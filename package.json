@@ -1,0 +1,28 @@
+{
+    "author": "ariatemplates <contact@ariatemplates.com> (http://github.com/ariatemplates)",
+    "name": "hashspace-prototype",
+    "description": "hashspace runtime prototype",
+    "version": "0.0.1-SNAPSHOT",
+    "homepage": "",
+    "repository": {
+        "type": "git",
+        "url": ""
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "grunt": "0.3.17",
+        "grunt-beautify": "0.1.0",
+        "grunt-jasmine-node": "0.0.2",
+        "grunt-contrib-compress": "0.3.2",
+        "jasmine-node": "1.0.26",
+        "testacular": "0.4.0",
+        "connect": "2.7.0"
+    },
+    "scripts": {
+        "prepublish": "node node_modules/grunt/bin/grunt build",
+        "test": "node node_modules/grunt/bin/grunt build test"
+    },
+    "config": {
+        "test-browsers": "Firefox"
+    }
+}

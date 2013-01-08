@@ -1,0 +1,98 @@
+
+<!--
+/*
+ * Copyright 2012 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+
+<html>
+<head>
+<script type="text/javascript" src="lib/jasmine.js"></script>
+<script type="text/javascript" src="lib/jasmine-html.js"></script>
+<script type="text/javascript" src="lib/noder.min.js"></script>
+<link href="lib/jasmine.css" type="text/css" rel="stylesheet"/>
+
+</head>
+<body>
+
+<script type="noder">
+
+// runtime tests
+require("spec/json.spec.js");
+require("spec/klass.spec.js");
+require("spec/propobserver.spec.js");
+require("spec/text.spec.js");
+require("spec/elt.spec.js");
+require("spec/if.spec.js");
+require("spec/insert.spec.js");
+require("spec/foreach.spec.js");
+
+// TODO
+// $text node 					OK
+// data binding on properties	OK
+// element nodes 				OK
+// node list at root level		OK
+// $if node						OK
+// $insert						OK
+// $foreach 					OK
+// data binding on arrays		OK
+
+// event handlers - onclick="{controller.save(todo)}"
+// input node
+// @attribute node?
+// data binding on full expression path
+
+// widgets
+// transitions
+// adaptors?
+
+// context variables?
+// # break and # continue 		NO - too complex for little added value
+
+// simple peg parser
+
+
+// type of expressions: 
+// expr: a / a.b  /  [x.]*b  /  [a.]*func(array of expr)
+// boundexpr: =[type1]   (=type1 bound)
+// cb: cb:a.func(array of expr)
+
+
+var reporter = new jasmine.TrivialReporter(), env = jasmine.getEnv();
+env.addReporter(reporter);
+env.execute();
+
+function hello1() {
+	if (!hello1.ng) {
+		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
+		hello1.ng=new Ng([
+			n.span(
+				0,
+				0,
+				[n.$text(0,["Hello World!"])]
+				)
+		]);
+	}
+	return hello1.ng.process(this,0);
+}
+
+var div = document.getElementById("test"); 
+div.appendChild(hello1().node);
+
+</script>
+
+<div id="test"></div>
+
+</body>
+</html>
