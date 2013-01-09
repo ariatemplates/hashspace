@@ -33,6 +33,14 @@ The samples folder also contains a pseudo-code implementation of what could be t
 As you will note, hashspace has many similarities with [angular JS][angular] as it implements the same type of algorithm that binds the HTML DOM to a JavaScript data structure. However the purpose of hashspace is not to implement a full framework as angular - but simply the HTML rendering part. Besides its pre-processor+runtime architecture will allow keeping the runtime as small as possible, while supporting advanced features - such as error managment and advanced expressions, as they may mainly impact the parser that will not be part of the runtime.
 
 
+Running Tests
+-------------
+To run the project you will have to install [grunt][grunt] and then simply
+- run *grunt* - this will launch a local webserver and a watch task on your files
+- and access *http://localhost:8000/test-index.html* to run the tests in your favorite browsers
+
+
 [key_features_blog]: http://ariatemplates.com/blog/2012/11/key-features-for-client-side-templates/
 [todomvc]: http://addyosmani.github.com/todomvc/
 [angular]:http://angularjs.org/
+[grunt]: http://gruntjs.com/
