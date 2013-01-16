@@ -32,20 +32,16 @@ TemplateInstructionEnd
   = S? _ InstructionBegin _ "/" TemplateToken _ InstructionEnd*
 
 TemplateContent
-  = S? elements:(element / S / ("#" [^ ] / [^#<&])+)* {
+  = S? elements:(element / ValueExpression / ("#" [^ ] / [^#<&\{])+)* {
   	var content = [];
-  	// Note that white spaces found here are between the close of a tag and the beginning of another
-  	// These can be safely ignored
+  	// Note that here we are ignoring only the space before the first element, all the others should be considered because
+  	// they might be part of a text node
   	for (var i = 0, len = elements.length; i < len; i += 1) {
   		// Each of these is either an element node or plain text
   		var element = elements[i];
   		if (element.type) {
-  			if (element.type !== "space") {
-  				// Don't want to store empty spaces between closed tags
-  				content.push(elements[i]);
-  			}
+  			content.push(elements[i]);
   		} else {
-  			//console.log("Found a character, what to do???", element);
   			content.push({
   				type : "text",
   				content : element.join("")
@@ -56,7 +52,25 @@ TemplateContent
   }
 
 
-// Instructions must be on a single line, no html is allowed in them, but we might have optional parameters
+ValueExpression  // These are in the form {something goes here}
+  = ValueTokenBegin bind:BindingModifierToken? value:BindableValue ValueTokenEnd {
+  	return {
+  		type : "value",
+  		args : value,
+  		bind : !!bind // it only says if there's a modifier or not, doesn't specify the default behavior
+  	}
+  }
+
+BindableValue
+  = head:Identifier tail:("." Identifier)* {
+  	var result = [head];
+  	for (var i = 0, len = tail.length; i < len; i += 1) {
+  		result.push(tail[i][1]);
+  	}
+  	return result;
+  }
+
+// Instructions must be on a single line, no HTML is allowed in them, but we might have optional parameters
 Instruction
   = _ InstructionBegin _ InstrucionName _ InstructionArguments? _ InstructionEnd
 
@@ -85,7 +99,9 @@ InstructionArgumentList  // similar to FormalParameterList but we don't allow ne
 InstructionBegin = "# "
 InstructionEnd = EOL+
 TemplateToken = "template"
-
+BindingModifierToken = "<"
+ValueTokenBegin = "{"
+ValueTokenEnd = "}"
 
 
 /*################
@@ -137,12 +153,13 @@ NameStartChar
 //  / [\u10000-\uEFFFF]   This character range doesn't seem to work in JS
 
 S "white space" //consists of one or more space (#x20) characters, carriage returns, line feeds, or tabs.
-  = empty:("\u0020" / "\u0009" / "\u000D" / "\u000A")+ {
+  = empty:("\u0020" / "\u0009" / "\u000D" / "\u000A")+
+/* This could actually return a node in case we want to process it {
   	return {
   		type : "space",
   		content : empty.join("")
   	}
-  }
+  }*/
 
 NameChar
   = NameStartChar / "-" / "." / [0-9] / "\u00B7" / [\u0300-\u036F] / [\u203F-\u2040]
@@ -159,30 +176,24 @@ element
   	return {
   		type : "element",
   		name : start.name,
-  		attr : start.attributes,
+  		attr : start.attr,
   		content : content,
   		empty : false
   	};
   }
 
 EmptyElemTag
-  = "<" name:Name attributes:(S Attribute)* S? "/>" {
-  	// attributes is an array of alternating white spaces and attributes
-  	var attr = [];
-  	for (var i = 0, len = attributes.length; i < len; i += 1) {
-  		attr.push(attributes[i][1]);
-  	}
-
+  = "<" name:Name attributes:(S text:Attribute {return text;})* S? "/>" {
   	return {
   		type : "element",
   		name : name,
-  		attr : attr,
+  		attr : attributes,
   		empty : true
   	};
   }
 
 STag
-  = "<" name:Name attributes:(S Attribute)* S? ">" {
+  = "<" name:Name attributes:(S text:Attribute {return text;})* S? ">" {
   	return {
   		name : name,
   		attr : attributes
@@ -190,8 +201,8 @@ STag
   }
 
 content
-  = before:CharData? after:((element / Reference / Comment) CharData?)* {
-  	// This is inside an html tag, so spaces might be needed, return the text content if any
+  = before:CharData? after:((element / Reference / Comment / ValueExpression) CharData?)* {
+  	// This is inside an HTML tag, so spaces might be needed, return the text content if any
   	var content = [];
   	if (before) {
   		// could be an empty line
@@ -211,38 +222,75 @@ content
 
   	return content;
   }
-// FIXME this was the standard definition it includes CDATA and Process Instructions
-// = CharData? ((element / Reference / CDSect / PI / Comment) CharData?)*
+// The standard definition of content includes also CDATA and Process Instructions
+
 
 CharData  // All text that is not markup constitutes the character data of the document.
-  = !([^<&]* "]]>" [^<&]*) chars:[^<&]* {
-  	return {
-  		type : "text",
-  		content : chars.join("")
-  	};
+  = !([^<&]* "]]>" [^<&]*) chars:(!ValueTokenBegin singleChar:[^<&] {return singleChar;})* {
+  	if (chars.length) {
+  		return {
+  			type : "text",
+  			content : chars.join("")
+  		};
+  	}
+  	// If we didn't catch anything just return undefined -> empty string, it's filtered out later
   }
-// = [^<&]* - ([^<&]* "]]>" [^<&]*)
 
 ETag
   = "</" Name S? ">"
 
 Attribute
-  = name:Name Eq value:AttValue {
-  	return [name, value[1].join("")];
+  = name:Name Eq list:AttValue {
+  	var valueDescription = [];
+  	var isStatic = true;
+  	var buffer = "";
+  	// list has 3 values: ['quote', 'value', 'quote']
+  	for (var i = 0, len = list[1].length; i < len; i += 1) {
+  		var value = list[1][i];
+  		if (value.type) {
+  			// There is a value expression in this attribute
+  			isStatic = false;
+  			if (buffer) {
+  				// Store whatever text we had so far
+  				valueDescription.push(buffer);
+  				buffer = "";
+  			}
+  			valueDescription.push(value);
+  		} else {
+  			// This is just a character or Reference
+  			buffer += value;
+  		}
+  	}
+
+  	// In case the buffer is not yet empty
+  	if (buffer) {
+  		valueDescription.push(buffer);
+  	}
+  	
+  	return {
+  		name : name,
+  		value : valueDescription,
+  		isStatic : isStatic,
+  		quote : list[0]
+  	}
   }
 
 AttValue
-  = '"' ([^<&"] / Reference)* '"'
-  / "'" ([^<&'] / Reference)* "'"
+  = '"' what:(!ValueTokenBegin character:[^<&"] {return character} / Reference / ValueExpression)* '"'
+  / "'" what:(!ValueTokenBegin character:[^<&'] {return character} / Reference / ValueExpression)* "'"
 
 Reference
   = EntityRef / CharRef
 
 EntityRef
-  = "&" Name ";"
+  = "&" name:Name ";" {
+  	return "&" + name + ";"
+  }
 
 CharRef
-  = "%" Name ";"
+  = "&#" digits:[0-9]+ ";" {
+  	return "&#" + digits.join("") + ";"
+  }
 
 Eq
   = S? "=" S?
@@ -250,13 +298,10 @@ Eq
 Comment
   = "<!--" chars:(!"-" Char / ('-' !"-" Char))* "-->" {
   	return "";
-  	// just ignore comments
+  	// just ignore HTML comments
   }
 
-/*  The following grammar is not supported by PEG
-Comment
-  = "<!--" ((Char - '-') / ('-' (Char - '-')))* "-->"
-
+/*  The following grammar is not supported by PEG, should be converted but I prefer to ignore them altogether
 // CDATA Sections
 CDSect = CDStart CData CDEnd
 CDStart = "<![CDATA["
@@ -267,6 +312,9 @@ CDEnd = "]]>"
 PI = '<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
 PITarget = Name - (('X' | 'x') ('M' | 'm') ('L' | 'l'))
 */
+
+
+
 
 /*!
  * This part is taken from the JavaScript PEGjs grammar by David Majda
