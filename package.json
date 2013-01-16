@@ -16,11 +16,13 @@
         "grunt-contrib-compress": "0.3.2",
         "jasmine-node": "1.0.26",
         "testacular": "0.4.0",
-        "connect": "2.7.0"
+        "connect": "2.7.0",
+        "pegjs" : "0.7.0",
+        "q" : "0.8.12"
     },
     "scripts": {
         "prepublish": "node node_modules/grunt/bin/grunt build",
-        "test": "node node_modules/grunt/bin/grunt build test"
+        "test": "node node_modules/grunt/bin/grunt test"
     },
     "config": {
         "test-browsers": "Firefox"

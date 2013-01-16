@@ -25,6 +25,9 @@ module.exports = function (grunt) {
       watch: {
         files: ['*.*'],
         tasks: []
+      },
+      test: {
+        files: ['test/*.js']
       }
     });
     grunt.registerTask('default', 'server watch');
