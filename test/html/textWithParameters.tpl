@@ -29,3 +29,11 @@ EOT
                 "content" : "\r\n   \r\n   World !\r\n"
             }]
 }
+
+EOT
+
+Hello Fabio Crisci World !
+
+ARGS
+
+["Fabio", "Crisci"]

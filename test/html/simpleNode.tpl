@@ -33,3 +33,14 @@ EOT
                 "content" : "\r\n"
             }]
 }
+
+EOT
+
+Hello brave user !
+<div>xxx</div>
+
+ARGS
+
+[{
+    "firstName" : "brave user"
+}]

@@ -45,3 +45,7 @@ EOT
                 "content" : "\r\n"
             }]
 }
+
+EOT
+
+<div><span>Some text here and some <strong>other</strong> text here</span></div>

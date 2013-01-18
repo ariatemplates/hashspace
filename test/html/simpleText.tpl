@@ -14,3 +14,11 @@ EOT
                 "content" : "Hello dear\r\n   World !\r\n"
             }]
 }
+
+EOT
+
+Hello dear World !
+
+ARGS
+
+["not", "used"]

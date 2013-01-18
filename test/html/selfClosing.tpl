@@ -26,3 +26,11 @@ EOT
                 "content" : "\r\n"
             }]
 }
+
+EOT
+
+<img src="http://someting.com/pathValue"/>
+
+ARGS
+
+["pathValue"]
