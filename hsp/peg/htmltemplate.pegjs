@@ -21,7 +21,7 @@ Template
   }
 
 TemplateInstruction
-  = _ InstructionBegin _ TemplateToken _ name:IdentifierName* _ args:InstructionArguments? _ InstructionEnd {
+  = _ InstructionBegin _ TemplateToken _ name:Identifier _ args:InstructionArgumentsDefinition? _ InstructionEnd {
   	return {
   		name : name,
   		args : args
@@ -32,7 +32,7 @@ TemplateInstructionEnd
   = S? _ InstructionBegin _ "/" TemplateToken _ InstructionEnd*
 
 TemplateContent
-  = S? elements:(element / ValueExpression / ("#" [^ ] / [^#<&\{])+)* {
+  = S? elements:(element / ValueExpression / Instruction / ("#" [^ ] / [^#<&\{])+)* {
   	var content = [];
   	// Note that here we are ignoring only the space before the first element, all the others should be considered because
   	// they might be part of a text node
@@ -70,20 +70,32 @@ BindableValue
   	return result;
   }
 
-// Instructions must be on a single line, no HTML is allowed in them, but we might have optional parameters
-Instruction
-  = _ InstructionBegin _ InstrucionName _ InstructionArguments? _ InstructionEnd
-
-InstrucionName
-  = chars:IdentifierName* { return chars.join(""); }  //Allow any JS identifier, even reserved keywords
-
-InstructionArguments
-  = "(" _ args:InstructionArgumentList? _ ")" {
-  	return args || [];
+// arguments that can only be identifiers, like in function declarations
+InstructionArgumentsDefinition
+  = "(" _ args:InstructionArgumentDefinitionList? _ ")" {
+    return args || [];
   }
 
-InstructionArgumentList  // similar to FormalParameterList but we don't allow new lines in it
+// Arguments that can be simple expressions, like in function call, this includes literals
+InstructionArgumentsCall
+  = base:IdentifierName? _ "(" _ args:InstructionArgumentCallList? _ ")" {
+    return {
+      base : base,
+      args : args
+    };
+  }
+
+InstructionArgumentDefinitionList
   = head:Identifier tail:(_ "," _ Identifier)* {
+    var result = [head];
+    for (var i = 0, len = tail.length; i < len; i += 1) {
+      result.push(tail[i][3]);
+    }
+    return result;
+   }
+
+InstructionArgumentCallList
+  = head:SimpleAssignmentExpression tail:(_ "," _ SimpleAssignmentExpression)* {
   	var result = [head];
   	for (var i = 0, len = tail.length; i < len; i += 1) {
   		result.push(tail[i][3]);
@@ -91,10 +103,81 @@ InstructionArgumentList  // similar to FormalParameterList but we don't allow ne
   	return result;
   }
 
+Instruction
+  = InstructionSingleLine
+  / InstructionElement
 
+// Empty instructions must be on a single line, no HTML is allowed in them, but we might have optional parameters
+InstructionSingleLine
+  = _ InstructionBegin _ name:SingleLineInstructionToken _ args:InstructionArgumentsCall? _ InstructionEnd {
+    return {
+      type : "instruction",
+      name : name,
+      args : args
+    };
+  }
+
+// Element instructions have an opening and closing line, they contain text / HTML elements
+InstructionElement
+  = _ InstructionBegin _ instruction:(InstructionIf / InstructionFor)? _ InstructionEnd {
+    return {
+      type : "instruction",
+      name : instruction.name,
+      content : instruction.content,
+      args : instruction.args
+    };
+  }
+
+// It's simple because it doesn't allow operators (like 'a = 12')
+SimpleAssignmentExpression
+  = Literal
+  / SimpleArrayLiteral
+  / SimpleObjectLiteral
+  / IdentifierLiteral
+
+IdentifierLiteral
+  = base:Identifier assign:("[" _ SimpleAssignmentExpression _ "]" / "." _ Identifier)* {
+    var args = [base];
+    for (var i = 0; i < assign.length; i += 1) {
+      args.push(assign[i][2]);
+    }
+
+    return {
+      type : "IdentifierLiteral",
+      value : args
+    };
+  }
+
+InstructionIf
+  = IfToken _ condition:(("(" _ exp:Expression _ ")") {return exp;} / Expression) _ EOL content:TemplateContent InstructionBegin _ "/" _ IfToken {
+    return {
+      type : "instruction",
+      name : "if",
+      args : condition,
+      content : content
+    };
+  }
+
+InstructionFor
+  = ForToken _ iterator:InstructionForExpression _ EOL content:TemplateContent InstructionBegin _ "/" _ ForToken {
+    return {
+      type : "instruction",
+      name : "for",
+      args : iterator,
+      content : content
+    };
+  }
+
+InstructionForExpression
+  = declaration:Identifier _ InToken _ collection:(IdentifierLiteral / SimpleArrayLiteral / SimpleObjectLiteral) {
+    return {
+      iterator : declaration,
+      collection : collection
+    };
+  }
 
 /*####################
-  Hashspace Keywords
+  Hashspace Tokens
 #####################*/
 InstructionBegin = "# "
 InstructionEnd = EOL+
@@ -102,13 +185,18 @@ TemplateToken = "template"
 BindingModifierToken = "<"
 ValueTokenBegin = "{"
 ValueTokenEnd = "}"
-
+SingleLineInstructionToken
+  = "insert"
 
 /*################
   Base symbols
 #################*/
 // Any padding excluding line breaks
 _
+  = WhiteSpace*
+
+// two underscores is used by JavaScript example to include new lines, we prefer to ignore it
+__
   = WhiteSpace*
 
 WhiteSpace
@@ -120,6 +208,11 @@ EOL "end of line"
   / "\r"
   / "\u2028" // line separator
   / "\u2029" // paragraph separator
+
+
+
+
+
 
 /*!
  * This part is taken from the HTML + XML specifications and defines well-formed XML Documents
@@ -323,6 +416,9 @@ PITarget = Name - (('X' | 'x') ('M' | 'm') ('L' | 'l'))
  * JavaScript parser based on the grammar described in ECMA-262, 5th ed.
  * (http://www.ecma-international.org/publications/standards/Ecma-262.htm)
  */
+SourceCharacter
+  = .
+
 Identifier "identifier"
   = !ReservedWord name:IdentifierName { return name; }
 
@@ -401,6 +497,171 @@ BooleanLiteral
   = TrueToken  { return { type: "BooleanLiteral", value: true  }; }
   / FalseToken { return { type: "BooleanLiteral", value: false }; }
 
+Literal
+  = NullLiteral
+  / BooleanLiteral
+  / value:NumericLiteral {
+      return {
+        type:  "NumericLiteral",
+        value: value
+      };
+    }
+  / value:StringLiteral {
+      return {
+        type:  "StringLiteral",
+        value: value
+      };
+    }
+
+NumericLiteral "number"
+  = literal:(HexIntegerLiteral / DecimalLiteral) !IdentifierStart {
+      return literal;
+    }
+
+HexIntegerLiteral
+  = "0" [xX] digits:HexDigit+ { return parseInt("0x" + digits); }
+
+HexDigit
+  = [0-9a-fA-F]
+
+DecimalLiteral
+  = parts:(DecimalIntegerLiteral "." DecimalDigits? ExponentPart?) {
+      return parseFloat(parts);
+    }
+  / parts:("." DecimalDigits ExponentPart?)     { return parseFloat(parts); }
+  / parts:(DecimalIntegerLiteral ExponentPart?) { return parseFloat(parts); }
+
+DecimalIntegerLiteral
+  = "0" / NonZeroDigit DecimalDigits?
+
+DecimalDigits
+  = DecimalDigit+
+
+DecimalDigit
+  = [0-9]
+
+NonZeroDigit
+  = [1-9]
+
+ExponentPart
+  = ExponentIndicator SignedInteger
+
+ExponentIndicator
+  = [eE]
+
+SignedInteger
+  = [-+]? DecimalDigits
+
+StringLiteral "string"
+  = parts:('"' DoubleStringCharacters? '"' / "'" SingleStringCharacters? "'") {
+      return parts[1];
+    }
+
+DoubleStringCharacters
+  = chars:DoubleStringCharacter+ { return chars.join(""); }
+
+SingleStringCharacters
+  = chars:SingleStringCharacter+ { return chars.join(""); }
+
+DoubleStringCharacter
+  = !('"' / "\\" / EOL) char_:SourceCharacter { return char_;     }
+  / "\\" sequence:EscapeSequence                         { return sequence;  }
+
+SingleStringCharacter
+  = !("'" / "\\" / EOL) char_:SourceCharacter { return char_;     }
+  / "\\" sequence:EscapeSequence                         { return sequence;  }
+
+EscapeSequence
+  = CharacterEscapeSequence
+  / "0" !DecimalDigit { return "\0"; }
+  / HexEscapeSequence
+  / UnicodeEscapeSequence
+
+CharacterEscapeSequence
+  = SingleEscapeCharacter
+  / NonEscapeCharacter
+
+SingleEscapeCharacter
+  = char_:['"\\bfnrtv] {
+      return char_
+        .replace("b", "\b")
+        .replace("f", "\f")
+        .replace("n", "\n")
+        .replace("r", "\r")
+        .replace("t", "\t")
+        .replace("v", "\x0B") // IE does not recognize "\v".
+    }
+
+NonEscapeCharacter
+  = (!EscapeCharacter / EOL) char_:SourceCharacter { return char_; }
+
+EscapeCharacter
+  = SingleEscapeCharacter
+  / DecimalDigit
+  / "x"
+  / "u"
+
+HexEscapeSequence
+  = "x" digits:(HexDigit HexDigit) {
+      return String.fromCharCode(parseInt("0x" + digits));
+    }
+
+UnicodeEscapeSequence
+  = "u" digits:(HexDigit HexDigit HexDigit HexDigit) {
+      return String.fromCharCode(parseInt("0x" + digits));
+    }
+
+SimpleObjectLiteral
+  = "{" _ properties:(SimplePropertyNameAndValueList _ ("," _)?)? "}" {
+      return {
+        type:       "ObjectLiteral",
+        properties: properties !== "" ? properties[0] : []
+      };
+    }
+
+SimplePropertyNameAndValueList
+  = head:SimplePropertyAssignment tail:(_ "," _ SimplePropertyAssignment)* {
+      var result = [head];
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][3]);
+      }
+      return result;
+    }
+
+// it doesn't include get and set keyword from JavaScript 1.8.5
+SimplePropertyAssignment
+  = name:PropertyName _ ":" _ value:SimpleAssignmentExpression {
+      return {
+        type:  "PropertyAssignment",
+        name:  name,
+        value: value
+      };
+    }
+
+PropertyName
+  = IdentifierName
+  / StringLiteral
+  / NumericLiteral
+
+SimpleArrayLiteral
+  = "[" _ elements:SimpleElementList? _ (Elision _)? "]" {
+      return {
+        type:     "ArrayLiteral",
+        elements: elements !== "" ? elements : []
+      };
+    }
+
+SimpleElementList
+  = (Elision _)?
+    head:SimpleAssignmentExpression
+    tail:(_ "," _ Elision? _ SimpleAssignmentExpression)* {
+      var result = [head];
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][5]);
+      }
+      return result;
+    }
+
 /* Tokens */
 
 BreakToken      = "break"            !IdentifierPart
@@ -434,3 +695,636 @@ VarToken        = "var"              !IdentifierPart
 VoidToken       = "void"             !IdentifierPart { return "void"; }
 WhileToken      = "while"            !IdentifierPart
 WithToken       = "with"             !IdentifierPart
+
+
+/* ===== A.3 Expressions ===== */
+// With respect to the original version we allow only Simple Object literals to avoid functions
+PrimaryExpression
+  = ThisToken       { return { type: "This" }; }
+  / name:Identifier { return { type: "Variable", name: name }; }
+  / Literal
+  / ArrayLiteral
+  / SimpleObjectLiteral  // !! this is different from JavaScript example
+  / "(" __ expression:Expression __ ")" { return expression; }
+
+ArrayLiteral
+  = "[" __ elements:ElementList? __ (Elision __)? "]" {
+      return {
+        type:     "ArrayLiteral",
+        elements: elements !== "" ? elements : []
+      };
+    }
+
+ElementList
+  = (Elision __)?
+    head:AssignmentExpression
+    tail:(__ "," __ Elision? __ AssignmentExpression)* {
+      var result = [head];
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][5]);
+      }
+      return result;
+    }
+
+Elision
+  = "," (__ ",")*
+
+/* we don't want this becase it contains function calls
+ObjectLiteral
+  = "{" __ properties:(PropertyNameAndValueList __ ("," __)?)? "}" {
+      return {
+        type:       "ObjectLiteral",
+        properties: properties !== "" ? properties[0] : []
+      };
+    }
+
+PropertyNameAndValueList
+  = head:PropertyAssignment tail:(__ "," __ PropertyAssignment)* {
+      var result = [head];
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][3]);
+      }
+      return result;
+    }
+
+PropertyAssignment
+  = name:PropertyName __ ":" __ value:AssignmentExpression {
+      return {
+        type:  "PropertyAssignment",
+        name:  name,
+        value: value
+      };
+    }
+  / GetToken __ name:PropertyName __
+    "(" __ ")" __
+    "{" __ body:FunctionBody __ "}" {
+      return {
+        type: "GetterDefinition",
+        name: name,
+        body: body
+      };
+    }
+  / SetToken __ name:PropertyName __
+    "(" __ param:PropertySetParameterList __ ")" __
+    "{" __ body:FunctionBody __ "}" {
+      return {
+        type:  "SetterDefinition",
+        name:  name,
+        param: param,
+        body:  body
+      };
+    }
+*/
+
+PropertyName
+  = IdentifierName
+  / StringLiteral
+  / NumericLiteral
+
+PropertySetParameterList
+  = Identifier
+
+MemberExpression
+  = base:(
+        PrimaryExpression
+/*      / FunctionExpression  // !! removed
+      / NewToken __ constructor:MemberExpression __ args:Arguments {
+          return {
+            type:        "NewOperator",
+            constructor: constructor,
+            arguments:   args
+          };
+        }  */
+    )
+    accessors:(
+        __ "[" __ name:Expression __ "]" { return name; }
+      / __ "." __ name:IdentifierName    { return name; }
+    )* {
+      var result = base;
+      for (var i = 0; i < accessors.length; i++) {
+        result = {
+          type: "PropertyAccess",
+          base: result,
+          name: accessors[i]
+        };
+      }
+      return result;
+    }
+
+NewExpression
+  = MemberExpression
+  / NewToken __ constructor:NewExpression {
+      return {
+        type:        "NewOperator",
+        constructor: constructor,
+        arguments:   []
+      };
+    }
+
+CallExpression
+  = base:(
+      name:MemberExpression __ args:Arguments {
+        return {
+          type:      "FunctionCall",
+          name:      name,
+          arguments: args
+        };
+      }
+    )
+    argumentsOrAccessors:(
+        __ args:Arguments {
+          return {
+            type:      "FunctionCallArguments",
+            arguments: args
+          };
+        }
+      / __ "[" __ name:Expression __ "]" {
+          return {
+            type: "PropertyAccessProperty",
+            name: name
+          };
+        }
+      / __ "." __ name:IdentifierName {
+          return {
+            type: "PropertyAccessProperty",
+            name: name
+          };
+        }
+    )* {
+      var result = base;
+      for (var i = 0; i < argumentsOrAccessors.length; i++) {
+        switch (argumentsOrAccessors[i].type) {
+          case "FunctionCallArguments":
+            result = {
+              type:      "FunctionCall",
+              name:      result,
+              arguments: argumentsOrAccessors[i].arguments
+            };
+            break;
+          case "PropertyAccessProperty":
+            result = {
+              type: "PropertyAccess",
+              base: result,
+              name: argumentsOrAccessors[i].name
+            };
+            break;
+          default:
+            throw new Error(
+              "Invalid expression type: " + argumentsOrAccessors[i].type
+            );
+        }
+      }
+      return result;
+    }
+
+Arguments
+  = "(" __ args:ArgumentList? __ ")" {
+    return args !== "" ? args : [];
+  }
+
+ArgumentList
+  = head:AssignmentExpression tail:(__ "," __ AssignmentExpression)* {
+    var result = [head];
+    for (var i = 0; i < tail.length; i++) {
+      result.push(tail[i][3]);
+    }
+    return result;
+  }
+
+LeftHandSideExpression
+  = CallExpression
+  / NewExpression
+
+PostfixExpression
+  = expression:LeftHandSideExpression _ operator:PostfixOperator {
+      return {
+        type:       "PostfixExpression",
+        operator:   operator,
+        expression: expression
+      };
+    }
+  / LeftHandSideExpression
+
+PostfixOperator
+  = "++"
+  / "--"
+
+UnaryExpression
+  = PostfixExpression
+  / operator:UnaryOperator __ expression:UnaryExpression {
+      return {
+        type:       "UnaryExpression",
+        operator:   operator,
+        expression: expression
+      };
+    }
+
+UnaryOperator
+  = DeleteToken
+  / VoidToken
+  / TypeofToken
+  / "++"
+  / "--"
+  / "+"
+  / "-"
+  / "~"
+  /  "!"
+
+MultiplicativeExpression
+  = head:UnaryExpression
+    tail:(__ MultiplicativeOperator __ UnaryExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+MultiplicativeOperator
+  = operator:("*" / "/" / "%") !"=" { return operator; }
+
+AdditiveExpression
+  = head:MultiplicativeExpression
+    tail:(__ AdditiveOperator __ MultiplicativeExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+AdditiveOperator
+  = "+" !("+" / "=") { return "+"; }
+  / "-" !("-" / "=") { return "-"; }
+
+ShiftExpression
+  = head:AdditiveExpression
+    tail:(__ ShiftOperator __ AdditiveExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+ShiftOperator
+  = "<<"
+  / ">>>"
+  / ">>"
+
+RelationalExpression
+  = head:ShiftExpression
+    tail:(__ RelationalOperator __ ShiftExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+RelationalOperator
+  = "<="
+  / ">="
+  / "<"
+  / ">"
+  / InstanceofToken
+  / InToken
+
+RelationalExpressionNoIn
+  = head:ShiftExpression
+    tail:(__ RelationalOperatorNoIn __ ShiftExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+RelationalOperatorNoIn
+  = "<="
+  / ">="
+  / "<"
+  / ">"
+  / InstanceofToken
+
+EqualityExpression
+  = head:RelationalExpression
+    tail:(__ EqualityOperator __ RelationalExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+EqualityExpressionNoIn
+  = head:RelationalExpressionNoIn
+    tail:(__ EqualityOperator __ RelationalExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+EqualityOperator
+  = "==="
+  / "!=="
+  / "=="
+  / "!="
+
+BitwiseANDExpression
+  = head:EqualityExpression
+    tail:(__ BitwiseANDOperator __ EqualityExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseANDExpressionNoIn
+  = head:EqualityExpressionNoIn
+    tail:(__ BitwiseANDOperator __ EqualityExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseANDOperator
+  = "&" !("&" / "=") { return "&"; }
+
+BitwiseXORExpression
+  = head:BitwiseANDExpression
+    tail:(__ BitwiseXOROperator __ BitwiseANDExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseXORExpressionNoIn
+  = head:BitwiseANDExpressionNoIn
+    tail:(__ BitwiseXOROperator __ BitwiseANDExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseXOROperator
+  = "^" !("^" / "=") { return "^"; }
+
+BitwiseORExpression
+  = head:BitwiseXORExpression
+    tail:(__ BitwiseOROperator __ BitwiseXORExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseORExpressionNoIn
+  = head:BitwiseXORExpressionNoIn
+    tail:(__ BitwiseOROperator __ BitwiseXORExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseOROperator
+  = "|" !("|" / "=") { return "|"; }
+
+LogicalANDExpression
+  = head:BitwiseORExpression
+    tail:(__ LogicalANDOperator __ BitwiseORExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+LogicalANDExpressionNoIn
+  = head:BitwiseORExpressionNoIn
+    tail:(__ LogicalANDOperator __ BitwiseORExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+LogicalANDOperator
+  = "&&" !"=" { return "&&"; }
+
+LogicalORExpression
+  = head:LogicalANDExpression
+    tail:(__ LogicalOROperator __ LogicalANDExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+LogicalORExpressionNoIn
+  = head:LogicalANDExpressionNoIn
+    tail:(__ LogicalOROperator __ LogicalANDExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+LogicalOROperator
+  = "||" !"=" { return "||"; }
+
+ConditionalExpression
+  = condition:LogicalORExpression __
+    "?" __ trueExpression:AssignmentExpression __
+    ":" __ falseExpression:AssignmentExpression {
+      return {
+        type:            "ConditionalExpression",
+        condition:       condition,
+        trueExpression:  trueExpression,
+        falseExpression: falseExpression
+      };
+    }
+  / LogicalORExpression
+
+ConditionalExpressionNoIn
+  = condition:LogicalORExpressionNoIn __
+    "?" __ trueExpression:AssignmentExpressionNoIn __
+    ":" __ falseExpression:AssignmentExpressionNoIn {
+      return {
+        type:            "ConditionalExpression",
+        condition:       condition,
+        trueExpression:  trueExpression,
+        falseExpression: falseExpression
+      };
+    }
+  / LogicalORExpressionNoIn
+
+AssignmentExpression
+  = left:LeftHandSideExpression __
+    operator:AssignmentOperator __
+    right:AssignmentExpression {
+      return {
+        type:     "AssignmentExpression",
+        operator: operator,
+        left:     left,
+        right:    right
+      };
+    }
+  / ConditionalExpression
+
+AssignmentExpressionNoIn
+  = left:LeftHandSideExpression __
+    operator:AssignmentOperator __
+    right:AssignmentExpressionNoIn {
+      return {
+        type:     "AssignmentExpression",
+        operator: operator,
+        left:     left,
+        right:    right
+      };
+    }
+  / ConditionalExpressionNoIn
+
+AssignmentOperator
+  = "=" (!"=") { return "="; }
+  / "*="
+  / "/="
+  / "%="
+  / "+="
+  / "-="
+  / "<<="
+  / ">>="
+  / ">>>="
+  / "&="
+  / "^="
+  / "|="
+
+Expression
+  = head:AssignmentExpression
+    tail:(__ "," __ AssignmentExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+ExpressionNoIn
+  = head:AssignmentExpressionNoIn
+    tail:(__ "," __ AssignmentExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }

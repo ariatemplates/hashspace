@@ -17,11 +17,11 @@ exports.htmlTemplates = {
 		test.expect(Object.keys(allTemplates).length * 1);
 
 		utils.each(function (name, template, next) {
-			console.log("\n->Parsing template", name);
+			//console.log("\n->Parsing template", name);
 			//console.log(template.content);
 
 			var actualTree = parser.parse(template.content);
-			//console.log(require("util").inspect(actualTree, false, null, true));
+			//console.log("ACTUAL TREE", require("util").inspect(actualTree, false, null, true));
 			//console.log(JSON.stringify(actualTree));
 
 			test.deepEqual(actualTree, template.tree);

@@ -17,7 +17,7 @@ EOT
 
 {
     "type" : "template",
-    "name" : ["variables"],
+    "name" : "variables",
     "args" : ["one", "two", "two2", "_"],
     "content" : [{
                 "type" : "text",

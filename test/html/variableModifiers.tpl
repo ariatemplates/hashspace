@@ -7,7 +7,7 @@ EOT
 
 {
     "type" : "template",
-    "name" : ["modifiers"],
+    "name" : "modifiers",
     "args" : [],
     "content" : [{
                 "type" : "value",

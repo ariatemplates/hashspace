@@ -7,7 +7,7 @@ EOT
 
 {
     "type" : "template",
-    "name" : ["hello2"],
+    "name" : "hello2",
     "args" : ["firstName", "lastName"],
     "content" : [{
                 "type" : "text",

@@ -2,7 +2,7 @@
 # /template
 
 EOT
-{"type":"template","name":["one"],"args":[],"content":[]}
+{"type":"template","name":"one","args":[],"content":[]}
 
 EOT
 

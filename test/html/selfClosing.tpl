@@ -5,7 +5,7 @@
 EOT
 {
     "type" : "template",
-    "name" : ["image"],
+    "name" : "image",
     "args" : ["path"],
     "content" : [{
                 "type" : "element",

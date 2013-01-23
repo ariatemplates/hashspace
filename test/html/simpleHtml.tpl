@@ -8,7 +8,7 @@ EOT
 
 {
     "type" : "template",
-    "name" : ["hello4"],
+    "name" : "hello4",
     "args" : [],
     "content" : [{
                 "type" : "element",

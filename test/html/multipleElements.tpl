@@ -7,7 +7,7 @@
 EOT
 {
     "type" : "template",
-    "name" : ["multiple"],
+    "name" : "multiple",
     "args" : [],
     "content" : [{
                 "type" : "element",
