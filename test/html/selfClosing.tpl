@@ -29,7 +29,7 @@ EOT
 
 EOT
 
-<img src="http://someting.com/pathValue"/>
+<img src="http://someting.com/pathValue">
 
 ARGS
 

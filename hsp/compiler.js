@@ -9,7 +9,12 @@ exports.compile = function (template) {
 		return;
 	}
 
-	return processors[ast.type](ast);
+	try {
+		return processors[ast.type](ast);
+	} catch (ex) {
+		console.log(ex);
+		return "";
+	}
 };
 
 // Now I use \n and \t for readability, but it should be an empty string
@@ -109,6 +114,42 @@ var processors = {
 	},
 	"value" : function (value) {
 		return "n.$text({e1:[" + bindValue(value.bind) + ", " + buildPath(value.args) + "]}, [\"\", 1])";
+	},
+	"instruction" : function (instruction) {
+		return processors["instruction." + instruction.name](instruction);
+	},
+	"instruction.insert" : function (instruction) {
+		var map = extractVariableArguments(instruction.args.args);
+
+		var insertParams = [
+			processors["element.variables"](map),
+			'"' + instruction.args.base + '"',
+			"[" + map.args.join(",") + "]"
+		];
+		return "n.$insert(" + insertParams.join(",") + ")";
+	},
+	"instruction.if" : function (instruction) {
+		// TODO
+		//console.log("IF", instruction);
+		var ifParams = [
+			"{e1:[1, 0, \"true\"]}",
+			1,
+			"[" + processors["template.content"](instruction.content) + "]"
+		];
+
+		return "n.$if(" + ifParams.join(",") + ")";
+	},
+	"instruction.for" : function (instruction) {
+		//console.log("FOR", instruction);
+		var foreachParams = [
+			"{e1:[1, " + buildPath(instruction.args.collection.value) + "]}",
+			"\"" + instruction.args.iterator + "\"",
+			0,
+			1,
+			"[" + processors["template.content"](instruction.content) + "]"
+		];
+
+		return "n.$foreach(" + foreachParams.join(",") + ")";
 	}
 };
 
@@ -198,4 +239,70 @@ function buildPath (pathArray) {
 	} else {
 		return "\"" + pathArray.join("\",\"") + "\"";
 	}
+}
+
+function extractVariableArguments (args) {
+	var map = {
+		variables : [],
+		args : []
+	};
+	var counter = 0;
+
+	for (var i = 0; i < args.length; i += 1) {
+		var param = args[i];
+		if (param.type === "IdentifierLiteral") {
+			counter += 1;
+			var id = counter;
+			var variable = "e" + id;
+
+			// Only identifiers are dynamic values 
+			// (we ignore the fact that object and array might have reference to other identifiers)
+			map.variables.push({
+				name : variable,
+				bind : 1,
+				path : param.value
+			});
+
+			map.args.push(1, id);
+		} else {
+			map.args.push(0, getValue(param));
+		}
+	}
+
+	return map;
+}
+
+function buildArrayFromLiteral (elements) {
+	var array = [];
+	for (var i = 0; i < elements.length; i += 1) {
+		array.push(getValue(elements[i]));
+	}
+	return "[" + array.join(",") + "]";
+}
+
+function buildObjectFromLiteral (properties) {
+	var object = [];
+	for (var i = 0; i < properties.length; i += 1) {
+		object.push(properties[i].name + ":" + getValue(properties[i].value));
+	}
+	return "{" + object.join(",") + "}";
+}
+
+function getValue (element) {
+	var value;
+
+	if (element.type === "NullLiteral") {
+		value = null;
+	} else if (element.type === "ArrayLiteral") {
+		value = buildArrayFromLiteral(element.elements);
+	} else if (element.type === "ObjectLiteral") {
+		value = buildObjectFromLiteral(element.properties);
+	} else if (element.type === "StringLiteral") {
+		value = "\"" + element.value + "\"";
+	} else {
+		// Let's imagine that we don't have Identifier literals inside Objects...
+		value = element.value;
+	}
+
+	return value;
 }
