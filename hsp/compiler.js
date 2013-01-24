@@ -1,6 +1,7 @@
 var parser = require("./parser");
 
 exports.compile = function (template) {
+	// Parsing might throw an exception
 	var ast = parser.parse(template);
 
 	// ast starts from a template definition
@@ -9,12 +10,7 @@ exports.compile = function (template) {
 		return;
 	}
 
-	try {
-		return processors[ast.type](ast);
-	} catch (ex) {
-		console.log(ex);
-		return "";
-	}
+	return processors[ast.type](ast);
 };
 
 // Now I use \n and \t for readability, but it should be an empty string

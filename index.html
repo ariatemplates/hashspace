@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Hashspace</title>
+<style type="text/css" media="screen">
+    #leftPanel { 
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 80%;
+    }
+    #editor {
+    	position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    #rightPanel {
+    	position: absolute;
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 80%;
+    }
+    #bottomPanel {
+    	position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 20%;
+        border-top: 1px solid #CCC;
+        overflow: auto;
+    }
+    #logs p {
+    	font-size: small;
+		margin: 5px;
+    }
+    .info {
+    	position : absolute;
+		right: 20px;
+		top: 15px;
+		z-index: 1000;
+
+		border: solid 1px #F1F1F1;
+		background: #fafafa;
+		display: inline-block;
+		height: 22px;
+		padding: 0 6px;
+		line-height: 22px;
+		text-align: center;
+		font-size: 12px;
+		color: #777;
+		border-radius: 1px;
+		text-rendering: optimizeLegibility;
+		font-family: "Helvetica", "Arial", "FreeSans", "Verdana", "Tahoma", "Lucida Sans", "Lucida Sans Unicode", "Luxi Sans", sans-serif;
+		opacity: 0.7
+    }
+</style>
+
+<script type="text/javascript" src="lib/noder.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+
+</head>
+<body>
+
+<div id="leftPanel">
+<div id="editor"># template hello()
+	Hello World!
+# /template</div>
+	<div class="info">Template</div>
+</div>
+
+<div id="rightPanel">
+	<div id="result"></div>
+	<div class="info">Output</div>
+</div>
+
+<div id="bottomPanel">
+	<div id="logs"></div>
+	<div class="info">Errors</div>
+</div>
+
+<script src="http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/crimson_editor");
+    //editor.getSession().setMode("ace/mode/javascript");
+
+    editor.getSession().on('change', function(e) {
+    	socket.emit('editor change', { text : editor.getValue() });
+    });
+
+    var socket = io.connect('http://localhost');
+
+    socket.on('welcome', function (data) {
+        socket.emit('editor change', { text : editor.getValue() });
+
+        var resultPanel = document.getElementById("result");
+        var logsPanel = document.getElementById("logs");
+        socket.on('compilation done', function (data) {
+            if (data.error) {
+            	var exceptionInfo = [data.line || "?", data.column || "?", data.error];
+
+            	var node = document.createElement("p");
+            	var text = document.createTextNode("[Line %1, Column %2]%3".replace(/%[0-9]+/g, function (token) {
+            		return exceptionInfo[parseInt(token.substring(1), 10) - 1] || token;
+            	}));
+            	node.appendChild(text);
+
+            	if (logsPanel.firstChild) {
+            		logsPanel.insertBefore(node, logsPanel.firstChild)
+            	} else {
+            		logsPanel.appendChild(node);
+            	}
+            } else {
+        	    var selfRunningCode = "module.exports=(" + data.code + ")()";
+        	    
+        	    noder.execute(selfRunningCode).then(function (out) {
+        	    	resultPanel.innerHTML = "";
+        	    	resultPanel.appendChild(out.node);
+        	    });
+            }
+        });
+    });
+</script>
+</body>

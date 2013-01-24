@@ -20,7 +20,7 @@ module.exports = function (grunt) {
     grunt.initConfig({
       server: {
         port: 8000,
-        base: '.'
+        base: __dirname
       },
       watch: {
         files: ['*.*'],
@@ -30,6 +30,8 @@ module.exports = function (grunt) {
         files: ['test/*.js']
       }
     });
-    grunt.registerTask('default', 'server watch');
 
+    grunt.loadTasks('tasks');
+
+    grunt.registerTask('default', 'server watch');
 };

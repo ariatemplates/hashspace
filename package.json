@@ -19,7 +19,9 @@
         "connect": "2.7.0",
         "pegjs" : "0.7.0",
         "q" : "0.8.12",
-        "phantom-proxy" : "0.1.792"
+        "phantom-proxy" : "0.1.792",
+        "socket.io" : "0.9.13",
+        "express" : "3.0.6"
     },
     "scripts": {
         "prepublish": "node node_modules/grunt/bin/grunt build",
