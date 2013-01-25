@@ -8,27 +8,67 @@
         top: 0;
         left: 0;
         width: 50%;
-        height: 80%;
-    }
-    #editor {
-    	position: relative;
-        width: 100%;
         height: 100%;
     }
     #rightPanel {
-    	position: absolute;
+        position: absolute;
         top: 0;
         right: 0;
         width: 50%;
-        height: 80%;
+        height: 100%;
     }
-    #bottomPanel {
-    	position: absolute;
+    #topLeftPanel { 
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+    }
+    #bottomLeftPanel {
+        position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
-        height: 20%;
-        border-top: 1px solid #CCC;
+        height: 50%;
+    }
+    #topRightPanel { 
+        position: relative;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+    }
+    #bottomRightPanel {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 50%;
+    }
+
+    #hRule {
+        position: absolute;
+        top: 50%;
+        height: 1px;
+        z-index: 1000;
+        left: 0;
+        right: 0;
+        background-color: #CCC;
+    }
+
+    #editor {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    #jseditor {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    #logs {
+        height: 100%;
         overflow: auto;
     }
     #logs p {
@@ -64,61 +104,121 @@
 <body>
 
 <div id="leftPanel">
-<div id="editor"># template hello()
-	Hello World!
+    <div id="topLeftPanel">
+        <div id="editor"># template hello(name)
+    Hello {name}!
 # /template</div>
-	<div class="info">Template</div>
+        <div class="info">Template</div>
+    </div>
+
+    <div id="hRule"></div>
+
+    <div id="bottomLeftPanel">
+        <div id="jseditor">//The script must return an array of arguments that will be passed to the template function
+var name = "World";
+
+return [name];</div>
+        <div class="info">JavaScript</div>
+    </div>
 </div>
 
 <div id="rightPanel">
-	<div id="result"></div>
-	<div class="info">Output</div>
-</div>
+    <div id="topRightPanel">
+        <div id="result"></div>
+        <div class="info">Output</div>
+    </div>
 
-<div id="bottomPanel">
-	<div id="logs"></div>
-	<div class="info">Errors</div>
+    <div id="hRule"></div>
+
+    <div id="bottomRightPanel">
+        <div id="logs"></div>
+        <div class="info">Errors</div>
+    </div>
 </div>
 
 <script src="http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 <script>
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/crimson_editor");
-    //editor.getSession().setMode("ace/mode/javascript");
+    editor.getSession().setMode("ace/mode/html");
 
-    editor.getSession().on('change', function(e) {
-    	socket.emit('editor change', { text : editor.getValue() });
+    var jseditor = ace.edit("jseditor");
+    jseditor.setTheme("ace/theme/crimson_editor");
+    jseditor.getSession().setMode("ace/mode/javascript");
+
+    var resultPanel = document.getElementById("result");
+    var logsPanel = document.getElementById("logs");
+
+    var log = function (line, column, message) {
+        var exceptionInfo = [line || "?", column || "?", message];
+
+        var node = document.createElement("p");
+        var text = document.createTextNode("[Line %1, Column %2] %3".replace(/%[0-9]+/g, function (token) {
+            return exceptionInfo[parseInt(token.substring(1), 10) - 1] || token;
+        }));
+        node.appendChild(text);
+
+        if (logsPanel.firstChild) {
+            logsPanel.insertBefore(node, logsPanel.firstChild)
+        } else {
+            logsPanel.appendChild(node);
+        }
+    };
+
+    // This one is used to store the last correctly compiled version of the template
+    var compiledTemplate;
+
+    var evaluateOutput = function (javascript) {
+        console.log(compiledTemplate);
+        if (compiledTemplate) {
+            var selfRunningCode = "(" + evaluateOutput.runInNoder.toString().replace("_JS_", javascript).replace("_TPL_", compiledTemplate) + ")()";
+
+            try {
+                noder.execute(selfRunningCode).then(function (out) {
+                    resultPanel.innerHTML = "";
+                    resultPanel.appendChild(out.node);
+                });
+            } catch (ex) {
+                log(ex.line, ex.column, ex.message);
+            }
+        } else {
+            log(null, null, "Invalid compiled template");
+        }
+    };
+    evaluateOutput.runInNoder = function () {
+        var jsresult = (function () {_JS_})();
+        if (!jsresult || !Object.prototype.toString.call(jsresult) === "[object Array]") {
+            // not an array
+            jsresult = [jsresult];
+        }
+        module.exports = (_TPL_).apply({}, jsresult);
+    };
+
+    // When the template editor changes we need to send data to the server and get a compiled version
+    editor.getSession().on('change', function () {
+        // the value is evaluated once the socket replies with a compiled template
+        socket.emit('editor change', {
+            text : editor.getValue()
+        });
+    });
+    // When the JS changes we just want to execute the same template again but with a different context
+    jseditor.getSession().on('change', function () {
+        evaluateOutput(jseditor.getValue());
     });
 
-    var socket = io.connect('http://localhost');
+    var socket = io.connect(window.location.origin);
 
     socket.on('welcome', function (data) {
-        socket.emit('editor change', { text : editor.getValue() });
+        socket.emit('editor change', {
+            text : editor.getValue()
+        });
 
-        var resultPanel = document.getElementById("result");
-        var logsPanel = document.getElementById("logs");
         socket.on('compilation done', function (data) {
             if (data.error) {
-            	var exceptionInfo = [data.line || "?", data.column || "?", data.error];
-
-            	var node = document.createElement("p");
-            	var text = document.createTextNode("[Line %1, Column %2]%3".replace(/%[0-9]+/g, function (token) {
-            		return exceptionInfo[parseInt(token.substring(1), 10) - 1] || token;
-            	}));
-            	node.appendChild(text);
-
-            	if (logsPanel.firstChild) {
-            		logsPanel.insertBefore(node, logsPanel.firstChild)
-            	} else {
-            		logsPanel.appendChild(node);
-            	}
+                log(data.line, data.column, data.error);
             } else {
-        	    var selfRunningCode = "module.exports=(" + data.code + ")()";
-        	    
-        	    noder.execute(selfRunningCode).then(function (out) {
-        	    	resultPanel.innerHTML = "";
-        	    	resultPanel.appendChild(out.node);
-        	    });
+                compiledTemplate = data.code;
+                evaluateOutput(jseditor.getValue());
             }
         });
     });
