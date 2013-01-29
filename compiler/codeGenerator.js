@@ -2,15 +2,20 @@ var parser = require("./parser");
 
 exports.compile = function (template) {
 	// Parsing might throw an exception
-	var ast = parser.parse(template);
+	var representation = parser.parse(template);
 
-	// ast starts from a template definition
-	if (ast.type !== "template") {
-		console.log("First node is not a template");
-		return;
+	// I'm sure it's an array otherwise the parser would have thrown an exception
+	for (var i = 0; i < representation.length; i += 1) {
+		var tree = representation[i];
+
+		if (tree.type === "template") {
+			representation[i] = processors[tree.type](tree);
+		}
+		// else is a string, just keep it as it is
 	}
 
-	return processors[ast.type](ast);
+	// TODO or should it return an array?
+	return representation.join("\n");
 };
 
 // Now I use \n and \t for readability, but it should be an empty string

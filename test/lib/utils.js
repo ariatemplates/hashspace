@@ -5,6 +5,30 @@ var vm = require("vm");
 var phantom = require("node-phantom");
 var http = require("http");
 var path = require("path");
+var parser = require("../../compiler/parser");
+var parseTree = require("./parseTree");
+
+/**
+ * Parse a template content and return the parser intermediate representation. 
+ * This function wraps already the template content inside opening / closing template tags
+ * @param  {String} template Template content
+ * @return {Object}          Intermediate representation (tree)
+ */
+exports.parse = function (template) {
+	try {
+		var parsedContent = parser.parse([
+			"# template test()",
+			template,
+			"# /template"
+		].join("\n"));
+
+		// there's only one template
+		return parseTree.create(parsedContent[0]);
+	} catch (ex) {
+		// Otherwise the log message in the console is unreadable
+		throw new Error(ex);
+	}
+}
 
 var allTemplates = {};
 
@@ -13,7 +37,7 @@ function getTemplateDeferred (file) {
 	if (path.basename(file).charAt(0) !== "_") {
 		fs.readFile(file, "utf-8", function (error, text) {
 			if (error) {
-				// I claim that I never get here becuase I already did a readdir, but there might be a read error
+				// I claim that I never get here because I already did a readdir, but there might be a read error
 				deferred.reject(new Error(error));
 			} else {
 				storeTemplate(file, text);

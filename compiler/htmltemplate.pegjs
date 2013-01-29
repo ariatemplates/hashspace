@@ -8,7 +8,18 @@
  */
 
 start
-  = Template  // TODO should include blank characters before / after the template
+  = S? begin:OutsideTemplate? templates:(S? Template S? OutsideTemplate?)+ {
+    var result = begin ? [begin] : [];
+    for (var i = 0; i < templates.length; i += 1) {
+      // [1] is Template, it must be there
+      result.push(templates[i][1]);
+      // [3] is OutsideTemplate, it might be empty
+      if (templates[i][3]) {
+        result.push(templates[i][3]);
+      }
+    }
+    return result;
+  }
 
 Template
   = instruction:TemplateInstruction content:TemplateContent TemplateInstructionEnd {
@@ -176,13 +187,21 @@ InstructionForExpression
     };
   }
 
+// This seems convoluted but what it means is:
+// - either any character that is not a '#'
+// - or a '#' that is not part of a TemplateInstruction
+OutsideTemplate
+  = chars:([^#] / (&"#" !TemplateInstruction "#") { return "#"; })* {
+    return chars.join("");
+  }
+
 /*####################
   Hashspace Tokens
 #####################*/
 InstructionBegin = "# "
 InstructionEnd = EOL+
 TemplateToken = "template"
-BindingModifierToken = "<"
+BindingModifierToken = ":"
 ValueTokenBegin = "{"
 ValueTokenEnd = "}"
 SingleLineInstructionToken
@@ -208,9 +227,6 @@ EOL "end of line"
   / "\r"
   / "\u2028" // line separator
   / "\u2029" // paragraph separator
-
-
-
 
 
 

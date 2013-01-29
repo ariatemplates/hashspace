@@ -6,7 +6,7 @@
     "homepage": "",
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/ariatemplates/hashspace.git"
     },
     "dependencies": {},
     "devDependencies": {
@@ -16,12 +16,12 @@
         "grunt-contrib-compress": "0.3.2",
         "jasmine-node": "1.0.26",
         "testacular": "0.4.0",
-        "connect": "2.7.0",
         "pegjs" : "0.7.0",
         "q" : "0.8.12",
-        "phantom-proxy" : "0.1.792",
+        "node-phantom" : "0.2.0",
         "socket.io" : "0.9.13",
-        "express" : "3.0.6"
+        "express" : "3.0.6",
+        "underscore" : "1.4.3"
     },
     "scripts": {
         "prepublish": "node node_modules/grunt/bin/grunt build",

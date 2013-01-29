@@ -20,18 +20,19 @@ module.exports = function (grunt) {
     grunt.initConfig({
       server: {
         port: 8000,
-        base: __dirname
+        base: __dirname,
+        templateExtension: "tpl"
       },
       watch: {
         files: ['*.*'],
         tasks: []
       },
       test: {
-        files: ['test/*.js']
+        files: ['test/parser/*.js']
       }
     });
 
-    grunt.loadTasks('tasks');
+    grunt.loadTasks('build/grunt-tasks');
 
     grunt.registerTask('default', 'server watch');
 };
