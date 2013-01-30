@@ -5,6 +5,7 @@ var io = require('socket.io').listen(server);
 var path = require("path");
 
 var renderer = require("../../compiler/renderer");
+var compiler = require("../../compiler/codeGenerator");
 
 module.exports = function(grunt) {
 	grunt.registerTask('server', 'Start an express web server', function () {
