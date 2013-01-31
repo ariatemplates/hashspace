@@ -28,10 +28,15 @@ exports.create = function (tree) {
 		/**
 		 * Whether the element is a certain instruction
 		 * @param  {String}  name Instruction name
-		 * @return {Boolean}
+		 * @throws
 		 */
 		isInstruction : function (name) {
-			return this.element.type === "instruction" && this.element.name === name;
+			if (this.element.type !== "instruction") {
+				throw new Error("Element " + this.path + " is not on instruction but '" + this.element.type + "'.");
+			}
+			if (this.element.name !== name) {
+				throw new Error("Instruction " + this.path + " is not of type '" + name + ", got '" + this.element.name + "'.");
+			}
 		},
 
 		/**
@@ -63,10 +68,36 @@ exports.create = function (tree) {
 			var elementPath = this.element.args.join(".");
 			var expectedPath = path.join(".");
 			if (elementPath !== expectedPath) {
-				throw new Error("Variable path in " + this.path + " is different from '" + expectedPath + "', got '" + elementPath + "'");
+				throw new Error("Variable path in " + this.path + " is different from '" + expectedPath + "', got '" + elementPath + "'.");
 			}
 			if (this.element.bind !== isBindModified) {
-				throw new Error("Variable binding in " + this.path + " is different from '" + isBindModified + "', got '" + this.element.bind + "'");
+				throw new Error("Variable binding in " + this.path + " is different from '" + isBindModified + "', got '" + this.element.bind + "'.");
+			}
+		},
+
+		/**
+		 * Whether the current element is a for loop.
+		 * @param  {String} iterator     Name of the variable created by the loop
+		 * @param  {String} keyword      Like 'in' or 'of'
+		 * @param  {Array}  collection   Path of the element on which we loop
+		 * @throws
+		 */
+		isForLoop : function (iterator, keyword, collection) {
+			if (this.element.type !== "instruction" || this.element.name !== "foreach") {
+				throw new Error("Element " + this.path + " is not a for loop. Type: " + this.element.type);
+			}
+			if (this.element.args.iterator !== iterator) {
+				throw new Error("Iterator in for loop " + this.path + " is not '" + iterator + "', got '" + this.element.args.iterator + "'.");
+			}
+			if (this.element.args.keyword !== keyword) {
+				throw new Error("Keyword in for loop " + this.path + " is not '" + keyword + "', got '" + this.element.args.keyword + "'.");
+			}
+			if (this.element.args.collection.type !== "ObjectIdentifier") {
+				throw new Error("Collection in for loop " + this.path + " must be 'ObjectIdentifier', got '" + this.element.args.keyword + "'.");
+			}
+			var collectionString = this.element.args.collection.path.join(".");
+			if (collectionString !== collection.join(".")) {
+				throw new Error("Collection in for loop " + this.path + " is not '" + collection + "', got '" + this.element.args.collection.path + "'.");
 			}
 		},
 

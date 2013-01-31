@@ -1,10 +1,14 @@
 /*
  * Grammar for hashspace.
- * At the time of writing a file can only contain a single template that look like
- *   # template
+ * A Template file contains blocks of plain text / templates
+ *
+ * A template must start on a new line and looks like
+ *   # template name()
  *     text, HTML nodes
  *     # instructions on their own single line
  *   # /template
+ *
+ * Anything outside is simply left untouched
  */
 
 start
@@ -21,6 +25,12 @@ start
     return result;
   }
 
+/***  STATEMENTS  ***/
+
+
+// # template name()
+//    anything here
+// # /template
 Template
   = instruction:TemplateInstruction content:TemplateContent TemplateInstructionEnd {
   	return {
@@ -31,19 +41,182 @@ Template
   	}
   }
 
+// These are in the form {something goes here}
+ValueExpression
+  = ValueTokenBegin bind:BindingModifierToken? value:ObjectIdentifier ValueTokenEnd {
+    return {
+      type : "value",
+      args : value.path,
+      bind : !!bind // it only says if there's a modifier or not, doesn't specify the default behavior
+    }
+  }
+
+// Could be single line or compounds
+//   # insert anotherTemplate()
+// or
+//   # if (something)
+//      Anything here
+//   # /if
+Instruction
+  = InstructionInsert
+  / InstructionElement
+
+// Element instructions have an opening and closing line, they contain text / HTML elements
+InstructionElement
+  = _ InstructionBegin _ instruction:(StatementIf / StatementForeach)? _ InstructionEnd {
+    return {
+      type : "instruction",
+      name : instruction.name,
+      content : instruction.content,
+      args : instruction.args
+    };
+  }
+
+// # if (condition)
+// # else
+// # /if
+// TODO
+StatementIf
+  = instruction:InstructionIf content:TemplateContent InstructionBegin _ "/" _ IfToken {
+    return {
+      type : "instruction",
+      name : "if",
+      args : condition,
+      content : content
+    };
+  }
+
+StatementForeach
+  = instruction:InstructionForeach content:TemplateContent InstructionBegin _ "/" _ HashspaceForToken {
+    return {
+      type : "instruction",
+      name : instruction.token,
+      args : instruction.expression,
+      content : content
+    };
+  }
+
+/*############
+  INSTRUCTIONS  
+#############*/
+
+
+// # template name()
 TemplateInstruction
-  = _ InstructionBegin _ TemplateToken _ name:Identifier _ args:InstructionArgumentsDefinition? _ InstructionEnd {
+  = _ InstructionBegin _ TemplateToken _ name:Identifier _ args:ArgumentsDefinition _ InstructionEnd {
   	return {
   		name : name,
   		args : args
   	}
   }
 
+// # /template
 TemplateInstructionEnd
   = S? _ InstructionBegin _ "/" TemplateToken _ InstructionEnd*
 
+
+// # insert name(arguments)
+InstructionInsert
+  = _ InstructionBegin _ name:InstructionInsertToken _ tpl:Identifier _ args:ArgumentsCallWithLiterals _ InstructionEnd {
+    return {
+      type : "instruction",
+      name : name,
+      args : {
+        template : tpl,
+        args : args
+      }
+    };
+  }
+
+// # if (condition)
+InstructionIf
+  = IfToken _ condition:(("(" _ exp:Expression _ ")") {return exp;} / Expression) _ EOL
+
+// # foreach (iterator in container)
+InstructionForeach
+  = token:HashspaceForToken _ 
+  expression:(
+    InstructionForeachExpression
+    / ("(" _ exp:InstructionForeachExpression _ ")") {return exp;}
+  ) _ EOL {
+    return {
+      token : token,
+      expression : expression
+    };
+  }
+
+// iterator in container
+InstructionForeachExpression
+  = iterator:Identifier _ token:(InToken) _ collection:ObjectIdentifier {
+    return {
+      iterator : iterator,
+      keyword : token,
+      collection : collection
+    };
+  }
+
+
+
+/*#########
+  ELEMENTS
+##########*/
+
+
+// Identifies a property of an object, e.g. 'car.engine.horsepower'
+// each of the dot properties must be a valid JavaScript identifier
+ObjectIdentifier
+  = head:Identifier tail:("." Identifier)* {
+    var result = [head];
+    for (var i = 0, len = tail.length; i < len; i += 1) {
+      result.push(tail[i][1]);
+    }
+    return {
+      type : "ObjectIdentifier",
+      path : result
+    };
+  }
+
+// Defines the arguments of a function definition. This is equivalent to a function signature
+// It only allows Identifiers
+// (one, two)
+ArgumentsDefinition
+  = "(" _ first:Identifier? others:(_ "," _ Identifier)* _ ")" {
+    var args = first ? [first] : [];
+    for (var i = 0, len = others.length; i < len; i += 1) {
+      args.push(others[i][3]);
+    }
+    return args;
+   }
+
+// Defines the arguments of a 'call' instruction. This is equivalent to calling a function
+// This element allows ObjectIdentifiers as well as Literals
+// (one.two, true)
+ArgumentsCallWithLiterals
+  = "(" _ first:SimpleAssignmentExpression? others:(_ "," _ SimpleAssignmentExpression)* _ ")" {
+    var args = first ? [first] : [];
+    for (var i = 0, len = others.length; i < len; i += 1) {
+      args.push(others[i][3]);
+    }
+    return args;
+  }
+
+// Looks like a JavaScript Assignment Expression but is simple because it doesn't allow operators (like 'a = 12')
+// It contains also Hashspace Object Identifiers (a.b.c)
+SimpleAssignmentExpression
+  = ObjectIdentifier
+  / Literal
+  / SimpleArrayLiteral
+  / SimpleObjectLiteral
+/// IdentifierLiteral
+
+// Anything that can be inside a template statement, this could be 
+// * plain text
+// * HTML element
+// * ValueExpression (e.g. template variables)
+// * Instruction like '# insert' or '# if'
 TemplateContent
   = S? elements:(element / ValueExpression / Instruction / ("#" [^ ] / [^#<&\{])+)* {
+    // TODO the first S? cancels any space before the first element, it should probably be a text node that could be ignored later
   	var content = [];
   	// Note that here we are ignoring only the space before the first element, all the others should be considered because
   	// they might be part of a text node
@@ -62,90 +235,17 @@ TemplateContent
   	return content;
   }
 
-
-ValueExpression  // These are in the form {something goes here}
-  = ValueTokenBegin bind:BindingModifierToken? value:BindableValue ValueTokenEnd {
-  	return {
-  		type : "value",
-  		args : value,
-  		bind : !!bind // it only says if there's a modifier or not, doesn't specify the default behavior
-  	}
+// This seems convoluted but what it means is:
+// - either any character that is not a '#'
+// - or a '#' that is not part of a TemplateInstruction
+OutsideTemplate
+  = chars:([^#] / (&"#" !TemplateInstruction "#") { return "#"; })* {
+    return chars.join("");
   }
 
-BindableValue
-  = head:Identifier tail:("." Identifier)* {
-  	var result = [head];
-  	for (var i = 0, len = tail.length; i < len; i += 1) {
-  		result.push(tail[i][1]);
-  	}
-  	return result;
-  }
-
-// arguments that can only be identifiers, like in function declarations
-InstructionArgumentsDefinition
-  = "(" _ args:InstructionArgumentDefinitionList? _ ")" {
-    return args || [];
-  }
-
-// Arguments that can be simple expressions, like in function call, this includes literals
-InstructionArgumentsCall
-  = base:IdentifierName? _ "(" _ args:InstructionArgumentCallList? _ ")" {
-    return {
-      base : base,
-      args : args
-    };
-  }
-
-InstructionArgumentDefinitionList
-  = head:Identifier tail:(_ "," _ Identifier)* {
-    var result = [head];
-    for (var i = 0, len = tail.length; i < len; i += 1) {
-      result.push(tail[i][3]);
-    }
-    return result;
-   }
-
-InstructionArgumentCallList
-  = head:SimpleAssignmentExpression tail:(_ "," _ SimpleAssignmentExpression)* {
-  	var result = [head];
-  	for (var i = 0, len = tail.length; i < len; i += 1) {
-  		result.push(tail[i][3]);
-  	}
-  	return result;
-  }
-
-Instruction
-  = InstructionSingleLine
-  / InstructionElement
-
-// Empty instructions must be on a single line, no HTML is allowed in them, but we might have optional parameters
-InstructionSingleLine
-  = _ InstructionBegin _ name:SingleLineInstructionToken _ args:InstructionArgumentsCall? _ InstructionEnd {
-    return {
-      type : "instruction",
-      name : name,
-      args : args
-    };
-  }
-
-// Element instructions have an opening and closing line, they contain text / HTML elements
-InstructionElement
-  = _ InstructionBegin _ instruction:(InstructionIf / InstructionFor)? _ InstructionEnd {
-    return {
-      type : "instruction",
-      name : instruction.name,
-      content : instruction.content,
-      args : instruction.args
-    };
-  }
-
-// It's simple because it doesn't allow operators (like 'a = 12')
-SimpleAssignmentExpression
-  = Literal
-  / SimpleArrayLiteral
-  / SimpleObjectLiteral
-  / IdentifierLiteral
-
+/*
+TODO, commented out because I don't know how to handle it in the compiled code,
+the best would be to include [] brackets in ObjectIdentifier
 IdentifierLiteral
   = base:Identifier assign:("[" _ SimpleAssignmentExpression _ "]" / "." _ Identifier)* {
     var args = [base];
@@ -158,54 +258,20 @@ IdentifierLiteral
       value : args
     };
   }
+*/
 
-InstructionIf
-  = IfToken _ condition:(("(" _ exp:Expression _ ")") {return exp;} / Expression) _ EOL content:TemplateContent InstructionBegin _ "/" _ IfToken {
-    return {
-      type : "instruction",
-      name : "if",
-      args : condition,
-      content : content
-    };
-  }
 
-InstructionFor
-  = ForToken _ iterator:InstructionForExpression _ EOL content:TemplateContent InstructionBegin _ "/" _ ForToken {
-    return {
-      type : "instruction",
-      name : "for",
-      args : iterator,
-      content : content
-    };
-  }
-
-InstructionForExpression
-  = declaration:Identifier _ InToken _ collection:(IdentifierLiteral / SimpleArrayLiteral / SimpleObjectLiteral) {
-    return {
-      iterator : declaration,
-      collection : collection
-    };
-  }
-
-// This seems convoluted but what it means is:
-// - either any character that is not a '#'
-// - or a '#' that is not part of a TemplateInstruction
-OutsideTemplate
-  = chars:([^#] / (&"#" !TemplateInstruction "#") { return "#"; })* {
-    return chars.join("");
-  }
-
-/*####################
+/*##################
   Hashspace Tokens
-#####################*/
+###################*/
 InstructionBegin = "# "
 InstructionEnd = EOL+
 TemplateToken = "template"
 BindingModifierToken = ":"
 ValueTokenBegin = "{"
 ValueTokenEnd = "}"
-SingleLineInstructionToken
-  = "insert"
+InstructionInsertToken = "insert"
+HashspaceForToken = "foreach"
 
 /*################
   Base symbols
@@ -507,7 +573,7 @@ FutureReservedWord
     !IdentifierPart
 
 NullLiteral
-  = NullToken { return { type: "NullLiteral" }; }
+  = NullToken { return { type: "NullLiteral", value: null }; }
 
 BooleanLiteral
   = TrueToken  { return { type: "BooleanLiteral", value: true  }; }
@@ -535,23 +601,30 @@ NumericLiteral "number"
     }
 
 HexIntegerLiteral
-  = "0" [xX] digits:HexDigit+ { return parseInt("0x" + digits); }
+  = "0" [xX] digits:HexDigit+ { return parseInt("0x" + digits.join("")); }
 
 HexDigit
   = [0-9a-fA-F]
 
 DecimalLiteral
-  = parts:(DecimalIntegerLiteral "." DecimalDigits? ExponentPart?) {
-      return parseFloat(parts);
+  = before:DecimalIntegerLiteral
+      "."
+    after:DecimalDigits?
+    exponent:ExponentPart? {
+      return parseFloat(before + "." + after + exponent);
     }
-  / parts:("." DecimalDigits ExponentPart?)     { return parseFloat(parts); }
-  / parts:(DecimalIntegerLiteral ExponentPart?) { return parseFloat(parts); }
+  / "." after:DecimalDigits exponent:ExponentPart? {
+      return parseFloat("." + after + exponent);
+    }
+  / before:DecimalIntegerLiteral exponent:ExponentPart? {
+      return parseFloat(before + exponent);
+    }
 
 DecimalIntegerLiteral
-  = "0" / NonZeroDigit DecimalDigits?
+  = "0" / digit:NonZeroDigit digits:DecimalDigits? { return digit + digits; }
 
 DecimalDigits
-  = DecimalDigit+
+  = digits:DecimalDigit+ { return digits.join(""); }
 
 DecimalDigit
   = [0-9]
@@ -560,13 +633,15 @@ NonZeroDigit
   = [1-9]
 
 ExponentPart
-  = ExponentIndicator SignedInteger
+  = indicator:ExponentIndicator integer:SignedInteger {
+    return indicator + integer;
+  }
 
 ExponentIndicator
   = [eE]
 
 SignedInteger
-  = [-+]? DecimalDigits
+  = sign:[-+]? digits:DecimalDigits { return sign + digits; }
 
 StringLiteral "string"
   = parts:('"' DoubleStringCharacters? '"' / "'" SingleStringCharacters? "'") {
@@ -618,31 +693,32 @@ EscapeCharacter
   / "u"
 
 HexEscapeSequence
-  = "x" digits:(HexDigit HexDigit) {
-      return String.fromCharCode(parseInt("0x" + digits));
+  = "x" h1:HexDigit h2:HexDigit {
+      return String.fromCharCode(parseInt("0x" + h1 + h2));
     }
 
 UnicodeEscapeSequence
-  = "u" digits:(HexDigit HexDigit HexDigit HexDigit) {
-      return String.fromCharCode(parseInt("0x" + digits));
+  = "u" h1:HexDigit h2:HexDigit h3:HexDigit h4:HexDigit {
+      return String.fromCharCode(parseInt("0x" + h1 + h2 + h3 + h4));
     }
 
 SimpleObjectLiteral
-  = "{" _ properties:(SimplePropertyNameAndValueList _ ("," _)?)? "}" {
-      return {
-        type:       "ObjectLiteral",
-        properties: properties !== "" ? properties[0] : []
-      };
-    }
+  = "{" _ first:SimplePropertyAssignment? others:(_ "," _ SimplePropertyAssignment)* _ "}" {
+    var object = {};
 
-SimplePropertyNameAndValueList
-  = head:SimplePropertyAssignment tail:(_ "," _ SimplePropertyAssignment)* {
-      var result = [head];
-      for (var i = 0; i < tail.length; i++) {
-        result.push(tail[i][3]);
+    if (first) {
+      object[first.name] = first.value.value;
+
+      for (var i = 0; i < others.length; i += 1) {
+        object[others[i][3].name] = others[i][3].value.value;
       }
-      return result;
     }
+    
+    return {
+      type: "ObjectLiteral",
+      value: object
+    };
+  }
 
 // it doesn't include get and set keyword from JavaScript 1.8.5
 SimplePropertyAssignment
@@ -661,11 +737,17 @@ PropertyName
 
 SimpleArrayLiteral
   = "[" _ elements:SimpleElementList? _ (Elision _)? "]" {
-      return {
-        type:     "ArrayLiteral",
-        elements: elements !== "" ? elements : []
-      };
+    // Convert back the inner literals
+    var value = [];
+    for (var i = 0; i < elements.length; i += 1) {
+      value.push(elements[i].value);
     }
+
+    return {
+      type: "ArrayLiteral",
+      value: value
+    };
+  }
 
 SimpleElementList
   = (Elision _)?
