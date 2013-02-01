@@ -9,19 +9,31 @@ exports.create = function (tree) {
 	// Prototype of any element that is contained in the tree
 	var contentElement = {
 		/**
+		 * Whether an element is of a given type
+		 * @return {String} type Type to be checked
+		 * @throws
+		 */
+		ofType : function (type) {
+			if (!this.element) {
+				throw new Error("Element " + this.path + " is undefined.");
+			}
+			if (this.element.type !== type) {
+				// Surely enough this is not a text node
+				throw new Error("Element " + this.path + " is not of type '" + type + "' but '" + this.element.type + "'.");
+			}
+		},
+
+		/**
 		 * Whether the element is a text node
 		 * @param  {String}  content [Optinal] Text node content (trimmed for comparison)
 		 * @throws
 		 */
 		isText : function (content) {
-			if (this.element.type !== "text") {
-				// Surely enough this is not a text node
-				throw new Error("Element " + this.path + " is not of type text but '" + this.element.type + "'.");
-			}
+			this.ofType("text");
 
 			if (content && this.element.content.trim() !== content.trim()) {
 				// Content is different from what expected
-				throw new Error("Text Element " + this.path + " doesn't match '" + content.trim() + "'\nValue: '" + this.element.content + "'.");
+				throw new Error("Text Element " + this.path + " doesn't match '" + content.trim() + "'. Value: '" + this.element.content + "'.");
 			}
 		},
 
@@ -31,9 +43,8 @@ exports.create = function (tree) {
 		 * @throws
 		 */
 		isInstruction : function (name) {
-			if (this.element.type !== "instruction") {
-				throw new Error("Element " + this.path + " is not on instruction but '" + this.element.type + "'.");
-			}
+			this.ofType("instruction");
+
 			if (this.element.name !== name) {
 				throw new Error("Instruction " + this.path + " is not of type '" + name + ", got '" + this.element.name + "'.");
 			}
@@ -45,9 +56,8 @@ exports.create = function (tree) {
 		 * @throws
 		 */
 		isElement : function (tagName) {
-			if (this.element.type !== "element") {
-				throw new Error("Element " + this.path + " is not an HTML element. Type: " + this.element.type);
-			}
+			this.ofType("element");
+
 			if (this.element.name !== tagName) {
 				throw new Error("Element " + this.path + " is not a " + tagName + " but a " + this.element.name);
 			}
@@ -62,9 +72,8 @@ exports.create = function (tree) {
 		 */
 		isVariable : function (path, isBindModified) {
 			isBindModified = isBindModified === true;
-			if (this.element.type !== "value") {
-				throw new Error("Element " + this.path + " is not a variable. Type: " + this.element.type);
-			}
+			this.ofType("value");
+
 			var elementPath = this.element.args.join(".");
 			var expectedPath = path.join(".");
 			if (elementPath !== expectedPath) {
@@ -83,8 +92,9 @@ exports.create = function (tree) {
 		 * @throws
 		 */
 		isForLoop : function (iterator, keyword, collection) {
-			if (this.element.type !== "instruction" || this.element.name !== "foreach") {
-				throw new Error("Element " + this.path + " is not a for loop. Type: " + this.element.type);
+			this.ofType("instruction");
+			if (this.element.name !== "foreach") {
+				throw new Error("Element " + this.path + " is not a for loop. " + this.element.type + " " + this.element.name);
 			}
 			if (this.element.args.iterator !== iterator) {
 				throw new Error("Iterator in for loop " + this.path + " is not '" + iterator + "', got '" + this.element.args.iterator + "'.");
@@ -99,6 +109,26 @@ exports.create = function (tree) {
 			if (collectionString !== collection.join(".")) {
 				throw new Error("Collection in for loop " + this.path + " is not '" + collection + "', got '" + this.element.args.collection.path + "'.");
 			}
+		},
+
+		/**
+		 * Whether the current element is an if statement.
+		 * @param  {Array}    condition Path of the condition element
+		 * @param  {Boolean}  haveElse  Whether the if has an else block. Default false
+		 * @throws
+		 */
+		isIf : function (condition, haveElse) {
+			haveElse = haveElse === true;
+			this.ofType("instruction");
+
+			if (this.element.name !== "if") {
+				throw new Error("Element " + this.path + " is not an if statement. " + this.element.type + " " + this.element.name);
+			}
+			var conditionString = this.element.args.path.join(".");
+			if (conditionString !== condition.join(".")) {
+				throw new Error("Condition of 'if' statement " + this.path + " is not '" + condition + "', got '" + this.element.args.path + "'.");
+			}
+			// TODO else ?
 		},
 
 		/**
@@ -126,6 +156,28 @@ exports.create = function (tree) {
 					writable : false,
 					configurable : false,
 					value : this.path + ".content[" + position + "]"
+				}
+			});
+		},
+
+		/**
+		 * Return an helper around the k-th element contained in the j-th content of this element.
+		 * This is useful for elements with multiple content blocks
+		 * @param  {Number} j Primary index, content[j]
+		 * @param  {Number} k Secondary index, content[j][k]
+		 * @return {Object}
+		 */
+		nn : function (j, k) {
+			return Object.create(contentElement, {
+				element : {
+					writable : false,
+					configurable : false,
+					value : this.element.content[j][k]
+				},
+				path : {
+					writable : false,
+					configurable : false,
+					value : this.path + ".content[" + j + "][" + k + "]"
 				}
 			});
 		}

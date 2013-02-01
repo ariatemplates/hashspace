@@ -58,12 +58,14 @@ ValueExpression
 //      Anything here
 //   # /if
 Instruction
-  = InstructionInsert
-  / InstructionElement
+  = _ instruction:(InstructionInsert / InstructionElement) _ EOL {
+    // I want the instructions to start on a new line
+    return instruction;
+  }
 
 // Element instructions have an opening and closing line, they contain text / HTML elements
 InstructionElement
-  = _ InstructionBegin _ instruction:(StatementIf / StatementForeach)? _ InstructionEnd {
+  = InstructionBegin _ instruction:(StatementIf / StatementForeach) {
     return {
       type : "instruction",
       name : instruction.name,
@@ -77,17 +79,17 @@ InstructionElement
 // # /if
 // TODO
 StatementIf
-  = instruction:InstructionIf content:TemplateContent InstructionBegin _ "/" _ IfToken {
+  = instruction:InstructionIf thenBlock:TemplateContent elseBlock:(InstructionElse TemplateContent)? InstructionIfEnd {
     return {
       type : "instruction",
       name : "if",
-      args : condition,
-      content : content
+      args : instruction.condition,
+      content : [thenBlock, elseBlock ? elseBlock[1] : []]
     };
   }
 
 StatementForeach
-  = instruction:InstructionForeach content:TemplateContent InstructionBegin _ "/" _ HashspaceForToken {
+  = instruction:InstructionForeach content:TemplateContent InstructionForeachEnd {
     return {
       type : "instruction",
       name : instruction.token,
@@ -99,11 +101,11 @@ StatementForeach
 /*############
   INSTRUCTIONS  
 #############*/
-
+// Instruction must end with and EOL but don't consume this character, because it might be needed by inner instructions
 
 // # template name()
 TemplateInstruction
-  = _ InstructionBegin _ TemplateToken _ name:Identifier _ args:ArgumentsDefinition _ InstructionEnd {
+  = _ InstructionBegin _ TemplateToken _ name:Identifier _ args:ArgumentsDefinition _ EOL {
   	return {
   		name : name,
   		args : args
@@ -112,12 +114,12 @@ TemplateInstruction
 
 // # /template
 TemplateInstructionEnd
-  = S? _ InstructionBegin _ "/" TemplateToken _ InstructionEnd*
+  = S? _ InstructionBegin _ "/" TemplateToken _ EOL?
 
 
 // # insert name(arguments)
 InstructionInsert
-  = _ InstructionBegin _ name:InstructionInsertToken _ tpl:Identifier _ args:ArgumentsCallWithLiterals _ InstructionEnd {
+  = InstructionBegin _ name:InstructionInsertToken _ tpl:Identifier _ args:ArgumentsCallWithLiterals {
     return {
       type : "instruction",
       name : name,
@@ -130,7 +132,20 @@ InstructionInsert
 
 // # if (condition)
 InstructionIf
-  = IfToken _ condition:(("(" _ exp:Expression _ ")") {return exp;} / Expression) _ EOL
+  = IfToken _ condition:(("(" _ exp:ObjectIdentifier _ ")") {return exp;} / ObjectIdentifier) _ EOL {
+    // In JavaScript the condition would be an Expression, we limit it to ObjectIdentifier
+    return {
+      condition : condition
+    };
+  }
+
+// # else
+InstructionElse
+  = InstructionBegin _ ElseToken _ EOL
+
+// # /if
+InstructionIfEnd
+  = InstructionBegin _ "/" _ IfToken
 
 // # foreach (iterator in container)
 InstructionForeach
@@ -155,6 +170,9 @@ InstructionForeachExpression
     };
   }
 
+// # /foreach
+InstructionForeachEnd
+  = InstructionBegin _ "/" _ HashspaceForToken
 
 
 /*#########
@@ -214,10 +232,10 @@ SimpleAssignmentExpression
 // * HTML element
 // * ValueExpression (e.g. template variables)
 // * Instruction like '# insert' or '# if'
+// Template content always follow an instruction. The first EOL should be discarded in some cases
 TemplateContent
-  = S? elements:(element / ValueExpression / Instruction / ("#" [^ ] / [^#<&\{])+)* {
-    // TODO the first S? cancels any space before the first element, it should probably be a text node that could be ignored later
-  	var content = [];
+  = elements:(element / ValueExpression / (EOL? instruction:Instruction) {return instruction;} / InsideTemplate)* {
+    var content = [];
   	// Note that here we are ignoring only the space before the first element, all the others should be considered because
   	// they might be part of a text node
   	for (var i = 0, len = elements.length; i < len; i += 1) {
@@ -228,7 +246,7 @@ TemplateContent
   		} else {
   			content.push({
   				type : "text",
-  				content : element.join("")
+  				content : element
   			});
   		}
   	}
@@ -242,6 +260,15 @@ OutsideTemplate
   = chars:([^#] / (&"#" !TemplateInstruction "#") { return "#"; })* {
     return chars.join("");
   }
+
+// This is the plain text that might be inside a template. It's any symbol unless it's the start of more
+// specialized elements
+InsideTemplate
+ = chars:(
+    (!(element / ValueExpression / EOL Instruction / TemplateInstructionEnd / InstructionForeachEnd / InstructionElse / InstructionIfEnd) letter:.) { return letter; }
+  )+ {
+  return chars.join("");
+ }
 
 /*
 TODO, commented out because I don't know how to handle it in the compiled code,
@@ -265,7 +292,7 @@ IdentifierLiteral
   Hashspace Tokens
 ###################*/
 InstructionBegin = "# "
-InstructionEnd = EOL+
+InstructionEnd = _ &EOL
 TemplateToken = "template"
 BindingModifierToken = ":"
 ValueTokenBegin = "{"

@@ -27,19 +27,17 @@ exports.staticTextMultiline = function (test) {
 	test.done();
 };
 
-/*
+
 exports.staticTextInstruction = function (test) {
 	test.doesNotThrow(function () {
 		var text = "instruction # must be on the beginning of a line\nOnly spaces allowed # if (true)\n";
 		var tree = utils.parse(text);
-		tree.log();
 
 		test.ok(tree.isTree(), "Expecting a valid tree");
 		test.ok(tree.hasContent(1), "Tree should have only one content element");
 
-		test.ok(tree.n(0).isText(text), "First node should be a text content");
+		tree.n(0).isText(text);
 	});
 
 	test.done();
 };
-*/

@@ -81,8 +81,7 @@ exports.mulitpleElements = function (test) {
 	test.doesNotThrow(function () {
 		var tree = utils.parse('<div>One</div>\n\t <div>Two</div>\n\t <div>Three</div><div>Four has no space</div>');
 
-		// The 7th is an empty new line before the end tag
-		test.ok(tree.hasContent(7), "Expecting 7 elements of alternating text and HTML");
+		test.ok(tree.hasContent(6), "Expecting 6 elements of alternating text and HTML");
 
 		tree.n(0).isElement("div");
 		tree.n(0).n(0).isText("One");
