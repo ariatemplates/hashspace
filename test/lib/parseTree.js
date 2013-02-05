@@ -31,9 +31,9 @@ exports.create = function (tree) {
 		isText : function (content) {
 			this.ofType("text");
 
-			if (content && this.element.content.trim() !== content.trim()) {
+			if (content && this.element.value.trim() !== content.trim()) {
 				// Content is different from what expected
-				throw new Error("Text Element " + this.path + " doesn't match '" + content.trim() + "'. Value: '" + this.element.content + "'.");
+				throw new Error("Text Element " + this.path + " doesn't match '" + content.trim() + "'. Value: '" + this.element.value + "'.");
 			}
 		},
 

@@ -102,7 +102,7 @@ exports.multipleContent = function (test) {
 			test.equals(parsed.length, 5, "Expecting 5 blocks of content");
 
 			// first is text
-			test.equals(parsed[0].trim(), text);
+			test.equals(parsed[0].value.trim(), text);
 
 			//second is a template
 			var tpl = parseTree.create(parsed[1]);
@@ -111,7 +111,7 @@ exports.multipleContent = function (test) {
 			tpl.n(0).isElement("cool");
 
 			// third is JavaScript
-			test.equals(parsed[2].trim(), js);
+			test.equals(parsed[2].value.trim(), js);
 
 			// fourth is another template
 			tpl = parseTree.create(parsed[3]);
@@ -121,7 +121,7 @@ exports.multipleContent = function (test) {
 			tpl.n(0).n(0).isText("better");
 
 			// last one is some other text
-			test.equals(parsed[4].trim(), other);
+			test.equals(parsed[4].value.trim(), other);
 		} catch (ex) {
 			throw new Error(ex);
 		}

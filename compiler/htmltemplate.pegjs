@@ -13,12 +13,12 @@
 
 start
   = S? begin:OutsideTemplate? templates:(S? Template S? OutsideTemplate?)+ {
-    var result = begin ? [begin] : [];
+    var result = begin.value ? [begin] : [];
     for (var i = 0; i < templates.length; i += 1) {
       // [1] is Template, it must be there
       result.push(templates[i][1]);
       // [3] is OutsideTemplate, it might be empty
-      if (templates[i][3]) {
+      if (templates[i][3].value) {
         result.push(templates[i][3]);
       }
     }
@@ -236,21 +236,21 @@ SimpleAssignmentExpression
 TemplateContent
   = elements:(element / ValueExpression / (EOL? instruction:Instruction) {return instruction;} / InsideTemplate)* {
     var content = [];
-  	// Note that here we are ignoring only the space before the first element, all the others should be considered because
-  	// they might be part of a text node
-  	for (var i = 0, len = elements.length; i < len; i += 1) {
-  		// Each of these is either an element node or plain text
-  		var element = elements[i];
-  		if (element.type) {
-  			content.push(elements[i]);
-  		} else {
-  			content.push({
-  				type : "text",
-  				content : element
-  			});
-  		}
-  	}
-  	return content;
+    // Note that here we are ignoring only the space before the first element, all the others should be considered because
+    // they might be part of a text node
+    for (var i = 0, len = elements.length; i < len; i += 1) {
+      // Each of these is either an element node or plain text
+      var element = elements[i];
+      if (element.type) {
+        content.push(elements[i]);
+      } else {
+        content.push({
+          type : "text",
+          value : element
+        });
+      }
+    }
+    return content;
   }
 
 // This seems convoluted but what it means is:
@@ -258,7 +258,10 @@ TemplateContent
 // - or a '#' that is not part of a TemplateInstruction
 OutsideTemplate
   = chars:([^#] / (&"#" !TemplateInstruction "#") { return "#"; })* {
-    return chars.join("");
+    return {
+      type : "plainText",
+      value :  chars.join("")
+    };
   }
 
 // This is the plain text that might be inside a template. It's any symbol unless it's the start of more
@@ -432,7 +435,7 @@ CharData  // All text that is not markup constitutes the character data of the d
   	if (chars.length) {
   		return {
   			type : "text",
-  			content : chars.join("")
+  			value : chars.join("")
   		};
   	}
   	// If we didn't catch anything just return undefined -> empty string, it's filtered out later

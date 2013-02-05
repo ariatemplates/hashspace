@@ -7,9 +7,10 @@ var http = require("http");
 var path = require("path");
 var parser = require("../../compiler/parser");
 var parseTree = require("./parseTree");
+var codeGenerator = require("../../compiler/codeGenerator");
 
 /**
- * Parse a template content and return the parser intermediate representation. 
+ * Parse a template content and return the parser intermediate representation.
  * This function wraps already the template content inside opening / closing template tags
  * @param  {String} template Template content
  * @return {Object}          Intermediate representation (tree)
@@ -28,7 +29,16 @@ exports.parse = function (template) {
 		// Otherwise the log message in the console is unreadable
 		throw new Error(ex);
 	}
-}
+};
+
+exports.compile = function (template) {
+	try {
+		return codeGenerator.compile(template);
+	} catch (ex) {
+		// Otherwise the log message in the console is unreadable
+		throw new Error(ex);
+	}
+};
 
 var allTemplates = {};
 
@@ -56,10 +66,9 @@ function storeTemplate (fileName, content) {
 	var parts = content.split("EOT");
 
 	try {
-		var expectedHtml = parts[2].split("ARGS");
+		var expectedHtml = parts[1].split("ARGS");
 		allTemplates[templateName] = {
 			content : parts[0].trim(),
-			tree : JSON.parse(parts[1] || "{}"),
 			html : expectedHtml[0],
 			args : JSON.parse(expectedHtml[1] || "[]")
 		};
@@ -100,20 +109,34 @@ exports.each = function (onEach, finalCallback) {
 	});
 };
 
-exports.run = function (code, args, callback) {
-	var executableCode = "(" + executeInPhantom.toString().replace("__CODE__", code) + ")(" + JSON.stringify(args) + ")";
-	//console.log("RUN THIS", executableCode);
 
-	var server = http.createServer(function (request, response) {
+var mockResponder = {
+	code : null,
+
+	getCode : function () {
+		return this.code;
+	},
+
+	setCode : function (compiled) {
+		this.code = compiled;
+	}
+};
+
+var server;
+var phantom_proxy;
+var phantom_page;
+
+exports.startServer = function (callback) {
+	server = http.createServer(function (request, response) {
 		if (request.url.indexOf("index") !== -1) {
 			response.writeHead(200, {
 				"Content-Type" : "text/html"
 			});
 			response.end([
 				"<html><head>",
-				"<script type='text/javascript' src='http://localhost:" + server.address().port + "/lib/noder.min.js'></script>",
+				"<script type='text/javascript' src='http://localhost:" + server.address().port + "/public/lib/noder.min.js'></script>",
 				"</head><body><script type='noder'>",
-				executableCode,
+				mockResponder.getCode(),
 				"</script></body></html>"
 			].join(""), "utf8");
 		} else {
@@ -126,23 +149,34 @@ exports.run = function (code, args, callback) {
 			});
 		}
 	});
+
 	server.on("listening", function () {
-		//console.log("Server started on", server.address().port);
-		
 		phantom.create(function (err, proxy) {
+			phantom_proxy = proxy;
 			proxy.createPage(function (err, page) {
-				// The page will open and execute the wrapped script that calls a callback
-				page.open("http://localhost:" + server.address().port + "/index");
-				page.onCallback = function (data) {
-					proxy.exit();
-					server.close(function () {
-						callback(data);
-					});
-				};
+				phantom_page = page;
+				callback();
 			});
 		});
 	});
 	server.listen(0);
+};
+
+exports.run = function (code, args, callback) {
+	var executableCode = "(" + executeInPhantom.toString().replace("__CODE__", code) + ")(" + JSON.stringify(args) + ")";
+	mockResponder.setCode(executableCode);
+
+	phantom_page.open("http://localhost:" + server.address().port + "/index");
+	phantom_page.onCallback = function (data) {
+		callback(data);
+	};
+};
+
+exports.stopServer = function (callback) {
+	phantom_proxy.exit();
+	server.close(function () {
+		callback();
+	});
 };
 
 function executeInPhantom (args) {
@@ -162,4 +196,4 @@ function executeInPhantom (args) {
 		};
 	}
 	window.callPhantom(res);
-};
+}

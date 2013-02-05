@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +27,7 @@ module.exports = function (grunt) {
         tasks: []
       },
       test: {
-        files: ['test/parser/*.js']
+        files: ['test/*.js', 'test/parser/*.js']
       }
     });
 
