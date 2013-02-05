@@ -22,9 +22,11 @@ function test1(person) {
 	if (!test1.ng) {
 		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
 		test1.ng=new Ng(
-			n.div(
+			n.elt(
+				"div",
 				0,
 				{"title":"test1"},
+				0,
 				[n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])]
 			)
 		);
@@ -44,14 +46,18 @@ function test2(person) {
 	if (!test2.ng) {
 		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
 		test2.ng=new Ng(
-			n.div(
+			n.elt(
+				"div",
 				{e1:[1,"person","gender"],e2:[1,"person","idx"]},
 				{"title":"test2","class":["t2 ",1],"tabIndex":["",2]},
+				0,
 				[	
 					n.$text({e1:[1,"person","firstName"],e2:[1,"person","lastName"]},["",1," / ",2," ["]),
-					n.span(
+					n.elt(
+						"span",
 						{e1:[1,"person","ffLevel"]},
 						{"class":["",1]},
+						0,
 						[n.$text({e1:[1,"person","ffNbr"]},["Frequent flyer #: ",1])]
 					),
 					n.$text(0,[" ]"])
@@ -89,7 +95,7 @@ describe("Element Nodes", function () {
 
 		// test property change
 		json.set(dm,"name","Marge");
-		n.refresh();
+		hsp.refresh();
 
 		expect(n.node.firstChild.firstChild.nodeValue).toEqual("Hello Marge!");		
 
@@ -114,7 +120,7 @@ describe("Element Nodes", function () {
 		json.set(dm,"gender","female");
 		json.set(dm,"ffLevel","gold");
 		json.set(dm,"ffNbr",1112223330);
-		n.refresh();
+		hsp.refresh();
 
 		expect(n.node.firstChild.attributes["class"].value).toEqual("t2 female");
 		expect(n.node.firstChild.attributes["tabIndex"].value).toEqual("1");

@@ -34,3 +34,7 @@ module.exports.createTextNode=function(text) {
 module.exports.createComment=function(text) {
 	return doc.createComment(text);
 }
+
+module.exports.getElementById=function(eltId) {
+	return doc.getElementById(eltId);
+}

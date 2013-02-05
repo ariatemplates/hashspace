@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-var klass=require("hsp/klass"),
+var hsp=require("hsp/rt"),
+	klass=require("hsp/klass"),
 	ExpHandler=require("hsp/exphandler");
 
 /**
@@ -56,13 +57,24 @@ var TNode=klass({
 		delete this.root;
 		delete this.vscope;
 		delete this.children;
+		delete this.atts;
+		delete this.evtHandlers;
 	},
 
 	/**
-	 * create and return an array of attribute objects from the attcfg passed as argument
-	 * @param {object} attcfg the attribute configuration - e.g. {"title":"test2","class":["t2",1],"tabIndex":["",2]}
+	 * create and set the atts property, which is an array of attribute objects created from the attcfg passed as argument
+	 * @param {Map} attcfg the attribute configuration - e.g. {"title":"test2","class":["t2",1],"tabIndex":["",2]}
+	 * @param {Map} ehcfg the event handler configuration - optional - e.g. {"onclick":2}
 	 */
-	createAttList:function(attcfg) {
+	createAttList:function(attcfg,ehcfg) {
+		if (ehcfg) {
+			evh=[];
+			for (var k in ehcfg) {
+				evh.push(new TCbAtt(k,ehcfg[k]));
+			}
+			this.evtHandlers=evh;
+		}
+		
 		if (attcfg===null || attcfg===0) return null;
 		var atts=[], itm;
 		for (var k in attcfg) {
@@ -79,7 +91,7 @@ var TNode=klass({
 				}
 			}
 		}
-		return atts;
+		this.atts=atts;
 	},
 
 	/**
@@ -88,7 +100,13 @@ var TNode=klass({
 	 */ 
 	onPropChange:function(chge) {
 		// set attribute dirty to true
-		this.adirty=true;
+		var root=this.root;
+		if (!this.adirty) {
+			this.adirty=true;
+			if (this===root) {
+				hsp.refresh.addTemplate(this);
+			}
+		}
 
 		// mark parent node as containining dirty children (cdirty)
 
@@ -99,6 +117,9 @@ var TNode=klass({
 				n=null;
 			} else {
 				n.cdirty=true;
+				if (n===root) {
+					hsp.refresh.addTemplate(n);
+				}
 				n=n.parent;
 			}
 		}
@@ -203,6 +224,31 @@ TExpAtt = klass({
 			else buf.push(tcfg[i]);
 		}
 		return buf.join("");
+	}
+});
+
+/**
+ * Expression-based Callback attribute
+ */
+TCbAtt = klass({
+	/**
+	 * Simple attribute constructor
+	 * @param {String} type the type of the event hanlder attribute - e.g. "click"
+	 * @param {Number} expIdx the index of the associated callback expression - e.g. 2
+	 */
+	$constructor:function(type, expIdx) {
+		this.evtType=type;
+		this.expIdx=expIdx;
+	},
+
+	/**
+	 * Executes the callback associated to this event handler
+	 * This method is called by nodes registered as event listeners
+	 * through addEventListener
+	 */
+	executeCb:function(evt, eh, vscope) {
+		var cbExp=eh.getExpr(this.expIdx);
+		cbExp.executeCb(evt, this.evtType, eh, vscope);
 	}
 });
 

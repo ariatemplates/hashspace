@@ -51,7 +51,9 @@ function test2(person) {
 				{e1:[1,"person","firstName"]},
 				1,
 				[	
-					n.h2(
+					n.elt(
+						"h2",
+						0,
 						0,
 						0,
 						[n.$text({e1:[1,"person","firstName"]},["Hello ",1])]
@@ -60,18 +62,22 @@ function test2(person) {
 						{e1:[1,"person","favouriteDish"]},
 						1,
 						[
-							n.span(
+							n.elt(
+								"span",
 								0,
 								{"class":"dish"},
+								0,
 								[n.$text({e1:[0,"person","favouriteDish"]},["Your preferred dish: ",1])]
 							)
 						]
 					)
 				],
 				[
-					n.div(
+					n.elt(
+						"div",
 						0,
 						{"class":"noname"},
+						0,
 						[n.$text({e1:[0,"person","lastName"]},["Hello ",1])]
 					)
 				]
@@ -123,6 +129,32 @@ function test3(person) {
 # /template
 ***/
 
+function test4(person) {
+	if (!test4.ng) {
+		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
+		test4.ng=new Ng([
+			n.$text(0,["Hello "]),
+			n.$if(
+				{e1:[5,true]},
+				1,
+				[	
+					n.$text({e1:[1,"person","firstName"]},["",1,"!"])
+				]
+			)
+		]);
+	}
+	return test4.ng.process(this,["person",person]);
+}
+/***
+// test literal as if parameter - even if it doesn't really make sense, should still be supported - e.g. for debugging purposes
+# template test4(person)
+	Hello 
+	# if (true)
+		{=person.firstName}!
+	# /if
+# /template
+***/
+
 
 describe("If Node", function () {
 	var ELEMENT_NODE=1;
@@ -139,11 +171,11 @@ describe("If Node", function () {
 
 		// change first name and check update
 		json.set(dm,"firstName","Marge");
-		n.refresh();
+		hsp.refresh();
 		expect(n.node.childNodes[1].nodeValue).toEqual("Hello Marge");
 
 		json.set(dm,"firstName",null);
-		n.refresh();
+		hsp.refresh();
 		expect(n.node.childNodes.length).toEqual(2);
 
 		n.$dispose();
@@ -159,13 +191,13 @@ describe("If Node", function () {
 		expect(n.node.childNodes[3].nodeName).toEqual("#comment");
 
 		json.set(dm,"favouriteDish","Donuts");
-		n.refresh();
+		hsp.refresh();
 		expect(n.node.childNodes.length).toEqual(6);
 		expect(n.node.childNodes[3].nodeName).toEqual("SPAN");
 		expect(n.node.childNodes[3].firstChild.nodeValue).toEqual("Your preferred dish: Donuts");
 
 		json.set(dm,"firstName",null);
-		n.refresh();
+		hsp.refresh();
 		expect(n.node.childNodes.length).toEqual(3);
 		expect(n.node.childNodes[1].nodeName).toEqual("DIV");
 		expect(n.node.childNodes[1].firstChild.nodeValue).toEqual("Hello Simpson");
@@ -186,13 +218,13 @@ describe("If Node", function () {
 
 		// moving to the else statement will automatically dispose the elements of the main block
 		json.set(dm,"firstName",null);
-		n.refresh();
+		hsp.refresh();
 		expect(n1.node).toEqual(null);
 		expect(n.childNodes[0].childNodes[0].tag).toEqual("div");
 		expect(n2.node).toEqual(null);
 
 		json.set(dm,"firstName","Marge");
-		n.refresh();
+		hsp.refresh();
 		expect(n.childNodes[0].childNodes[0].tag).toEqual("h2");
 		n2=n.childNodes[0].childNodes[1].childNodes[0];
 		expect(n2.node).not.toEqual(null);
@@ -214,6 +246,17 @@ describe("If Node", function () {
 		expect(n.childNodes).toEqual(undefined);
 		expect(ch1.node).toEqual(null);
 		expect(ch2.node).toEqual(null);
+	});
+
+	it("tests literal value as if condition", function() {
+		var dm={firstName:"Omer",lastName:"Simpson",favouriteDish:"Donuts"};
+		var n=test4(dm);
+		expect(n.childNodes.length).toEqual(2);
+		var ch1=n.childNodes[1];
+		var ch2=n.childNodes[1].childNodes[0];
+		expect(ch1.node).not.toEqual(null);
+		expect(ch2.node.nodeValue).toEqual("Omer!");
+		n.$dispose();
 	});
 
 });

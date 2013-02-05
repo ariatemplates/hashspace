@@ -83,7 +83,7 @@
 			</form>
 		# else
 			<div class="view">
-				<input class="toggle" type="checkbox" value="{=todo.completed}">
+				<input class="toggle" type="checkbox" value="{todo.completed}">
 				<label ondblclick="{ctl.editTodo(todo)}">{=todo.title}</label>
 				<button class="destroy" onclick="{ctl.removeTodo(todo)}"></button>
 			</div>

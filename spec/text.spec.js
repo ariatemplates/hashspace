@@ -135,8 +135,8 @@ describe("Text Nodes", function () {
 		expect(n2.node.firstChild.nodeValue).toEqual("Hello Charles Darwin!");
 
 		json.set(dm2,"lastName","Brown");
-		n1.refresh();
-		n2.refresh();
+		hsp.refresh();
+		
 		expect(n1.node.firstChild.nodeValue).toEqual("Hello Daniel Kahneman!");
 		expect(n2.node.firstChild.nodeValue).toEqual("Hello Charles Brown!");
 		n1.$dispose();
@@ -154,9 +154,7 @@ describe("Text Nodes", function () {
 		expect(n3.node.firstChild.nodeValue).toEqual("Hello Charles Darwin!");
 		
 		json.set(dm,"lastName","Brown");
-		n1.refresh();
-		n2.refresh();
-		n3.refresh();
+		hsp.refresh();
 		expect(n1.node.firstChild.nodeValue).toEqual("Hello Charles Brown!");
 		expect(n2.node.firstChild.nodeValue).toEqual("Hello Charles Brown!");
 		expect(n3.node.firstChild.nodeValue).toEqual("Hello Charles Darwin!"); // unbound case
@@ -186,7 +184,7 @@ describe("Text Nodes", function () {
 		n=hello3(dm);
 		expect(n.node.firstChild.nodeValue).toEqual("Hello Charles Darwin!");
 		json.set(dm,"lastName","Brown");
-		n.refresh();
+		hsp.refresh();
 		expect(n.node.firstChild.nodeValue).toEqual("Hello Charles Brown!");
 		n.$dispose();
 	});
@@ -195,6 +193,7 @@ describe("Text Nodes", function () {
 		var n=hello5("Bart");
 
 		expect(n.node.firstChild.nodeValue).toEqual("Hello Bart!");
+		n.$dispose();
 	});
 
 });

@@ -29,6 +29,7 @@
 <script type="noder">
 
 // runtime tests
+
 require("spec/json.spec.js");
 require("spec/klass.spec.js");
 require("spec/propobserver.spec.js");
@@ -37,6 +38,7 @@ require("spec/elt.spec.js");
 require("spec/if.spec.js");
 require("spec/insert.spec.js");
 require("spec/foreach.spec.js");
+require("spec/evthandler.spec.js");
 
 // TODO
 // $text node 					OK
@@ -47,52 +49,79 @@ require("spec/foreach.spec.js");
 // $insert						OK
 // $foreach 					OK
 // data binding on arrays		OK
+// event handlers 				OK
+// hsp.refresh()				OK
+// hsp.display()				OK
 
-// event handlers - onclick="{controller.save(todo)}"
 // input node
 // @attribute node?
 // data binding on full expression path
-
 // widgets
+// function expressions
+// long expression paths
 // transitions
 // adaptors?
-
 // context variables?
-// # break and # continue 		NO - too complex for little added value
-
-// simple peg parser
-
-
-// type of expressions: 
-// expr: a / a.b  /  [x.]*b  /  [a.]*func(array of expr)
-// boundexpr: =[type1]   (=type1 bound)
-// cb: cb:a.func(array of expr)
+// mobile event support
 
 
 var reporter = new jasmine.TrivialReporter(), env = jasmine.getEnv();
 env.addReporter(reporter);
 env.execute();
 
-function hello1() {
+
+// ###################################################################################
+// Sample test
+var hsp=require("hsp/rt"),
+	json=require("hsp/json");
+
+var p={name:"user"}
+var count=0;
+
+function handleClick() {
+	count++;
+	switch(count) {
+		case 1:
+			json.set(p,"name","you");
+			break;
+		case 2:
+			json.set(p,"name","YOU (ok - no need to click any longer..)");
+			break;
+		case 3:
+			json.set(p,"name","YOU (ok - no need to click any longer - THANKS!..)");
+			break;
+	}
+}
+
+function hello1(person) {
 	if (!hello1.ng) {
 		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
 		hello1.ng=new Ng([
-			n.span(
-				0,
-				0,
-				[n.$text(0,["Hello World!"])]
+			n.elt(
+				"div",
+				{e1:[4,handleClick]},
+				{"title":"click me!"},
+				{"click":1},
+				[n.$text({e1:[1,"person","name"]},["hello ",1,"!"])]
 				)
 		]);
 	}
-	return hello1.ng.process(this,0);
+	return hello1.ng.process(this,["person",person]);
 }
+/***
+# template hello1(person)
+	<div title="click me!" onclick="handleClick()">
+		hello {person.name}!
+	</div>
+# /template
+***/
 
-var div = document.getElementById("test"); 
-div.appendChild(hello1().node);
+hsp.display("testdiv", hello1(p)); 
+// equivalent to document.getElementById("test").appendChild(hello1(p).node); 
 
 </script>
 
-<div id="test"></div>
+<div id="testdiv"></div>
 
 </body>
 </html>

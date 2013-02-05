@@ -143,16 +143,16 @@ describe("Insert statement", function () {
 
 		// update the data model
 		json.set(dm,"firstName","Marge");
-		n.refresh();
+		hsp.refresh();
 		expect(n.node.childNodes[3].nodeValue).toEqual("First Name: Marge");
 
 		json.set(dm,"firstName",null);
-		n.refresh();
+		hsp.refresh();
 		expect(n.node.childNodes.length).toEqual(3);
 
 		json.set(dm,"firstName","Mickey");
 		json.set(dm,"lastName","Mouse");
-		n.refresh();
+		hsp.refresh();
 		expect(n.node.childNodes.length).toEqual(5);
 		expect(n.node.childNodes[0].nodeValue).toEqual("Last Name: Mouse");
 		expect(n.node.childNodes[3].nodeValue).toEqual("First Name: Mickey");
@@ -182,7 +182,7 @@ describe("Insert statement", function () {
 		expect(n.node.childNodes[0].nodeValue).toEqual("answer is?");
 
 		n.updateArgument(1,"answer is 42");
-		n.refresh();
+		hsp.refresh();
 
 		expect(n.node.childNodes[0].nodeValue).toEqual("answer is 42");
 
