@@ -42,7 +42,7 @@ exports.template = function (test) {
 	expected = [
 		'function one(1,2){',
 		'if(!one.ng){',
-		'var Ng=require("hsp/rt").NodeGenerator,n=Ng.nodes,el=require("hsp/rt/eltnode");',
+		'var Ng=require("hsp/rt").NodeGenerator,n=Ng.nodes;',
 		'one.ng=new Ng([YES]);',
 		'}',
 		'return one.ng.process(this,[DONE])',
@@ -85,7 +85,7 @@ exports.elementNoArgs = function (test) {
 	};
 	
 	var result = processors[node.type](node, walker);
-	var expected = 'new el("NAME",0,{},[CONTENT])';
+	var expected = 'n.elt("NAME",0,{},0,[CONTENT])';
 	test.equal(result, expected);
 
 	// with static arguments
@@ -107,7 +107,7 @@ exports.elementNoArgs = function (test) {
 	};
 	
 	result = processors[node.type](node, walker);
-	expected = 'new el("STATIC",0,{"A":\'static\',"b":"yes"},[CONTENT])';
+	expected = 'n.elt("STATIC",0,{"A":\'static\',"b":"yes"},0,[CONTENT])';
 	test.equal(result, expected);
 
 	// dynamic arguments (attr.bind is whether or not it has the bind modifier)
@@ -150,7 +150,7 @@ exports.elementNoArgs = function (test) {
 	};
 	
 	result = processors[node.type](node, walker);
-	expected = 'new el("DYN",{e1:[1,0,"a"],e2:[1,"b","c"],e3:[0,"c","b","a"],e4:[0,0,"f"]},{"A":[\'begin\',1],"B":[\'\',2],"C":[\'\',3,"other",4]},[CONTENT])';
+	expected = 'n.elt("DYN",{e1:[1,0,"a"],e2:[1,"b","c"],e3:[0,"c","b","a"],e4:[0,0,"f"]},{"A":[\'begin\',1],"B":[\'\',2],"C":[\'\',3,"other",4]},0,[CONTENT])';
 	test.equal(result, expected);
 
 	test.done();
@@ -167,7 +167,7 @@ exports.emptyElement = function (test) {
 	
 	// here we use a real walker
 	var result = processors[node.type](node, treeWalker);
-	var expected = 'new el("EMPTY",0,{},[])';
+	var expected = 'n.elt("EMPTY",0,{},0,[])';
 	test.equal(result, expected);
 
 	test.done();

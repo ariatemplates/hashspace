@@ -9,6 +9,10 @@ var Q = require("q");
 var renderer = require("../../compiler/renderer");
 var compiler = require("../../compiler/codeGenerator");
 
+io.configure(function () {
+	io.set("log level", 2);  // suppress debug messages
+});
+
 module.exports = function(grunt) {
 	grunt.registerTask('server', 'Start an express web server', function () {
 		grunt.config.requires('server.port');

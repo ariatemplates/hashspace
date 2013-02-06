@@ -24,7 +24,7 @@ exports.template = function (node, walker) {
 	return [
 		'function ' + functionName + '(' + node.args + '){',
 		'if(!' + functionName + '.ng){',
-		'var Ng=require("hsp/rt").NodeGenerator,n=Ng.nodes,el=require("hsp/rt/eltnode");',
+		'var Ng=require("hsp/rt").NodeGenerator,n=Ng.nodes;',
 		functionName + '.ng=new Ng([',
 		walker.walk(node.content, module.exports).join(","),
 		']);',
@@ -41,9 +41,10 @@ exports.element = function (node, walker) {
 	var map = extractAttributeVariables(node.attr);
 
 	return [
-		'new el("' + node.name + '",',
+		'n.elt("' + node.name + '",',
 		boundVariables(map.variables, walker) + ",",   // all attributes whose value might change
 		exports.elementAttributes(map) + ",",          // attribute descriptions
+		0 + ",",       // callbacks
 		"[" + walker.walk(node.content, module.exports).join(",") + "]",  // element content
 		')'
 	].join("");
@@ -51,7 +52,7 @@ exports.element = function (node, walker) {
 
 /**
  * Generate the attribute list for an argument.
- * Given a map of static / dynamic attributes return an array of parameters that are either 
+ * Given a map of static / dynamic attributes return an array of parameters that are either
  * - a string for static values
  * - a number for the variable reference
  */

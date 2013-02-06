@@ -24,8 +24,13 @@ exports.htmlTemplates = {
 		// Expect N assertions for template
 		test.expect(Object.keys(allTemplates).length * 3);
 
-		utils.each(function (name, template, next) {
+		// I expect the test to end in less that 3 seconds
+		var timeout = setTimeout(function () {
+			test.fail("Test timeout");
+			test.done();
+		}, 3000);
 
+		utils.each(function (name, template, next) {
 			var js;
 			test.doesNotThrow(function () {
 				js = utils.compile(template.content);
@@ -38,6 +43,7 @@ exports.htmlTemplates = {
 				next();
 			});
 		}, function () {
+			clearTimeout(timeout);
 			test.done();
 		});
 	}
