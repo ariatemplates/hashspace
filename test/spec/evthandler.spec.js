@@ -35,7 +35,7 @@ function test1(person,ctl) {
 /***
 // basic test with a single div container
 # template test1(person,ctl)
-	<div title="test1" onclick="ctl.handleClick()">
+	<div title="test1" onclick="{ctl.handleClick()}">
 		Hello {person.name}!
 	</div>
 # /template
@@ -67,8 +67,8 @@ function test2(label,names,ctl) {
 /***
 # template test2(label,names,ctl)
 	# foreach (name in names)
-		<span onclick="handleClick(name,name_key,"literal arg",event)">
-			{label} {=name_key}: {name}
+		<span onclick="{handleClick(name,name_key,"literal arg",event)}">
+			{:label} {name_key}: {:name}
 		</span>
 	# /foreach
 # /template
@@ -100,7 +100,7 @@ function test3(person,ctl) {
 /***
 // test callback on the global scope
 # template test3(person)
-	<div title="test3" onclick="doClick('blah',event)">
+	<div title="test3" onclick="{doClick('blah',event)}">
 		Hello {person.name}!
 	</div>
 # /template
