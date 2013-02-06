@@ -7,7 +7,8 @@ exports.singleLineNoAttributes = function (test) {
 		tree.n(0).isElement("div");
 		tree.n(0).n(0).isText("abc");
 
-		test.deepEqual(tree.n(0).get("attr"), []);
+		var attributes = tree.n(0).more("attr");
+		attributes.length(0);
 	});
 
 	test.done();
@@ -20,12 +21,10 @@ exports.singleLineWithArgsSingleQuote = function (test) {
 		tree.n(0).isElement("help");
 		tree.n(0).n(0).isText("one");
 
-		test.deepEqual(tree.n(0).get("attr"), [{
-			name : "some",
-			value : ["attribute"],
-			isStatic : true,
-			quote : "'"
-		}]);
+		var attributes = tree.n(0).more("attr");
+		attributes.length(1);
+		attributes.n(0).isAttribute("some", true, true);
+		test.deepEqual(attributes.n(0).get("value"), ["attribute"]);
 	});
 
 	test.done();
@@ -38,12 +37,10 @@ exports.singleLineWithArgsDoubleQuote = function (test) {
 		tree.n(0).isElement("help");
 		tree.n(0).n(0).isText("two");
 
-		test.deepEqual(tree.n(0).get("attr"), [{
-			name : "some",
-			value : ["attribute"],
-			isStatic : true,
-			quote : '"'
-		}]);
+		var attributes = tree.n(0).more("attr");
+		attributes.length(1);
+		attributes.n(0).isAttribute("some", true);
+		test.deepEqual(attributes.n(0).get("value"), ["attribute"]);
 	});
 
 	test.done();
@@ -56,22 +53,15 @@ exports.singleLineWithArgsMixedQuote = function (test) {
 		tree.n(0).isElement("weird");
 		tree.n(0).n(0).isText("indeed");
 
-		test.deepEqual(tree.n(0).get("attr"), [{
-			name : "one",
-			value : ["1"],
-			isStatic : true,
-			quote : '"'
-		}, {
-			name : "two",
-			value : ["due"],
-			isStatic : true,
-			quote : "'"
-		}, {
-			name : "three",
-			value : ["3'3"],
-			isStatic : true,
-			quote : '"'
-		}]);
+		var attributes = tree.n(0).more("attr");
+		attributes.length(3);
+		attributes.n(0).isAttribute("one", true);
+		attributes.n(1).isAttribute("two", true, true);
+		attributes.n(2).isAttribute("three", true);
+
+		test.deepEqual(attributes.n(0).get("value"), ["1"]);
+		test.deepEqual(attributes.n(1).get("value"), ["due"]);
+		test.deepEqual(attributes.n(2).get("value"), ["3'3"]);
 	});
 
 	test.done();
@@ -106,12 +96,10 @@ exports.selfClosing = function (test) {
 		var tree = utils.parse('<img src="http://someting.com/url"/>');
 
 		tree.n(0).isElement("img");
-		test.deepEqual(tree.n(0).get("attr"), [{
-			name : "src",
-			value : ["http://someting.com/url"],
-			isStatic : true,
-			quote : '"'
-		}]);
+		var attributes = tree.n(0).more("attr");
+		attributes.length(1);
+		attributes.n(0).isAttribute("src", true);
+		test.deepEqual(attributes.n(0).get("value"), ["http://someting.com/url"]);
 
 		// I expect it to be undefined / missing
 		test.deepEqual(tree.n(0).get("content"));

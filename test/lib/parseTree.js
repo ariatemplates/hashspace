@@ -25,7 +25,7 @@ exports.create = function (tree) {
 
 		/**
 		 * Whether the element is a text node
-		 * @param  {String}  content [Optinal] Text node content (trimmed for comparison)
+		 * @param  {String}  content [Optional] Text node content (trimmed for comparison)
 		 * @throws
 		 */
 		isText : function (content) {
@@ -60,6 +60,30 @@ exports.create = function (tree) {
 
 			if (this.element.name !== tagName) {
 				throw new Error("Element " + this.path + " is not a " + tagName + " but a " + this.element.name);
+			}
+		},
+
+		/**
+		 * Whether this element is an HTML element attribute
+		 * @param  {String}  name      Attribute name
+		 * @param  {Boolean} isStatic  true if static, default true
+		 * @param  {String}  isSingle  Whether it's wrapped in single quote or not. default false
+		 * @throws
+		 */
+		isAttribute : function (name, isStatic, isSingle) {
+			if (this.element.type !== "ElementAttribute") {
+				throw new Error("Element " + this.path + " is not an attribute but a " + this.element.type);
+			}
+			if (this.element.name !== name) {
+				throw new Error("Attribute " + this.path + " does not have name '" + name + "' but '" + this.element.name + "'");
+			}
+			isStatic = isStatic !== false;
+			if (this.element.isStatic !== isStatic) {
+				throw new Error("Attribute " + this.path + " has 'isStatic' set to '" + this.element.isStatic + "' expecting '" + isStatic + "'");
+			}
+			var quote = isSingle ? "'" : '"';
+			if (this.element.quote !== quote) {
+				throw new Error("Attribute " + this.path + " has 'quote' set to _" + this.element.quote + "_ expecting _" + quote + "_");
 			}
 		},
 
@@ -128,7 +152,25 @@ exports.create = function (tree) {
 			if (conditionString !== condition.join(".")) {
 				throw new Error("Condition of 'if' statement " + this.path + " is not '" + condition + "', got '" + this.element.args.path + "'.");
 			}
-			// TODO else ?
+		},
+
+		/**
+		 * Whether this node is a callback for a given type
+		 * @param  {String}  event     Event name
+		 * @param  {String}  isSingle  Whether it's wrapped in single quote or not. default false
+		 * @return {Boolean}
+		 */
+		isCallback : function (event, isSingle) {
+			if (this.element.type !== "EventCallback") {
+				throw new Error("Element " + this.path + " is not a callback but a " + this.element.type);
+			}
+			if (this.element.name !== event) {
+				throw new Error("Callback " + this.path + " does not react to '" + event + "' but to '" + this.element.event + "'");
+			}
+			var quote = isSingle ? "'" : '"';
+			if (this.element.quote !== quote) {
+				throw new Error("Callback " + this.path + " has 'quote' set to _" + this.element.quote + "_ expecting _" + quote + "_");
+			}
 		},
 
 		/**
@@ -178,6 +220,58 @@ exports.create = function (tree) {
 					writable : false,
 					configurable : false,
 					value : this.path + ".content[" + j + "][" + k + "]"
+				}
+			});
+		},
+
+		/**
+		 * Get an array of properties
+		 * @param  {String} what Element property
+		 * @return {Object}
+		 */
+		more : function (what) {
+			return Object.create(ArrayElement, {
+				array : {
+					writable : false,
+					configurable : false,
+					value : this.element[what]
+				},
+				path : {
+					writable : false,
+					configurable : false,
+					value : this.path + "." + what
+				}
+			});
+		}
+	};
+
+	var ArrayElement = {
+		/**
+		 * Assert that this array have exactly i elements
+		 * @throws
+		 */
+		length : function (i) {
+			if (this.array.length !== i) {
+				throw new Error("Array " + this.path + " has length " + this.array.length + " instead of " + i);
+			}
+		},
+
+		/**
+		 * Return an helper around the n-th element of this array.
+		 * @param  {Number} position Index
+		 * @return {Object}
+		 */
+		n : function (position) {
+			return Object.create(contentElement, {
+				element : {
+					writable : false,
+					configurable : false,
+					value : this.array[position]
+				},
+				path : {
+					writable : false,
+					configurable : false,
+					value : this.path + "[" + position + "]"
 				}
 			});
 		}
