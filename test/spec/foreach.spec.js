@@ -101,6 +101,34 @@ function test2(ds) {
 # /template
 ***/
 
+function test3(things) {
+	if(!test3.ng) {
+		var Ng = require("hsp/rt").NodeGenerator,
+			n = Ng.nodes,
+			el = require("hsp/rt/eltnode");
+
+		test3.ng = new Ng([
+		n.$foreach(
+			{e1: [1, 0, "things"]}, 
+			"oneThing", 
+			0, 
+			1, 
+			[
+				n.$text(0, ["      "]), 
+				n.$text({e1: [1, 0, "oneThing"]}, ["", 1]), 
+				n.$text(0, ["\n    "])])
+			]);
+	}
+	return test3.ng.process(this, ["things", things])
+}
+/***
+# template test3(things) 
+	# foreach (oneThing in things)
+		{oneThing}
+	# /foreach
+# /template
+***/
+
 describe("ForEach Node", function () {
 	var ELEMENT_NODE=1;
 	var TEXT_NODE=3;
@@ -387,5 +415,17 @@ describe("ForEach Node", function () {
 		n.$dispose();
 	});
 	
+	it("tests simple push in an array", function() {
+		var ds=["oranges"];
+		var n=test3(ds);
+
+		expect(n.node.childNodes.length).toEqual(2+5);
+
+		json.push(ds,"mangos");
+		hsp.refresh();
+
+		expect(n.node.childNodes.length).toEqual(2+5*2);
+		expect(n.node.childNodes[2+5+1].nodeValue).toEqual("mangos");
+	});
 
 });
