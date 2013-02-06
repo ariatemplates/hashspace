@@ -3,6 +3,8 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io').listen(server);
 var path = require("path");
+var request = require("request");
+var Q = require("q");
 
 var renderer = require("../../compiler/renderer");
 var compiler = require("../../compiler/codeGenerator");
@@ -45,8 +47,6 @@ module.exports = function(grunt) {
 		app.use(express.static(grunt.config('server.base')));
 
 		io.sockets.on('connection', function (socket) {
-			socket.emit('welcome', "hello!");
-
 			socket.on('editor change', function (data) {
 				try {
 					var js = compiler.compile(data.text);
@@ -65,6 +65,55 @@ module.exports = function(grunt) {
 					});
 				}
 			});
+			socket.on('get snippets', function () {
+				request({
+					url : "https://api.github.com/users/piuccio/gists",
+					json : true
+				}, function (error, response, body) {
+					if (error) {
+						socket.emit('snippets', {
+							error : error
+						});
+					} else {
+						// The API only sends back the raw url, get the file content
+						var gists = {};
+						body.reduce(function (working, gist) {
+							return working.then(getGistFiles.bind(null, gist, gists));
+						}, Q.resolve(body)).then(function () {
+							socket.emit('snippets', {
+								error : false,
+								gists : gists
+							});
+						});
+					}
+				});
+			});
+
+			socket.emit('welcome', "hello!");
 		});
 	});
 };
+
+function getGistFiles (gist, gists) {
+	var deferred = Q.defer();
+	if (gist.files["console.js"] && gist.files.template) {
+		// Valid hashspace gist
+		Q.all([
+			Q.nfcall(request, gist.files["console.js"].raw_url),
+			Q.nfcall(request, gist.files.template.raw_url)
+		]).then(function (result) {
+			// result[i] -> is the i-th request done through Q.all
+			// result[i][j] -> is the j-th parameter in the request callback
+			gists[gist.id] = gist;
+			gists[gist.id].files["console.js"].raw_text = result[0][1];
+			gists[gist.id].files.template.raw_text = result[1][1];
+
+			deferred.resolve("");
+		}, function (error) {
+			deferred.reject(new Error(error));
+		});
+	} else {
+		deferred.resolve("");
+	}
+	return deferred.promise;
+}

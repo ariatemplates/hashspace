@@ -22,20 +22,28 @@
         node.appendChild(text);
 
         if (logsPanel.firstChild) {
-            logsPanel.insertBefore(node, logsPanel.firstChild)
+            logsPanel.insertBefore(node, logsPanel.firstChild);
         } else {
             logsPanel.appendChild(node);
         }
     };
-    log.info = function (text) {
+    log.info = function (message) {
         var node = document.createElement("pre");
-        var text = document.createTextNode(text);
+        var text = document.createTextNode(message);
         node.appendChild(text);
 
         if (logsPanel.firstChild) {
-            logsPanel.insertBefore(node, logsPanel.firstChild)
+            logsPanel.insertBefore(node, logsPanel.firstChild);
         } else {
             logsPanel.appendChild(node);
+        }
+    };
+
+    var on = function (element, event, callback) {
+        if (element.addEventListener) {
+            element.addEventListener(event, callback, false);
+        } else if (element.attachEvent)  {
+            element.attachEvent("on" + event, callback);
         }
     };
 
@@ -67,34 +75,37 @@
             }
         });
 
+        var executeCodeCallback = function () {
+            var callMe = new Function("json", "vscope", "log", "refresh", '"use strict";' + consoleEditor.getValue());
+
+            var logScope = function (text) {
+                if (!text) {
+                    text = "";
+                } else {
+                    text += "\n";
+                }
+                log.info(text + JSON.stringify(runningModule.out.vscope, function (key, value) {
+                    if (key === "#scope") {
+                        return "#scope";
+                    }
+                    return value;
+                }, "\t"));
+            };
+            var refreshScoped = function () {
+                runningModule.out.refresh();
+            };
+            callMe(runningModule.json, runningModule.out.vscope, logScope, refreshScoped);
+        };
         consoleEditor.commands.addCommand({
             name: "executeConsole",
             bindKey: {
                 win: 'ctrl-space',
                 mac: 'command-space'
             },
-            exec: function (editor) {
-                var callMe = new Function("json", "vscope", "log", "refresh", '"use strict";' + editor.getValue());
-
-                var logScope = function (text) {
-                    if (!text) {
-                        text = "";
-                    } else {
-                        text += "\n";
-                    }
-                    log.info(text + JSON.stringify(runningModule.out.vscope, function (key, value) {
-                        if (key === "#scope") {
-                            return "#scope";
-                        }
-                        return value;
-                    }, "\t"));
-                };
-                var refreshScoped = function () {
-                    runningModule.out.refresh();
-                };
-                callMe(runningModule.json, runningModule.out.vscope, logScope, refreshScoped);
-            }
+            exec: executeCodeCallback
         });
+        var executeButton = document.getElementById("execute");
+        on(executeButton, "click", executeCodeCallback);
     });
 
     // Variable holding the last correctly evaluated template module
@@ -132,6 +143,78 @@
         __CODE__
     };
 
+    var titleText = document.getElementById("title");
+    var moreSnippetsLink = document.getElementById("getSnippet");
+    var closeSnippetsLink = document.getElementById("closeSnippetDialog");
+    var snippetsDialog = document.getElementById("snippetDialog");
+    var snippetDialogBody = document.getElementById("snippetDialogBody");
+    on(moreSnippetsLink, "click", function () {
+        // this is just because IE doesn't have classlist or trim...
+        var oldClass = snippetsDialog.className;
+        snippetsDialog.className = oldClass.replace("hidden", "").replace(/^\s+|\s+$/g, "");
+
+        snippetDialogBody.innerHTML = "Loading";
+
+        socket.emit('get snippets');
+    });
+    on(closeSnippetsLink, "click", function () {
+        snippetsDialog.className += " hidden";
+    });
+    on(snippetDialogBody, "click", function (event) {
+        event = event || window.event;
+        var target = event.target || event.srcElement;
+
+        var gistId = target.getAttribute("data-gist");
+        if (gistId) {
+            event.cancelBubble = true;
+            if (event.stopPropagation) {
+                event.stopPropagation();
+            }
+            if (event.preventDefault) {
+                event.preventDefault();
+            }
+
+            var gist = snippets[gistId];
+            titleText.innerHTML = gist.description;
+            editor.setValue(gist.template, 1);
+            consoleEditor.setValue(gist.console, 1);
+
+            socket.emit('editor change', {
+                text : gist.template
+            });
+
+            snippetsDialog.className += " hidden";
+
+            return false;
+        }
+    });
+    var snippets = {};
+    socket.on('snippets', function (data) {
+        if (data.error) {
+            snippetDialogBody.innerHTML = data.error;
+        } else {
+            var list = "<ul class='gists'>";
+            for (var gistId in data.gists) {
+                if (data.gists.hasOwnProperty(gistId)) {
+                    var gist = data.gists[gistId];
+                    if (gist.files["console.js"] && gist.files.template) {
+                        // this is an hashspace gist
+                        var description = gist.description.replace(/^hashspace\s+/, "");
+                        list += "<li class='gist'><a href='#' data-gist='" + gistId + "'>" + description + "</a></li>";
+                        snippets[gistId] = {
+                            console : gist.files["console.js"].raw_text,
+                            template : gist.files.template.raw_text,
+                            description : description
+                        };
+                    }
+                }
+            }
+            list += "</ul>";
+            snippetDialogBody.innerHTML = list;
+        }
+    });
+
+
     // Initial editor text
     var initialEditor = [
         "// Define a datamodel",
@@ -167,4 +250,4 @@
         "log('After json.set');",
         "refresh();"
     ].join("\n");
-})()
+})();
