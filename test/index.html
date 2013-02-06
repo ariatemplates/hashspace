@@ -18,10 +18,21 @@
 
 <html>
 <head>
-<script type="text/javascript" src="lib/jasmine.js"></script>
-<script type="text/javascript" src="lib/jasmine-html.js"></script>
-<script type="text/javascript" src="lib/noder.min.js"></script>
-<link href="lib/jasmine.css" type="text/css" rel="stylesheet"/>
+<script type="text/javascript" src="/lib/jasmine.js"></script>
+<script type="text/javascript" src="/lib/jasmine-html.js"></script>
+<script type="text/javascript" src="/lib/noder.min.js">
+{
+	resolver : {
+		"default" : {
+			"spec" :"/test/spec/"
+		}
+	},
+	packaging : {
+		baseUrl : "/"
+	}
+}
+</script>
+<link href="/lib/jasmine.css" type="text/css" rel="stylesheet"/>
 
 </head>
 <body>

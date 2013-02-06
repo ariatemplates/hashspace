@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,13 +19,19 @@ module.exports = function (grunt) {
     grunt.initConfig({
       server: {
         port: 8000,
-        base: '.'
+        base: __dirname,
+        templateExtension: "tpl"
       },
       watch: {
         files: ['*.*'],
         tasks: []
+      },
+      test: {
+        files: ['test/*.js', 'test/parser/*.js']
       }
     });
-    grunt.registerTask('default', 'server watch');
 
+    grunt.loadTasks('build/grunt-tasks');
+
+    grunt.registerTask('default', 'server watch');
 };

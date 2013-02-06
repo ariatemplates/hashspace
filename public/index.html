@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Hashspace playground</title>
+
+<link href="style.css" rel="stylesheet">
+
+<script type="text/javascript" src="lib/noder.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+
+</head>
+<body>
+
+<div id="topPanel">
+    <span id="title">Hashspace playground</span>
+    <span id="getSnippet">more snippets</span>
+</div>
+
+<div id="bottomPanel">
+    <div id="leftPanel">
+        <div id="topLeftPanel">
+            <div id="editor"></div>
+            <div class="info">Template</div>
+        </div>
+
+        <div id="hRule"></div>
+
+        <div id="bottomLeftPanel">
+            <div id="console"></div>
+            <div class="info">Console</div>
+            <div class="actions">
+                <button id="execute">Execute this code</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="rightPanel">
+        <div id="topRightPanel">
+            <div id="result"></div>
+            <div class="info">Output</div>
+        </div>
+
+        <div id="hRule"></div>
+
+        <div id="bottomRightPanel">
+            <div id="logs"></div>
+            <div class="info">Logs</div>
+        </div>
+    </div>
+</div>
+
+<div id="snippetDialog" class="dialog hidden">
+    <div id="snippetDialogBody" class="body"></div>
+    <div class="footer">
+        <button id="closeSnippetDialog">Close</button>
+    </div>
+</div>
+
+<script src="http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="lib/json2.js"></script>
+<script type="text/javascript" src="behavior.js"></script>
+
+</body>

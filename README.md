@@ -26,9 +26,9 @@ Currently only some parts of the runtime are developed:
 - # foreach statements
 - array data-bindings (i.e. automatic refresh of foreach nodes when the foreach array is changed)
 
-Please refer to the unit-tests suites in the spec folder for more details.
+Please refer to the unit-tests suites in `test/spec` folder for more details.
 
-The samples folder also contains a pseudo-code implementation of what could be the [todomvc][todomvc] implementation with hashspace (some syntax pieces and implementation details still TBD)
+The `public/samples` folder also contains a pseudo-code implementation of what could be the [todomvc][todomvc] implementation with hashspace (some syntax pieces and implementation details still TBD)
 
 As you will note, hashspace has many similarities with [angular JS][angular] as it implements the same type of algorithm that binds the HTML DOM to a JavaScript data structure. However the purpose of hashspace is not to implement a full framework as angular - but simply the HTML rendering part. Besides its pre-processor+runtime architecture will allow keeping the runtime as small as possible, while supporting advanced features - such as error managment and advanced expressions, as they may mainly impact the parser that will not be part of the runtime.
 
