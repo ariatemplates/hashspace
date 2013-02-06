@@ -176,7 +176,24 @@ var TNode=klass({
 	/**
 	 * Abstract function that should be implemented by sub-classes
 	 */
-	createNode:function() {}
+	createNode:function() {},
+
+
+	/**
+	 * Recursively replace the DOM node by another node if it matches the preNode passed as argument
+	 */
+	replaceNodeBy:function(prevNode,newNode) {
+		if (this.node===prevNode) {
+			this.node=newNode;
+
+			var cn=this.childNodes;
+			if (cn) {
+				for (var i=0, sz=cn.length;sz>i;i++) {
+					cn[i].replaceNodeBy(prevNode,newNode);
+				}
+			}
+		}
+	}
 });
 
 /**

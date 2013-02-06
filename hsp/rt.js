@@ -118,8 +118,8 @@ module.exports.display = function(container, rootNode) {
 	if (typeof(container==="string")) {
 		c=doc.getElementById(container);
 	}
-	if (c && rootNode.node) {
-		c.appendChild(rootNode.node);
+	if (c && rootNode) {
+		rootNode.appendToDOM(c);
 	}
 }
 

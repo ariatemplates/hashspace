@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-var hsp=require("hsp/rt");
-var json=require("hsp/json");
+var hsp=require("hsp/rt"),
+	json=require("hsp/json"),
+	doc=require("hsp/document");
 
 function test1(label,names) {
 	if (!test1.ng) {
@@ -415,17 +416,21 @@ describe("ForEach Node", function () {
 		n.$dispose();
 	});
 	
-	it("tests simple push in an array", function() {
+	it("tests node appendToDOM", function() {
 		var ds=["oranges"];
 		var n=test3(ds);
 
-		expect(n.node.childNodes.length).toEqual(2+5);
+		// simulate appendToDOM with another doc fragment
+		var df=doc.createDocumentFragment();
+		n.appendToDOM(df);
+
+		expect(df.childNodes.length).toEqual(2+5);
 
 		json.push(ds,"mangos");
 		hsp.refresh();
 
-		expect(n.node.childNodes.length).toEqual(2+5*2);
-		expect(n.node.childNodes[2+5+1].nodeValue).toEqual("mangos");
+		expect(df.childNodes.length).toEqual(2+5*2);
+		expect(df.childNodes[2+5+1].nodeValue).toEqual("mangos");
 	});
 
 });

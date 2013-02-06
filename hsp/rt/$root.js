@@ -23,6 +23,8 @@ var klass=require("hsp/klass"),
 	tn=require("hsp/rt/tnode"),
 	TNode=tn.TNode;
 
+var DOCUMENT_FRAGMENT_NODE=11;
+
 /**
  * Root node - created at the root of each template
  * Contains the listeners requested by the child nodes
@@ -156,7 +158,23 @@ var $RootNode = klass({
 	 */
 	updateArgument:function(argidx, argvalue) {
 		json.set(this.vscope["#scope"], this.argNames[argidx], argvalue);
-	}
+	},
+
+	/**
+	 * Append this root element to the DOM
+	 * @param {DOMElement} domElt the DOM element to which the template will be appended through the appendChild DOMElement method
+	 */
+	appendToDOM:function(domElt) {
+		var df=this.node; // should be a doc fragment
+		if (df.nodeType !== DOCUMENT_FRAGMENT_NODE) {
+			console.log("[hashspace] root element can only be appended once in the DOM");
+		} else {
+			domElt.appendChild(df);	
+			
+			// recursively updates all reference to the previous doc fragment node
+			this.replaceNodeBy(df,domElt);
+		}
+	}	
 });
 
 /**

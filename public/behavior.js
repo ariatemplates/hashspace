@@ -120,7 +120,9 @@
                 runningModule = module;
                 
                 resultPanel.innerHTML = "";
-                resultPanel.appendChild(module.out.node);
+
+                // TODO call hsp.display(resultPanel, module.out)
+                module.out.appendToDOM(resultPanel);
             });
         } catch (ex) {
             log(ex.line, ex.column, ex.message);
