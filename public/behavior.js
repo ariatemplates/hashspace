@@ -2,11 +2,16 @@
     // Template editor
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/crimson_editor");
+    editor.setTheme("ace/theme/crimson_editor");
+    editor.setShowPrintMargin(false);
+    editor.setReadOnly(true);
 
     // Console editor
     var consoleEditor = ace.edit("console");
     consoleEditor.setTheme("ace/theme/crimson_editor");
     consoleEditor.getSession().setMode("ace/mode/javascript");
+    consoleEditor.setShowPrintMargin(false);
+    consoleEditor.setReadOnly(true);
 
     var resultPanel = document.getElementById("result");
     var logsPanel = document.getElementById("logs");
@@ -49,23 +54,72 @@
 
     // IO socket, used to ask the server to compile our templates
     var socket = io.connect(window.location.origin);
+    var snippets = {};
+
+    var titleText = document.getElementById("title");
+    var moreSnippetsLink = document.getElementById("getSnippet");
+    var closeSnippetsLink = document.getElementById("closeSnippetDialog");
+    var snippetsDialog = document.getElementById("snippetDialog");
+    var snippetDialogBody = document.getElementById("snippetDialogBody");
 
     // The socket is connected, we can start compiling
     socket.on('welcome', function (data) {
-        editor.setValue(initialEditor, 1);
-        consoleEditor.setValue(initialConsole, 1);
-
+        var changeTimeout;
         // Whenever I modify the template part I want to compile it again
         editor.getSession().on('change', function () {
-            // the value is evaluated once the socket replies with a compiled template
-            socket.emit('editor change', {
-                text : editor.getValue()
-            });
+            // but only after a small timeout, I don't want to be flooded by logs when I type
+            clearTimeout(changeTimeout);
+            changeTimeout = setTimeout(function () {
+                // the value is evaluated once the socket replies with a compiled template
+                socket.emit('editor change', {
+                    text : editor.getValue()
+                });
+            }, 60);
         });
 
-        socket.emit('editor change', {
-            text : initialEditor
-        });
+        if (data.error) {
+            snippetDialogBody.innerHTML = data.error;
+        } else {
+            snippetsDialog.className += " hidden";
+            editor.setReadOnly(false);
+            consoleEditor.setReadOnly(false);
+
+            var list = "<ul class='gists'>";
+            var firstGist = true;
+            for (var gistId in data.gists) {
+                if (data.gists.hasOwnProperty(gistId)) {
+                    var gist = data.gists[gistId];
+                    if (gist.files["console.js"] && gist.files.template) {
+                        // this is an hashspace gist
+                        var description = gist.description.replace(/^hashspace\s+/, "");
+                        list += "<li class='gist'><a href='#' data-gist='" + gistId + "'>" + description + "</a></li>";
+                        var consoleText = gist.files["console.js"].raw_text;
+                        var templateText = gist.files.template.raw_text;
+                        snippets[gistId] = {
+                            console : consoleText,
+                            template : templateText,
+                            description : description
+                        };
+
+                        if (firstGist) {
+                            editor.setValue(templateText, 1);
+                            consoleEditor.setValue(consoleText, 1);
+                            titleText.innerHTML = description;
+                            firstGist = false;
+
+                            /*socket.emit('editor change', {
+                                text : templateText
+                            });*/
+                        }
+                    }
+                }
+            }
+            list += "</ul>";
+
+            setTimeout(function () {
+                snippetDialogBody.innerHTML = list;
+            }, 400);
+        }
 
         socket.on('compilation done', function (data) {
             if (data.error) {
@@ -76,7 +130,7 @@
         });
 
         var executeCodeCallback = function () {
-            var callMe = new Function("json", "vscope", "log", "refresh", '"use strict";' + consoleEditor.getValue());
+            var callMe = new Function("json", "vscope", "log", "hsp", '"use strict";' + consoleEditor.getValue());
 
             var logScope = function (text) {
                 if (!text) {
@@ -91,10 +145,12 @@
                     return value;
                 }, "\t"));
             };
-            var refreshScoped = function () {
-                runningModule.out.refresh();
+            var hspObject = {
+                refresh : function () {
+                    runningModule.out.refresh();
+                }
             };
-            callMe(runningModule.json, runningModule.out.vscope, logScope, refreshScoped);
+            callMe(runningModule.json, runningModule.out.vscope, logScope, hspObject);
         };
         consoleEditor.commands.addCommand({
             name: "executeConsole",
@@ -145,19 +201,11 @@
         __CODE__
     };
 
-    var titleText = document.getElementById("title");
-    var moreSnippetsLink = document.getElementById("getSnippet");
-    var closeSnippetsLink = document.getElementById("closeSnippetDialog");
-    var snippetsDialog = document.getElementById("snippetDialog");
-    var snippetDialogBody = document.getElementById("snippetDialogBody");
+    
     on(moreSnippetsLink, "click", function () {
         // this is just because IE doesn't have classlist or trim...
         var oldClass = snippetsDialog.className;
         snippetsDialog.className = oldClass.replace("hidden", "").replace(/^\s+|\s+$/g, "");
-
-        snippetDialogBody.innerHTML = "Loading";
-
-        socket.emit('get snippets');
     });
     on(closeSnippetsLink, "click", function () {
         snippetsDialog.className += " hidden";
@@ -190,66 +238,4 @@
             return false;
         }
     });
-    var snippets = {};
-    socket.on('snippets', function (data) {
-        if (data.error) {
-            snippetDialogBody.innerHTML = data.error;
-        } else {
-            var list = "<ul class='gists'>";
-            for (var gistId in data.gists) {
-                if (data.gists.hasOwnProperty(gistId)) {
-                    var gist = data.gists[gistId];
-                    if (gist.files["console.js"] && gist.files.template) {
-                        // this is an hashspace gist
-                        var description = gist.description.replace(/^hashspace\s+/, "");
-                        list += "<li class='gist'><a href='#' data-gist='" + gistId + "'>" + description + "</a></li>";
-                        snippets[gistId] = {
-                            console : gist.files["console.js"].raw_text,
-                            template : gist.files.template.raw_text,
-                            description : description
-                        };
-                    }
-                }
-            }
-            list += "</ul>";
-            snippetDialogBody.innerHTML = list;
-        }
-    });
-
-
-    // Initial editor text
-    var initialEditor = [
-        "// Define a datamodel",
-        "var model = {",
-        "    name : 'Peter',",
-        "    age : 30",
-        "};",
-        "",
-        "# template welcome(person)",
-        "   Hello {person.name}, you're {:person.age} years old and you're age won't change",
-        "# /template",
-        "",
-        "// In this file you can have multiple templates or JavaScript object",
-        "// this line tells the editor which template should be displayed in the output panel",
-        "// and what are its arguments (second parameter should be an array)",
-        "display(welcome, [model]);"
-    ].join("\n");
-    var initialConsole = [
-        "// In this console you can interact with the model",
-        "// without causing a recompilation of the template",
-        "// ",
-        "// The model is accessible with the name `vscope`",
-        "// You can display it calling `log()`",
-        "// You can interact with it using the `json` helper",
-        "// To refresh a template, call `refresh()`",
-        "// ",
-        "// Try for instance the following code",
-        "// Hint: Press Ctrl+Space to execute it",
-        " ",
-        "log('Before json.set');",
-        "json.set(vscope.person, 'name', 'James');",
-        "json.set(vscope.person, 'age', 40);",
-        "log('After json.set');",
-        "refresh();"
-    ].join("\n");
 })();

@@ -69,31 +69,28 @@ module.exports = function(grunt) {
 					});
 				}
 			});
-			socket.on('get snippets', function () {
-				request({
-					url : "https://api.github.com/users/piuccio/gists",
-					json : true
-				}, function (error, response, body) {
-					if (error) {
-						socket.emit('snippets', {
-							error : error
-						});
-					} else {
-						// The API only sends back the raw url, get the file content
-						var gists = {};
-						body.reduce(function (working, gist) {
-							return working.then(getGistFiles.bind(null, gist, gists));
-						}, Q.resolve(body)).then(function () {
-							socket.emit('snippets', {
-								error : false,
-								gists : gists
-							});
-						});
-					}
-				});
-			});
 
-			socket.emit('welcome', "hello!");
+			request({
+				url : "https://api.github.com/users/piuccio/gists",
+				json : true
+			}, function (error, response, body) {
+				if (error) {
+					socket.emit('snippets', {
+						error : error
+					});
+				} else {
+					// The API only sends back the raw url, get the file content
+					var gists = {};
+					body.reduce(function (working, gist) {
+						return working.then(getGistFiles.bind(null, gist, gists));
+					}, Q.resolve(body)).then(function () {
+						socket.emit('welcome', {
+							error : false,
+							gists : gists
+						});
+					});
+				}
+			});
 		});
 	});
 };
