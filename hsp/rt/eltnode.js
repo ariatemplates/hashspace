@@ -69,6 +69,7 @@ var EltNode = klass({
 	 * Create the DOM node element
 	 */
 	createNode:function() {
+		this.TYPE=this.tag; // for debugging purposes
 		var nd=doc.createElement(this.tag);
 		this.node=nd;
 		this.refreshAttributes();

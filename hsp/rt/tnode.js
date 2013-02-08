@@ -183,6 +183,7 @@ var TNode=klass({
 	 * Recursively replace the DOM node by another node if it matches the preNode passed as argument
 	 */
 	replaceNodeBy:function(prevNode,newNode) {
+		if (prevNode===newNode) return;
 		if (this.node===prevNode) {
 			this.node=newNode;
 

@@ -77,6 +77,7 @@ var $ForEachNode = klass({
 	 */
 	createNodeInstance:function(parent) {
 		var ni=TNode.createNodeInstance.call(this,parent);
+		ni.TYPE="# foreach"; // for debugging purposes
 		var nd=ni.node; // same as parent node in this case
 		ni.node1=doc.createComment("# foreach");
 		ni.node2=doc.createComment("# /foreach");
@@ -196,12 +197,14 @@ var $ForEachNode = klass({
 				// re-attach pending item in the DOM and in childNodes
 				this.childNodes.splice(i,0,pendingItems[i]);
 				current.splice(i,0,pendingItems[i].vscope[itnm])
+				sz+=1;
 				var nextNode=this.node2;
 				if (i<sz-1) {
 					nextNode=this.childNodes[i+1].node1;
 				}
 
 				pendingItems[i].attachDOMNodesBefore(nextNode);
+				pendingItems[i]=null;
 			} else {
 
 				// check if current item exists in next targets
@@ -215,7 +218,9 @@ var $ForEachNode = klass({
 					// item has to be removed
 					domIdx=this.deleteItem(i,domIdx,false);
 				}
+				// remove item from current array (may have been put in pendingItems list if needed later)
 				current.splice(i,1);
+				sz-=1;
 
 				// check if target exist in next items
 				idx=current.indexOf(titm,i);
@@ -235,9 +240,10 @@ var $ForEachNode = klass({
 						refNode=this.childNodes[i+1].node1;
 					}
 					this.node.insertBefore(ni.node,refNode);
-					ni.node=this.node;
+					ni.replaceNodeBy(ni.node,this.node);
 					// update current array
 					current.splice(i,0,titm);
+					sz+=1;
 				}
 			}
 		}
@@ -261,11 +267,12 @@ var $ForEachNode = klass({
 					this.childNodes.splice(i,0,pendingItems[i]);
 					pendingItems[i].attachDOMNodesBefore(this.node2);
 					pendingItems[i].updateScope(i,i===0,i===maxsz-1);
+					pendingItems[i]=null;
 				} else {
 					// create new item
 					var ni=this.createItem(titm,i,i===0,i===maxsz-1,doc.createDocumentFragment());
 					this.node.insertBefore(ni.node,this.node2);
-					ni.node=this.node;
+					ni.replaceNodeBy(ni.node,this.node);
 				}
 			}
 		}
@@ -437,6 +444,7 @@ var $ItemNode = klass({
 		vs[itnm+"_islast"]=islast;
 
 		var ni=TNode.createNodeInstance.call(this,parent);
+		ni.TYPE="# item"; // for debugging purposes
 		var nd=ni.node;
 		ni.vscope=vs;
 		ni.node1=doc.createComment("# item");

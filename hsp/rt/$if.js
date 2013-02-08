@@ -60,6 +60,7 @@ var $IfNode = klass({
 	createNodeInstance:function(parent) {
 		var ni=TNode.createNodeInstance.call(this,parent);
 		var nd=ni.node; // same as parent node in this case
+		ni.TYPE="# if"; // for debugging purposes
 		ni.node1=doc.createComment("# if");
 		ni.node2=doc.createComment("# /if");
 		nd.appendChild(ni.node1);
@@ -126,7 +127,7 @@ var $IfNode = klass({
 					n=ch[i].createNodeInstance(this);
 					this.childNodes.push(n);
 				}
-				this.node=this.parent.node; // remove doc fragment reference
+				this.replaceNodeBy(this.node,this.parent.node); // recursively remove doc fragment reference
 				this.node.insertBefore(df,this.node2);
 				this.isDOMempty=false;
 			}
