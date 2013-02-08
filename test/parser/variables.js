@@ -45,30 +45,24 @@ exports.asAttribute = function (test) {
 		var tree = utils.parse("As first<div class='{one}&nbsp;two'>or last<span class='strong {:two.style.classname}'>Text</span></div>");
 
 		tree.n(1).isElement("div");
-		var attributes = tree.n(1).get("attr");
-		test.deepEqual(attributes, [{
-			name : "class",
-			isStatic : false,
-			quote : "'",
-			value : [{
-				type : "value",
-				args : ["one"],
-				bind : false
-			}, "&nbsp;two"]
-		}]);
+		var attributes = tree.n(1).more("attr");
+		attributes.length(1);
+		attributes.n(0).isAttribute("class", false, true);
+		test.deepEqual(attributes.n(0).get("value"), [{
+			type : "value",
+			args : ["one"],
+			bind : false
+		}, "&nbsp;two"]);
 
 		var span = tree.n(1).n(1);
 		span.isElement("span");
-		attributes = span.get("attr");
-		test.deepEqual(attributes, [{
-			name : "class",
-			isStatic : false,
-			quote : "'",
-			value : ["strong ", {
-				type : "value",
-				args : ["two", "style", "classname"],
-				bind : true
-			}]
+		attributes = span.more("attr");
+		attributes.length(1);
+		attributes.n(0).isAttribute("class", false, true);
+		test.deepEqual(attributes.n(0).get("value"), ["strong ", {
+			type : "value",
+			args : ["two", "style", "classname"],
+			bind : true
 		}]);
 	});
 
@@ -81,12 +75,11 @@ exports.multipleAttributes = function (test) {
 		var tree = utils.parse("<article style=\"{two2.color}='{two2.colorValue}';\" static=\"no&#20;vars&#20;here\"></article>");
 
 		tree.n(0).isElement("article");
-		var attributes = tree.n(0).get("attr");
-		test.deepEqual(attributes, [{
-			name : "style",
-			isStatic : false,
-			quote : '"',
-			value : [{
+		var attributes = tree.n(0).more("attr");
+		attributes.length(2);
+
+		attributes.n(0).isAttribute("style", false);
+		test.deepEqual(attributes.n(0).get("value"), [{
 				type : "value",
 				args : ["two2", "color"],
 				bind : false
@@ -94,13 +87,9 @@ exports.multipleAttributes = function (test) {
 				type : "value",
 				args : ["two2", "colorValue"],
 				bind : false
-			}, "';"]
-		}, {
-			name : "static",
-			isStatic : true,
-			quote : '"',
-			value : ["no&#20;vars&#20;here"]
-		}]);
+			}, "';"]);
+		attributes.n(1).isAttribute("static");
+		test.deepEqual(attributes.n(1).get("value"), ["no&#20;vars&#20;here"]);
 	});
 
 	test.done();

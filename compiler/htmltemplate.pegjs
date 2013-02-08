@@ -33,12 +33,12 @@ start
 // # /template
 Template
   = instruction:TemplateInstruction content:TemplateContent TemplateInstructionEnd {
-  	return {
-  		type : "template",
-  		name : instruction.name,
-  		args : instruction.args,
-  		content : content
-  	}
+    return {
+      type : "template",
+      name : instruction.name,
+      args : instruction.args,
+      content : content
+    }
   }
 
 // These are in the form {something goes here}
@@ -106,10 +106,10 @@ StatementForeach
 // # template name()
 TemplateInstruction
   = _ InstructionBegin _ TemplateToken _ name:Identifier _ args:ArgumentsDefinition _ EOL {
-  	return {
-  		name : name,
-  		args : args
-  	}
+    return {
+      name : name,
+      args : args
+    }
   }
 
 // # /template
@@ -273,6 +273,32 @@ InsideTemplate
   return chars.join("");
  }
 
+// A callback attribute for an HTML element
+// onclick, ontap, onwhatever
+AttributeCallback
+  = "on" event:Name {
+    return event;
+  }
+
+// What goes in the callback attribute, must be a method call on a local or global scope where arguments are
+// - ObjectIdentifier
+// - Literal
+AttributeCallbackValue
+  = quote:'"' _ ValueTokenBegin _ method:ObjectIdentifier _ args:ArgumentsCallWithLiterals _ ValueTokenEnd _ '"' {
+    return {
+      quote : quote,
+      method : method,
+      args : args
+    };
+  }
+  / quote:"'" _ ValueTokenBegin _ method:ObjectIdentifier _ args:ArgumentsCallWithLiterals _ ValueTokenEnd _ "'" {
+    return {
+      quote : quote,
+      method : method,
+      args : args
+    };
+  }
+
 /*
 TODO, commented out because I don't know how to handle it in the compiled code,
 the best would be to include [] brackets in ObjectIdentifier
@@ -337,7 +363,7 @@ Char
   / "\u000D"   // carriage return
   / [\u0020-\uD7FF]
   / [\uE000-\uFFFD]
-//  / [\u10000-\u10FFFF]	/* any Unicode character, excluding the surrogate blocks, FFFE, and FFFF. */
+//  / [\u10000-\u10FFFF]  /* any Unicode character, excluding the surrogate blocks, FFFE, and FFFF. */
 
 NameStartChar
   = [a-z]
@@ -359,12 +385,6 @@ NameStartChar
 
 S "white space" //consists of one or more space (#x20) characters, carriage returns, line feeds, or tabs.
   = empty:("\u0020" / "\u0009" / "\u000D" / "\u000A")+
-/* This could actually return a node in case we want to process it {
-  	return {
-  		type : "space",
-  		content : empty.join("")
-  	}
-  }*/
 
 NameChar
   = NameStartChar / "-" / "." / [0-9] / "\u00B7" / [\u0300-\u036F] / [\u203F-\u2040]
@@ -372,112 +392,145 @@ NameChar
 
 Name
   = first:NameStartChar next:(NameChar)* {
-  	return first + next.join("");
+    return first + next.join("");
   }
 
 element
   = EmptyElemTag
   / start:STag content:content ETag {
-  	return {
-  		type : "element",
-  		name : start.name,
-  		attr : start.attr,
-  		content : content,
-  		empty : false
-  	};
+    return {
+      type : "element",
+      name : start.name,
+      attr : start.attr,
+      events : start.events,
+      content : content,
+      empty : false
+    };
   }
 
 EmptyElemTag
   = "<" name:Name attributes:(S text:Attribute {return text;})* S? "/>" {
-  	return {
-  		type : "element",
-  		name : name,
-  		attr : attributes,
-  		empty : true
-  	};
+    var attr = [];
+    var events = [];
+    for (var i = 0; i < attributes.length; i += 1) {
+      if (attributes[i].type === "EventCallback") {
+        events.push(attributes[i]);
+      } else {
+        attr.push(attributes[i]);
+      }
+    }
+    return {
+      type : "element",
+      name : name,
+      attr : attr,
+      events : events,
+      empty : true
+    };
   }
 
 STag
   = "<" name:Name attributes:(S text:Attribute {return text;})* S? ">" {
-  	return {
-  		name : name,
-  		attr : attributes
-  	};
+    var attr = [];
+    var events = [];
+    for (var i = 0; i < attributes.length; i += 1) {
+      if (attributes[i].type === "EventCallback") {
+        events.push(attributes[i]);
+      } else {
+        attr.push(attributes[i]);
+      }
+    }
+    return {
+      name : name,
+      attr : attr,
+      events : events
+    };
   }
 
 content
   = before:CharData? after:((element / Reference / Comment / ValueExpression) CharData?)* {
-  	// This is inside an HTML tag, so spaces might be needed, return the text content if any
-  	var content = [];
-  	if (before) {
-  		// could be an empty line
-  		content.push(before);
-  	}
-  	for (var i = 0, len = after.length; i < len; i += 1) {
-  		var children = after[i];
-  		if (children[0]) {
-  			// this is either an element / Reference / Comment that might want to be discarded
-  			content.push(children[0]);
-  		}
-  		if (children[1]) {
-  			// this is the CharData at the end of this tag
-  			content.push(children[1]);
-  		}
-  	}
+    // This is inside an HTML tag, so spaces might be needed, return the text content if any
+    var content = [];
+    if (before) {
+      // could be an empty line
+      content.push(before);
+    }
+    for (var i = 0, len = after.length; i < len; i += 1) {
+      var children = after[i];
+      if (children[0]) {
+        // this is either an element / Reference / Comment that might want to be discarded
+        content.push(children[0]);
+      }
+      if (children[1]) {
+        // this is the CharData at the end of this tag
+        content.push(children[1]);
+      }
+    }
 
-  	return content;
+    return content;
   }
 // The standard definition of content includes also CDATA and Process Instructions
 
 
 CharData  // All text that is not markup constitutes the character data of the document.
   = !([^<&]* "]]>" [^<&]*) chars:(!ValueTokenBegin singleChar:[^<&] {return singleChar;})* {
-  	if (chars.length) {
-  		return {
-  			type : "text",
-  			value : chars.join("")
-  		};
-  	}
-  	// If we didn't catch anything just return undefined -> empty string, it's filtered out later
+    if (chars.length) {
+      return {
+        type : "text",
+        value : chars.join("")
+      };
+    }
+    // If we didn't catch anything just return undefined -> empty string, it's filtered out later
   }
 
 ETag
   = "</" Name S? ">"
 
 Attribute
-  = name:Name Eq list:AttValue {
-  	var valueDescription = [];
-  	var isStatic = true;
-  	var buffer = "";
-  	// list has 3 values: ['quote', 'value', 'quote']
-  	for (var i = 0, len = list[1].length; i < len; i += 1) {
-  		var value = list[1][i];
-  		if (value.type) {
-  			// There is a value expression in this attribute
-  			isStatic = false;
-  			if (buffer) {
-  				// Store whatever text we had so far
-  				valueDescription.push(buffer);
-  				buffer = "";
-  			}
-  			valueDescription.push(value);
-  		} else {
-  			// This is just a character or Reference
-  			buffer += value;
-  		}
-  	}
+  = name:AttributeCallback Eq callback:AttributeCallbackValue {
+    return {
+      type : "EventCallback",
+      name : name,
+      quote : callback.quote,
+      args : {
+        method : callback.method,
+        args : callback.args
+      }
+    }
+  }
+  / name:Name Eq list:AttValue {
+    var valueDescription = [];
+    var isStatic = true;
+    var buffer = "";
+    // list has 3 values: ['quote', 'value', 'quote']
+    for (var i = 0, len = list[1].length; i < len; i += 1) {
+      var value = list[1][i];
+      if (value.type) {
+        // There is a value expression in this attribute
+        isStatic = false;
+        if (buffer) {
+          // Store whatever text we had so far
+          valueDescription.push(buffer);
+          buffer = "";
+        }
+        valueDescription.push(value);
+      } else {
+        // This is just a character or Reference
+        buffer += value;
+      }
+    }
 
-  	// In case the buffer is not yet empty
-  	if (buffer) {
-  		valueDescription.push(buffer);
-  	}
-  	
-  	return {
-  		name : name,
-  		value : valueDescription,
-  		isStatic : isStatic,
-  		quote : list[0]
-  	}
+    // In case the buffer is not yet empty
+    if (buffer) {
+      valueDescription.push(buffer);
+    }
+
+    return {
+      type : "ElementAttribute",
+      name : name,
+      value : valueDescription,
+      isStatic : isStatic,
+      quote : list[0]
+    }
   }
 
 AttValue
@@ -489,12 +542,12 @@ Reference
 
 EntityRef
   = "&" name:Name ";" {
-  	return "&" + name + ";"
+    return "&" + name + ";"
   }
 
 CharRef
   = "&#" digits:[0-9]+ ";" {
-  	return "&#" + digits.join("") + ";"
+    return "&#" + digits.join("") + ";"
   }
 
 Eq
@@ -502,8 +555,8 @@ Eq
 
 Comment
   = "<!--" chars:(!"-" Char / ('-' !"-" Char))* "-->" {
-  	return "";
-  	// just ignore HTML comments
+    return "";
+    // just ignore HTML comments
   }
 
 /*  The following grammar is not supported by PEG, should be converted but I prefer to ignore them altogether

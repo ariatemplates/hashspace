@@ -81,6 +81,7 @@ exports.elementNoArgs = function (test) {
 		type : "element",
 		name : "NAME",
 		attr : [],
+		events : [],
 		content : ["CONTENT"]
 	};
 	
@@ -103,6 +104,7 @@ exports.elementNoArgs = function (test) {
 			isStatic : true,
 			quote : '"'
 		}],
+		events : [],
 		content : ["CONTENT"]
 	};
 	
@@ -146,6 +148,7 @@ exports.elementNoArgs = function (test) {
 			isStatic : false,
 			quote : '"'
 		}],
+		events : [],
 		content : ["CONTENT"]
 	};
 	
@@ -162,6 +165,7 @@ exports.emptyElement = function (test) {
 		type : "element",
 		name : "EMPTY",
 		attr : [],
+		events : [],
 		empty : true
 	};
 	
@@ -392,3 +396,53 @@ exports.foreach = function (test) {
 
 	test.done();
 };
+
+exports.elementCallbacks = function (test) {
+	// no arguments
+	var node = {
+		type : "element",
+		name : "EVT",
+		attr : [],
+		events : [{
+			type : "EventCallback",
+			name : "TOUCH",
+			quote : "'",
+			args : {
+				method : {
+					type : "ObjectIdentifier",
+					path : ["one"]
+				},
+				args : []
+			}
+		}, {
+			type : "EventCallback",
+			name : "CARESS",
+			quote : '"',
+			args : {
+				method : {
+					type : "ObjectIdentifier",
+					path : ["one", "object"]
+				},
+				args : [{
+					type : "NumberLiteral",
+					value : 0.5
+				}, {
+					type : "ObjectIdentifier",
+					path : ["another", "here"]
+				}, {
+					type : "ArrayLiteral",
+					value : ["one", "two"]
+				}]
+			}
+		}],
+		empty : true
+	};
+
+	var result = processors[node.type](node, treeWalker);
+	var expected = 'n.elt("EVT",{e1:[4,one],e3:[3,"one","object",0,0.5,1,2,0,["one","two"]],e2:[0,"another","here"]},{},{"TOUCH":1,"CARESS":3},[])';
+	test.equal(result, expected);
+
+	test.done();
+};
+
+// TODO test an element that has both events and attributes

@@ -38,20 +38,21 @@ exports.template = function (node, walker) {
  * HTML element definition
  */
 exports.element = function (node, walker) {
-	var map = extractAttributeVariables(node.attr);
+	var eventMap = extractObjectIdentifiersFromCallbacks(node.events);
+	var map = extractAttributeVariables(node.attr, eventMap.counter);
 
 	return [
 		'n.elt("' + node.name + '",',
-		boundVariables(map.variables, walker) + ",",   // all attributes whose value might change
+		variablesAndEvents(eventMap.events, eventMap.variables.concat(map.variables), walker) + ",",   // all attributes whose value might change
 		exports.elementAttributes(map) + ",",          // attribute descriptions
-		0 + ",",       // callbacks
+		exports.elementCallbacks(eventMap) + ",",      // callbacks
 		"[" + walker.walk(node.content, module.exports).join(",") + "]",  // element content
 		')'
 	].join("");
 };
 
 /**
- * Generate the attribute list for an argument.
+ * Generate the attribute list for an HTML element.
  * Given a map of static / dynamic attributes return an array of parameters that are either
  * - a string for static values
  * - a number for the variable reference
@@ -70,6 +71,17 @@ exports.elementAttributes = function (map) {
 		result.push("\"" + attribute.name + "\":" + serializeDynamicAttributeValues(attribute));
 	}
 	return "{" + result.join(",") + "}";
+};
+
+/**
+ * Generate the events list for an HTML element
+ */
+exports.elementCallbacks = function (map) {
+	if (map.eventTypes.length === 0) {
+		return 0;
+	} else {
+		return "{" + map.eventTypes.join(",") + "}";
+	}
 };
 
 /**
@@ -186,14 +198,14 @@ exports.buildPath = function (pathArray) {
 	}
 };
 
-function extractAttributeVariables (attributes) {
+function extractAttributeVariables (attributes, counter) {
 	// variables in the body are handled differently
 	var map = {
 		areStatic : [],
 		areDynamic : [],
 		variables : []
 	};
-	var counter = 0;
+	counter = counter || 0;
 
 	for (var i = 0; i < attributes.length; i += 1) {
 		var attribute = attributes[i];
@@ -304,4 +316,78 @@ function boundVariables (array, walker) {
 		}).join(",") + "}";
 	}
 	return value;
+}
+
+function variablesAndEvents (events, variables, walker) {
+	if (events.length === 0 && variables.length === 0) {
+		return 0;
+	}
+
+	var values = [];
+	// events are already serialized
+	for (var i = 0; i < events.length; i += 1) {
+		values.push(events[i]);
+	}
+	walker.each(variables, function (variable) {
+		values.push(variable.name + ":" + exports.bindVariable(variable));
+	});
+	return "{" + values.join(",") + "}";
+}
+
+function extractObjectIdentifiersFromCallbacks (events) {
+	var map = {
+		variables : [],
+		events : [],
+		eventTypes : [],
+		counter : 0
+	};
+	var counter = 0, id, variable;
+
+	for (var i = 0; i < events.length; i += 1) {
+		var event = events[i];
+		var parameters = event.args.args;
+
+		var eventCall = "[";
+		var methodPath = event.args.method.path;
+		if (methodPath.length === 1) {
+			// literal callback
+			eventCall += "4," + methodPath[0];
+		} else {
+			// standard callback
+			eventCall += '3,"' + methodPath[0] + '","' + methodPath[1] + '"';
+		}
+
+		for (var j = 0; j < parameters.length; j += 1) {
+			var param = parameters[j];
+			if (param.type === "ObjectIdentifier") {
+				counter += 1;
+				id = counter;
+				variable = "e" + id;
+
+				map.variables.push({
+					name : variable,
+					bind : 0,   // arguments of method call are not bound
+					path : param.path
+				});
+
+				// add a dynamic expression
+				eventCall += ",1," + id;
+			} else {
+				// add a literal
+				eventCall += ",0," + JSON.stringify(param.value);
+			}
+		}
+		eventCall += "]";
+
+		counter += 1;
+		id = counter;
+		variable = "e" + id;
+		map.events.push(variable + ":" + eventCall);
+		map.eventTypes.push('"' + event.name + '":' + id);
+	}
+
+	// because the next variable computation shouldn't restart from 0
+	map.counter = counter;
+
+	return map;
 }
