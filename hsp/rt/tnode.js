@@ -16,7 +16,7 @@
 
 var hsp=require("hsp/rt"),
 	klass=require("hsp/klass"),
-	ExpHandler=require("hsp/exphandler");
+	ExpHandler=require("./exphandler");
 
 /**
  * Template node - base class of all nodes
