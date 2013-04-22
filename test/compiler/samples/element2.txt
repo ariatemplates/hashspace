@@ -1,0 +1,87 @@
+##### Template:
+# template test(person)
+	<div title="Some text">
+		<b>Some text in <span class="test">bold</span></b>
+		<input type="text" value="{person.name}"/>
+	</div>
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["person"],
+    "content": [
+    	{type:"element", name:"div", closed:false, attributes:[
+    		{type:"attribute", name:"title", value:[{type:"text", value:"Some text"}]}
+    	]},
+    	{type:"element", name:"b", closed:false, attributes:[]},
+    	{"type": "text","value": "Some text in "},
+    	{type:"element", name:"span", closed:false, attributes:[
+    		{type:"attribute", name:"class", value:[{type:"text", value:"test"}]}
+    	]},
+    	{"type": "text","value": "bold"},
+    	{"type": "endelement",name:"span"},
+		{"type": "endelement",name:"b"},
+		{type:"element", name:"input", closed:true, attributes:[
+    		{type:"attribute", name:"type", value:[{type:"text", value:"text"}]},
+    		{type:"attribute", name:"value", value:[{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "name" ]}]}
+    	]},
+    	{"type": "endelement",name:"div"}
+    ]
+  }
+]
+
+##### Syntax Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["person"],
+    "content": [
+      {type:"element", name:"div", closed:false, attributes:[
+          	{name:"title", type:"text", value:"Some text"}
+      ],"content": [
+			{type:"element", name:"b", closed:false, attributes:[],"content": [
+				{"type": "text","value": "Some text in "},
+				{type:"element", name:"span", closed:false, attributes:[
+          			{name:"class", type:"text", value:"test"}
+      			],"content": [
+      				{"type": "text","value": "bold"}
+      			]}
+			]},
+			{type:"element", name:"input", closed:true, content:[], attributes:[
+          		{name:"type", type:"text", value:"text"},
+          		{name:"value", type:"expression", "category": "objectref", "bound": true, "path": [ "person", "name" ]}
+          	]}
+      ]}
+    ]
+  }
+]
+
+##### Template Code
+test=[
+	n.elt(	"div", 
+			0,
+			{"title":"Some text"},
+			0,[
+				n.elt("b",0,0,0,[
+					n.$text(0,["Some text in "]),
+					n.elt(	"span", 
+						0,
+						{"class":"test"},
+						0,[
+							n.$text(0,["bold"])
+					])
+				]),
+				n.elt("input", 
+					{e1:[1,"person","name"]},
+					{"type":"text", "value":["",1]},
+					0
+				)
+			]
+	)
+]

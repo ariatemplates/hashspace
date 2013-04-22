@@ -1,0 +1,83 @@
+##### Template:
+# template test
+   {if true} Boolean {/if}
+   {if 123.4} Number {/if}
+   {if ('ok')} String1 {/if}
+   {if "o\"k"} String2 {/if}
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": [],
+    "content": [
+      {"type": "if", "condition": {"category": "boolean", "value": true}},
+      {"type": "text","value": " Boolean "},
+      {"type": "endif"},
+      {"type": "if", "condition": {"category": "number", "value": 123.4}},
+      {"type": "text","value": " Number "},
+      {"type": "endif"},
+      {"type": "if", "condition": {"category": "string", "value": "ok"}},
+      {"type": "text","value": " String1 "},
+      {"type": "endif"},
+      {"type": "if", "condition": {"category": "string", "value": "o\"k"}},
+      {"type": "text","value": " String2 "},
+      {"type": "endif"}
+    ]
+  }
+]
+
+##### Syntax Tree:
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": [],
+    "content": [
+      {"type": "if",
+        "condition": {"category": "boolean", "value": true},
+        "content1": [
+          {"type": "text", "value": " Boolean "}
+        ]
+      },
+      {"type": "if",
+        "condition": {"category": "number", "value": 123.4},
+        "content1": [
+          {"type": "text", "value": " Number "}
+        ]
+      },
+      {"type": "if",
+        "condition": {"category": "string", "value": "ok"},
+        "content1": [
+          {"type": "text", "value": " String1 "}
+        ]
+      },
+      {"type": "if",
+        "condition": {"category": "string", "value": "o\"k"},
+        "content1": [
+          {"type": "text", "value": " String2 "}
+        ]
+      },
+    ]
+  }
+]
+
+##### Template Code
+test=[
+  n.$if( {e1:[5,true]}, 1, [ 
+    n.$text(0,[" Boolean "])
+  ]),
+  n.$if( {e1:[5,123.4]}, 1, [ 
+    n.$text(0,[" Number "])
+  ]),
+  n.$if( {e1:[5,"ok"]}, 1, [ 
+    n.$text(0,[" String1 "])
+  ]),
+  n.$if( {e1:[5,"o\"k"]}, 1, [ 
+    n.$text(0,[" String2 "])
+  ])
+]

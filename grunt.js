@@ -27,7 +27,8 @@ module.exports = function (grunt) {
         tasks: []
       },
       test: {
-        files: ['test/*.js', 'test/parser/*.js']
+        //files: ['test/*.js', 'test/parser/*.js']
+        files: ['test/compiler/*.js']
       }
     });
 

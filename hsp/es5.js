@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-// Add ECMAScript 5 support for IE 6/7/8
-// polyfills from Mozilla Developer Network
+// Add some ECMAScript 5 support for IE 6/7/8
+// all polyfills from Mozilla Developer Network
 
+
+// Array.indexOf
 if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
         "use strict";
@@ -48,4 +50,29 @@ if (!Array.prototype.indexOf) {
         }
         return -1;
     }
+}
+
+// Function.bind
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function (oThis) {
+    if (typeof this !== "function") {
+      // closest thing possible to the ECMAScript 5 internal IsCallable function
+      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+    }
+ 
+    var aArgs = Array.prototype.slice.call(arguments, 1), 
+        fToBind = this, 
+        fNOP = function () {},
+        fBound = function () {
+          return fToBind.apply(this instanceof fNOP && oThis
+                                 ? this
+                                 : oThis,
+                               aArgs.concat(Array.prototype.slice.call(arguments)));
+        };
+ 
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+ 
+    return fBound;
+  };
 }

@@ -1,0 +1,53 @@
+##### Template:
+# template hello(person)
+	{:person.name}!
+# /template
+
+##### Parsed Tree:
+[
+  {
+    "type": "template",
+    "name": "hello",
+    "args": [ "person"],
+    "content": [
+      {
+        "type": "expression",
+        "category": "objectref",
+        "bound": false,
+        "path": [ "person", "name" ]
+      }, { 
+      	"type": "text", "value": "!"
+      }
+    ]
+  }
+]
+
+##### Syntax Tree:
+
+[
+  {
+    "type": "template",
+    "name": "hello",
+    "args": ["person"],
+    "content": [
+      {
+        "type": "textblock",
+        "content": [
+          { 
+          	"type": "expression", 
+          	"category": "objectref",
+          	"bound": false, 
+          	"path": [ "person", "name" ]
+          }, { 
+          	"type": "text", "value": "!" 
+          }
+        ]
+      }
+    ]
+  }
+]
+
+##### Template Code
+hello=[
+  n.$text({e1:[0,"person","name"]},["",1,"!"])
+]

@@ -2,7 +2,6 @@
     // Template editor
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/crimson_editor");
-    editor.setTheme("ace/theme/crimson_editor");
     editor.setShowPrintMargin(false);
     editor.setReadOnly(true);
 
@@ -116,9 +115,11 @@
             }
             list += "</ul>";
 
-            setTimeout(function () {
-                snippetDialogBody.innerHTML = list;
-            }, 400);
+            //setTimeout(function () {
+            //    snippetDialogBody.innerHTML = list;
+            //}, 400);
+
+            editor.setValue("Sorry the hashspace playground is temporarily unavailable\nThis should be fixed soon..", 1);
         }
 
         socket.on('compilation done', function (data) {
@@ -182,6 +183,7 @@
 
                 // TODO call hsp.display(resultPanel, module.out)
                 module.out.appendToDOM(resultPanel);
+                alert(resultPanel)
             });
         } catch (ex) {
             log(ex.line, ex.column, ex.message);

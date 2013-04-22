@@ -17,69 +17,59 @@
 var hsp=require("hsp/rt");
 var json=require("hsp/json");
 
-
-function test1(person) {
-	if (!test1.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test1.ng=new Ng(
-			n.elt(
-				"div",
-				0,
-				{"title":"test1"},
-				0,
-				[n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])]
-			)
-		);
-	}
-	return test1.ng.process(this,["person",person]);
-}
 /***
-// basic test with a single div container
 # template test1(person)
 	<div title="test1">
 		Hello {=person.name}!
 	</div>
 # /template
 ***/
+var test1 = require("hsp/rt").template(["person"], function(n) {
+	return [
+		n.elt(
+			"div",
+			0,
+			{"title":"test1"},
+			0,
+			[n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])]
+		)
+	]
+});
 
-function test2(person) {
-	if (!test2.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test2.ng=new Ng(
-			n.elt(
-				"div",
-				{e1:[1,"person","gender"],e2:[1,"person","idx"]},
-				{"title":"test2","class":["t2 ",1],"tabIndex":["",2]},
-				0,
-				[	
-					n.$text({e1:[1,"person","firstName"],e2:[1,"person","lastName"]},["",1," / ",2," ["]),
-					n.elt(
-						"span",
-						{e1:[1,"person","ffLevel"]},
-						{"class":["",1]},
-						0,
-						[n.$text({e1:[1,"person","ffNbr"]},["Frequent flyer #: ",1])]
-					),
-					n.$text(0,[" ]"])
-				]
-			)
-		);
-	}
-	return test2.ng.process(this,["person",person]);
-}
 /***
-// basic test with a single div container
 # template test2(person)
-	<div title="test2" class="t2 {=person.gender}" tabIndex="{=person.idx}">
-		{=person.firstName} / {=person.lastName} 
+	<div title="test2" class="t2 {person.gender}" tabIndex="{person.idx}">
+		{person.firstName} / {person.lastName} 
 		[
-		<span class="{=person.ffLevel}">
-			Frequent flyer #: {=person.ffNbr}
+		<span class="{person.ffLevel}">
+			Frequent flyer #: {person.ffNbr}
 		</span>
 		]
 	</div>
 # /template
 ***/
+var test2 = require("hsp/rt").template(["person"], function(n) {
+	return [
+		n.elt(
+			"div",
+			{e1:[1,"person","gender"],e2:[1,"person","idx"]},
+			{"title":"test2","class":["t2 ",1],"tabIndex":["",2]},
+			0,
+			[	
+				n.$text({e1:[1,"person","firstName"],e2:[1,"person","lastName"]},["",1," / ",2," ["]),
+				n.elt(
+					"span",
+					{e1:[1,"person","ffLevel"]},
+					{"class":["",1]},
+					0,
+					[n.$text({e1:[1,"person","ffNbr"]},["Frequent flyer #: ",1])]
+				),
+				n.$text(0,[" ]"])
+			]
+		)
+	]
+});
+
 
 describe("Element Nodes", function () {
 	var ELEMENT_NODE=1;

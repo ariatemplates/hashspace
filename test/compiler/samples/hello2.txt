@@ -1,0 +1,47 @@
+# template hello2 ()
+# /template
+
+# template hello2bis(arg,arg2)
+	{if arg} Hello {else} Hi {/if} // some comment here
+		Some / text \// here!
+	{if (arg)}
+		Another Hello
+	{else if (arg2)}
+		Another Hello 2
+	{else}
+		Another Hi
+	{/if}
+
+	{foreach (x in mycol)}
+		// comment1
+		<!--
+			comment2
+		-->
+
+	{/foreach}
+
+	<div class="x y" 
+		blah="123" 
+		hsp-ondelete="d"
+		>content</div>
+	<div class="x y \{foo \"bar" blah="123" empty="" hsp-ondelete="d"> content #2 </div>
+
+	{foreach k,itm in anothercol}
+		<ul>
+			<li class="test"/>
+		</ul >
+	{/foreach}
+
+	{:arg}
+
+	<span foo="{a.b.bar}"/>
+	<span foo="{a.b[2].bar}"/>
+	<span foo="{abc}"/>
+	// invalid expression
+	<span foo="{[123]}"/> 
+	<span foo="{myfunc()}"/> 
+	<span foo="{myfunc(a.b)}"/> 
+	<span foo="{x.myfunc(a.b,125,d.e)}"/>
+# /template
+
+EOB

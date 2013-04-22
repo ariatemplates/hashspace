@@ -1,0 +1,69 @@
+##### Template:
+# template test(person)
+	<div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
+		Hello {person.name}!
+	</div>
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["person"],
+    "content": [
+    	{type:"element", name:"div", closed:false, attributes:[
+    		{type:"attribute", name:"title", value:[{type:"text", value:"Some text"}]},
+    		{type:"attribute", name:"id", value:[{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "id" ]}]},
+    		{type:"attribute", name:"class", value:[
+    			{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "gender" ]},
+    			{type:"text", value:" "},
+    			{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "category" ]}
+    		]}
+    	]},
+    	{"type": "text","value": "Hello "},
+    	{"type": "expression", "category": "objectref", "bound": true, "path": [ "person", "name" ]},
+    	{"type": "text","value": "! "},
+    	{"type": "endelement",name:"div"}
+    ]
+  }
+]
+
+##### Syntax Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["person"],
+    "content": [
+      {type:"element", name:"div", closed:false, attributes:[
+          {name:"title", type:"text", value:"Some text"},
+          {name:"id", type:"expression", "category": "objectref", "bound": true, "path": [ "person", "id" ]},
+          {name:"class", type:"textblock", content:[
+          	{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "gender" ]},
+			{type:"text", value:" "},
+			{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "category" ]}
+          ]}
+      ],"content": [
+      	{ "type": "textblock", "content": [
+        	{"type": "text","value": "Hello "},
+            {"type": "expression", "category": "objectref", "bound": true, "path": [ "person", "name" ]},
+    		{"type": "text","value": "! "}
+         ]}
+      ]}
+    ]
+  }
+]
+
+##### Template Code
+test=[
+	n.elt(	"div", 
+			{e1:[1,"person","id"],e2:[1,"person","gender"],e3:[1,"person","category"]} ,
+			{"title":"Some text","id":["",1],"class":["",2," ",3]},
+			0,[
+				n.$text({e1:[1,"person","name"]},["Hello ",1,"! "])
+			]
+	)
+]

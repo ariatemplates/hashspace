@@ -193,19 +193,12 @@ var $InsertNode = klass({
 	 * 		this array: the odd item is eiter 0 or 1: 0=arg is a literal value / 1=arg is an expression
 	 *                  the even item is the argument value (i.e. value or expression index)
 	 */
-	$constructor:function(exps, tplfn, args) {
+	$constructor:function(exps, expIdx) {
 		this.isInsertNode=true;
 		this.isDOMless=true;
 		this.exps=exps; // used by the $RootNode constructor 
 		$RootNode.$constructor.call(this);
-		
-
-		if (tplfn.constructor!==Function) {
-			console.log("[$InsertNode] Invalid template function");
-		} else {
-			this.tplfunction=tplfn;
-		}
-		this.tplArgs=args;
+		this.expIdx=expIdx;
 	},
 
 	$dispose:function() {
@@ -223,22 +216,55 @@ var $InsertNode = klass({
 	createNodeInstance:function(parent) {
 		var ni=TNode.createNodeInstance.call(this,parent);
 
-		if (ni.tplfunction) {
-			// determine the arguments
-			var tplArgs=ni.tplArgs, args=[], eh=ni.eh;
-			for (var i=0, sz=tplArgs.length;sz>i;i+=2) {
-				if (tplArgs[i]) {
-					// arg is an expression
-					args.push(eh.getValue(tplArgs[i+1], ni.vscope, null));
-				} else {
-					// arg is a literal value
-					args.push(tplArgs[i+1]);
-				}
+		var v=ni.eh.getValue(ni.expIdx, ni.vscope, null);
+		if (v && v.fn) {
+			ni.func=v.fn;
+			ni.tplArgs=v.args;
+			
+			ni.isTemplate=(ni.func.isTemplate===true)
+			if (ni.isTemplate) {
+				// sub-template insertion
+				ni.func.apply(ni,ni.getArguments());
+			} else {
+				// JS function call
+				// so we have to manage a text node instead of a sub-template
+				ni.isDOMless=false;
+				ni.node=doc.createTextNode(ni.getContent());
+				ni.parent.node.appendChild(ni.node);
 			}
-
-			var n=ni.tplfunction.apply(ni,args);
+			
+		} else {
+			console.log("[$InsertNode] Invalid template function");
 		}
+
 		return ni;
+	},
+
+	/**
+	 * Calculates and return the insert arguments in the current vscope
+	 */
+	getArguments:function() {
+		var tplArgs=this.tplArgs, args=[], eh=this.eh;
+		for (var i=0, sz=tplArgs.length;sz>i;i+=2) {
+			if (tplArgs[i]) {
+				// arg is an expression
+				args.push(eh.getValue(tplArgs[i+1], this.vscope, null));
+			} else {
+				// arg is a literal value
+				args.push(tplArgs[i+1]);
+			}
+		}
+		return args;
+	},
+
+	/**
+	 * Calculates the content of the insert text node when it is not a sub-template
+	 */
+	getContent:function() {
+		if (!this.isTemplate) {
+			return this.func.apply({},this.getArguments());
+		}
+		return "";
 	},
 
 	/**
@@ -250,13 +276,18 @@ var $InsertNode = klass({
 			// (i.e. the arguments of the sub-templates)
 			// so we have to update the vscope of the sub-template (which is different from the vscope of the parent's node)
 			
-			var pscope=this.parent.vscope; // parent scope used to determine the new arguments values
-			var tplArgs=this.tplArgs, eh=this.eh;
-			for (var i=0, idx=0, sz=tplArgs.length;sz>i;i+=2, idx++) {
-				if (tplArgs[i]) {
-					// arg is an expression
-					this.updateArgument(idx,eh.getValue(tplArgs[i+1], pscope, null));
+			if (this.isTemplate) {
+				var pscope=this.parent.vscope; // parent scope used to determine the new arguments values
+				var tplArgs=this.tplArgs, eh=this.eh;
+				for (var i=0, idx=0, sz=tplArgs.length;sz>i;i+=2, idx++) {
+					if (tplArgs[i]) {
+						// arg is an expression
+						this.updateArgument(idx,eh.getValue(tplArgs[i+1], pscope, null));
+					}
 				}
+			} else {
+				// is JS function
+				this.node.nodeValue=this.getContent();
 			}
 			this.adirty=false;
 		}

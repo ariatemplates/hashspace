@@ -17,143 +17,121 @@
 var hsp=require("hsp/rt");
 var json=require("hsp/json");
 
-
-function test1(person) {
-	if (!test1.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test1.ng=new Ng(
-			n.$if(
-				{e1:[1,"person","firstName"]},
-				1,
-				[	
-					n.$text({e1:[1,"person","firstName"]},["Hello ",1])
-				]
-			)
-		);
-	}
-	return test1.ng.process(this,["person",person]);
-}
 /***
-// basic test without any else statement
 # template test1(person)
-	# if (person.firstName)
-		Hello {=person.firstName}
-	# /if
+	{if (person.firstName)}
+		Hello {person.firstName}
+	{/if}
 # /template
 ***/
+var test1 = require("hsp/rt").template(["person"], function(n) {
+	return [
+		n.$if(
+			{e1:[1,"person","firstName"]},
+			1,
+			[	
+				n.$text({e1:[1,"person","firstName"]},["Hello ",1])
+			]
+		)
+	]
+});
 
-
-function test2(person) {
-	if (!test2.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test2.ng=new Ng(
-			n.$if(
-				{e1:[1,"person","firstName"]},
-				1,
-				[	
-					n.elt(
-						"h2",
-						0,
-						0,
-						0,
-						[n.$text({e1:[1,"person","firstName"]},["Hello ",1])]
-					),
-					n.$if(
-						{e1:[1,"person","favouriteDish"]},
-						1,
-						[
-							n.elt(
-								"span",
-								0,
-								{"class":"dish"},
-								0,
-								[n.$text({e1:[0,"person","favouriteDish"]},["Your preferred dish: ",1])]
-							)
-						]
-					)
-				],
-				[
-					n.elt(
-						"div",
-						0,
-						{"class":"noname"},
-						0,
-						[n.$text({e1:[0,"person","lastName"]},["Hello ",1])]
-					)
-				]
-			)
-		);
-	}
-	return test2.ng.process(this,["person",person]);
-}
 /***
-// basic test with else statements and nested ifs
 # template test2(person)
-	# if (person.firstName)
+	{if person.firstName}
 		<h2>Hello {=person.firstName}</h2>
-		# if (person.favouriteDish)
+		{if (person.favouriteDish)}
 			<span class="dish">Your preferred dish: {person.favouriteDish}</span>
-		# /if
-	# else
+		{/if}
+	{else}
 		<div class="noname">
 			Hello {person.lastName}
 		</div>
-	# /if
+	{/if}
 # /template
 ***/
+var test2 = require("hsp/rt").template(["person"], function(n) {
+	return [
+		n.$if(
+			{e1:[1,"person","firstName"]},
+			1,
+			[	
+				n.elt(
+					"h2",
+					0,
+					0,
+					0,
+					[n.$text({e1:[1,"person","firstName"]},["Hello ",1])]
+				),
+				n.$if(
+					{e1:[1,"person","favouriteDish"]},
+					1,
+					[
+						n.elt(
+							"span",
+							0,
+							{"class":"dish"},
+							0,
+							[n.$text({e1:[0,"person","favouriteDish"]},["Your preferred dish: ",1])]
+						)
+					]
+				)
+			],
+			[
+				n.elt(
+					"div",
+					0,
+					{"class":"noname"},
+					0,
+					[n.$text({e1:[0,"person","lastName"]},["Hello ",1])]
+				)
+			]
+		)
+	]
+});
 
-
-function test3(person) {
-	if (!test3.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test3.ng=new Ng([
-			n.$text(0,["Hello "]),
-			n.$if(
-				{e1:[1,"person","firstName"]},
-				1,
-				[	
-					n.$text({e1:[1,"person","firstName"]},["",1,"!"])
-				]
-			)
-		]);
-	}
-	return test3.ng.process(this,["person",person]);
-}
 /***
-// basic test without any else statement
 # template test3(person)
 	Hello 
-	# if (person.firstName)
-		{=person.firstName}!
-	# /if
+	{if person.firstName}
+		{person.firstName}!
+	{/if}
 # /template
 ***/
+var test3 = require("hsp/rt").template(["person"], function(n) {
+	return [
+		n.$text(0,["Hello "]),
+		n.$if(
+			{e1:[1,"person","firstName"]},
+			1,
+			[	
+				n.$text({e1:[1,"person","firstName"]},["",1,"!"])
+			]
+		)
+	]
+});
 
-function test4(person) {
-	if (!test4.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test4.ng=new Ng([
-			n.$text(0,["Hello "]),
-			n.$if(
-				{e1:[5,true]},
-				1,
-				[	
-					n.$text({e1:[1,"person","firstName"]},["",1,"!"])
-				]
-			)
-		]);
-	}
-	return test4.ng.process(this,["person",person]);
-}
 /***
-// test literal as if parameter - even if it doesn't really make sense, should still be supported - e.g. for debugging purposes
 # template test4(person)
 	Hello 
-	# if (true)
-		{=person.firstName}!
-	# /if
+	// test literal as if parameter - even if it doesn't really make sense, should still be supported - e.g. for debugging purposes
+	{if (true)}
+		{person.firstName}!
+	{/if}
 # /template
 ***/
+var test4 = require("hsp/rt").template(["person"], function(n) {
+	return [
+		n.$text(0,["Hello "]),
+		n.$if(
+			{e1:[5,true]},
+			1,
+			[	
+				n.$text({e1:[1,"person","firstName"]},["",1,"!"])
+			]
+		)
+	]
+});
 
 
 describe("If Node", function () {

@@ -28,7 +28,7 @@ var ExpHandler = klass({
 	 * Possible expression types are
 	 *  0: unbound data ref 	- e.g. {e1:[0,0,"item_key"]}
 	 *  1: bound data ref 		- e.g. {e1:[1,"person","name"]}
-	 *  2: function expression
+	 *  2: literal data ref
 	 *  3: callback expression 	- e.g. {e1:[3,"ctl","deleteItem",1,2,1,0]}
 	 *  4: callback literal 	- e.g. {e1:[4,myfunc,1,2,1,0]}
 	 *  5: literal value 		- e.g. {e1:[5,"some value"]}
@@ -80,13 +80,14 @@ var ExpHandler = klass({
 						executeCb:ExpHandlerEC_Callback
 					}
 				} else if (etype===4) {
-					// callback literal - e.g. {e1:[4,myfunc,1,2,1,0]}
+					// function call literal - e.g. {e1:[4,myfunc,1,2,1,0]}
 					var args=null;
 					if (v.length>2) args=v.slice(2);
 					exp={
 						fn:v[1],
 						args:args,
-						executeCb:ExpHandlerEC_Callback
+						executeCb:ExpHandlerEC_Callback,
+						getValue:ExpHandlerGV_GlobalFunction
 					}
 				} else {
 					console.log("Unsupported expression type: "+etype);
@@ -131,6 +132,14 @@ function ExpHandlerGV_ObjProperty(vscope, defvalue) {
 function ExpHandlerGV_Literal(vscope, defvalue) {
 	// this == var object created in the ExpHandler
 	return this.value;
+}
+
+/**
+ * Get Function expression details
+ */
+function ExpHandlerGV_GlobalFunction(vscope, defvalue) {
+	// this == var object created in the ExpHandler
+	return {fn:this.fn, args:this.args};
 }
 
 /**

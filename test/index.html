@@ -64,14 +64,15 @@ require("spec/evthandler.spec.js");
 // hsp.refresh()				OK
 // hsp.display()				OK
 
-// input node
-// @attribute node?
-// data binding on full expression path
-// widgets
 // function expressions
+// input node
+// adaptors? a.b.c.adaptKm2Miles(a.b.c) valueExpressions
+// 			 hsp.adaptBool2Checked(hsp.adaptBool2Opposite(todo.active))
+// @attribute node? 
+// transitions (events: create/delete/refresh/attrefresh/childrefresh)
+// data binding on full expression path
+// widgets / components
 // long expression paths
-// transitions
-// adaptors?
 // context variables?
 // mobile event support
 
@@ -83,6 +84,8 @@ env.execute();
 
 // ###################################################################################
 // Sample test
+
+
 var hsp=require("hsp/rt"),
 	json=require("hsp/json");
 
@@ -104,21 +107,6 @@ function handleClick() {
 	}
 }
 
-function hello1(person) {
-	if (!hello1.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		hello1.ng=new Ng([
-			n.elt(
-				"div",
-				{e1:[4,handleClick]},
-				{"title":"click me!"},
-				{"click":1},
-				[n.$text({e1:[1,"person","name"]},["hello ",1,"!"])]
-				)
-		]);
-	}
-	return hello1.ng.process(this,["person",person]);
-}
 /***
 # template hello1(person)
 	<div title="click me!" onclick="handleClick()">
@@ -126,9 +114,19 @@ function hello1(person) {
 	</div>
 # /template
 ***/
+var hello1 = require("hsp/rt").template(["person"], function(n) {
+	return [
+		n.elt(
+			"div",
+			{e1:[4,handleClick]},
+			{"title":"click me!"},
+			{"click":1},
+			[n.$text({e1:[1,"person","name"]},["hello ",1,"!"])]
+		)
+	]
+});
 
 hsp.display("testdiv", hello1(p)); 
-// equivalent to document.getElementById("test").appendChild(hello1(p).node); 
 
 </script>
 

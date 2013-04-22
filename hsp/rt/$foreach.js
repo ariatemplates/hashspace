@@ -31,7 +31,7 @@ var klass=require("hsp/klass"),
  *
  * in all cases the following scope variables will be created:
  * 		itm 		the item variable as specfiied in the foreach instruction (can be any valid JS name)
- *		itm_key   	the item key in the collection - maybe a string (for non-array objects) or an integer (for arrays)
+ *		itm_key   	the item key in the collection - maybe a string (for non-array objects) or an integer (for arrays) - note: an explicit value can be passed as argument
  * 		itm_isfirst	indicator telling if this is the first item of the collection (boolean)
  * 		itm_islast	indicator telling if this is the last item of the collection (boolean)
  */
@@ -43,14 +43,15 @@ var $ForEachNode = klass({
 	 * @param {Map<Expression>|int} exps the map of the variables used by the node. 
 	 *   0 is passed if no  expression is used 
 	 * @param {String} itemName the name of the item variable that should be created
-	 * @param {Number} forType the type of foreach loop: 0=in / 1=of / 2=on
+	 * @param {String} itemKeyName the name of the item key that should be used 
 	 * @param {Number} colExpIdx the index of the expression of the collection over which the statement must iterate
 	 * @param {Array} children list of sub-node generators - 0 may be passed if there is not child nodes
 	 */				
-	$constructor:function(exps, itemName, forType, colExpIdx, children) {
+	$constructor:function(exps, itemKeyName, itemName, forType, colExpIdx, children) {
 		this.isDOMless=true;
 		this.itemName=itemName;
-		this.forType=forType;
+		this.itemKeyName=itemKeyName;
+		this.forType=0; // 0=in / 1=of / 2=on
 		this.colExpIdx=colExpIdx;
 
 		// force binding for the collection
@@ -58,7 +59,7 @@ var $ForEachNode = klass({
 		TNode.$constructor.call(this, exps);
 		this.displayedCol=null; // displayed collection
 
-		this.itemNode=new $ItemNode(children,itemName); // will be used as generator for each childNode instance
+		this.itemNode=new $ItemNode(children,itemName,itemKeyName); // will be used as generator for each childNode instance
 	},
 
 	$dispose:function() {
@@ -406,10 +407,11 @@ var $ItemNode = klass({
 	 * @param {Array<TNodes>} the child node generators
 	 * @param {String} itemName the name of the item variable used in the scope
 	 */
-	$constructor:function(children,itemName) {
+	$constructor:function(children,itemName,itemKeyName) {
 		TNode.$constructor.call(this, 0);
 		this.isDOMless=true;
 		this.itemName=itemName;
+		this.itemKeyName=itemKeyName;
 		if (children && children!==0) {
 			this.children=children;
 		}
@@ -439,7 +441,7 @@ var $ItemNode = klass({
 		var vs=klass.createObject(parent.vscope), itnm=this.itemName;
 		vs["#scope"]=vs;
 		vs[itnm]=item;
-		vs[itnm+"_key"]=key;
+		vs[this.itemKeyName]=key;
 		vs[itnm+"_isfirst"]=isfirst;
 		vs[itnm+"_islast"]=islast;
 
@@ -521,7 +523,7 @@ var $ItemNode = klass({
 	 */
 	updateScope:function(key,isfirst,islast) {
 		var vs=this.vscope, itnm=this.itemName;
-		json.set(vs,itnm+"_key",key);
+		json.set(vs,this.itemKeyName,key);
 		json.set(vs,itnm+"_isfirst",isfirst);
 		json.set(vs,itnm+"_islast",islast);
 	}

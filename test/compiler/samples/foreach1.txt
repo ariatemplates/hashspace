@@ -1,0 +1,51 @@
+##### Template:
+# template test(things)
+  Foreach test:
+  {foreach (thing in things)} - {thing} - {/foreach}
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["things"],
+    "content": [
+      {"type": "text","value": "Foreach test: "},
+      {"type": "foreach","item":"thing","key":"thing_key",colref:{"category":"objectref","path": ["things"]}},
+      {"type": "text","value": " - "},
+      {"type": "expression","category": "objectref","bound": true,"path": [ "thing" ]},
+      {"type": "text","value": " - "},
+      {"type": "endforeach"}
+    ]
+  }
+]
+
+##### Syntax Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["things"],
+    "content": [
+      {"type": "text","value": "Foreach test: "},
+      {"type": "foreach","item":"thing","key":"thing_key",collection:{"category":"objectref","path": ["things"]}, content:[
+        {"type": "textblock", "content": [
+          {"type": "text","value": " - "},
+          {"type": "expression", "category": "objectref", "bound": true, "path": [ "thing" ]}, 
+          {"type": "text","value": " - "}
+        ]}
+      ]}
+    ]
+  }
+]
+
+##### Template Code
+test=[
+  n.$text(0,["Foreach test:  "]),
+  n.$foreach({e1: [1, 0, "things"]}, "thing_key", "thing", 0 , 1, [
+    n.$text({e1: [1, 0, "thing"]}, [" - ", 1, " - "])
+  ])
+]

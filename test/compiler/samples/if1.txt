@@ -1,0 +1,79 @@
+##### Template:
+# template test(value1, value2)
+   Hello
+
+   {if value1} World {/if}
+
+   {if value2}
+   		A
+   {else}
+   		B
+   {/if}
+
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["value1","value2"],
+    "content": [
+      {"type": "text","value": "Hello  "},
+      {"type": "if", "condition": {"category": "objectref", "path": ["value1"]}},
+      {"type": "text","value": " World "},
+      {"type": "endif"},
+      {"type": "text","value": " "},
+      {"type": "if", "condition": {"category": "objectref", "path": ["value2"]}},
+      {"type": "text","value": "A "},
+      {"type": "else"},
+      {"type": "text","value": "B "},
+      {"type": "endif"}
+    ]
+  }
+]
+
+##### Syntax Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["value1","value2"],
+    "content": [
+      {"type": "text","value": "Hello  "},
+      {"type": "if",
+        "condition": {"category": "objectref", "path": ["value1"]},
+        "content1": [
+          {"type": "text", "value": " World "}
+        ]
+      },
+      {"type": "text","value": " "},
+      {"type": "if",
+        "condition": {"category": "objectref", "path": ["value2"]},
+        "content1": [
+          {"type": "text", "value": "A "}
+        ],
+        "content2": [
+          {"type": "text", "value": "B "}
+        ]
+      }
+    ]
+  }
+]
+
+
+##### Template Code
+test=[
+  n.$text(0,["Hello  "]),
+  n.$if( {e1:[1,0,"value1"]}, 1, [ 
+      n.$text(0,[" World "])
+  ]),
+  n.$text(0,[" "]),
+  n.$if( {e1:[1,0,"value2"]}, 1, [ 
+      n.$text(0,["A "])
+  ],[
+      n.$text(0,["B "])
+  ])
+]

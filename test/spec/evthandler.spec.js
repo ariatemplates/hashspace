@@ -17,88 +17,56 @@
 var hsp=require("hsp/rt");
 var json=require("hsp/json");
 
-function test1(person,ctl) {
-	if (!test1.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test1.ng=new Ng(
-			n.elt(
-				"div",
-				{e1:[3,"ctl","handleClick"]},
-				{"title":"test1"},
-				{"click":1},
-				[n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])]
-			)
-		);
-	}
-	return test1.ng.process(this,["person",person,"ctl",ctl]);
-}
 /***
-// basic test with a single div container
 # template test1(person,ctl)
 	<div title="test1" onclick="{ctl.handleClick()}">
 		Hello {person.name}!
 	</div>
 # /template
 ***/
+var test1 = require("hsp/rt").template(["person","ctl"], function(n) {
+	return [
+		n.elt(
+			"div",
+			{e1:[3,"ctl","handleClick"]},
+			{"title":"test1"},
+			{"click":1},
+			[n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])]
+		)
+	]
+});
 
-function test2(label,names,ctl) {
-	if (!test2.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test2.ng=new Ng(
-			n.$foreach(
-				{e1:[1,0,"names"]},
-				"name", // name of the loop variable that should be created
-				0,  	// for type: 0=in / 1=of / 2=on
-				1,		// index of the collection expression
-				[
-					n.elt(
-						"span",
-						{e1:[3,"ctl","handleClick",1,2,1,3,0,"literal arg",1,4],e2:[0,0,"name"],e3:[0,0,"name_key"],e4:[0,0,"event"]},
-						0,
-						{"click":1},
-						[n.$text({e1:[0,0,"label"],e2:[1,0,"name_key"],e3:[0,0,"name"]},["",1," ",2,": ",3])]
-					)
-				]
-			)
-		);
-	}
-	return test2.ng.process(this,["label",label,"names",names,"ctl",ctl]);
-}
 /***
 # template test2(label,names,ctl)
 	# foreach (name in names)
-		<span onclick="{handleClick(name,name_key,"literal arg",event)}">
+		<span onclick="{ctl.handleClick(name,name_key,"literal arg",event)}">
 			{:label} {name_key}: {:name}
 		</span>
 	# /foreach
 # /template
 ***/
+var test2 = require("hsp/rt").template(["label","names","ctl"], function(n) {
+	return [
+		n.$foreach(
+			{e1:[1,0,"names"]},
+			"name_key",
+			"name", // name of the loop variable that should be created
+			0,  	// for type: 0=in / 1=of / 2=on
+			1,		// index of the collection expression
+			[
+				n.elt(
+					"span",
+					{e1:[3,"ctl","handleClick",1,2,1,3,0,"literal arg",1,4],e2:[0,0,"name"],e3:[0,0,"name_key"],e4:[0,0,"event"]},
+					0,
+					{"click":1},
+					[n.$text({e1:[0,0,"label"],e2:[1,0,"name_key"],e3:[0,0,"name"]},["",1," ",2,": ",3])]
+				)
+			]
+		)
+	]
+});
 
-var doClickCount=0, doClickEvtType="", doClickStrArg="";
-
-function doClick(str,evt) {
-	doClickCount++;
-	doClickEvtType=evt.type;
-	doClickStrArg=str;
-}
-
-function test3(person,ctl) {
-	if (!test3.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test3.ng=new Ng(
-			n.elt(
-				"div",
-				{e1:[4,doClick,0,'blah',1,2],e2:[0,0,"event"]},
-				{"title":"test3"},
-				{"click":1},
-				[n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])]
-			)
-		);
-	}
-	return test3.ng.process(this,["person",person,"ctl",ctl]);
-}
 /***
-// test callback on the global scope
 # template test3(person)
 	<div title="test3" onclick="{doClick('blah',event)}">
 		Hello {person.name}!
@@ -106,7 +74,27 @@ function test3(person,ctl) {
 # /template
 ***/
 
-describe("Element Nodes", function () {
+var test3 = require("hsp/rt").template(["person","ctl"], function(n) {
+	return [
+		n.elt(
+			"div",
+			{e1:[4,doClick,0,'blah',1,2],e2:[0,0,"event"]},
+			{"title":"test3"},
+			{"click":1},
+			[n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])]
+		)
+	]
+});
+
+var doClickCount=0, doClickEvtType="", doClickStrArg="";
+function doClick(str,evt) {
+	doClickCount++;
+	doClickEvtType=evt.type;
+	doClickStrArg=str;
+}
+
+
+describe("Event Handlers", function () {
 	var ELEMENT_NODE=1;
 	var TEXT_NODE=3;
 

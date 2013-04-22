@@ -63,8 +63,6 @@ var NodeGenerator = klass({
 	}
 });
 
-module.exports.NodeGenerator = NodeGenerator;
-
 var tplRefresh=[]; 		// List of templates pending refresh
 var tplTimeoutId=null;	// Timer id to trigger refresh automatically
 
@@ -124,11 +122,39 @@ module.exports.display = function(container, rootNode) {
 }
 
 /**
+ * Helper to create template functions
+ * @param {Array} argNames the list of argument names - e.g. ["label", "value"]
+ * @param {Function} contentFunction a function returning the structure of the template
+ * e.g. function(n) { return [n.$text({e1:[0,0,"label"],e2:[1,0,"value"]},["",1,": ",2])] }
+ */
+module.exports.template = function(argNames, contentFunction) {
+	// closure variables
+	var ng=new NodeGenerator(null), args=[], sz=argNames.length;
+	for (var i=0;sz>i;i++) {
+		args.push(argNames[i]);
+		args.push(null);
+	}
+
+	var f=function() {
+		if (!ng.nodedefs) {
+			ng.nodedefs=contentFunction(nodes);
+		}
+
+		for (var i=0;sz>i;i++) {
+			args[1+2*i]=arguments[i];
+		}
+		return ng.process(this,args);
+	}
+	f.isTemplate=true;
+	return f;
+}
+
+
+/**
  * Collection of the node types supported by the NodeGenerator
  * This collection is attached to the Nodegenerator constructor through a nodes property
  */
 var nodes={}
-NodeGenerator.nodes=nodes;
 
 var nodeList=[
 	"$text",require("hsp/rt/$text"),
@@ -148,5 +174,5 @@ for (var i=0, sz=nodeList.length;sz>i;i+=2) {
  * nodes.$text=function(exps, textcfg) {return new $TextNode(exps, textcfg);}
  */
 function createShortcut(tagName,tagConstructor) {
-	nodes[tagName]=function(a1,a2,a3,a4,a5) {return new tagConstructor(a1,a2,a3,a4,a5);}
+	nodes[tagName]=function(a1,a2,a3,a4,a5,a6) {return new tagConstructor(a1,a2,a3,a4,a5,a6);}
 }

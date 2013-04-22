@@ -1,0 +1,85 @@
+##### Template:
+# template test(label, passengers)
+  {foreach k,name in passengers.names}
+    {if name_isfirst}
+      \<\<
+    {/if}
+    {:label} {k}: {name}
+    {if name_islast}
+      >>
+    {/if}
+  {/foreach}
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["label","passengers"],
+    "content": [
+      {"type": "foreach","item":"name","key":"k",colref:{"category":"objectref","path": ["passengers","names"]}},
+      {"type": "if", "condition": {"category": "objectref", "path": ["name_isfirst"]}},
+      {"type": "text","value": "<< "},
+      {"type": "endif"},
+      {"type": "expression", "category": "objectref", "bound": false, "path": [ "label" ]},
+      {"type": "text", "value": " "},
+      {"type": "expression", "category": "objectref", "bound": true, "path": [ "k" ]},
+      {"type": "text", "value": ": "},
+      {"type": "expression", "category": "objectref", "bound": true, "path": [ "name" ]},
+      {"type": "text", "value": " "},
+      {"type": "if", "condition": {"category": "objectref", "path": ["name_islast"]}},
+      {"type": "text","value": ">> "},
+      {"type": "endif"},
+      {"type": "endforeach"}
+    ]
+  }
+]
+
+##### Syntax Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["label","passengers"],
+    "content": [
+      {"type": "foreach","item":"name","key":"k",collection:{"category":"objectref","path": ["passengers","names"]},content:[
+        {"type": "if",
+          "condition": {"category": "objectref", "path": ["name_isfirst"]},
+          "content1": [
+            {"type": "text", "value": "<< "}
+          ]
+        },
+        {"type": "textblock", "content": [
+          {"type": "expression", "category": "objectref", "bound": false, "path": [ "label" ]},
+          {"type": "text", "value": " "},
+          {"type": "expression", "category": "objectref", "bound": true, "path": [ "k" ]},
+          {"type": "text", "value": ": "},
+          {"type": "expression", "category": "objectref", "bound": true, "path": [ "name" ]},
+          {"type": "text", "value": " "}
+        ]},
+        {"type": "if",
+          "condition": {"category": "objectref", "path": ["name_islast"]},
+          "content1": [
+            {"type": "text", "value": ">> "}
+          ]
+        }
+      ]
+    }]
+  }
+]
+
+##### Template Code
+test=[
+  n.$foreach({e1: [1, "passengers", "names"]}, "k", "name", 0 , 1, [
+    n.$if( {e1:[1,0,"name_isfirst"]}, 1, [ 
+        n.$text(0,["<< "])
+    ]),
+    n.$text({e1:[0,0,"label"],e2:[1,0,"k"],e3:[1,0,"name"]} ,["",1," ",2,": ",3," "]),
+    n.$if( {e1:[1,0,"name_islast"]}, 1, [ 
+        n.$text(0,[">> "])
+    ])
+  ])
+]

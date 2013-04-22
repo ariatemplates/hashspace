@@ -6,8 +6,8 @@ var path = require("path");
 var request = require("request");
 var Q = require("q");
 
-var renderer = require("../../compiler/renderer");
-var compiler = require("../../compiler/codeGenerator");
+var renderer = require("../../hsp/compiler/renderer");
+var compiler = require("../../hsp/compiler/compiler");
 
 io.configure(function () {
 	io.set("log level", 2);  // suppress debug messages
@@ -53,16 +53,27 @@ module.exports = function(grunt) {
 		io.sockets.on('connection', function (socket) {
 			socket.on('editor change', function (data) {
 				try {
-					var js = compiler.compile(data.text);
+					var r= compiler.compile(data.text);
+					var js = r.code;
+
+					var errmsg=false, sz=r.errors.length;
+					if (sz)  {
+						var e=[];
+						for (var i=0;sz>i;i++) {
+							e.push("XXX Error: "+r.errors[i].description);
+						}
+						errmsg=e.join('\r\n');
+						// TODO line number						
+					}
 
 					socket.emit('compilation done', {
-						error : false,
+						error : errmsg,
 						code : js
 					});
 				} catch (ex) {
 					console.log(ex);
 					socket.emit('compilation done', {
-						error : ex.message,
+						error : 'AA'+ex.message,
 						offset : ex.offset,
 						line : ex.line,
 						column : ex.column
@@ -70,6 +81,12 @@ module.exports = function(grunt) {
 				}
 			});
 
+			socket.emit('welcome', {
+				error : false,
+				gists : []
+			});
+
+			/*
 			request({
 				url : "https://api.github.com/users/piuccio/gists",
 				json : true
@@ -91,6 +108,7 @@ module.exports = function(grunt) {
 					});
 				}
 			});
+			*/
 		});
 	});
 };

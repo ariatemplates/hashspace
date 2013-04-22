@@ -1,0 +1,51 @@
+##### Template:
+var x="text1";
+function func() {var x="text2"};
+
+# template hello1
+   Hello World!
+# /template
+
+// comment
+function func2(z) {return z;}
+
+# template hello1bis (arg1, arg2)
+	Hello
+	Again!
+# /template
+var z;
+##### Parsed Tree:
+
+[ 
+  { type: 'plaintext', value: 'var x=\"text1\";\r\nfunction func() {var x=\"text2\"};\r\n\r\n'},
+  { type: 'template', name: 'hello1', args: [], content: [
+    { type: 'text', value: 'Hello World!' } 
+  ]},
+  { type: 'plaintext', value: '\r\n// comment\r\nfunction func2(z) {return z;}\r\n\r\n'},
+  { type: 'template', name: 'hello1bis', args: [ 'arg1', 'arg2' ], content: [
+    { type: 'text', value: 'Hello Again!' } 
+  ]}
+]
+
+##### Syntax Tree:
+
+[ 
+  { type: 'plaintext', value: 'var x=\"text1\";\r\nfunction func() {var x=\"text2\"};\r\n\r\n'},
+  { type: 'template', name: 'hello1', args: [], content: [
+    { type: 'text', value: 'Hello World!' } 
+  ]},
+  { type: 'plaintext', value: '\r\n// comment\r\nfunction func2(z) {return z;}\r\n\r\n'},
+  { type: 'template', name: 'hello1bis', args: [ 'arg1', 'arg2' ], content: [
+    { type: 'text', value: 'Hello Again!' } 
+  ]}
+]
+
+##### Template Code 1
+hello1=[
+  n.$text(0, ["Hello World!"])
+]
+
+##### Template Code 2
+hello1bis=[
+  n.$text(0, ["Hello Again!"])
+]

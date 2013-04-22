@@ -18,166 +18,150 @@ var hsp=require("hsp/rt"),
 	json=require("hsp/json"),
 	doc=require("hsp/document");
 
-function test1(label,names) {
-	if (!test1.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test1.ng=new Ng(
-			n.$foreach(
-				{e1:[1,0,"names"]},
-				"name", // name of the loop variable that should be created
-				0,  	// for type: 0=in / 1=of / 2=on
-				1,		// index of the collection expression
-				[
-					n.elt(
-						"span",
-						0,
-						{"class":"name"},
-						0,
-						[n.$text({e1:[0,0,"label"],e2:[1,0,"name_key"],e3:[0,0,"name"],e4:[0,"name","length"]},["",1," ",2,": ",3," (",4," chars)"])]
-					),
-					n.$if(
-						{e1:[1,0,"name_islast"]},
-						1,
-						[n.$text({e1:[0,"names","length"]},["Number of items: ",1])]
-					)
-				]
-			)
-		);
-	}
-	return test1.ng.process(this,["label",label,"names",names]);
-}
 /***
 # template test1(label,names)
-	# foreach (name in names)
+	{foreach (name in names)}
 		<span class="name">
-			{label} {=name_key}: {name} ({name.length} chars)
+			{label} {name_key}: {name} ({:name.length} chars)
 		</span>
-		# if (name_islast)
-			Number of items: {names.length}
-		# /if
-	# /foreach
+		{if (name_islast)}
+			Number of items: {:names.length}
+		{/if}
+	{/foreach}
 # /template
 ***/
+var test1 = require("hsp/rt").template(["label","names"], function(n) {
+	return [
+		n.$foreach(
+			{e1:[1,0,"names"]},
+			"name_key",
+			"name", // name of the loop variable that should be created
+			0,  	// for type: 0=in / 1=of / 2=on
+			1,		// index of the collection expression
+			[
+				n.elt(
+					"span",
+					0,
+					{"class":"name"},
+					0,
+					[n.$text({e1:[0,0,"label"],e2:[1,0,"name_key"],e3:[0,0,"name"],e4:[0,"name","length"]},["",1," ",2,": ",3," (",4," chars)"])]
+				),
+				n.$if(
+					{e1:[1,0,"name_islast"]},
+					1,
+					[n.$text({e1:[0,"names","length"]},["Number of items: ",1])]
+				)
+			]
+		)
+	]
+});
 
-
-
-function test2(ds) {
-	if (!test2.ng) {
-		var Ng=require("hsp/rt").NodeGenerator, n=Ng.nodes;
-		test2.ng=new Ng(
-			n.$foreach(
-				{e1:[1,"ds","persons"]},
-				"person", // name of the loop variable that should be created
-				0,  	// for type: 0=in / 1=of / 2=on
-				1,		// index of the collection expression
-				[
-					n.$text({e1:[1,0,"person_key"],e2:[1,"person","firstName"],e3:[1,"person","lastName"],e4:[0,"name","length"]},["Person #",1,": ",2," ",3]),
-					n.$if(
-						{e1:[1,0,"person_isfirst"]},
-						1,
-						[n.$text(0,["(first)"])]
-					),
-					n.$if(
-						{e1:[1,0,"person_islast"]},
-						1,
-						[n.$text(0,["(last)"])]
-					)
-				]
-			)
-		);
-	}
-	return test2.ng.process(this,["ds",ds]);
-}
 /***
 # template test2(ds)
-	# foreach (person in ds.persons)
-		Person #{=person_key}: {=person.firstName} {=person.lastName}
-		# if (person_isfirst)
+	{foreach idx,person in ds.persons}
+		Person #{idx}: {person.firstName} {person.lastName}
+		{if (person_isfirst)}
 			(first)
-		# /if
-		# if (person_islast)
+		{/if}
+		{if (person_islast)}
 			(last)
-		# /if
-	# /foreach
+		{/if}
+	{/foreach}
 # /template
 ***/
+var test2 = require("hsp/rt").template(["ds"], function(n) {
+	return [
+		n.$foreach(
+			{e1:[1,"ds","persons"]},
+			"idx",
+			"person", // name of the loop variable that should be created
+			0,  	// for type: 0=in / 1=of / 2=on
+			1,		// index of the collection expression
+			[
+				n.$text({e1:[1,0,"idx"],e2:[1,"person","firstName"],e3:[1,"person","lastName"],e4:[0,"name","length"]},["Person #",1,": ",2," ",3]),
+				n.$if(
+					{e1:[1,0,"person_isfirst"]},
+					1,
+					[n.$text(0,["(first)"])]
+				),
+				n.$if(
+					{e1:[1,0,"person_islast"]},
+					1,
+					[n.$text(0,["(last)"])]
+				)
+			]
+		)
+	]
+});
 
-function test3(things) {
-	if(!test3.ng) {
-		var Ng = require("hsp/rt").NodeGenerator,
-			n = Ng.nodes,
-			el = require("hsp/rt/eltnode");
-
-		test3.ng = new Ng([
+/***
+# template test3(things) 
+	{foreach (oneThing in things)}
+		{oneThing}
+	{/foreach}
+# /template
+***/
+var test3 = require("hsp/rt").template(["things"], function(n) {
+	return [
 		n.$foreach(
 			{e1: [1, 0, "things"]}, 
+			"oneThing_key",
 			"oneThing", 
 			0, 
 			1, 
 			[
 				n.$text(0, ["      "]), 
 				n.$text({e1: [1, 0, "oneThing"]}, ["", 1]), 
-				n.$text(0, ["\n    "])])
-			]);
-	}
-	return test3.ng.process(this, ["things", things])
-}
-/***
-# template test3(things) 
-	# foreach (oneThing in things)
-		{oneThing}
-	# /foreach
-# /template
-***/
-
-function test4(things) {
-	if(!test4.ng) {
-		var Ng = require("hsp/rt").NodeGenerator,n = Ng.nodes;
-		test4.ng = new Ng([
-			n.$foreach(
-				{e1: [1, 0, "things"]},
-				"oneThing",
-				0,
-				1, 
-				[
-					n.$if(
-						{e1: [1, 0, "oneThing_isfirst"]},
-						1, 
-						[n.$text(0, ["First "])], 
-						[
-							n.$if(
-								{e1: [1, 0, "oneThing_islast"]}, 
-								1, 
-								[n.$text(0, [" and last "])], 
-								[n.$text(0, [" then "])]
-							)
-						]
-					),
-					n.$text({e1: [1, 0, "oneThing"]}, ["", 1])
-				]
-			)
-		]);
-	}
-	return test4.ng.process(this, ["things", things])
-}
+				n.$text(0, ["\n    "])
+			]
+		)
+	]
+});
 
 /***
-# template main(things)
-    # foreach oneThing in things
-        # if oneThing_isfirst
+# template test4(things)
+    {foreach oneThing in things}
+        {if oneThing_isfirst}
             First
-        # else
-            # if oneThing_islast
+        {else}
+            {if oneThing_islast}
                 and last
-            # else
+            {else}
                 then
-            # /if
-        # /if
+            {/if}
+        {/if}
         {oneThing}
         <br/>
-    # /foreach
+    {/foreach}
 # /template
 ***/
+var test4 = require("hsp/rt").template(["things"], function(n) {
+	return [
+		n.$foreach(
+			{e1: [1, 0, "things"]},
+			"oneThing_key",
+			"oneThing",
+			0,
+			1, 
+			[
+				n.$if(
+					{e1: [1, 0, "oneThing_isfirst"]},
+					1, 
+					[n.$text(0, ["First "])], 
+					[
+						n.$if(
+							{e1: [1, 0, "oneThing_islast"]}, 
+							1, 
+							[n.$text(0, [" and last "])], 
+							[n.$text(0, [" then "])]
+						)
+					]
+				),
+				n.$text({e1: [1, 0, "oneThing"]}, ["", 1])
+			]
+		)
+	]
+});
 
 describe("ForEach Node", function () {
 	var ELEMENT_NODE=1;

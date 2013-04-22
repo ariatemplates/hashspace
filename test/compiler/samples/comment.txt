@@ -1,0 +1,73 @@
+##### Template:
+# template hello(world)
+	Hello // comment 1
+	World!
+	{if (world)} // comment 2
+	   <!-- another comment
+	   on multiple 
+	   lines 
+	   # /template
+	   -->
+	   ...
+	{/if}
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template",
+    "name": "hello",
+    "args": ["world"],
+    "content": [
+      {"type": "text","value": "Hello "},
+      {"type": "comment","value": " comment 1"},
+      {"type": "text","value": " World! "},
+      {"type": "if", "condition": {"category": "objectref", "path": ["world"]}},
+      {"type": "text","value": " "},
+      {"type": "comment","value": " comment 2"},
+      {"type": "text","value": " "},
+      {"type": "comment","value": " another comment\r\n\t   on multiple \r\n\t   lines \r\n\t   # /template\r\n\t   "},
+      {"type": "text","value": " ... "},
+      {"type": "endif"}
+    ]
+  }
+]
+
+##### Syntax Tree
+
+[
+  {
+    "type": "template",
+    "name": "hello",
+    "args": ["world"],
+    "content": [
+      { "type": "textblock", "content": [
+          {"type": "text","value": "Hello "},
+          {"type": "text","value": " World! "}
+        ]
+      },
+      {"type": "if",
+        "condition": {"category": "objectref", "path": ["world"]},
+        "content1": [
+          {
+            "type": "textblock",
+            "content": [
+              {"type": "text","value": " "},
+              {"type": "text","value": " "},
+              {"type": "text","value": " ... "}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+
+##### Template Code
+hello=[
+  n.$text(0,["Hello  World!"]),
+  n.$if( {e1:[1,0,"world"]}, 1, [ 
+      n.$text(0,["   ... "])
+  ])
+]

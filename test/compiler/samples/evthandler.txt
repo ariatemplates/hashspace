@@ -1,0 +1,97 @@
+##### Template:
+# template test(path, ctl, person)
+	<img src="http://someting.com/{path}" onclick="{ctl.handleClick()}"/>
+	<img onclick="{ctl.handleClick(path, person.name, "literal arg", event)}"/>
+	<img onclick="{doClick('blah',event)}"/>
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["path","ctl", "person"],
+    "content": [
+    	{type:"element", name:"img", closed:true, attributes:[
+    		{type:"attribute", name:"src", value:[
+    			{type:"text", value:"http://someting.com/"},
+    			{type:"expression",category:"objectref",bound:true,path:["path"]}
+    		]},
+    		{type:"attribute", name:"onclick", value:[
+    			{type:"expression",category:"functionref", bound:true, path:["ctl","handleClick"], args:[]}
+    		]}
+    	]},
+    	{type:"element", name:"img", closed:true, attributes:[
+    		{type:"attribute", name:"onclick", value:[
+    			{type:"expression",category:"functionref", bound:true, path:["ctl","handleClick"], args:[
+    				{"category": "objectref", "path": ["path"]},
+    				{"category": "objectref", "path": ["person", "name"]},
+    				{"category": "string",value: "literal arg"},
+    				{"category": "event"}
+    			]}
+    		]}
+    	]},
+    	{type:"element", name:"img", closed:true, attributes:[
+    		{type:"attribute", name:"onclick", value:[
+    			{type:"expression",category:"functionref", bound:true, path:["doClick"], args:[
+    				{"category": "string",value: "blah"},
+    				{"category": "event"}
+    			]}
+    		]}
+    	]}
+    ]
+  }
+]
+
+##### Syntax Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["path","ctl", "person"],
+    "content": [
+      {type:"element", name:"img", closed:true, attributes:[
+          	{name:"src", type:"textblock", content:[
+          		{type:"text", value:"http://someting.com/"},
+          		{type:"expression", "category": "objectref", "bound": true, "path": [ "path" ]}
+          	]},
+          	{name:"onclick", type:"expression", "category": "functionref", "bound": true, path:["ctl","handleClick"], args:[]}
+      ],"content": []},
+      {type:"element", name:"img", closed:true, attributes:[
+          	{name:"onclick", type:"expression", "category": "functionref", "bound": true, path:["ctl","handleClick"], args:[
+          	    {"category": "objectref", "path": ["path"]},
+          	    {"category": "objectref", "path": ["person", "name"]},
+          	    {"category": "string",value: "literal arg"},
+          	    {"category": "event"}
+          	]}
+      ],"content": []},
+      {type:"element", name:"img", closed:true, attributes:[
+          	{name:"onclick", type:"expression", "category": "functionref", "bound": true, path:["doClick"], args:[
+          	    {"category": "string",value: "blah"},
+          	    {"category": "event"}
+          	]}
+      ],"content": []}
+    ]
+  }
+]
+
+##### Template code
+test=[
+    n.elt(	"img", 
+            {e1:[1,0,"path"],e2:[3,"ctl","handleClick"]} ,
+            {"src":["http://someting.com/",1]},
+            {"click":2}
+    ),
+    n.elt(	"img", 
+            {e1:[3,"ctl","handleClick",1,2,1,3,0,"literal arg",1,4],e2:[1,0,"path"],e3:[1,"person","name"],e4:[0,0,"event"]} ,
+            0,
+            {"click":1}
+    ),
+    n.elt(	"img", 
+            {e1:[4,doClick,0,"blah",1,2],e2:[0,0,"event"]},
+            0,
+            {"click":1}
+    )
+]
