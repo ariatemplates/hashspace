@@ -1,5 +1,0 @@
-# template one()
-# /template
-
-EOT
-

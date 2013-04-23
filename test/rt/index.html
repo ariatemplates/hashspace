@@ -22,11 +22,6 @@
 <script type="text/javascript" src="/lib/jasmine-html.js"></script>
 <script type="text/javascript" src="/lib/noder.min.js">
 {
-	resolver : {
-		"default" : {
-			"spec" :"/test/spec/"
-		}
-	},
 	packaging : {
 		baseUrl : "/"
 	}
@@ -41,41 +36,15 @@
 
 // runtime tests
 
-require("spec/json.spec.js");
-require("spec/klass.spec.js");
-require("spec/propobserver.spec.js");
-require("spec/text.spec.js");
-require("spec/elt.spec.js");
-require("spec/if.spec.js");
-require("spec/insert.spec.js");
-require("spec/foreach.spec.js");
-require("spec/evthandler.spec.js");
-
-// TODO
-// $text node 					OK
-// data binding on properties	OK
-// element nodes 				OK
-// node list at root level		OK
-// $if node						OK
-// $insert						OK
-// $foreach 					OK
-// data binding on arrays		OK
-// event handlers 				OK
-// hsp.refresh()				OK
-// hsp.display()				OK
-
-// function expressions
-// input node
-// adaptors? a.b.c.adaptKm2Miles(a.b.c) valueExpressions
-// 			 hsp.adaptBool2Checked(hsp.adaptBool2Opposite(todo.active))
-// @attribute node? 
-// transitions (events: create/delete/refresh/attrefresh/childrefresh)
-// data binding on full expression path
-// widgets / components
-// long expression paths
-// context variables?
-// mobile event support
-
+require("test/rt/json.spec.js");
+require("test/rt/klass.spec.js");
+require("test/rt/propobserver.spec.js");
+require("test/rt/text.spec.js");
+require("test/rt/elt.spec.js");
+require("test/rt/if.spec.js");
+require("test/rt/insert.spec.js");
+require("test/rt/foreach.spec.js");
+require("test/rt/evthandler.spec.js");
 
 var reporter = new jasmine.TrivialReporter(), env = jasmine.getEnv();
 env.addReporter(reporter);
@@ -109,7 +78,7 @@ function handleClick() {
 
 /***
 # template hello1(person)
-	<div title="click me!" onclick="handleClick()">
+	<div title="click me!" onclick="{handleClick()}">
 		hello {person.name}!
 	</div>
 # /template
