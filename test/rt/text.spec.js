@@ -35,7 +35,7 @@ var hello1 = require("hsp/rt").template([], function(n) {
 ***/
 var hello2 = require("hsp/rt").template(["person"], function(n) {
 	return [
-		n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])
+		n.$text({e1:[1,2,"person","name"]},["Hello ",1,"!"])
 	]
 });
 
@@ -46,7 +46,7 @@ var hello2 = require("hsp/rt").template(["person"], function(n) {
 ***/
 var hello3 = require("hsp/rt").template(["person"], function(n) {
 	return [
-		n.$text({e1:[1,"person","firstName"],e2:[1,"person","lastName"]},["Hello ",1," ",2,"!"])
+		n.$text({e1:[1,2,"person","firstName"],e2:[1,2,"person","lastName"]},["Hello ",1," ",2,"!"])
 	]
 });
 
@@ -58,7 +58,7 @@ var hello3 = require("hsp/rt").template(["person"], function(n) {
 ***/
 var hello4 = require("hsp/rt").template(["person"], function(n) {
 	return [
-		n.$text({e1:[1,"person","firstName"],e2:[0,"person","lastName"]},["Hello ",1," ",2,"!"])
+		n.$text({e1:[1,2,"person","firstName"],e2:[0,2,"person","lastName"]},["Hello ",1," ",2,"!"])
 	]
 });
 
@@ -70,7 +70,7 @@ var hello4 = require("hsp/rt").template(["person"], function(n) {
 ***/
 var hello5 = require("hsp/rt").template(["name"], function(n) {
 	return [
-		n.$text({e1:[1,0,"name"]},["Hello ",1,"!"])
+		n.$text({e1:[1,1,"name"]},["Hello ",1,"!"])
 	]
 });
 

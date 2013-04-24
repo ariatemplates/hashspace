@@ -27,10 +27,10 @@ var json=require("hsp/json");
 var test1 = require("hsp/rt").template(["person"], function(n) {
 	return [
 		n.$if(
-			{e1:[1,"person","firstName"]},
+			{e1:[1,2,"person","firstName"]},
 			1,
 			[	
-				n.$text({e1:[1,"person","firstName"]},["Hello ",1])
+				n.$text({e1:[1,2,"person","firstName"]},["Hello ",1])
 			]
 		)
 	]
@@ -39,7 +39,7 @@ var test1 = require("hsp/rt").template(["person"], function(n) {
 /***
 # template test2(person)
 	{if person.firstName}
-		<h2>Hello {=person.firstName}</h2>
+		<h2>Hello {person.firstName}</h2>
 		{if (person.favouriteDish)}
 			<span class="dish">Your preferred dish: {person.favouriteDish}</span>
 		{/if}
@@ -53,7 +53,7 @@ var test1 = require("hsp/rt").template(["person"], function(n) {
 var test2 = require("hsp/rt").template(["person"], function(n) {
 	return [
 		n.$if(
-			{e1:[1,"person","firstName"]},
+			{e1:[1,2,"person","firstName"]},
 			1,
 			[	
 				n.elt(
@@ -61,10 +61,10 @@ var test2 = require("hsp/rt").template(["person"], function(n) {
 					0,
 					0,
 					0,
-					[n.$text({e1:[1,"person","firstName"]},["Hello ",1])]
+					[n.$text({e1:[1,2,"person","firstName"]},["Hello ",1])]
 				),
 				n.$if(
-					{e1:[1,"person","favouriteDish"]},
+					{e1:[1,2,"person","favouriteDish"]},
 					1,
 					[
 						n.elt(
@@ -72,7 +72,7 @@ var test2 = require("hsp/rt").template(["person"], function(n) {
 							0,
 							{"class":"dish"},
 							0,
-							[n.$text({e1:[0,"person","favouriteDish"]},["Your preferred dish: ",1])]
+							[n.$text({e1:[0,2,"person","favouriteDish"]},["Your preferred dish: ",1])]
 						)
 					]
 				)
@@ -83,7 +83,7 @@ var test2 = require("hsp/rt").template(["person"], function(n) {
 					0,
 					{"class":"noname"},
 					0,
-					[n.$text({e1:[0,"person","lastName"]},["Hello ",1])]
+					[n.$text({e1:[0,2,"person","lastName"]},["Hello ",1])]
 				)
 			]
 		)
@@ -102,10 +102,10 @@ var test3 = require("hsp/rt").template(["person"], function(n) {
 	return [
 		n.$text(0,["Hello "]),
 		n.$if(
-			{e1:[1,"person","firstName"]},
+			{e1:[1,2,"person","firstName"]},
 			1,
 			[	
-				n.$text({e1:[1,"person","firstName"]},["",1,"!"])
+				n.$text({e1:[1,2,"person","firstName"]},["",1,"!"])
 			]
 		)
 	]
@@ -127,7 +127,7 @@ var test4 = require("hsp/rt").template(["person"], function(n) {
 			{e1:[5,true]},
 			1,
 			[	
-				n.$text({e1:[1,"person","firstName"]},["",1,"!"])
+				n.$text({e1:[1,2,"person","firstName"]},["",1,"!"])
 			]
 		)
 	]

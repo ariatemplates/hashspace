@@ -51,5 +51,5 @@
 
 ##### Template Code
 hello=[
-  n.$text({e1:[1,0,"name"]}, ["Hello ",1,"!"])
+  n.$text({e1:[1,1,"name"]}, ["Hello ",1,"!"])
 ]

@@ -78,7 +78,7 @@ test=[
 					])
 				]),
 				n.elt("input", 
-					{e1:[1,"person","name"]},
+					{e1:[1,2,"person","name"]},
 					{"type":"text", "value":["",1]},
 					0
 				)

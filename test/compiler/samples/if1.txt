@@ -67,11 +67,11 @@
 ##### Template Code
 test=[
   n.$text(0,["Hello  "]),
-  n.$if( {e1:[1,0,"value1"]}, 1, [ 
+  n.$if( {e1:[1,1,"value1"]}, 1, [ 
       n.$text(0,[" World "])
   ]),
   n.$text(0,[" "]),
-  n.$if( {e1:[1,0,"value2"]}, 1, [ 
+  n.$if( {e1:[1,1,"value2"]}, 1, [ 
       n.$text(0,["A "])
   ],[
       n.$text(0,["B "])

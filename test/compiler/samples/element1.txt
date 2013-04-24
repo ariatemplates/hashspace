@@ -60,10 +60,10 @@
 ##### Template Code
 test=[
 	n.elt(	"div", 
-			{e1:[1,"person","id"],e2:[1,"person","gender"],e3:[1,"person","category"]} ,
+			{e1:[1,2,"person","id"],e2:[1,2,"person","gender"],e3:[1,2,"person","category"]} ,
 			{"title":"Some text","id":["",1],"class":["",2," ",3]},
 			0,[
-				n.$text({e1:[1,"person","name"]},["Hello ",1,"! "])
+				n.$text({e1:[1,2,"person","name"]},["Hello ",1,"! "])
 			]
 	)
 ]

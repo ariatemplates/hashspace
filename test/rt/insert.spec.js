@@ -23,7 +23,7 @@ var json=require("hsp/json");
 # /template
 ***/
 var content = require("hsp/rt").template(["label", "value"], function(n) {
-	return [n.$text({e1:[0,0,"label"],e2:[1,0,"value"]},["",1,": ",2])]
+	return [n.$text({e1:[0,1,"label"],e2:[1,1,"value"]},["",1,": ",2])]
 });
 
 
@@ -37,7 +37,7 @@ var content = require("hsp/rt").template(["label", "value"], function(n) {
 var test1 = require("hsp/rt").template(["person"], function(n) {
 	return [
 		n.$text(0,["Before"]),
-		n.$insert({e1:[4,content,0,"First Name",1,2], e2:[1,"person","firstName"]},1),
+		n.$insert({e1:[4,1,content,0,"First Name",1,2], e2:[1,2,"person","firstName"]},1),
 		n.$text(0,["After"])
 	]
 });
@@ -53,13 +53,13 @@ var test1 = require("hsp/rt").template(["person"], function(n) {
 ***/
 var nameDetails = require("hsp/rt").template(["person"], function(n) {
 	return [
-		n.$insert({e1:[4,content,0,"Last Name",1,2], e2:[1,"person","lastName"]},1),
+		n.$insert({e1:[4,1,content,0,"Last Name",1,2], e2:[1,2,"person","lastName"]},1),
 		n.$if(
-			{e1:[1,"person","firstName"]},
+			{e1:[1,2,"person","firstName"]},
 			1,
 			[	
 				n.$text(0,[", "]),
-				n.$insert({e1:[4,content,0,"First Name",1,2], e2:[1,"person","firstName"]},1)
+				n.$insert({e1:[4,1,content,0,"First Name",1,2], e2:[1,2,"person","firstName"]},1)
 			]
 		)
 	]
@@ -72,7 +72,7 @@ var nameDetails = require("hsp/rt").template(["person"], function(n) {
 ***/
 var test2 = require("hsp/rt").template(["p"], function(n) {
 	return [
-		n.$insert({e1:[4,nameDetails,1,2], e2:[1,0,"p"]},1)
+		n.$insert({e1:[4,1,nameDetails,1,2], e2:[1,1,"p"]},1)
 	]
 });
 
@@ -85,8 +85,8 @@ var test2 = require("hsp/rt").template(["p"], function(n) {
 ***/
 var test3 = require("hsp/rt").template(["person","label"], function(n) {
 	return [
-		n.$text({e1:[1,0,"label"]},["",1]),
-		n.$insert({e1:[4,content,1,2,1,3], e2:[1,"person","firstName"],e3:[0,"person","lastName"]},1)
+		n.$text({e1:[1,1,"label"]},["",1]),
+		n.$insert({e1:[4,1,content,1,2,1,3], e2:[1,2,"person","firstName"],e3:[0,2,"person","lastName"]},1)
 	]
 });
 
@@ -98,7 +98,7 @@ var test3 = require("hsp/rt").template(["person","label"], function(n) {
 ***/
 var test4 = require("hsp/rt").template(["person"], function(n) {
 	return [
-		n.$insert({e1:[4,concat,1,2,1,3], e2:[1,"person","firstName"],e3:[1,"person","lastName"]},1)
+		n.$insert({e1:[4,1,concat,1,2,1,3], e2:[1,2,"person","firstName"],e3:[1,2,"person","lastName"]},1)
 	]
 });
 

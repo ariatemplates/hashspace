@@ -33,7 +33,7 @@ var hsp=require("hsp/rt"),
 var test1 = require("hsp/rt").template(["label","names"], function(n) {
 	return [
 		n.$foreach(
-			{e1:[1,0,"names"]},
+			{e1:[1,1,"names"]},
 			"name_key",
 			"name", // name of the loop variable that should be created
 			0,  	// for type: 0=in / 1=of / 2=on
@@ -44,12 +44,12 @@ var test1 = require("hsp/rt").template(["label","names"], function(n) {
 					0,
 					{"class":"name"},
 					0,
-					[n.$text({e1:[0,0,"label"],e2:[1,0,"name_key"],e3:[0,0,"name"],e4:[0,"name","length"]},["",1," ",2,": ",3," (",4," chars)"])]
+					[n.$text({e1:[0,1,"label"],e2:[1,1,"name_key"],e3:[0,1,"name"],e4:[0,2,"name","length"]},["",1," ",2,": ",3," (",4," chars)"])]
 				),
 				n.$if(
-					{e1:[1,0,"name_islast"]},
+					{e1:[1,1,"name_islast"]},
 					1,
-					[n.$text({e1:[0,"names","length"]},["Number of items: ",1])]
+					[n.$text({e1:[0,2,"names","length"]},["Number of items: ",1])]
 				)
 			]
 		)
@@ -72,20 +72,20 @@ var test1 = require("hsp/rt").template(["label","names"], function(n) {
 var test2 = require("hsp/rt").template(["ds"], function(n) {
 	return [
 		n.$foreach(
-			{e1:[1,"ds","persons"]},
+			{e1:[1,2,"ds","persons"]},
 			"idx",
 			"person", // name of the loop variable that should be created
 			0,  	// for type: 0=in / 1=of / 2=on
 			1,		// index of the collection expression
 			[
-				n.$text({e1:[1,0,"idx"],e2:[1,"person","firstName"],e3:[1,"person","lastName"],e4:[0,"name","length"]},["Person #",1,": ",2," ",3]),
+				n.$text({e1:[1,1,"idx"],e2:[1,2,"person","firstName"],e3:[1,2,"person","lastName"],e4:[0,2,"name","length"]},["Person #",1,": ",2," ",3]),
 				n.$if(
-					{e1:[1,0,"person_isfirst"]},
+					{e1:[1,1,"person_isfirst"]},
 					1,
 					[n.$text(0,["(first)"])]
 				),
 				n.$if(
-					{e1:[1,0,"person_islast"]},
+					{e1:[1,1,"person_islast"]},
 					1,
 					[n.$text(0,["(last)"])]
 				)
@@ -104,14 +104,14 @@ var test2 = require("hsp/rt").template(["ds"], function(n) {
 var test3 = require("hsp/rt").template(["things"], function(n) {
 	return [
 		n.$foreach(
-			{e1: [1, 0, "things"]}, 
+			{e1: [1,1,"things"]}, 
 			"oneThing_key",
 			"oneThing", 
 			0, 
 			1, 
 			[
 				n.$text(0, ["      "]), 
-				n.$text({e1: [1, 0, "oneThing"]}, ["", 1]), 
+				n.$text({e1: [1,1,"oneThing"]}, ["", 1]), 
 				n.$text(0, ["\n    "])
 			]
 		)
@@ -138,26 +138,26 @@ var test3 = require("hsp/rt").template(["things"], function(n) {
 var test4 = require("hsp/rt").template(["things"], function(n) {
 	return [
 		n.$foreach(
-			{e1: [1, 0, "things"]},
+			{e1: [1,1,"things"]},
 			"oneThing_key",
 			"oneThing",
 			0,
 			1, 
 			[
 				n.$if(
-					{e1: [1, 0, "oneThing_isfirst"]},
+					{e1: [1,1,"oneThing_isfirst"]},
 					1, 
-					[n.$text(0, ["First "])], 
+					[n.$text(0,["First "])], 
 					[
 						n.$if(
-							{e1: [1, 0, "oneThing_islast"]}, 
+							{e1: [1,1,"oneThing_islast"]}, 
 							1, 
 							[n.$text(0, [" and last "])], 
 							[n.$text(0, [" then "])]
 						)
 					]
 				),
-				n.$text({e1: [1, 0, "oneThing"]}, ["", 1])
+				n.$text({e1: [1,1,"oneThing"]}, ["", 1])
 			]
 		)
 	]

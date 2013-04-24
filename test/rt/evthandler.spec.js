@@ -28,10 +28,10 @@ var test1 = require("hsp/rt").template(["person","ctl"], function(n) {
 	return [
 		n.elt(
 			"div",
-			{e1:[3,"ctl","handleClick"]},
+			{e1:[3,2,"ctl","handleClick"]},
 			{"title":"test1"},
 			{"click":1},
-			[n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])]
+			[n.$text({e1:[1,2,"person","name"]},["Hello ",1,"!"])]
 		)
 	]
 });
@@ -48,7 +48,7 @@ var test1 = require("hsp/rt").template(["person","ctl"], function(n) {
 var test2 = require("hsp/rt").template(["label","names","ctl"], function(n) {
 	return [
 		n.$foreach(
-			{e1:[1,0,"names"]},
+			{e1:[1,1,"names"]},
 			"name_key",
 			"name", // name of the loop variable that should be created
 			0,  	// for type: 0=in / 1=of / 2=on
@@ -56,10 +56,10 @@ var test2 = require("hsp/rt").template(["label","names","ctl"], function(n) {
 			[
 				n.elt(
 					"span",
-					{e1:[3,"ctl","handleClick",1,2,1,3,0,"literal arg",1,4],e2:[0,0,"name"],e3:[0,0,"name_key"],e4:[0,0,"event"]},
+					{e1:[3,2,"ctl","handleClick",1,2,1,3,0,"literal arg",1,4],e2:[0,1,"name"],e3:[0,1,"name_key"],e4:[0,1,"event"]},
 					0,
 					{"click":1},
-					[n.$text({e1:[0,0,"label"],e2:[1,0,"name_key"],e3:[0,0,"name"]},["",1," ",2,": ",3])]
+					[n.$text({e1:[0,1,"label"],e2:[1,1,"name_key"],e3:[0,1,"name"]},["",1," ",2,": ",3])]
 				)
 			]
 		)
@@ -78,10 +78,10 @@ var test3 = require("hsp/rt").template(["person","ctl"], function(n) {
 	return [
 		n.elt(
 			"div",
-			{e1:[4,doClick,0,'blah',1,2],e2:[0,0,"event"]},
+			{e1:[4,1,doClick,0,'blah',1,2],e2:[0,1,"event"]},
 			{"title":"test3"},
 			{"click":1},
-			[n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])]
+			[n.$text({e1:[1,2,"person","name"]},["Hello ",1,"!"])]
 		)
 	]
 });

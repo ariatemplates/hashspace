@@ -67,7 +67,7 @@
 ##### Template Code
 hello=[
   n.$text(0,["Hello  World!"]),
-  n.$if( {e1:[1,0,"world"]}, 1, [ 
+  n.$if( {e1:[1,1,"world"]}, 1, [ 
       n.$text(0,["   ... "])
   ])
 ]

@@ -103,11 +103,13 @@ var $RootNode = klass({
 		if (!eh) return; // no expression is associated to this node
 		for (var k in eh.exps) {
 			e=eh.exps[k];
-			if (e.bound) {
+			if (e.bound===true) {
 				// create or reuse prop observer for this expression
-				var t=vs[e.onm]; // target object
+				var nm=e.onm? e.onm : e.root;
+				var t=vs[nm]; // target object
 				if (!t) continue;
-				this.createObjectObserver(ni,t,e.pnm);			
+				var pp=e.pnm? e.pnm : e.path[0];
+				this.createObjectObserver(ni,t,pp);			
 			}
 		}
 	},

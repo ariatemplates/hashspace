@@ -35,7 +35,6 @@
 <script type="noder">
 
 // runtime tests
-
 require("test/rt/json.spec.js");
 require("test/rt/klass.spec.js");
 require("test/rt/propobserver.spec.js");
@@ -58,20 +57,20 @@ env.execute();
 var hsp=require("hsp/rt"),
 	json=require("hsp/json");
 
-var p={name:"user"}
+var p={msg:""}
 var count=0;
 
 function handleClick() {
 	count++;
 	switch(count) {
 		case 1:
-			json.set(p,"name","you");
+			json.set(p,"msg","thanks for running them");
 			break;
 		case 2:
-			json.set(p,"name","YOU (ok - no need to click any longer..)");
+			json.set(p,"msg","thanks a lot - ok, no need to click any longer..");
 			break;
 		case 3:
-			json.set(p,"name","YOU (ok - no need to click any longer - THANKS!..)");
+			json.set(p,"msg","THANKS A MILLION - no need to click any longer - THANKS!..");
 			break;
 	}
 }
@@ -87,10 +86,10 @@ var hello1 = require("hsp/rt").template(["person"], function(n) {
 	return [
 		n.elt(
 			"div",
-			{e1:[4,handleClick]},
+			{e1:[4,1,handleClick]},
 			{"title":"click me!"},
 			{"click":1},
-			[n.$text({e1:[1,"person","name"]},["hello ",1,"!"])]
+			[n.$text({e1:[1,2,"person","msg"]},["Hashspace runtime tests (",1,"!)"])]
 		)
 	]
 });

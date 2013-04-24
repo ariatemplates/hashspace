@@ -221,22 +221,15 @@ function formatExpression(expression, firstIdx, walker) {
 			if (path>2) {
 				walker.logError("Long expression paths are not supported yet");
 			} else {
-				var res;
+				var res, rootRef=path[0];
+				if (isRootInScope) {
+					rootRef='"'+rootRef+'"';
+				}
 				nextIndex++;
 				if (path.length===1) {
-					if (isRootInScope) {
-						res=['e',exprIdx,':[',arg1,',0,"',path[0],'"'];
-					} else {
-						// todo homogenize with previous
-						res=['e',exprIdx,':[',arg1,',',path[0]];
-					}
+					res=['e',exprIdx,':[',arg1,',1,',rootRef];
 				} else if (path.length===2) {
-					if (isRootInScope) {
-						res=['e',exprIdx,':[',arg1,',"',path[0],'","',path[1],'"'];
-					} else {
-						// todo homogenize with previous
-						res=['e',exprIdx,':[',arg1,',',path[0],',"',path[1],'"'];
-					}
+					res=['e',exprIdx,':[',arg1,',2,',rootRef,',"',path[1],'"'];
 				}
 				if (args && args.length>0) {
 					var acat, arg;
@@ -252,8 +245,7 @@ function formatExpression(expression, firstIdx, walker) {
 							res.push(',1,'+argExprIdx[i]);
 						}
 					}
-					res.push("]");
-					res.push(",");
+					res.push("],");
 					res.push(argExprs.join(","));
 				} else {
 					res.push("]");
@@ -269,7 +261,7 @@ function formatExpression(expression, firstIdx, walker) {
 		code=['e',exprIdx,':[5,"',(''+expression.value).replace(/"/g, "\\\""),'"]'].join('');
 		nextIndex++;
 	} else if (cat === 'event') {
-		code=['e',exprIdx,':[0,0,"event"]'].join('');
+		code=['e',exprIdx,':[0,1,"event"]'].join('');
 		nextIndex++;
 	} else {
 		walker.logError("Unsupported expression: "+cat);

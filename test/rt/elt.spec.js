@@ -20,7 +20,7 @@ var json=require("hsp/json");
 /***
 # template test1(person)
 	<div title="test1">
-		Hello {=person.name}!
+		Hello {person.name}!
 	</div>
 # /template
 ***/
@@ -31,7 +31,7 @@ var test1 = require("hsp/rt").template(["person"], function(n) {
 			0,
 			{"title":"test1"},
 			0,
-			[n.$text({e1:[1,"person","name"]},["Hello ",1,"!"])]
+			[n.$text({e1:[1,2,"person","name"]},["Hello ",1,"!"])]
 		)
 	]
 });
@@ -52,17 +52,17 @@ var test2 = require("hsp/rt").template(["person"], function(n) {
 	return [
 		n.elt(
 			"div",
-			{e1:[1,"person","gender"],e2:[1,"person","idx"]},
+			{e1:[1,2,"person","gender"],e2:[1,2,"person","idx"]},
 			{"title":"test2","class":["t2 ",1],"tabIndex":["",2]},
 			0,
 			[	
-				n.$text({e1:[1,"person","firstName"],e2:[1,"person","lastName"]},["",1," / ",2," ["]),
+				n.$text({e1:[1,2,"person","firstName"],e2:[1,2,"person","lastName"]},["",1," / ",2," ["]),
 				n.elt(
 					"span",
-					{e1:[1,"person","ffLevel"]},
+					{e1:[1,2,"person","ffLevel"]},
 					{"class":["",1]},
 					0,
-					[n.$text({e1:[1,"person","ffNbr"]},["Frequent flyer #: ",1])]
+					[n.$text({e1:[1,2,"person","ffNbr"]},["Frequent flyer #: ",1])]
 				),
 				n.$text(0,[" ]"])
 			]
