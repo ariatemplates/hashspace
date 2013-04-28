@@ -1,0 +1,14 @@
+##### Template:
+# template test(person)
+    <img onclick="{doClick('blah',event,)}"/>
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Invalid expression",
+    "line": 2,
+    "column": 19,
+    "code": "doClick('blah',event,)"
+  }
+]

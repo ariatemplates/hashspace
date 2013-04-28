@@ -1,46 +1,49 @@
 hashspace
 =========
 
-Hashspace is currently an experimental client-side HTML template engine. Its purpose is to provide a powerful and light-weight way to create adanced web-pages containing application logic.
+Hashspace is a client-side HTML template engine - currently under construction. Its purpose is to provide a powerful and light-weight way to create adanced web-pages containing application logic.
 
 The key targetted features are:
-- a simple an natural template syntax
+- a simple an natural template syntax thanks to an offline compiler
 - bi-directional data-binding on any HTML element property (attributes and content)
 - light-weight (target: <20kb minified compressed for the runtime library)
 - support of sub-templates and widget libraries
 - support of advanced expressions
 
-cf. [this article][key_features_blog] for more information
+Hashspace is composed of 2 main parts:
+- a file pre-processor that translates the HTML templates into JavaScript functions (cf. compiler test files for the syntax)
+- a runtime library that interprets the compiled templates dynamically
 
-Once fully developed it should be composed of 2 main parts:
-- a file pre-processor that will translate the HTML templates into JavaScript functions (cf. spec files for the syntax)
-- a runtime library that will interpret the templates dynamically
+Please refer to the samples in the unit-tests suites in the 'test/compiler or 'test/rt' folders for more details.
+The `public/samples` folder also contains a pseudo-code implementation of what should be the [todomvc][todomvc] implementation once the minimum set of features are implemented.
+
 
 Currently only some parts of the runtime are developed:
 - json wrapper to set properties in a data object and automatically trigger notifications to observer objects
 - text nodes
 - data binding on properties
 - element nodes (e.g. div, span, section, h1...)
-- # if statements
-- # insert statements
-- # foreach statements
+- {if} statements
+- {insert} statements
+- {foreach} statements
 - array data-bindings (i.e. automatic refresh of foreach nodes when the foreach array is changed)
-
-Please refer to the unit-tests suites in `test/spec` folder for more details.
-
-The `public/samples` folder also contains a pseudo-code implementation of what could be the [todomvc][todomvc] implementation with hashspace (some syntax pieces and implementation details still TBD)
-
-As you will note, hashspace has many similarities with [angular JS][angular] as it implements the same type of algorithm that binds the HTML DOM to a JavaScript data structure. However the purpose of hashspace is not to implement a full framework as angular - but simply the HTML rendering part. Besides its pre-processor+runtime architecture will allow keeping the runtime as small as possible, while supporting advanced features - such as error managment and advanced expressions, as they may mainly impact the parser that will not be part of the runtime.
 
 
 Running Tests
 -------------
-To run the project you will have to install [grunt][grunt] and then simply
+To run the project you will have to install [grunt][grunt] and [mocha][mocha]
+
+For the compiler test:
+- run *mocha test*
+
+For the browser runtime tests:
 - run *grunt* - this will launch a local webserver and a watch task on your files
-- and access *http://localhost:8000/test-index.html* to run the tests in your favorite browsers
+- and access *http://localhost:8000/test* to run the tests in your favorite browsers
 
 
 [key_features_blog]: http://ariatemplates.com/blog/2012/11/key-features-for-client-side-templates/
 [todomvc]: http://addyosmani.github.com/todomvc/
 [angular]:http://angularjs.org/
 [grunt]: http://gruntjs.com/
+[mocha]: http://visionmedia.github.io/mocha/
+

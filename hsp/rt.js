@@ -149,6 +149,24 @@ module.exports.template = function(argNames, contentFunction) {
 	return f;
 }
 
+/**
+ * Helper function used by the hashspace compiler to insert errors in the generated scripts when invalid
+ */
+module.exports.logErrors = function(errors) {
+	var sz=errors.length, err, msg, code;
+	for (var i=0;sz>i;i++) {
+		err=errors[i];
+		if (err.lineInfoTxt) {
+			code="\r\n>> "+err.lineInfoTxt.replace(/\r?\n/gi,"\r\n>> ");
+		} else if (err.code) {
+			code="\r\n>> "+err.code;
+		}
+		msg=[
+			err.description, '(line: ', err.line, ',column: ', err.column, ')', code
+		].join('');
+		console.log(msg);
+	}
+} 
 
 /**
  * Collection of the node types supported by the NodeGenerator

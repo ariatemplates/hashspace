@@ -1,0 +1,20 @@
+##### Template:
+# template test(things)
+  Foreach test:
+  {foreach (thing in things)} - {thing} - {/forach}
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Invalid expression",
+    "line": 3,
+    "column": 43,
+    "code": "/forach"
+  },
+  {
+    "description": "Missing end foreach statement",
+    "line": 3,
+    "column": 3
+  }
+]

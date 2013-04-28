@@ -1,0 +1,14 @@
+##### Template:
+# template test(person)
+    <div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
+        <span>Hello {person.name}!</span>
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Missing end element </div>",
+    "line": 2,
+    "column": 5
+  }
+]

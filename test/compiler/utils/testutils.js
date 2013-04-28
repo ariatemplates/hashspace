@@ -28,6 +28,22 @@ exports.getSampleContent = function (sampleName) {
 }
 
 /**
+ * Return the template part of a template sample
+ * @param {String} sampleName the sample name - e.g. "basic1"
+ * @return {String}
+ */
+exports.getErrorSampleContent = function (sampleName) {
+    var content = fs.readFileSync(__dirname+"/../errsamples/"+sampleName+".txt","utf-8");
+    var c=content.split(/\r?\n?#####[^\n]*\n/), sz=c.length;
+
+    var res={
+        template:   sz>1? c[1] : "",
+        errors:     sz>2? eval(c[2]) : null
+    }
+    return res;
+}
+
+/**
  * Compare 2 JS code strings, ignore white spaces and carriage returns;
  */
 exports.compareJSCode=function(s1,s2) {
@@ -125,6 +141,7 @@ function isDate (value) {
 * Checks whether a JSON object is fully contained in another.
 * @param {Object} big the container JSON structure
 * @param {Object} small the contained JSON structure
+* @param {String} optKey an aopttional key name representing a reference to the current big object
 * @return {Boolean} true if <i>small</i> is contained in <i>big</i>
 */
 function jsonContains (big, small, optKey) {

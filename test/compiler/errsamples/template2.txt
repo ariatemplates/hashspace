@@ -1,0 +1,12 @@
+##### Template:
+# template hello(foo)
+    {foo.bar} Hello World!
+
+##### Errors:
+[
+  {
+    "description": "Missing end template statement",
+    "line": 1,
+    "column": 1
+  }
+]

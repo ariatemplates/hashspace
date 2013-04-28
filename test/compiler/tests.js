@@ -1,4 +1,4 @@
-// Mocha test
+// Mocha tests
 var assert = require("assert");
 var parser = require("../../hsp/compiler/parser");
 var compiler = require("../../hsp/compiler/compiler");
@@ -51,7 +51,7 @@ describe('Block Parser: ', function(){
 			console.log(JSON.stringify(bl ,null,"  "));
 		}
 		
-		var r=compiler.compile(sample.template, true);
+		var r=compiler.compile(sample.template, this.name, true, true);
 		if (sample.syntaxTree) {
 			assert.equal(ut.jsonContains(r.syntaxTree, sample.syntaxTree, "syntaxTree"), "", "syntax tree comparison");
 		} else {
@@ -88,7 +88,7 @@ describe('Block Parser: ', function(){
 
 	it ('validates full compiled template', function(){
 		var sample=ut.getSampleContent("template");
-		var r=compiler.compile(sample.template);
+		var r=compiler.compile(sample.template, "template");
 
 		var s=[	
 				'// ################################################################ ',

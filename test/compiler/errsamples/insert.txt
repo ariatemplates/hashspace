@@ -1,0 +1,16 @@
+##### Template:
+# template test(person)
+    foo
+    {content("First Name", person.firstName}
+    bar
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Invalid expression",
+    "line": 3,
+    "column": 5,
+    "code": "content(\"First Name\", person.firstName"
+  }
+]

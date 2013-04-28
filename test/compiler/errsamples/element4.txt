@@ -1,0 +1,21 @@
+##### Template:
+# template test(person)
+    <div title="Some text class="foo">
+        foo bar
+    </div>
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Invalid HTML element syntax",
+    "line": 2,
+    "column": 5,
+    "code": "<div title=\"Some text class=\"foo\">"
+  },
+  {
+    "description": "End element </div> does not match any <div> element",
+    "line": 4,
+    "column": 5
+  }
+]

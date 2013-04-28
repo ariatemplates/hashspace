@@ -1,0 +1,12 @@
+##### Template:
+# template hello(person)
+    Hello {person.name,}!
+# /template
+
+##### Errors:
+[ { 
+    description: 'Invalid expression',
+    line: 2,
+    column: 11,
+    code: 'person.name,' 
+} ]

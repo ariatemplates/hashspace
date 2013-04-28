@@ -1,0 +1,18 @@
+##### Template:
+# template hello(person)
+    {if person.isAdult}
+        blah
+    {else if person.isMinor/}
+        blah
+    {/if}
+# /template
+
+##### Error:
+[
+  {
+    "description": "Invalid expression",
+    "line": 4,
+    "column": 5,
+    "code": "else if person.isMinor/"
+  }
+]

@@ -1,0 +1,14 @@
+##### Template:
+# template hello foo
+    {foo.bar} Hello World!
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Invalid template arguments",
+    "line": 1,
+    "column": 1,
+    "code": "# template hello foo"
+  }
+]

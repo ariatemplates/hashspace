@@ -1,0 +1,14 @@
+##### Template:
+# template hello(person)
+    {if (person.isAdult}
+        Hello
+    {/if}
+# /template
+
+##### Error:
+[ { 
+    description: 'Invalid if condition',
+    line: 2,
+    column: 9,
+    code: '(person.isAdult' 
+} ]

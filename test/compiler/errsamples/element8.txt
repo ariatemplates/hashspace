@@ -1,0 +1,13 @@
+##### Template:
+# template test(person)
+    <img onclick="{123}"/>
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Event handler attribute only support function expressions",
+    "line": 2,
+    "column": 19
+  }
+]

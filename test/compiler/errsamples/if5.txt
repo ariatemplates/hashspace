@@ -1,0 +1,14 @@
+##### Template:
+# template hello(person)
+    blah
+    {/if}
+# /template
+
+##### Error:
+[
+  {
+    "description": "{/if} statement does not match any {if} block",
+    "line": 3,
+    "column": 5
+  }
+]

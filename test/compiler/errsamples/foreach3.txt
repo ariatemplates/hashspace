@@ -1,0 +1,14 @@
+##### Template:
+# template test(things)
+  Foreach test:
+  {thing} - {/foreach}
+# /template
+
+##### Errors:
+[
+  {
+    "description": "{/foreach} statement does not match any {foreach} block",
+    "line": 3,
+    "column": 13
+  }
+]

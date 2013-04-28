@@ -59,7 +59,7 @@ function argAsString(value) {
 exports["textblock"] = function (node, walker) {
 	// we should generate sth like
 	// n.$text({e1:[1,"person","firstName"],e2:[1,"person","lastName"]},["Hello ",1," ",2,"!"])
-	var tb=formatTextBlock(node.content, 1 ,walker);
+	var tb=formatTextBlock(node, 1 ,walker);
 	return ["n.$text(",tb.expArg,"," , tb.blockArgs , ")"].join('');
 };
 
@@ -159,7 +159,7 @@ exports["element"] = function (node, walker) {
 					list.push('"'+aname+'":["",'+e.exprIdx+']');
 				}
 			} else if (type==="textblock") {
-				var tb=formatTextBlock(att.content, exprIdx ,walker);
+				var tb=formatTextBlock(att, exprIdx ,walker);
 				exprIdx=tb.nextIndex;
 				if (tb.expArg!=='0') {
 					exprlist.push(tb.expArg.slice(1,-1));
@@ -230,6 +230,9 @@ function formatExpression(expression, firstIdx, walker) {
 					res=['e',exprIdx,':[',arg1,',1,',rootRef];
 				} else if (path.length===2) {
 					res=['e',exprIdx,':[',arg1,',2,',rootRef,',"',path[1],'"'];
+				} else {
+					walker.logError("Long expression paths are not supported yet", expression);
+					res=[];
 				}
 				if (args && args.length>0) {
 					var acat, arg;
@@ -264,7 +267,7 @@ function formatExpression(expression, firstIdx, walker) {
 		code=['e',exprIdx,':[0,1,"event"]'].join('');
 		nextIndex++;
 	} else {
-		walker.logError("Unsupported expression: "+cat);
+		walker.logError("Unsupported expression: "+cat,expression);
 	}
 
 	return {code:code, exprIdx:exprIdx, nextIndex:nextIndex};
@@ -273,8 +276,8 @@ function formatExpression(expression, firstIdx, walker) {
 /**
  * Format the textblock content for textblock and attribute nodes
  **/
-function formatTextBlock(content, nextExprIdx,walker) {
-	var c=content, sz=c.length, itm, expArr=[], args=[], idx=0; // idx is the index in the $text array (=args)
+function formatTextBlock(node, nextExprIdx, walker) {
+	var c=node.content, sz=c.length, itm, expArr=[], args=[], idx=0; // idx is the index in the $text array (=args)
 	for (var i=0;sz>i;i++) {
 		itm=c[i];
 		if (itm.type==="text") {
@@ -288,7 +291,7 @@ function formatTextBlock(content, nextExprIdx,walker) {
 					args[idx-1]=args[idx-1].slice(0,-1)+escapeNewLines(itm.value.replace(/"/g, "\\\""))+'"';
 				} else {
 					// we should never get there as idx is odd !
-					walker.logError("Invalid textblock structure");
+					walker.logError("Invalid textblock structure", node);
 				}
 			}
 		} else if (itm.type==="expression") {

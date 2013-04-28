@@ -1,0 +1,7 @@
+##### Template:
+# template hello(person)
+    {foo bar} Hello World!
+# /template
+
+##### Errors:
+

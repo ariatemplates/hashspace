@@ -1,0 +1,13 @@
+##### Template:
+# template hello(person)
+    {foo[2].bar[3]} Hello World!
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Long expression paths are not supported yet",
+    "line": 2,
+    "column": 5
+  }
+]

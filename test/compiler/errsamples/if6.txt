@@ -1,0 +1,21 @@
+##### Template:
+# template hello(person)
+    blah
+    {else}
+        blah
+    {/if}
+# /template
+
+##### Error:
+[
+  {
+    "description": "{else} statement found outside any {if} block",
+    "line": 3,
+    "column": 5
+  },
+  {
+    "description": "{/if} statement does not match any {if} block",
+    "line": 5,
+    "column": 5
+  }
+]

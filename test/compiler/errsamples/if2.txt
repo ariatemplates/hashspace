@@ -1,0 +1,14 @@
+##### Template:
+# template hello(person)
+    {if person.isAdult}
+        Hello
+# /template
+
+##### Error:
+[
+  {
+    "description": "Missing end if statement",
+    "line": 2,
+    "column": 5
+  }
+]

@@ -8,7 +8,9 @@
         "type": "git",
         "url": "https://github.com/ariatemplates/hashspace.git"
     },
-    "dependencies": {},
+    "dependencies": {
+        "acorn":"0.1.0",
+    },
     "devDependencies": {
         "grunt": "0.3.17",
         "grunt-beautify": "0.1.0",

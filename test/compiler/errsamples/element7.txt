@@ -1,0 +1,19 @@
+##### Template:
+# template test(person)
+    <img onclick="foo{doClick('blah',event,)}bar"/>
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Event handler attributes don't support text and expression mix",
+    "line": 2,
+    "column": 10
+  },
+  {
+    "description": "Invalid expression",
+    "line": 2,
+    "column": 22,
+    "code": "doClick('blah',event,)"
+  }
+]
