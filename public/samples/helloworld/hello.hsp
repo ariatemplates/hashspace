@@ -1,0 +1,9 @@
+
+# template hello(name)
+    <div class="msg">
+        Hello {name}!
+    </div>
+# /template
+
+// display the template in the #output div
+hsp.display("output", hello("World"));

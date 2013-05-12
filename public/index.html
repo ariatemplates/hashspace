@@ -1,66 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
+
+<!--
+/*
+ * Copyright 2012 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+
+<html>
 <head>
-<title>Hashspace playground</title>
-
-<link href="style.css" rel="stylesheet">
-
-<script type="text/javascript" src="lib/noder.min.js"></script>
-<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="/lib/noder.min.js">
+{
+    packaging : {
+        baseUrl : "/"
+    }
+}
+</script>
+<link href="/css/main.css" type="text/css" rel="stylesheet"/>
 
 </head>
 <body>
 
-<div id="topPanel">
-    <span id="title">Hashspace playground</span>
-    <span id="getSnippet">more snippets</span>
-</div>
+<div id="main"></div>
 
-<div id="bottomPanel">
-    <div id="leftPanel">
-        <div id="topLeftPanel">
-            <div id="editor"></div>
-            <div class="info">Template</div>
-        </div>
-
-        <div id="hRule"></div>
-
-        <div id="bottomLeftPanel">
-            <div id="console"></div>
-            <div class="info">Console</div>
-            <div class="actions">
-                <button id="execute">Execute this code</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="rightPanel">
-        <div id="topRightPanel">
-            <div id="result"></div>
-            <div class="info">Output</div>
-        </div>
-
-        <div id="hRule"></div>
-
-        <div id="bottomRightPanel">
-            <div id="logs"></div>
-            <div class="info">Logs</div>
-        </div>
-    </div>
-</div>
-
-<div id="snippetDialog" class="dialog">
-    <div id="snippetDialogBody" class="body">
-        <p>Loading snippets from GitHub</p>
-        <p>Please wait a little longer.</p>
-    </div>
-    <div class="footer">
-        <button id="closeSnippetDialog">Close</button>
-    </div>
-</div>
 
 <script src="http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript" src="lib/json2.js"></script>
-<script type="text/javascript" src="behavior.js"></script>
+<script type="noder">
+
+// some samples
+//require("samples/helloworld/hello.hsp");
+//require("samples/clickhandler/clickhandler.hsp");
+
+var Playground=require("./playground/playground");
+var pg = new Playground("main");
+pg.showSample(0);
+
+</script>
 
 </body>
+</html>
