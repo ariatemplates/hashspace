@@ -9,7 +9,7 @@
         "url": "https://github.com/ariatemplates/hashspace.git"
     },
     "dependencies": {
-        "acorn":"0.1.0",
+        "acorn":"0.1.0"
     },
     "devDependencies": {
         "grunt": "0.3.17",
