@@ -29,6 +29,13 @@ Currently only some parts of the runtime are developed:
 - array data-bindings (i.e. automatic refresh of foreach nodes when the foreach array is changed)
 
 
+Running the Samples
+-------------------
+To run and update the samples in a live environment, you will have to install [grunt][grunt] and then:
+- run *grunt* to launch a local web-server that can compile templates on the fly (cf. hsp/grunt folder)
+- open *http://localhost:8000* in your favorite browser..
+- choose your sample from the sample list
+
 Running Tests
 -------------
 To run the project you will have to install [grunt][grunt] and [mocha][mocha]
