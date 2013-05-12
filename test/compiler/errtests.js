@@ -33,12 +33,12 @@ describe('Template compilation errors: ', function(){
         var s=[
             compiler.HEADER,
             '\r\n',
-            'require("hsp/rt").logErrors([{',
+            'require("hsp/rt").logErrors(__filename,[{',
             '"description":"SyntaxError: Unexpected token",',
-            '"lineInfoTxt":"    foo({blah:\\\"hello\\\",});\\r\\n----------------------ˆ--",',
+            '"lineInfoTxt":"    foo({blah:\\\"hello\\\",});\\r\\n----------------------^--",',
             '"lineInfoHTML":"<span class=\\\"code\\\">    foo({blah:\\\"hello\\\",<span class=\\\"error\\\" title=\\\"SyntaxError: Unexpected token\\\">}</span>);</span>",',
             '"code":"    foo({blah:\\\"hello\\\",});",',
-            '"line":18,',
+            '"line":19,',
             '"column":22',
             '}]);\r\n'
         ].join('');

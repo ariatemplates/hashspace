@@ -31,7 +31,7 @@ describe('JS Validator: ', function(){
         assert.equal(r.errors[0].line,2,"error line number");
         assert.equal(r.errors[0].column,31,"error column number");
 
-        s='function func() {var x="text2",};\r\n-------------------------------ˆ-';
+        s='function func() {var x="text2",};\r\n-------------------------------^-';
         assert.equal(r.errors[0].lineInfoTxt,s,"error line info as text");
         s='<span class="code">function func() {var x="text2",<span class="error" title="SyntaxError: Unexpected token">}</span>;</span>';
         assert.equal(r.errors[0].lineInfoHTML,s,"error line info as HTML");
@@ -51,7 +51,7 @@ describe('JS Validator: ', function(){
         assert.equal(r.errors[0].line,3,"error line number");
         assert.equal(r.errors[0].column,0,"error column number");
 
-        s='?;var z;\r\nˆ-------';
+        s='?;var z;\r\n^-------';
         assert.equal(r.errors[0].lineInfoTxt,s,"error line info as text");
         s='<span class="code"><span class="error" title="SyntaxError: Unexpected token">?</span>;var z;</span>';
         assert.equal(r.errors[0].lineInfoHTML,s,"error line info as HTML");
@@ -71,7 +71,7 @@ describe('JS Validator: ', function(){
         assert.equal(r.errors[0].line,3,"error line number");
         assert.equal(r.errors[0].column,1,"error column number");
 
-        s=' ?;var z;\r\n-ˆ-------';
+        s=' ?;var z;\r\n-^-------';
         assert.equal(r.errors[0].lineInfoTxt,s,"error line info as text");
         s='<span class="code"> <span class="error" title="SyntaxError: Unexpected token">?</span>;var z;</span>';
         assert.equal(r.errors[0].lineInfoHTML,s,"error line info as HTML");

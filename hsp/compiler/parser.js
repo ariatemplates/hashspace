@@ -168,12 +168,12 @@ var SyntaxTree=klass({
 			}
 		}
 
-		if (buf.length===1) {
+		if (buf.length===1 && buf[0].type==="text") {
 			// only one text block
 			n=new Node("text");
-			n.value=blocks[idx].value;
-		} else if (buf.length>1) {
-			// several blocks have to be aggregated
+			n.value=buf[0].value;
+		} else if (buf.length>0) {
+			// an expression or several blocks have to be aggregated
 			n=new Node("textblock");
 			n.content=buf;
 		}
@@ -311,7 +311,7 @@ var SyntaxTree=klass({
 			this._logError("Missing end foreach statement",blocks[idx]);
 		} 
 
-		return 
+		return idx2;
 	},
 
 	/**
@@ -399,7 +399,6 @@ var SyntaxTree=klass({
 					return (type==="endelement"); // && name===ename
 				});
 				if (idx2<0 || !blocks[idx2]) {
-					// TODO add error line nbr
 					this._logError("Missing end element </"+ename+">",b);
 					endFound=true;
 				} else {

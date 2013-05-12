@@ -42,7 +42,7 @@ function formatError(err,input) {
     var lineStr=before+after;
     var lncursor=[];
     for (var i=0, sz=lineStr.length; sz>i;i++) {
-        lncursor[i]= (i===cursorPos)? 'ˆ' : '-';
+        lncursor[i]= (i===cursorPos)? '^' : '-';
     }
     var lineInfoTxt=lineStr+'\r\n'+lncursor.join('');
 

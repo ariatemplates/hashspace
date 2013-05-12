@@ -13,6 +13,7 @@ var HEADER=module.exports.HEADER=[
 	'//  Direct MODIFICATIONS WILL BE LOST when the file is recompiled!  ',
 	'// ################################################################ ',
 	'',
+	'var hsp=require("hsp/rt");',
 	''
 ].join('\r\n');
 
@@ -34,7 +35,13 @@ var HEADER=module.exports.HEADER=[
  */
 exports.compile = function (template, fileName, includeSyntaxTree, bypassJSvalidation) {
 	// Parsing might throw an exception
-	var res = parser.parse(template);
+	var res={};
+
+	if (!template) {
+		res.errors=[{description:"[Hashspace compiler] template argument is undefined"}];
+	} else {
+		res = parser.parse(template);
+	}
 	res.code='';
 	if (!fileName) {
 		fileName="[anonymous]";
@@ -58,6 +65,9 @@ exports.compile = function (template, fileName, includeSyntaxTree, bypassJSvalid
 
 	if (!res.errors) {
 		res.errors=[];
+	} else if (res.errors.length>0) {
+		// remove all code so that script can still be loaded
+		res.code=HEADER;
 	}
 
 	if (res.errors.length==0 && bypassJSvalidation!==true) {
@@ -88,7 +98,7 @@ function getErrorScript(errors) {
 	var r='';
 	if (errors && errors.length) {
 		r=[
-			'\r\nrequire("hsp/rt").logErrors(',
+			'\r\nrequire("hsp/rt").logErrors(__filename,',
 			JSON.stringify(errors,null),
 			');\r\n'
 		].join("");

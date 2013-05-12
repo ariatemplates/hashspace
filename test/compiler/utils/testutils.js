@@ -86,6 +86,9 @@ exports.compareJSCode=function(s1,s2) {
  * Return -1 if end of string found
  */
 function getNextNWCharIdx(s,startIdx) {
+    if (s===undefined) {
+        return -1;
+    }
     var idx=startIdx, next=true, c, max=s.length-1;
     while (next) {
         if (idx>max) {

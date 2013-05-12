@@ -1,0 +1,62 @@
+##### Template:
+# template test(label, passengers)
+  <div>
+    {foreach k,name in passengers.names}
+      x
+    {/foreach}
+  </div>
+# /template
+
+##### Parsed Tree
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["label","passengers"],
+    "closed": true,
+    "content": [
+      {"type": "element","name": "div","closed": false,"attributes": []},
+      {"type": "foreach","item":"name","key":"k",colref:{"category":"objectref","path": ["passengers","names"]}},
+      {"type": "text","value": "x "},
+      {"type": "endforeach"},
+      {"type": "text","value": " "},
+      {"type": "endelement", "name": "div"}
+    ]
+  }
+]
+
+##### Syntax Tree
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["label","passengers"],
+    "content": [
+      {"type": "element","name": "div","closed": false,"attributes": [],"content": [
+          {"type": "foreach","item": "name","key": "k", 
+            "collection": {"category": "objectref","path": ["passengers","names"],"code": "passengers.names", "bound": true},
+            "content": [
+              {"type": "text","value": "x "}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+
+
+##### Template Code
+test=[
+  n.elt(  "div", 
+      0,
+      0,
+      0,
+      [
+        n.$foreach( {e1: [1,2,"passengers","names"]}, "k", "name", 0 , 1, [
+          n.$text(0 ,["x "])
+        ]),
+        n.$text(0 ,[" "])
+      ]
+  )
+]

@@ -42,6 +42,12 @@ exports["template"] = function (node, walker) {
  * Generate a text node
  */
 exports["text"] = function (node, walker) {
+	if (node.value===undefined) {
+		console.dir(node);
+		return "n.$text(0,[\"\"])";
+	}
+
+
 	return ["n.$text(0,[\"" , escapeNewLines(node.value.replace(/"/g, "\\\"")) , "\"])"].join('');
 };
 

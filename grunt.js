@@ -13,14 +13,13 @@
  * limitations under the License.
  */
 
-
 module.exports = function (grunt) {
    
     grunt.initConfig({
-      server: {
+      hspserver: {
         port: 8000,
         base: __dirname,
-        templateExtension: "tpl"
+        templateExtension: "hsp"
       },
       watch: {
         files: ['*.*'],
@@ -32,7 +31,7 @@ module.exports = function (grunt) {
       }
     });
 
-    grunt.loadTasks('build/grunt-tasks');
+    grunt.loadTasks('hsp/grunt');
 
-    grunt.registerTask('default', 'server watch');
+    grunt.registerTask('default', 'hspserver watch');
 };

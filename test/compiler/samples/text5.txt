@@ -1,0 +1,51 @@
+##### Template:
+# template hello(person)
+	<div>{person.name}</div>
+# /template
+
+##### Parsed Tree:
+[
+  {
+    "type": "template",
+    "name": "hello",
+    "args": [ "person"],
+    "content": [
+      {"type": "element", "name": "div", "closed": false, "attributes": []},
+      {"type": "expression", "category": "objectref", "bound": true, "path": ["person","name"], "code": "person.name"},
+      {"type": "endelement", "name": "div"}
+    ]
+  }
+]
+
+##### Syntax Tree:
+[
+  {
+    "type": "template",
+    "name": "hello",
+    "args": [ "person"],
+    "content": [
+      {"type": "element", "name": "div", "closed": false, "attributes": [], "content":[
+        {type:"textblock", "content": [
+              {
+                "type": "expression",
+                "bound": true,
+                "category": "objectref",
+                "path": ["person","name"],
+                "code": "person.name",
+              }
+        ]}
+      ]}
+    ]
+  }
+]
+
+##### Template Code
+hello=[
+  n.elt(  "div", 
+      0,
+      0,
+      0,[
+        n.$text({e1:[1,2,"person","name"]},["",1])
+      ]
+  )
+]

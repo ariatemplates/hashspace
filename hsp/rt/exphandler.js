@@ -254,6 +254,12 @@ var FuncRefExpr=klass({
 			vscope["event"]=evt1;	
 		}
 
-		fn.apply(v.scope,cbargs);
+		var ctxt=null;
+		if (!this.isLiteral) {
+			// TODO change to support long paths
+			ctxt=vscope[this.root];
+		}
+
+		fn.apply(ctxt,cbargs);
 	}
 })
