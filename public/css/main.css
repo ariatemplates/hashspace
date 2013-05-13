@@ -37,6 +37,12 @@
     height:100%;
 }
 
+.warning {
+    display: inline-block;
+    color:red;
+    font-weight:bold;
+}
+
 /* ************************************ */
 /* Sample list */
 
