@@ -43,7 +43,7 @@ module.exports = function(grunt) {
             } else if (req.url==="/hsp/compile") {
                 var src=req.body.src;
                 if (src) {
-                    src=(''+src).replace(/\\u0026/gi,"&");
+                    src=(''+src).replace(/\\u0026/gi,"&").replace(/\\u002B/gi,"+");
                     // compile src
                     var r=renderer.renderString(src);
                     if (r.serverErrors && r.serverErrors.length) {

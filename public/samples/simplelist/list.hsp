@@ -1,0 +1,51 @@
+var json=require("hsp/json");
+
+# template list(persons)
+	<a onclick="{addElement()}">Add element</a> - 
+	<a onclick="{deleteElement()}">Delete element</a> - 
+	<a onclick="{changeAll()}">Change all elements</a>
+    <ul>
+        {foreach p in persons}
+        	<li>
+                {p.firstName} {p.lastName}
+                {if p_isfirst}<span class="info">(first)</span>{/if}
+                {if p_islast}<span class="info">(last)</span>{/if}
+            </li>
+        {/foreach}
+    </ul>
+# /template
+
+var persons=[
+	{firstName:"Omer",lastName:"Simpsons"},
+	{firstName:"Marge",lastName:"Simpsons"},
+	{firstName:"Bart"},
+	{firstName:"Lisa"},
+	{firstName:"Maggy"}
+]
+
+// display the template in the #output div
+hsp.display("output", list(persons));
+
+var count=0;
+
+function addElement() {
+	count++;
+	// add one element without removing any at position 1
+    json.splice(persons,1,0,{firstName:"John",lastName:'Doe'+count})
+}
+
+function deleteElement() {
+	// remove one element at position 0
+    json.splice(persons,0,1); 
+}
+
+function changeAll() {
+	// replace all elements (from 0 to persons.length-1) with the array provided as last argument
+	json.splice2(persons,0,persons.length,[
+		{firstName:"Charlie", lastName:"Parker"},
+		{firstName:"Sonny", lastName:"Stitt"},
+		{firstName:"Cannonball", lastName:"Adderley"},
+		{firstName:"Stefano", lastName:"Di Battista"},
+		{firstName:"Kenny", lastName:"Garrett"}
+	]);
+}

@@ -67,7 +67,7 @@ var Playground = module.exports = klass({
      */
     compileAndUpdate:function(fileName,newCode) {
         //alert(fileName+" : "+newCode);
-        var code=(newCode+'').replace(/\&/g,"\\u0026"), self=this;
+        var code=(newCode+'').replace(/\&/g,"\\u0026").replace(/\+/g,"\\u002B"), self=this;
 
         jx.load("hsp/compile?src="+code, function(error,code) {
             if (error) {

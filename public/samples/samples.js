@@ -14,6 +14,13 @@ module.exports = [
         files: [
             {src:"clickhandler.hsp", main:true}
         ]
-    },
+    }, {
+        title:"Simple list",
+        folder:"simplelist",
+        description:"description.md",
+        files: [
+            {src:"list.hsp", main:true}
+        ]
+    }
 
 ]

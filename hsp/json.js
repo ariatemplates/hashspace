@@ -127,6 +127,18 @@ module.exports={
 	},
 
 	/**
+	 * Same as splice but with an array argument to pass all items that need to be inserted as an array and not as separate arguments
+	 * @param {Array} arrayArg the items that must be inserted at the index position
+	 */
+	splice2:function(array, index, howMany, arrayArg) {
+		arrayArg.splice(0,0,index,howMany);
+		res=Array.prototype.splice.apply(array,arrayArg);
+
+		notifyObservers(array, index, null, null, "splice"); // NB: splice is not a valid change type according to Object.observe spec
+		return res;
+	},
+
+	/**
 	 * Removes the first element from an array and returns that element. This method changes the length of the array.
 	 * @param {Array} array the array on which the shift should be performed
 	 */
