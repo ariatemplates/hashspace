@@ -30,9 +30,14 @@ exports["template"] = function (node, walker) {
 
 	walker.templates[tplName] = tplCode
 
+	var exp='';
+	if (node.export===true) {
+		exp=' =exports.'+tplName
+	}
+
 	var CRLF='\r\n';
 	return [
-		'var ',tplName,' = require("hsp/rt").template([',walker.each(node.args, argAsString),'], function(n){',CRLF,
+		'var ',tplName,exp,' = require("hsp/rt").template([',walker.each(node.args, argAsString),'], function(n){',CRLF,
 		'  return ',tplCode,';',CRLF,
 		'});',CRLF
 	].join("");

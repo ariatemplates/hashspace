@@ -7,7 +7,7 @@ var ut = require("./utils/testutils");
 describe('Block Parser: ', function(){
 
 	it ('tests testutils.getContent', function(){
-		var tpl=ut.getSampleContent("template").template;
+		var tpl=ut.getSampleContent("template1").template;
 		var s=[	'var x="text1";',
 				'function func() {var x="text2"};',
 				'',
@@ -79,7 +79,7 @@ describe('Block Parser: ', function(){
 		}
 	}
 
-	var samples=[	"template", "text1", "text2", "text3", "text4", "text5", "if1", "if2", "if3", "comment", 
+	var samples=[	"template1", "template2", "text1", "text2", "text3", "text4", "text5", "if1", "if2", "if3", "comment", 
 					"foreach1", "foreach2", "foreach3", "element1", "element2", "evthandler", "insert"];
 	for (var i=0, sz=samples.length;sz>i;i++) {
 		// create one test for each sample
@@ -87,8 +87,8 @@ describe('Block Parser: ', function(){
 	}
 
 	it ('validates full compiled template', function(){
-		var sample=ut.getSampleContent("template");
-		var r=compiler.compile(sample.template, "template");
+		var sample=ut.getSampleContent("template1");
+		var r=compiler.compile(sample.template, "template1");
 
 		var s=[	
 				compiler.HEADER,
@@ -107,6 +107,25 @@ describe('Block Parser: ', function(){
 				'  return [n.$text(0,["Hello Again!"])];',
 				'});',
 				'var z;'
+				].join("\r\n");
+
+		assert.equal(r.errors.length,0,"no compilation error");
+		//console.log(s.length) // 587
+		//console.log(r.code.length) // 591		
+		//assert.equal(r.code,s,"template generated code"); // strange issue with non visible characters
+		assert.equal(ut.compareJSCode(r.code, s),"","template generated code");
+	});
+
+	it ('validates full compiled template with export', function(){
+		var sample=ut.getSampleContent("template2");
+		var r=compiler.compile(sample.template, "template2");
+
+		var s=[	
+				compiler.HEADER,
+				'',
+				'var hello4 = exports.hello4 = require("hsp/rt").template([], function(n){',
+				'  return [n.$text(0,["Hello World!"])];',
+				'});'
 				].join("\r\n");
 
 		assert.equal(r.errors.length,0,"no compilation error");

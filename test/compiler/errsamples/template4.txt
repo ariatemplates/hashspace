@@ -1,0 +1,20 @@
+##### Template:
+# espor template hello()
+    Hello World!
+# blahblah foo
+
+# /templte
+
+##### Errors:
+[
+  {
+    "description": "Invalid template template modifier: espor",
+    "line": 1,
+    "column": 1
+  },
+  {
+    "description": "Missing end template statement",
+    "line": 1,
+    "column": 1
+  }
+]

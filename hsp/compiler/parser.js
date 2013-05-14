@@ -104,8 +104,13 @@ var SyntaxTree=klass({
 		var n=new Node("template"), b=blocks[idx];
 		n.name=b.name;
 		n.args=b.args;
+		n.export=b.mod==="export";
 		n.content=[];
 		out.push(n);
+
+		if (b.mod!=='' && b.mod!=="export") {
+			this._logError("Invalid template template modifier: "+b.mod,blocks[idx]);
+		}
 
 		if (!b.closed) {
 			this._logError("Missing end template statement",b);

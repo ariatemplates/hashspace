@@ -8,7 +8,7 @@ TemplateFile
   {return blocks;}
 
 TextBlock
-  = lines:(!("#" _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+ 
+  = lines:(!("#" _ "template") !("#" _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+ 
   {return {type:"plaintext", value:lines.join('')}}
 
 RequireBlock "require" // TODO: finalize!
@@ -20,12 +20,20 @@ TemplateBlock "template"
   {start.content=content;start.closed=(end!=="");return start}
 
 TemplateStart "template statement"
-  = _ "# " _ "template" _ name:Identifier _ args:(ArgumentsDefinition / invarg:InvalidTplArgs)? _  EOL 
+  = _ "# " _ m:(("template") / (c:[a-zA-Z0-9]+ _ "template") {return c.join('')})
+    _ name:Identifier _ args:(ArgumentsDefinition / invarg:InvalidTplArgs)? _  EOL 
   {
+    var mod="";
+    if (m!=="template") {
+      mod=m;
+    }
     if (args && args.invalidTplArg) {
-      return {type:"invalidtemplate", line:line, column:column, code: "# template "+name+" "+args.invalidTplArg}
+      if (mod) {
+        mod+=" ";
+      }
+      return {type:"invalidtemplate", line:line, column:column, code: "# "+mod+"template "+name+" "+args.invalidTplArg}
     } else {
-      return {type:"template", name:name, args:(args==='')? []:args, line:line, column:column}
+      return {type:"template", name:name, mod:mod, args:(args==='')? []:args, line:line, column:column}
     }
   }
 

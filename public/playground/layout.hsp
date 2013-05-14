@@ -1,5 +1,5 @@
 
-# template mainLayout(data,ctl) 
+# export template mainLayout(data,ctl) 
     <div class="playground" onmouseover="{ctl.hideSampleList()}">
         <div class="descriptionContainer">
             {sampleList(data,ctl)}
@@ -37,7 +37,7 @@
     </div>
 # /template
 
-# template errorList(errors) 
+# export template errorList(errors) 
     <div class="errorlist">
         <ul>
             {foreach err in errors}
@@ -54,8 +54,3 @@
         </ul>
     </div>
 # /template
-
-// TODO use public keyword on template
-module.exports.mainLayout=mainLayout;
-module.exports.errorList=errorList;
-

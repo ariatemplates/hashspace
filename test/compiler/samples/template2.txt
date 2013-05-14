@@ -1,0 +1,28 @@
+##### Template:
+
+# export template hello4()
+   Hello World!
+# /template
+
+##### Parsed Tree:
+
+[ 
+  { type: 'plaintext', value: '\r\n'},
+  { type: 'template', name: 'hello4', mod:'export', args: [], content: [
+    { type: 'text', value: 'Hello World!' } 
+  ]}
+]
+
+##### Syntax Tree:
+
+[ 
+  { type: 'plaintext', value: '\r\n'},
+  { type: 'template', name: 'hello4', export:true, args: [], content: [
+    { type: 'text', value: 'Hello World!' } 
+  ]}
+]
+
+##### Template Code 1
+hello4=[
+  n.$text(0, ["Hello World!"])
+]
