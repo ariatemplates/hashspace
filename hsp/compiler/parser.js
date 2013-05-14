@@ -20,11 +20,17 @@ function getBlockList (template) {
 exports.getBlockList=getBlockList;
 
 exports.parse = function (template) {
-	var bl= getBlockList(template);
-	var st=new SyntaxTree();
-	st.generateTree(bl);
-	//st.displayErrors();
-	return {syntaxTree:st.tree.content, errors:st.errors};
+	var res={}
+	try {
+		var bl = getBlockList(template);
+		var st=new SyntaxTree();
+		st.generateTree(bl);
+		//st.displayErrors();
+		res={syntaxTree:st.tree.content, errors:st.errors};
+	} catch(ex) {
+		res={syntaxTree:null, errors:[{description:ex.toString(),line:ex.line, column:ex.column}]};
+	}
+	return res;
 };
 
 /**

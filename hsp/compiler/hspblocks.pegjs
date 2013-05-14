@@ -4,18 +4,18 @@
  */
 
 TemplateFile
-  = blocks:(RequireBlock / TemplateBlock / TextBlock)* 
+  = blocks:(TemplateBlock / TextBlock)*  /*(RequireBlock / TemplateBlock / TextBlock)* */
   {return blocks;}
 
 TextBlock
   = lines:(!("#" _ "template") !("#" _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+ 
   {return {type:"plaintext", value:lines.join('')}}
 
-RequireBlock "require" // TODO: finalize!
+RequireBlock "require block" // TODO: finalize!
   = _ "# " _ "require" _ (EOL / EOF) 
   {return {type:"require"}}
 
-TemplateBlock "template"
+TemplateBlock "template block"
   = start:TemplateStart content:TemplateContent? end:TemplateEnd? 
   {start.content=content;start.closed=(end!=="");return start}
 
