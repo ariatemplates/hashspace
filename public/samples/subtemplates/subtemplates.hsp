@@ -1,0 +1,36 @@
+
+# export template personList(persons)
+    <div class="subtemplates">
+        {foreach p in persons}
+            {personDescription(p)}
+            <br/> // TODO if !p_islast
+        {/foreach}
+    </div>
+# /template
+
+# export template personDescription(person)
+    <div class="person">
+        {item("First Name: ",person.firstName)}
+        {item("Last Name: ",person.lastName)}
+    </div>
+# /template
+
+# template item(label,value)
+    {if value}
+        <div>
+            <div class="label">{label}</div>
+            <div class="value">{value}</div>
+        </div>
+    {/if}
+# /template
+
+var persons=[
+    {firstName:"Omer",lastName:"Simpsons"},
+    {firstName:"Marge",lastName:"Simpsons"},
+    {firstName:"Bart"},
+    {firstName:"Lisa"},
+    {firstName:"Maggy"}
+]
+
+// display the template in the #output div
+hsp.display("output", personList(persons));

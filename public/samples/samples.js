@@ -21,6 +21,13 @@ module.exports = [
         files: [
             {src:"list.hsp", main:true}
         ]
+    }, {
+        title:"Sub-templates",
+        folder:"subtemplates",
+        description:"description.md",
+        files: [
+            {src:"subtemplates.hsp", main:true}
+        ]
     }
 
 ]

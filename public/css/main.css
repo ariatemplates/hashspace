@@ -45,18 +45,6 @@ a:hover {
     height:100%;
 }
 
-.warning {
-    display: inline-block;
-    color:red;
-    font-weight:bold;
-}
-
-.info {
-    display: inline-block;
-    color:green;
-    font-weight:bold;
-}
-
 /* ************************************ */
 /* Sample list */
 
@@ -102,3 +90,28 @@ a:hover {
     background-color:#EEEEEE;
 }
 
+/* ************************************ */
+/* Samples */
+
+.warning {
+    display: inline-block;
+    color:red;
+    font-weight:bold;
+}
+
+.info {
+    display: inline-block;
+    color:green;
+    font-weight:bold;
+}
+
+.subtemplates .label {
+    float:left;;
+    width:100px;  
+    text-align: right;
+    padding-right: 5px;
+}
+
+.subtemplates .value {
+    font-weight: bold;
+}
