@@ -80,7 +80,8 @@ describe('Block Parser: ', function(){
 	}
 
 	var samples=[	"template1", "template2", "text1", "text2", "text3", "text4", "text5", "if1", "if2", "if3", "comment", 
-					"foreach1", "foreach2", "foreach3", "element1", "element2", "evthandler", "insert"];
+					"foreach1", "foreach2", "foreach3", "element1", "element2", "evthandler", "insert",
+					"jsexpression1"];
 	for (var i=0, sz=samples.length;sz>i;i++) {
 		// create one test for each sample
 		it ('validates sample ('+samples[i]+')', testFn.bind({name:samples[i]}));

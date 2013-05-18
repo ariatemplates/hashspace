@@ -1,0 +1,102 @@
+##### Template:
+# template test(value)
+  {if (value === "test" || value===false || value===null || value===123)} 
+    World
+  {/if}
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["value"],
+    "content": [
+      {"type": "if", "condition": {
+      	"category": "jsexpression",
+      	"type": "BinaryExpression", "operator": "||",
+        "left": {
+          "type": "BinaryExpression", "operator": "||",
+          "left": {
+            "type": "BinaryExpression", "operator": "||",
+            "left": {
+              "type": "BinaryExpression", "operator": "===",
+              "left": {
+                "type": "expression", "category": "objectref", "path": ["value"]
+              },
+              "right": {
+                "type": "expression", "category": "string", "value": "test","code": "test"
+              }
+            },
+            "right": {
+              "type": "BinaryExpression", "operator": "===",
+              "left": {
+                "type": "expression", "category": "objectref", "path": ["value"]
+              },
+              "right": {
+                "type": "expression", "category": "boolean", "value": false, "code": "false"
+              }
+            }
+          },
+          "right": {
+            "type": "BinaryExpression", "operator": "===",
+            "left": {
+              "type": "expression", "category": "objectref", "path": ["value"]
+            },
+            "right": {
+              "type": "expression", "category": "null", "code": "null"
+            }
+          }
+        },
+        "right": {
+          "type": "BinaryExpression", "operator": "===",
+          "left": {
+            "type": "expression", "category": "objectref", "path": ["value"]
+          },
+          "right": {
+            "type": "expression", "category": "number", "value": 123
+          }
+        }
+      }},
+      {"type": "text","value": "World "},
+      {"type": "endif"}
+    ]
+  }
+]
+
+##### Syntax Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["value"],
+    "export": false,
+    "content": [
+      { "type": "if",
+        "condition": {
+          "type": "expression",
+          "category": "jsexpression",
+          "objectrefs": [
+            {"type": "expression","category": "objectref", "path": ["value"]}
+          ],
+          "code": "a0 === \"test\" || a0 === false || a0 === null || a0 === 123",
+          "bound": true
+        },
+        "content1": [
+          {"type": "text","value": "World "}
+        ]
+      }
+    ]
+  },
+  {"type": "plaintext","value": "\r\n"}
+]
+    
+##### Template Code
+test=[
+  n.$if( {e1:[6,function(a0) {return (a0 === \"test\" || a0 === false || a0 === null || a0 === 123);},2],
+          e2:[1,1,"value"]}, 1, [ 
+      n.$text(0,["World "])
+  ])
+]

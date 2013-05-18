@@ -134,6 +134,40 @@ var test4 = require("hsp/rt").template(["person"], function(n) {
 });
 
 
+/***
+# template test5(data)
+  {if (data.value === "test" || data.value===false || data.value===null || data.value===123)} 
+    Hello
+  {/if}
+# /template
+***/
+
+var test5 = require("hsp/rt").template(["data"], function(n) {
+	return [
+	  n.$if( {e1:[6,function(a0) {return (a0 === "test" || a0 === false || a0 === null || a0 === 123);},2],
+	          e2:[1,2,"data","value"]}, 1, [ 
+	      n.$text(0,["Hello"])
+	  ])
+	]
+});
+
+/***
+# template test6
+  {if (!false)} 
+    Hello
+  {/if}
+# /template
+***/
+
+var test6 = require("hsp/rt").template([], function(n) {
+	return [
+	  n.$if( {e1:[6,function() {return (!false);}]}, 1, [ 
+	      n.$text(0,["Hello"])
+	  ])
+	]
+});
+
+
 describe("If Node", function () {
 	var ELEMENT_NODE=1;
 	var TEXT_NODE=3;
@@ -234,6 +268,39 @@ describe("If Node", function () {
 		var ch2=n.childNodes[1].childNodes[0];
 		expect(ch1.node).not.toEqual(null);
 		expect(ch2.node.nodeValue).toEqual("Omer!");
+		n.$dispose();
+	});
+
+	it("tests jsexpression as if condition", function() {
+		var dm={value:123};
+		var n=test5(dm);
+		expect(n.childNodes.length).toEqual(1);
+		var if1=n.childNodes[0];
+		expect(if1.childNodes.length).toEqual(1);
+		var text1=if1.childNodes[0];
+		expect(text1.node.nodeValue).toEqual("Hello");
+
+		json.set(dm,"value","foo");
+		hsp.refresh();
+		expect(if1.childNodes).toEqual(null);
+
+		json.set(dm,"value","test");
+		hsp.refresh();
+		expect(if1.childNodes.length).toEqual(1);
+		text1=if1.childNodes[0];
+		expect(text1.node.nodeValue).toEqual("Hello");
+
+		n.$dispose();
+	});
+
+	it("tests jsexpression as if condition w/o any argument", function() {
+		var n=test6();
+		expect(n.childNodes.length).toEqual(1);
+		var if1=n.childNodes[0];
+		expect(if1.childNodes.length).toEqual(1);
+		var text1=if1.childNodes[0];
+		expect(text1.node.nodeValue).toEqual("Hello");
+
 		n.$dispose();
 	});
 

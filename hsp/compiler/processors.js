@@ -277,6 +277,22 @@ function formatExpression(expression, firstIdx, walker) {
 	} else if (cat === 'event') {
 		code=['e',exprIdx,':[0,1,"event"]'].join('');
 		nextIndex++;
+	} else if (cat === 'jsexpression') {
+		var refs=expression.objectrefs, ref, e, idx=exprIdx+1, exprs=[], exprIdxs=[];
+		var args=[], sz=refs.length, argSeparator=(sz>0)? ',' : '';
+		for (var i=0;sz>i;i++) {
+			ref=refs[i];
+			args[i]="a"+i;
+			e=formatExpression(ref,idx,walker);
+			exprs.push(e.code);
+			exprIdxs[i]=e.exprIdx;
+			idx=e.nextIndex;
+		}
+		var func=['function(',args.join(','),') {return (',expression.code.replace(/"/g,'\\"'),');}'].join('');
+		var code0=['e',exprIdx,':[6,',func,argSeparator,exprIdxs.join(','),']'].join('');
+		exprs.splice(0,0,code0);
+		code = exprs.join(',');
+		nextIndex=exprIdxs[exprIdxs.length-1]+1;
 	} else {
 		walker.logError("Unsupported expression: "+cat,expression);
 	}

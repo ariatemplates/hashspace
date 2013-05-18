@@ -1,6 +1,11 @@
 /*
  * Partial grammar for hashspace that separates all statement or html element blocks
  * and return it as an Array
+ * 
+ * The last part of this file corresponds to fragments of the JavaScript grammar 
+ * written by David Majda (minor modifications have been added to cope 
+ * with hashspace constraints)
+ * @see https://github.com/dmajda/pegjs
  */
 
 TemplateFile
@@ -82,11 +87,11 @@ InvalidBlock
   {return {type:"invalidblock", code:chars.join(''), line:line, column:column}}
 
 IfBlock "if statement"
-  = "{" _ "if " _ expr:Expression _ "}" EOS?
+  = "{" _ "if " _ expr:HExpression _ "}" EOS?
   {return {type:"if", condition:expr, line:line, column:column}}
 
 ElseIfBlock "elseif statement" 
-  = "{" _ "else " _ "if" _ expr:( Expression / ( "(" _ expr2:Expression _ ")" ) {return expr2}) _ "}" EOS?
+  = "{" _ "else " _ "if" _ expr:( HExpression / ( "(" _ expr2:HExpression _ ")" ) {return expr2}) _ "}" EOS?
   {return {type:"elseif", value:expr, line:line, column:column}}
 
 ElseBlock
@@ -166,7 +171,7 @@ HTMLAttributeChar // TODO look at W3C specs
     / [^{\"\n\r]
 
 ExpressionBlock
-  = "{" ubflag:":"? e:Expression* "}" // we need to keep a list of expression to match expressions starting with a valid part
+  = "{" ubflag:":"? e:HExpression* "}" // we need to keep a list of expression to match expressions starting with a valid part
   {
     var r={};
     if (e.length==1) {
@@ -188,13 +193,16 @@ ExpressionBlock
     return r;
   }
 
-Expression
-  = Expression1 
-    / "(" _ exp:Expression1 _ ")" {return exp}
+HExpression
+  = HExpression1 
+    / "(" _ exp:HExpression1 _ ")" {return exp}
     / InvalidExpressionValue
 
-Expression1
-  = JSLiteral / JSFunctionCall / JSObjectRef
+HExpression1
+  =   JSLiteral 
+    / JSFunctionCall 
+    / JSObjectRef 
+    / ce:ConditionalExpressionNoIn {if (!ce.category) ce.category="jsexpression";return ce;}
 
 InvalidExpressionValue
   = chars:[^}]+
@@ -224,6 +232,19 @@ EOS "end of statement" //
 EOF "end of file"
   = !.
 
+__ // changed
+  = (WhiteSpace / EOL / Comment)*
+
+Comment "comment"
+  = MultiLineComment
+  / SingleLineComment
+
+MultiLineComment
+  = "/*" (!"*/" .)* "*/"
+
+SingleLineComment
+  = "//" (!EOL .)*
+
 // ################################################################################
 
 JSObjectRef "JS object reference"
@@ -243,14 +264,15 @@ JSFunctionCall "JS function reference"
   {if (args==='') args=[];return {category:"functionref", path:fnpath.path, args:args, code:fnpath.code+"("+args.join(",")+")"}} 
 
 JSLiteral
-  = NullLiteral       { return {category: "null", code:"null"};}
-  / v:BooleanLiteral  { return {category: "boolean", value:v.value, code:v.value};}
-  / v:NumericLiteral  { return {category: "number", value: v, code:v};}
-  / v:StringLiteral   { return {category: "string",  value: v, code:v};}
+  = NullLiteral       { return {type:"expression", category: "null", code:"null"};}
+  / v:BooleanLiteral  { return {type:"expression", category: "boolean", value:v.value, code:""+v.value};}
+  / v:NumericLiteral  { return {type:"expression", category: "number", value: v, code:""+v};}
+  / v:StringLiteral   { return {type:"expression", category: "string",  value: v, code:""+v};}
 
 // ################################################################################
 /*!
- * This part is taken from the JavaScript PEGjs grammar by David Majda
+ * The last part of this file is taken & modified from the JavaScript PEGjs grammar 
+ * by David Majda
  * https://github.com/dmajda/pegjs
  *
  * JavaScript parser based on the grammar described in ECMA-262, 5th ed.
@@ -433,3 +455,600 @@ HexEscapeSequence
 UnicodeEscapeSequence
   = "u" h1:HexDigit h2:HexDigit h3:HexDigit h4:HexDigit 
   {return String.fromCharCode(parseInt("0x" + h1 + h2 + h3 + h4));}
+
+
+/* ===== A.3 Expressions ===== */
+
+PrimaryExpression // changed
+  = name:Identifier { return { type: "expression", "category": "objectref", "path": [name]}; }
+  / JSLiteral
+  / ArrayLiteral
+  / ObjectLiteral
+  / "(" __ expression:Expression __ ")" { return expression; }
+
+ArrayLiteral
+  = "[" __ elements:ElementList? __ (Elision __)? "]" {
+      return {
+        type:     "ArrayLiteral",
+        elements: elements !== "" ? elements : []
+      };
+    }
+
+ElementList
+  = (Elision __)?
+    head:AssignmentExpression
+    tail:(__ "," __ Elision? __ AssignmentExpression)* {
+      var result = [head];
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][5]);
+      }
+      return result;
+    }
+
+Elision
+  = "," (__ ",")*
+
+ObjectLiteral
+  = "{" __ properties:(PropertyNameAndValueList __ ("," __)?)? "}" {
+      return {
+        type:       "ObjectLiteral",
+        properties: properties !== "" ? properties[0] : []
+      };
+    }
+
+PropertyNameAndValueList
+  = head:PropertyAssignment tail:(__ "," __ PropertyAssignment)* {
+      var result = [head];
+      for (var i = 0; i < tail.length; i++) {
+        result.push(tail[i][3]);
+      }
+      return result;
+    }
+
+PropertyAssignment // changed
+  = name:PropertyName __ ":" __ value:AssignmentExpression {
+      return {
+        type:  "PropertyAssignment",
+        name:  name,
+        value: value
+      };
+    }
+
+PropertyName
+  = IdentifierName
+  / StringLiteral
+  / NumericLiteral
+
+PropertySetParameterList
+  = Identifier
+
+MemberExpression // changed
+  = base:(
+        PrimaryExpression
+    )
+    accessors:(
+        __ "[" __ name:Expression __ "]" { return name; }
+      / __ "." __ name:IdentifierName    { return name; }
+    )* {
+      var result = base;
+      for (var i = 0; i < accessors.length; i++) {
+        result = {
+          type: "PropertyAccess",
+          base: result,
+          name: accessors[i]
+        };
+      }
+      return result;
+    }
+
+NewExpression // changed
+  = MemberExpression
+
+CallExpression
+  = base:(
+      name:MemberExpression __ arguments:Arguments {
+        return {
+          type:      "FunctionCall",
+          name:      name,
+          arguments: arguments
+        };
+      }
+    )
+    argumentsOrAccessors:(
+        __ arguments:Arguments {
+          return {
+            type:      "FunctionCallArguments",
+            arguments: arguments
+          };
+        }
+      / __ "[" __ name:Expression __ "]" {
+          return {
+            type: "PropertyAccessProperty",
+            name: name
+          };
+        }
+      / __ "." __ name:IdentifierName {
+          return {
+            type: "PropertyAccessProperty",
+            name: name
+          };
+        }
+    )* {
+      var result = base;
+      for (var i = 0; i < argumentsOrAccessors.length; i++) {
+        switch (argumentsOrAccessors[i].type) {
+          case "FunctionCallArguments":
+            result = {
+              type:      "FunctionCall",
+              name:      result,
+              arguments: argumentsOrAccessors[i].arguments
+            };
+            break;
+          case "PropertyAccessProperty":
+            result = {
+              type: "PropertyAccess",
+              base: result,
+              name: argumentsOrAccessors[i].name
+            };
+            break;
+          default:
+            throw new Error(
+              "Invalid expression type: " + argumentsOrAccessors[i].type
+            );
+        }
+      }
+      return result;
+    }
+
+Arguments
+  = "(" __ arguments:ArgumentList? __ ")" {
+    return arguments !== "" ? arguments : [];
+  }
+
+ArgumentList
+  = head:AssignmentExpression tail:(__ "," __ AssignmentExpression)* {
+    var result = [head];
+    for (var i = 0; i < tail.length; i++) {
+      result.push(tail[i][3]);
+    }
+    return result;
+  }
+
+LeftHandSideExpression
+  = CallExpression
+  / NewExpression
+
+PostfixExpression
+  = expression:LeftHandSideExpression _ operator:PostfixOperator {
+      return {
+        type:       "PostfixExpression",
+        operator:   operator,
+        expression: expression
+      };
+    }
+  / LeftHandSideExpression
+
+PostfixOperator
+  = "++"
+  / "--"
+
+UnaryExpression
+  = PostfixExpression
+  / operator:UnaryOperator __ expression:UnaryExpression {
+      return {
+        type:       "UnaryExpression",
+        operator:   operator,
+        expression: expression
+      };
+    }
+
+UnaryOperator // changed
+  = "void"
+  / "typeof"
+  / "++"
+  / "--"
+  / "+"
+  / "-"
+  / "~"
+  /  "!"
+
+MultiplicativeExpression
+  = head:UnaryExpression
+    tail:(__ MultiplicativeOperator __ UnaryExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+MultiplicativeOperator
+  = operator:("*" / "/" / "%") !"=" { return operator; }
+
+AdditiveExpression
+  = head:MultiplicativeExpression
+    tail:(__ AdditiveOperator __ MultiplicativeExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+AdditiveOperator
+  = "+" !("+" / "=") { return "+"; }
+  / "-" !("-" / "=") { return "-"; }
+
+ShiftExpression
+  = head:AdditiveExpression
+    tail:(__ ShiftOperator __ AdditiveExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+ShiftOperator
+  = "<<"
+  / ">>>"
+  / ">>"
+
+RelationalExpression
+  = head:ShiftExpression
+    tail:(__ RelationalOperator __ ShiftExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+RelationalOperator
+  = "<="
+  / ">="
+  / "<"
+  / ">"
+  / "instanceof"
+  / "in"
+
+RelationalExpressionNoIn
+  = head:ShiftExpression
+    tail:(__ RelationalOperatorNoIn __ ShiftExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+RelationalOperatorNoIn
+  = "<="
+  / ">="
+  / "<"
+  / ">"
+  / "instanceof"
+
+EqualityExpression
+  = head:RelationalExpression
+    tail:(__ EqualityOperator __ RelationalExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+EqualityExpressionNoIn
+  = head:RelationalExpressionNoIn
+    tail:(__ EqualityOperator __ RelationalExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+EqualityOperator
+  = "==="
+  / "!=="
+  / "=="
+  / "!="
+
+BitwiseANDExpression
+  = head:EqualityExpression
+    tail:(__ BitwiseANDOperator __ EqualityExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseANDExpressionNoIn
+  = head:EqualityExpressionNoIn
+    tail:(__ BitwiseANDOperator __ EqualityExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseANDOperator
+  = "&" !("&" / "=") { return "&"; }
+
+BitwiseXORExpression
+  = head:BitwiseANDExpression
+    tail:(__ BitwiseXOROperator __ BitwiseANDExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseXORExpressionNoIn
+  = head:BitwiseANDExpressionNoIn
+    tail:(__ BitwiseXOROperator __ BitwiseANDExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseXOROperator
+  = "^" !("^" / "=") { return "^"; }
+
+BitwiseORExpression
+  = head:BitwiseXORExpression
+    tail:(__ BitwiseOROperator __ BitwiseXORExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseORExpressionNoIn
+  = head:BitwiseXORExpressionNoIn
+    tail:(__ BitwiseOROperator __ BitwiseXORExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+BitwiseOROperator
+  = "|" !("|" / "=") { return "|"; }
+
+LogicalANDExpression
+  = head:BitwiseORExpression
+    tail:(__ LogicalANDOperator __ BitwiseORExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+LogicalANDExpressionNoIn
+  = head:BitwiseORExpressionNoIn
+    tail:(__ LogicalANDOperator __ BitwiseORExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+LogicalANDOperator
+  = "&&" !"=" { return "&&"; }
+
+LogicalORExpression
+  = head:LogicalANDExpression
+    tail:(__ LogicalOROperator __ LogicalANDExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+LogicalORExpressionNoIn
+  = head:LogicalANDExpressionNoIn
+    tail:(__ LogicalOROperator __ LogicalANDExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+LogicalOROperator
+  = "||" !"=" { return "||"; }
+
+ConditionalExpression
+  = condition:LogicalORExpression __
+    "?" __ trueExpression:AssignmentExpression __
+    ":" __ falseExpression:AssignmentExpression {
+      return {
+        type:            "ConditionalExpression",
+        condition:       condition,
+        trueExpression:  trueExpression,
+        falseExpression: falseExpression
+      };
+    }
+  / LogicalORExpression
+
+// This is the one we use in hashspace
+ConditionalExpressionNoIn
+  = condition:LogicalORExpressionNoIn __
+    "?" __ trueExpression:AssignmentExpressionNoIn __
+    ":" __ falseExpression:AssignmentExpressionNoIn {
+      return {
+        type:            "ConditionalExpression",
+        condition:       condition,
+        trueExpression:  trueExpression,
+        falseExpression: falseExpression
+      };
+    }
+  / LogicalORExpressionNoIn
+
+// Not used in hashspace
+AssignmentExpression
+  = left:LeftHandSideExpression __
+    operator:AssignmentOperator __
+    right:AssignmentExpression {
+      return {
+        type:     "AssignmentExpression",
+        operator: operator,
+        left:     left,
+        right:    right
+      };
+    }
+  / ConditionalExpression
+
+AssignmentExpressionNoIn
+  = left:LeftHandSideExpression __
+    operator:AssignmentOperator __
+    right:AssignmentExpressionNoIn {
+      return {
+        type:     "AssignmentExpression",
+        operator: operator,
+        left:     left,
+        right:    right
+      };
+    }
+  / ConditionalExpressionNoIn
+
+AssignmentOperator
+  = "=" (!"=") { return "="; }
+  / "*="
+  / "/="
+  / "%="
+  / "+="
+  / "-="
+  / "<<="
+  / ">>="
+  / ">>>="
+  / "&="
+  / "^="
+  / "|="
+
+Expression
+  = head:AssignmentExpression
+    tail:(__ "," __ AssignmentExpression)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }
+
+ExpressionNoIn
+  = head:AssignmentExpressionNoIn
+    tail:(__ "," __ AssignmentExpressionNoIn)* {
+      var result = head;
+      for (var i = 0; i < tail.length; i++) {
+        result = {
+          type:     "BinaryExpression",
+          operator: tail[i][1],
+          left:     result,
+          right:    tail[i][3]
+        };
+      }
+      return result;
+    }

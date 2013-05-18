@@ -40,11 +40,9 @@ var test1 = require("hsp/rt").template(["person"], function(n) {
 # template test2(person)
 	<div title="test2" class="t2 {person.gender}" tabIndex="{person.idx}">
 		{person.firstName} / {person.lastName} 
-		[
 		<span class="{person.ffLevel}">
 			Frequent flyer #: {person.ffNbr}
 		</span>
-		]
 	</div>
 # /template
 ***/

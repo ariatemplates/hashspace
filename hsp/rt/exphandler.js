@@ -33,6 +33,7 @@ var ExpHandler = klass({
 	 *  3: callback expression 	- e.g. {e1:[3,2,"ctl","deleteItem",1,2,1,0]}
 	 *  4: callback literal 	- e.g. {e1:[4,1,myfunc,1,2,1,0]}
 	 *  5: literal value 		- e.g. {e1:[5,"some value"]}
+	 *  6: function expression  - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}
 	 */
 	$constructor:function(edef) {
 		this.exps={};
@@ -50,15 +51,18 @@ var ExpHandler = klass({
 					// simple expressions
 					exp=new DataRefExpr(v);
 				} else if (etype===3 || etype===4) {
-					// function expression
+					// function call expression
 					exp=new FuncRefExpr(v);
+				} else if (etype===6) {
+					// function expression
+					exp=new FuncExpr(v,this);
 				} else {
-					console.log("Unsupported expression type: "+etype);
+					console.warn("Unsupported expression type: "+etype);
 				}
 				if (exp) this.exps[key]=exp;
 			} else {
 				// check other types of variables - e.g. callback
-				console.log("Unsupported expression definition: "+v);
+				console.warn("Unsupported expression definition: "+v);
 			}
 		}
 	},
@@ -159,7 +163,7 @@ var DataRefExpr=klass({
 
 /**
  * Class representing a function reference expression
- * (can be used for event hanler callbacks or for text or sub-template insertion)
+ * (can be used for event handler callbacks or for text or sub-template insertion)
  *  3: callback expression 	- e.g. {e1:[3,2,"ctl","deleteItem",1,2,1,0]}
  *  4: callback literal 	- e.g. {e1:[4,1,myfunc,1,2,1,0]}
  */
@@ -263,3 +267,53 @@ var FuncRefExpr=klass({
 		fn.apply(ctxt,cbargs);
 	}
 })
+
+
+/**
+ * Class representing a function expression
+ * (used to represent a javascript expression such as {person.age+1})
+ *  6: function expression  - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}
+ */
+var FuncExpr=klass({
+	/**
+	 * Class constructor
+	 * @param {Array} desc the expression descriptor - e.g. [6,function(a0,a1){return a0+a1;},2,3]
+	 */
+	$constructor:function(desc, exphandler) {
+		// call parent constructor
+		this.fn=desc[1];
+		this.eh=exphandler;
+		var argLength=desc.length-2;
+		if (argLength>0) {
+			this.args=desc.slice(2);
+		} else {
+			this.args=null;
+		}
+	},
+
+	/**
+	 * Return the value processed by the function expression
+	 * if one of the argument is undefined and leads to an invalid execution, the defvalue argument is returned
+	 */
+	getValue:function(vscope, defvalue) {
+		if (!this.args) {
+			try {
+				return this.fn.call({});
+			} catch(ex) {
+				return defvalue;
+			}
+		} else {
+			var argvalues=[];
+			for (var i=0, sz=this.args.length;sz>i;i++) {
+				argvalues[i]=this.eh.getValue(this.args[i],vscope,null);
+			}
+			try {
+				var r=this.fn.apply({},argvalues);
+				return r;
+			} catch(ex){
+				return defvalue;
+			}
+
+		}
+	}
+});
