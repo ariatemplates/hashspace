@@ -6,4 +6,4 @@
 # /template
 
 // display the template in the #output div
-hsp.display("output", hello("World"));
+hsp.display(hello("World"),"output");

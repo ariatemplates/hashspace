@@ -24,7 +24,7 @@ var persons=[
 ]
 
 // display the template in the #output div
-hsp.display("output", list(persons));
+hsp.display(list(persons),"output");
 
 var count=0;
 

@@ -96,7 +96,7 @@ var Playground = module.exports = klass({
      */
     showSample:function(sampleIdx) {
         // load layout template
-        hsp.display(this.containerId,layout.mainLayout(this.data,this));
+        hsp.display(layout.mainLayout(this.data,this),this.containerId);
         this.initEditor();
         this.loadSample(sampleIdx);
     },
@@ -128,7 +128,7 @@ var Playground = module.exports = klass({
     logErrors:function(fileName,errors) {
         var d=this.data;
         json.set(d,"errors", errors);
-        hsp.display("output",layout.errorList(d.errors));
+        hsp.display(layout.errorList(d.errors),"output");
         return false;
     },
 

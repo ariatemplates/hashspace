@@ -3,7 +3,8 @@
     <div class="subtemplates">
         {foreach p in persons}
             {personDescription(p)}
-            <br/> // TODO if !p_islast
+            // add a separator between each person
+            {if !p_islast} <br/> {/if}
         {/foreach}
     </div>
 # /template
@@ -33,4 +34,4 @@ var persons=[
 ]
 
 // display the template in the #output div
-hsp.display("output", personList(persons));
+hsp.display(personList(persons),"output");

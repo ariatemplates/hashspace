@@ -28,5 +28,5 @@ function changeMessage() {
 // set a first message value
 changeMessage();
 // display the template in the #output div
-hsp.display("output", message(msg));
+hsp.display(message(msg),"output");
 
