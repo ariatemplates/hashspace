@@ -1,0 +1,22 @@
+##### Template:
+# template test(x,y)
+    {if !(x++ && y--)}
+        Hello
+    {/if}
+# /template
+
+##### Error:
+[
+  {
+    "description": "Postfix operator ++ is not allowed",
+    "line": 2,
+    "column": 9,
+    "code": "!((a0)++ && (a1)--)"
+  },
+  {
+    "description": "Postfix operator -- is not allowed",
+    "line": 2,
+    "column": 9,
+    "code": "!((a0)++ && (a1)--)"
+  }
+]

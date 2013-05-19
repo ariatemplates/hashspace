@@ -202,7 +202,7 @@ HExpression1
   =   JSLiteral 
     / JSFunctionCall 
     / JSObjectRef 
-    / ce:ConditionalExpressionNoIn {if (!ce.category) ce.category="jsexpression";return ce;}
+    / ce:ConditionalExpressionNoIn {if (!ce.category) ce.category="jsexpression";ce.line=line;ce.column=column;return ce;}
 
 InvalidExpressionValue
   = chars:[^}]+

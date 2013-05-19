@@ -1,0 +1,21 @@
+##### Template:
+# template test(value)
+  {if !(value>3)} 
+    Hello
+  {/if}
+# /template
+
+##### Parsed Tree
+
+"skip"
+
+##### Syntax Tree
+
+"skip"
+
+##### Template Code
+test=[
+  n.$if( {e1:[6,function(a0) {return (!(a0 > 3));},2], e2:[1,1,"value"]}, 1, [ 
+      n.$text(0,["Hello "])
+  ])
+]

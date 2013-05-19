@@ -1,0 +1,16 @@
+##### Template:
+# template test(value)
+    {if !(++value)}
+        Hello
+    {/if}
+# /template
+
+##### Error:
+[
+  {
+    "description": "Unary operator ++ is not allowed",
+    "line": 2,
+    "column": 9,
+    "code": "!(++(a0))"
+  }
+]

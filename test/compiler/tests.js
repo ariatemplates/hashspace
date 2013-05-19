@@ -43,21 +43,27 @@ describe('Block Parser: ', function(){
 	var testFn= function(){
 		var sample=ut.getSampleContent(this.name);
 		var bl=parser.getBlockList(sample.template);
-		if (sample.parsedTree) {
-			assert.equal(ut.jsonContains(bl, sample.parsedTree, "parsedTree"), "", "parsed tree comparison");
-		} else {
-			console.log("--------------");
-			console.log("Parsed tree for "+this.name+": ");
-			console.log(JSON.stringify(bl ,null,"  "));
+		var skip=(sample.parsedTree && sample.parsedTree==="skip");
+		if (!skip) {
+			if (sample.parsedTree) {
+				assert.equal(ut.jsonContains(bl, sample.parsedTree, "parsedTree"), "", "parsed tree comparison");
+			} else {
+				console.log("--------------");
+				console.log("Parsed tree for "+this.name+": ");
+				console.log(JSON.stringify(bl ,null,"  "));
+			}
 		}
 		
 		var r=compiler.compile(sample.template, this.name, true, true);
-		if (sample.syntaxTree) {
-			assert.equal(ut.jsonContains(r.syntaxTree, sample.syntaxTree, "syntaxTree"), "", "syntax tree comparison");
-		} else {
-			console.log("--------------");
-			console.log("Syntax tree for "+this.name+": ");
-			console.log(JSON.stringify(r.syntaxTree ,null,"  "));
+		skip=(sample.syntaxTree && sample.syntaxTree==="skip");
+		if (!skip) {
+			if (sample.syntaxTree) {
+				assert.equal(ut.jsonContains(r.syntaxTree, sample.syntaxTree, "syntaxTree"), "", "syntax tree comparison");
+			} else {
+				console.log("--------------");
+				console.log("Syntax tree for "+this.name+": ");
+				console.log(JSON.stringify(r.syntaxTree ,null,"  "));
+			}
 		}
 
 		if (sample.codeFragments) {
@@ -81,7 +87,7 @@ describe('Block Parser: ', function(){
 
 	var samples=[	"template1", "template2", "text1", "text2", "text3", "text4", "text5", "if1", "if2", "if3", "comment", 
 					"foreach1", "foreach2", "foreach3", "element1", "element2", "evthandler", "insert",
-					"jsexpression1"];
+					"jsexpression1", "jsexpression2"];
 	for (var i=0, sz=samples.length;sz>i;i++) {
 		// create one test for each sample
 		it ('validates sample ('+samples[i]+')', testFn.bind({name:samples[i]}));
