@@ -7,7 +7,7 @@
 ##### Parsed Tree:
 
 [ 
-  { type: 'plaintext', value: '\r\n'},
+  { type: 'plaintext', value: '\n'},
   { type: 'template', name: 'hello4', mod:'export', args: [], content: [
     { type: 'text', value: 'Hello World!' } 
   ]}
@@ -16,7 +16,7 @@
 ##### Syntax Tree:
 
 [ 
-  { type: 'plaintext', value: '\r\n'},
+  { type: 'plaintext', value: '\n'},
   { type: 'template', name: 'hello4', export:true, args: [], content: [
     { type: 'text', value: 'Hello World!' } 
   ]}

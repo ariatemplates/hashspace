@@ -23,7 +23,7 @@ describe('Block Parser: ', function(){
 				'\tAgain!',
 				'# /template',
 				'var z;'
-				].join("\r\n");
+				].join("\n");
 
 		assert.equal(tpl,s,"sample content");
 	});

@@ -17,11 +17,11 @@ var z;
 ##### Parsed Tree:
 
 [ 
-  { type: 'plaintext', value: 'var x=\"text1\";\r\nfunction func() {var x=\"text2\"};\r\n\r\n'},
+  { type: 'plaintext', value: 'var x=\"text1\";\nfunction func() {var x=\"text2\"};\n\n'},
   { type: 'template', name: 'hello1', args: [], content: [
     { type: 'text', value: 'Hello World!' } 
   ]},
-  { type: 'plaintext', value: '\r\n// comment\r\nfunction func2(z) {return z;}\r\n\r\n'},
+  { type: 'plaintext', value: '\n// comment\nfunction func2(z) {return z;}\n\n'},
   { type: 'template', name: 'hello1bis', args: [ 'arg1', 'arg2' ], content: [
     { type: 'text', value: 'Hello Again!' } 
   ]}
@@ -30,11 +30,11 @@ var z;
 ##### Syntax Tree:
 
 [ 
-  { type: 'plaintext', value: 'var x=\"text1\";\r\nfunction func() {var x=\"text2\"};\r\n\r\n'},
+  { type: 'plaintext', value: 'var x=\"text1\";\nfunction func() {var x=\"text2\"};\n\n'},
   { type: 'template', name: 'hello1', args: [], content: [
     { type: 'text', value: 'Hello World!' } 
   ]},
-  { type: 'plaintext', value: '\r\n// comment\r\nfunction func2(z) {return z;}\r\n\r\n'},
+  { type: 'plaintext', value: '\n// comment\nfunction func2(z) {return z;}\n\n'},
   { type: 'template', name: 'hello1bis', args: [ 'arg1', 'arg2' ], content: [
     { type: 'text', value: 'Hello Again!' } 
   ]}
