@@ -8,7 +8,7 @@ module.exports = [
             {src:"hello.hsp", main:true}
         ]
     }, {
-        title:"Simpe event handler",
+        title:"Simple event handler",
         folder:"clickhandler",
         description:"description.md",
         files: [
