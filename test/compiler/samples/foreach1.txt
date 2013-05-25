@@ -15,7 +15,7 @@
       {"type": "text","value": "Foreach test: "},
       {"type": "foreach","item":"thing","key":"thing_key",colref:{"category":"objectref","path": ["things"]}},
       {"type": "text","value": " - "},
-      {"type": "expression","category": "objectref","bound": true,"path": [ "thing" ]},
+      {"type": "expression", expType:"Variable", "category": "jsexpression", name:"thing"},
       {"type": "text","value": " - "},
       {"type": "endforeach"}
     ]

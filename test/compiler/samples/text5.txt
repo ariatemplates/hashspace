@@ -11,7 +11,14 @@
     "args": [ "person"],
     "content": [
       {"type": "element", "name": "div", "closed": false, "attributes": []},
-      {"type": "expression", "category": "objectref", "bound": true, "path": ["person","name"], "code": "person.name"},
+      {
+        "type": "expression",
+        "expType": "PropertyAccess",
+        "category": "jsexpression",
+        "bound": true,
+        "base": {type:"Variable", name:"person"},
+        "name": "name"
+      },
       {"type": "endelement", "name": "div"}
     ]
   }
@@ -30,8 +37,7 @@
                 "type": "expression",
                 "bound": true,
                 "category": "objectref",
-                "path": ["person","name"],
-                "code": "person.name",
+                "path": ["person","name"]
               }
         ]}
       ]}

@@ -1,0 +1,17 @@
+##### Template:
+# template test(person)
+	{content1()}
+# /template
+
+##### Parsed Tree:
+
+"skip"
+
+##### Syntax Tree:
+
+"skip"
+
+##### Template Code
+test=[
+    n.$insert({e1:[4,1,content1]},1)
+]

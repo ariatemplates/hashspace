@@ -11,12 +11,12 @@
     "description": "Postfix operator ++ is not allowed",
     "line": 2,
     "column": 9,
-    "code": "!((a0)++ && (a1)--)"
+    "code": "!(((a0)++ && (a1)--))"
   },
   {
     "description": "Postfix operator -- is not allowed",
     "line": 2,
     "column": 9,
-    "code": "!((a0)++ && (a1)--)"
+    "code": "!(((a0)++ && (a1)--))"
   }
 ]

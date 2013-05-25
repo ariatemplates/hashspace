@@ -175,7 +175,11 @@ ExpressionBlock
   {
     var r={};
     if (e.length==1) {
-      r=e[0];if (!r.type) r.type="expression"; r.bound=(ubflag.length==0); r.line=line; r.column=column;
+      r=e[0];
+      if (r.type!=="invalidexpression") {
+        r.expType=r.type; r.type="expression";
+      }
+      r.bound=(ubflag.length==0); r.line=line; r.column=column;
     } else {
       var code=[], itm;
       for (var i=0, sz=e.length;sz>i;i++) {
@@ -185,7 +189,7 @@ ExpressionBlock
         } else if (itm.code) {
           code.push(itm.code);
         } else {
-          code.push("TODO");
+          code.push("(...)"); // TODO
         }
       }
       r.type="expression"; r.category="invalidexpression"; r.code=code.join(''); r.line=line; r.column=column;
@@ -194,15 +198,13 @@ ExpressionBlock
   }
 
 HExpression
-  = HExpression1 
-    / "(" _ exp:HExpression1 _ ")" {return exp}
+  = HExpressionContent 
+    / "(" _ exp:HExpressionContent _ ")" {return exp}
     / InvalidExpressionValue
 
-HExpression1
-  =   JSLiteral 
-    / JSFunctionCall 
-    / JSObjectRef 
-    / ce:ConditionalExpressionNoIn {if (!ce.category) ce.category="jsexpression";ce.line=line;ce.column=column;return ce;}
+HExpressionContent
+  =  ce:ConditionalExpressionNoIn 
+  {if (!ce.category) ce.category="jsexpression"; ce.expType=ce.type;ce.line=line;ce.column=column;return ce;}
 
 InvalidExpressionValue
   = chars:[^}]+
@@ -459,8 +461,8 @@ UnicodeEscapeSequence
 
 /* ===== A.3 Expressions ===== */
 
-PrimaryExpression // changed
-  = name:Identifier { return { type: "expression", "category": "objectref", "path": [name]}; }
+PrimaryExpression // changed 
+  = name:Identifier { return { type: "Variable", name: name, code:name }; }
   / JSLiteral
   / ArrayLiteral
   / ObjectLiteral
@@ -538,6 +540,8 @@ MemberExpression // changed
           name: accessors[i]
         };
       }
+      result.code=base.code
+      if (accessors.length) result.code+="."+accessors.join(".");
       return result;
     }
 

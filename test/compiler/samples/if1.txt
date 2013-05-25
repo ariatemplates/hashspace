@@ -21,11 +21,19 @@
     "args": ["value1","value2"],
     "content": [
       {"type": "text","value": "Hello  "},
-      {"type": "if", "condition": {"category": "objectref", "path": ["value1"]}},
+      {"type": "if", "condition": {
+        "type": "Variable",
+        "category": "jsexpression",
+        "name": "value1"
+      }},
       {"type": "text","value": " World "},
       {"type": "endif"},
       {"type": "text","value": " "},
-      {"type": "if", "condition": {"category": "objectref", "path": ["value2"]}},
+      {"type": "if", "condition": {
+        "type": "Variable",
+        "category": "jsexpression",
+        "name": "value2"
+      }},
       {"type": "text","value": "A "},
       {"type": "else"},
       {"type": "text","value": "B "},

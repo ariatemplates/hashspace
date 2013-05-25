@@ -16,29 +16,49 @@
     	{type:"element", name:"img", closed:true, attributes:[
     		{type:"attribute", name:"src", value:[
     			{type:"text", value:"http://someting.com/"},
-    			{type:"expression",category:"objectref",bound:true,path:["path"]}
-    		]},
+    			{type:"expression", "category": "jsexpression", expType:"Variable", "bound": true, name:"path"}
+     		]},
     		{type:"attribute", name:"onclick", value:[
-    			{type:"expression",category:"functionref", bound:true, path:["ctl","handleClick"], args:[]}
+          {"type": "expression", "category": "jsexpression", "expType": "FunctionCall", "bound": true,
+            "name": {
+              "type": "PropertyAccess",
+              "base": {"type": "Variable", "name": "ctl"},
+              "name": "handleClick"
+            },
+            "arguments": []
+          }
     		]}
     	]},
     	{type:"element", name:"img", closed:true, attributes:[
     		{type:"attribute", name:"onclick", value:[
-    			{type:"expression",category:"functionref", bound:true, path:["ctl","handleClick"], args:[
-    				{"category": "objectref", "path": ["path"]},
-    				{"category": "objectref", "path": ["person", "name"]},
-    				{"category": "string",value: "literal arg"},
-    				{"category": "event"}
-    			]}
+          {"type": "expression", "category": "jsexpression", "expType": "FunctionCall", "bound": true,
+            "name": {
+              "type": "PropertyAccess",
+              "base": {"type": "Variable", "name": "ctl"},
+              "name": "handleClick"
+            },
+            "arguments": [
+              {"type": "Variable","name": "path"},
+              {"type": "PropertyAccess", "base": {"type": "Variable","name": "person"}, "name": "name"},
+              {"type": "expression", "category": "string", "value": "literal arg", "code": "literal arg"},
+              {"type": "Variable", "name": "event"}
+            ]
+          }
     		]}
     	]},
     	{type:"element", name:"img", closed:true, attributes:[
     		{type:"attribute", name:"onclick", value:[
-    			{type:"expression",category:"functionref", bound:true, path:["doClick"], args:[
-    				{"category": "string",value: "blah"},
-    				{"category": "event"}
-    			]}
-    		]}
+          {"type": "expression", "category": "jsexpression", "expType": "FunctionCall", "bound": true,
+            "name": {
+              "type": "Variable",
+              "name": "doClick"
+            },
+            "arguments": [
+              {"type": "expression", "category": "string", "value": "blah", "code": "blah"},
+              {"type": "Variable", "name": "event"}
+            ]
+          }
+        ]}
     	]}
     ]
   }
@@ -64,13 +84,13 @@
           	    {"category": "objectref", "path": ["path"]},
           	    {"category": "objectref", "path": ["person", "name"]},
           	    {"category": "string",value: "literal arg"},
-          	    {"category": "event"}
+          	    {"category": "objectref", "path": ["event"]}
           	]}
       ],"content": []},
       {type:"element", name:"img", closed:true, attributes:[
           	{name:"onclick", type:"expression", "category": "functionref", "bound": true, path:["doClick"], args:[
           	    {"category": "string",value: "blah"},
-          	    {"category": "event"}
+          	    {"category": "objectref", "path": ["event"]}
           	]}
       ],"content": []}
     ]

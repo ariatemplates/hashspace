@@ -150,7 +150,7 @@ var SyntaxTree=klass({
 	 * Text block management: regroups adjacent text and expression blocks
 	 */
 	_text:function(idx,blocks,out) {
-		var sz=blocks.length, idx2=idx, goahead=(sz>idx2), b, buf=[], n=null;
+		var sz=blocks.length, idx2=idx, goahead=(sz>idx2), b, buf=[], n=null, insertIdx=-1;
 
 		while (goahead) {
 			b=blocks[idx2];
@@ -159,12 +159,21 @@ var SyntaxTree=klass({
 					buf.push(b);
 				}
 			} else if (b.type==="expression") {
+				if (b.category==="jsexpression") {
+					// pre-process expression
+					var e=new HExpression(b,this);
+					// inject the processed expression in the block list
+					b = blocks[idx2]=e.getSyntaxTree();
+				} 
+
 				if (b.category==="invalidexpression") {
 					this._logError("Invalid expression",b);
 				} else if (b.category!=="functionref") {
 					buf.push(b);
 				} else  {
 					// this is an insert statement
+					insertIdx=idx2;
+					idx2++; // will be handled below
 					goahead=false;
 				}
 			} else if (b.type==="comment") {
@@ -192,6 +201,11 @@ var SyntaxTree=klass({
 			out.push(n);
 		}
 
+		if (insertIdx>-1) {
+			// an insert block has to be added after the text block
+			this._insert(insertIdx,blocks,out);
+		}
+
 		// return the last index that was handled
 		return idx2>idx? idx2-1 : idx;
 	},
@@ -201,12 +215,11 @@ var SyntaxTree=klass({
 	 */
 	_expression:function(idx,blocks,out) {
 		var b=blocks[idx], cat=b.category;
-		if (cat==="functionref") {
-			return this._insert(idx,blocks,out);
-		} else if (cat==="invalidexpression") {
+		if (cat==="invalidexpression") {
 			this._logError("Invalid expression",b);
 			return idx;
 		}
+
 		return this._text(idx,blocks,out);
 	},
 
@@ -367,7 +380,12 @@ var SyntaxTree=klass({
 				if (type==="text" || type==="expression") {
 					if (type==="expression") {
 						var v=att.value[0], cat=v.category;
-						if (cat==="invalidexpression") {
+						if (cat==="jsexpression") {
+							// pre-process expression
+							var e=new HExpression(v,this);
+							// inject the processed expression in the block list
+							att.value[0]=e.getSyntaxTree();
+						}  else if (cat==="invalidexpression") {
 							this._logError("Invalid expression",v);
 						} else if (att.name.match(/^on/i) && cat !=="functionref") {
 							this._logError("Event handler attribute only support function expressions",v);
@@ -389,8 +407,15 @@ var SyntaxTree=klass({
 				// raise errors if we have invalid attributes
 				for (var j=0;sz2>j;j++) {
 					var v=att.value[j];
-					if (v.type==="expression" && v.category==="invalidexpression") {
-						this._logError("Invalid expression",v);
+					if (v.type==="expression") {
+						if (v.category==="jsexpression") {
+							// pre-process expression
+							var e=new HExpression(v,this);
+							// inject the processed expression in the block list
+							att.value[j]=e.getSyntaxTree();
+						}  else if (v.category==="invalidexpression") {
+							this._logError("Invalid expression",v);
+						}
 					}
 				}
 				att2={name:att.name, type:"textblock", content:att.value}
@@ -461,6 +486,10 @@ var HExpression = klass({
 	$constructor:function(node, globalSyntaxTree) {
 		this.rootExpression=node;
 		this.errors=null;
+		this.globalSyntaxTree=globalSyntaxTree;
+		if (node.expType) {
+			node.type=node.expType;
+		}
 		if (node.category!=="jsexpression") {
 			// we only reprocess jsexpression
 			this._st=node;
@@ -470,6 +499,17 @@ var HExpression = klass({
 			var code=this._process(node);
 			this.rootExpression.code=code;
 			this._st={type:"expression",category:"jsexpression",objectrefs:this._objectRefs,code:code};
+
+			// if we have only one variable, we can simplify the syntaxtree
+			if (code==="a0") {
+				this._st=this._objectRefs[0];
+			}
+
+			// add line / column nbr if present
+			if (node.line) {
+				this._st.line=node.line;
+				this._st.column=node.column;
+			}
 
 			// check errors
 			if (this.errors) {
@@ -508,7 +548,7 @@ var HExpression = klass({
 				r = this._getValue(node)
 				break;
 			case "BinaryExpression":
-				r = ''+this._process(node.left) + ' ' + node.operator + ' ' + this._process(node.right) + '';
+				r = '('+this._process(node.left) + ' ' + node.operator + ' ' + this._process(node.right) + ')';
 				break;
 			case "UnaryExpression": // e.g. !x +x -x typeof x  ++x and --x will not be supported
 				r = ''+node.operator+'('+this._process(node.expression)+')';
@@ -520,9 +560,47 @@ var HExpression = klass({
 				r = ''+'('+this._process(node.expression)+')'+node.operator;
 				this._logError('Postfix operator '+node.operator+' is not allowed');
 				break;
+			case "Variable":
+				r=this._getValue({ type: "expression", "category": "objectref", bound:node.bound, "path": [node.name]});
+				break;
+			case "PropertyAccess":
+				// this is an object ref
+				var n=node, p=[];
+				while (n) {
+					p.push(n.name);
+					n=n.base;
+				}
+				p.reverse();
+				r=this._getValue({ type: "expression", "category": "objectref", bound:node.bound, "path": p});
+				break;
+			case "FunctionCall":
+				// this is an object ref
+				var n=node.name, p=[];
+				while (n) {
+					p.push(n.name);
+					n=n.base;
+				}
+				p.reverse();
+
+				var n={ type: "expression", "category": "functionref", bound:node.bound, "path": p};
+				r=this._getValue(n);
+
+				// add arguments
+				var args2=[], args=node.arguments, sz=args? args.length : 0, e;
+				for (var i=0;sz>i;i++) {
+					if (!args[i].category) {
+						// add category otherwise HExpression will not be parsed
+						args[i].category="jsexpression";
+					}
+					e=new HExpression(args[i],this.globalSyntaxTree);
+					args2[i]=e.getSyntaxTree();
+				}
+				n.args=args2;
+				break;
 			default:
 				this._logError(node.type+'(s) are not supported yet');
-				//console.dir(node);
+				console.warn('[HExpression] '+node.type+'(s) are not supported yet:');
+				console.dir(node);
 				break;
 		}
 		return r;
@@ -541,6 +619,9 @@ var HExpression = klass({
 				for (var i=0;sz>i;i++) {
 					e=this._objectRefs[i], pl=e.path.length, ok=true;
 					// only the path may vary
+					if (e.category!=="objectref") {
+						continue;
+					}
 					if (pl===node.path.length) {
 						for (var j=0;pl>j;j++) {
 							if (e.path[j]!==node.path[j]) {
@@ -560,6 +641,14 @@ var HExpression = klass({
 					r="a"+sz; // argument variable
 					this._objectRefs[sz]=node;
 				}
+				break;
+			case "functionref":
+				// add the function call to the object ref list
+				// we don't optimize the storeage as it is less likely to have the same combination repeated 
+				// than with simple object refs
+				var sz=this._objectRefs.length;
+				r="a"+sz; // argument variable
+				this._objectRefs[sz]=node;
 				break;
 			case "string":
 				r = '"' + node.value.replace(/\"/g,'\\"') + '"';

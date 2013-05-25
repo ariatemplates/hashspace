@@ -14,11 +14,22 @@
     "args": ["person"],
     "content": [
       {type: "text", "value": "Before "},
-      {type: "expression", category: "functionref", bound:true, path:["content1"], args:[]},
+      {type: "expression", "category": "jsexpression", "expType": "FunctionCall", bound:true, 
+        "name": {
+          "type": "Variable",
+          "name": "content1"
+        },
+        "arguments": []
+      },
       {type: "text", "value": " "},
-      {type: "expression", category: "functionref", bound:true, path:["content2"], args:[
-          {category:"string", value:"First Name"},
-          {category:"objectref", path:["person","firstName"]}
+      {type: "expression", "category": "jsexpression", "expType": "FunctionCall", bound:true, 
+        name:{
+          "type": "Variable",
+          "name": "content2"
+        }, 
+        arguments:[
+          {type:"expression", category:"string", value:"First Name"},
+          {type:"PropertyAccess", base:{type:"Variable",name:"person"}, name:"firstName"}
       ]},
       {type: "text", "value": " After"}
     ]
@@ -36,8 +47,8 @@
       {type: "insert", path:["content1"], args:[]},
       {type: "text", "value": " "},
       {type: "insert", path:["content2"], args:[
-          {category:"string", value:"First Name"},
-          {category:"objectref", path:["person","firstName"]}
+          {type:"expression", category:"string", value:"First Name"},
+          {type:"expression", category:"objectref", path:["person","firstName"]}
       ]},
       {type: "text", "value": " After"}
     ]

@@ -27,7 +27,7 @@
 		{"type": "endelement",name:"b"},
 		{type:"element", name:"input", closed:true, attributes:[
     		{type:"attribute", name:"type", value:[{type:"text", value:"text"}]},
-    		{type:"attribute", name:"value", value:[{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "name" ]}]}
+    		{type:"attribute", name:"value", value:[{type:"expression", "category": "jsexpression", expType:"PropertyAccess", "bound": true, base:{type:"Variable", name:"person"}, name:"name"}]}
     	]},
     	{"type": "endelement",name:"div"}
     ]

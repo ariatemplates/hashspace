@@ -20,8 +20,13 @@
     "args": ["v1","v2"],
     "content": [
       {"type": "text","value": "Hello "},
-      {"type": "if", "condition": {"category": "objectref", "path": ["v1","isWorld"]}},
-      {"type": "if", "condition": {"category": "objectref", "path": ["v2"]}},
+      {"type": "if", "condition": {
+        "type": "PropertyAccess",
+        "category": "jsexpression",
+        "base": {type:"Variable", name:"v1"},
+        "name": "isWorld"
+      }},
+      {"type": "if", "condition": {"type": "Variable", "category": "jsexpression", "name":"v2"}},
       {"type": "text","value": "World "},
       {"type": "else"},
       {"type": "text","value": "Mate! "},

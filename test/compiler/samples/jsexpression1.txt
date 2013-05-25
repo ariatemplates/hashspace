@@ -23,7 +23,7 @@
             "left": {
               "type": "BinaryExpression", "operator": "===",
               "left": {
-                "type": "expression", "category": "objectref", "path": ["value"]
+                "type": "Variable", "name": "value"
               },
               "right": {
                 "type": "expression", "category": "string", "value": "test","code": "test"
@@ -32,7 +32,7 @@
             "right": {
               "type": "BinaryExpression", "operator": "===",
               "left": {
-                "type": "expression", "category": "objectref", "path": ["value"]
+                "type": "Variable", "name": "value"
               },
               "right": {
                 "type": "expression", "category": "boolean", "value": false, "code": "false"
@@ -42,7 +42,7 @@
           "right": {
             "type": "BinaryExpression", "operator": "===",
             "left": {
-              "type": "expression", "category": "objectref", "path": ["value"]
+              "type": "Variable", "name": "value"
             },
             "right": {
               "type": "expression", "category": "null", "code": "null"
@@ -52,7 +52,7 @@
         "right": {
           "type": "BinaryExpression", "operator": "===",
           "left": {
-            "type": "expression", "category": "objectref", "path": ["value"]
+            "type": "Variable", "name": "value"
           },
           "right": {
             "type": "expression", "category": "number", "value": 123
@@ -81,7 +81,7 @@
           "objectrefs": [
             {"type": "expression","category": "objectref", "path": ["value"]}
           ],
-          "code": "a0 === \"test\" || a0 === false || a0 === null || a0 === 123",
+          "code": "((((a0 === \"test\") || (a0 === false)) || (a0 === null)) || (a0 === 123))",
           "bound": true
         },
         "content1": [
@@ -95,8 +95,10 @@
     
 ##### Template Code
 test=[
-  n.$if( {e1:[6,function(a0) {return (a0 === \"test\" || a0 === false || a0 === null || a0 === 123);},2],
+  n.$if( {e1:[6,function(a0) {return ((((a0 === "test") || (a0 === false)) || (a0 === null)) || (a0 === 123));},2],
           e2:[1,1,"value"]}, 1, [ 
       n.$text(0,["World "])
   ])
 ]
+
+

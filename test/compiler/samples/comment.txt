@@ -23,7 +23,7 @@
       {"type": "text","value": "Hello "},
       {"type": "comment","value": " comment 1"},
       {"type": "text","value": " World! "},
-      {"type": "if", "condition": {"category": "objectref", "path": ["world"]}},
+      {"type": "if", "condition": {type:"Variable", category:"jsexpression", name:"world"}},
       {"type": "text","value": " "},
       {"type": "comment","value": " comment 2"},
       {"type": "text","value": " "},

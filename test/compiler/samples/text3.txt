@@ -14,14 +14,18 @@
       	"type": "text", "value": "Hello "
       },{
         "type": "expression",
-        "category": "objectref",
+        "expType": "PropertyAccess",
+        "category": "jsexpression",
         "bound": true,
-        "path": [ "person", "firstName" ]
+        "base": {type:"Variable", name:"person"},
+        "name": "firstName"
       },{
         "type": "expression",
-        "category": "objectref",
+        "expType": "PropertyAccess",
+        "category": "jsexpression",
         "bound": true,
-        "path": [ "person", "lastName" ]
+        "base": {type:"Variable", name:"person"},
+        "name": "lastName"
       }
     ]
   }

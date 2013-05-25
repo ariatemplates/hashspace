@@ -211,6 +211,9 @@ function formatExpression(expression, firstIdx, walker) {
 		} else {
 			var root=path[0], isRootInScope=walker.isInScope(root);
 			var arg1= isRootInScope? bound : 2;
+			if (root==="event") {
+				arg1=0;
+			}
 			if (cat==='functionref') {
 				arg1= isRootInScope? 3 : 4;
 				argExprs=[];
@@ -233,7 +236,7 @@ function formatExpression(expression, firstIdx, walker) {
 				walker.logError("Long expression paths are not supported yet");
 			} else {
 				var res, rootRef=path[0];
-				if (isRootInScope) {
+				if (isRootInScope || root==="event") {
 					rootRef='"'+rootRef+'"';
 				}
 				nextIndex++;
@@ -274,11 +277,14 @@ function formatExpression(expression, firstIdx, walker) {
 	} else if (cat === 'string') {
 		code=['e',exprIdx,':[5,"',(''+expression.value).replace(/"/g, "\\\""),'"]'].join('');
 		nextIndex++;
-	} else if (cat === 'event') {
-		code=['e',exprIdx,':[0,1,"event"]'].join('');
-		nextIndex++;
 	} else if (cat === 'jsexpression') {
 		var refs=expression.objectrefs, ref, e, idx=exprIdx+1, exprs=[], exprIdxs=[];
+
+		if (refs===undefined) {
+			console.warn("[formatExpression] The following expression has not been pre-processed - parser should be updated: ");
+			console.dir(expression);
+		}
+
 		var args=[], sz=refs.length, argSeparator=(sz>0)? ',' : '';
 		for (var i=0;sz>i;i++) {
 			ref=refs[i];
@@ -288,7 +294,7 @@ function formatExpression(expression, firstIdx, walker) {
 			exprIdxs[i]=e.exprIdx;
 			idx=e.nextIndex;
 		}
-		var func=['function(',args.join(','),') {return (',expression.code.replace(/"/g,'\\"'),');}'].join('');
+		var func=['function(',args.join(','),') {return ',expression.code,';}'].join('');
 		var code0=['e',exprIdx,':[6,',func,argSeparator,exprIdxs.join(','),']'].join('');
 		exprs.splice(0,0,code0);
 		code = exprs.join(',');

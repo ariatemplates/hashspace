@@ -26,7 +26,8 @@
 # template sampleList(data,ctl)
     // display sample title and list as a popup div
     <div class="sampleTitle" onmouseover="{ctl.showSampleList(event)}">
-        {data.sampleTitle}
+        <a>Sample #{data.sampleIndex+1}:</a> {data.sampleTitle}
+
         {if data.isSampleListVisible}
             <div class="sampleList">
                 {foreach idx,sample in data.samples}

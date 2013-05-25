@@ -1,0 +1,17 @@
+##### Template:
+# template test(value)
+  {(value=="a")+2}
+# /template
+
+##### Parsed Tree
+
+"skip"
+
+##### Syntax Tree
+
+"skip"
+
+##### Template Code
+test=[
+  n.$text({e1:[6,function(a0) {return ((a0=="a")+2);},2], e2:[1,1,"value"]}, ["",1])
+]

@@ -15,15 +15,15 @@
     "content": [
     	{type:"element", name:"div", closed:false, attributes:[
     		{type:"attribute", name:"title", value:[{type:"text", value:"Some text"}]},
-    		{type:"attribute", name:"id", value:[{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "id" ]}]},
+    		{type:"attribute", name:"id", value:[{type:"expression", "category": "jsexpression", expType:"PropertyAccess", "bound": true, base:{type:"Variable", name:"person"}, name:"id"}]},
     		{type:"attribute", name:"class", value:[
-    			{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "gender" ]},
+    			{type:"expression", "category": "jsexpression", expType:"PropertyAccess", "bound": true, base:{type:"Variable", name:"person"}, name:"gender"},
     			{type:"text", value:" "},
-    			{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "category" ]}
+    			{type:"expression", "category": "jsexpression", expType:"PropertyAccess", "bound": true, base:{type:"Variable", name:"person"}, name:"category"}
     		]}
     	]},
     	{"type": "text","value": "Hello "},
-    	{"type": "expression", "category": "objectref", "bound": true, "path": [ "person", "name" ]},
+    	{"type": "expression", "category": "jsexpression", expType:"PropertyAccess", "bound": true, base:{type:"Variable", name:"person"}, name:"name"},
     	{"type": "text","value": "! "},
     	{"type": "endelement",name:"div"}
     ]

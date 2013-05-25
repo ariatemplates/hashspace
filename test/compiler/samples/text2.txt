@@ -12,9 +12,11 @@
     "content": [
       {
         "type": "expression",
-        "category": "objectref",
+        "expType": "PropertyAccess",
+        "category": "jsexpression",
         "bound": false,
-        "path": [ "person", "name" ]
+        "base": {type:"Variable", name:"person"},
+        "name": "name"
       }, { 
       	"type": "text", "value": "!"
       }
