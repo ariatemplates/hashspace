@@ -573,6 +573,9 @@ var HExpression = klass({
 				p.reverse();
 				r=this._getValue({ type: "expression", "category": "objectref", bound:node.bound, "path": p});
 				break;
+			case "ConditionalExpression":
+				r = '('+this._process(node.condition)+'? '+this._process(node.trueExpression)+' : '+this._process(node.falseExpression)+')';
+				break;
 			case "FunctionCall":
 				// this is an object ref
 				var n=node.name, p=[];
