@@ -74,6 +74,19 @@ var hello5 = require("hsp/rt").template(["name"], function(n) {
 	]
 });
 
+var globalValue="foo"
+/***
+# template hello6()
+	{globalValue}
+# /template
+***/
+var hello6 = require("hsp/rt").template([], function(n) {
+	return [
+		n.$text({e1:[2,1,globalValue]},["",1])
+	]
+});
+
+
 
 describe("Text Nodes", function () {
 	var TEXT_NODE=3;
@@ -180,6 +193,14 @@ describe("Text Nodes", function () {
 		var n=hello5("Bart");
 
 		expect(n.node.firstChild.nodeValue).toEqual("Hello Bart!");
+		n.$dispose();
+	});
+
+	it("tests an expression referencing a global string value",function() {
+		globalValue="blah blah";
+		var n=hello6();
+
+		expect(n.node.firstChild.nodeValue).toEqual("blah blah");
 		n.$dispose();
 	});
 

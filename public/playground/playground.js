@@ -123,6 +123,7 @@ var Playground = module.exports = klass({
                 self.editor.setValue(data,-1);
             }
         });
+        this.hideSampleList();
     },
 
     logErrors:function(fileName,errors) {

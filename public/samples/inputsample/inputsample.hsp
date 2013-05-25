@@ -1,0 +1,18 @@
+
+# template inputSample(data)
+    <div class="info">All the following comments are synchronized:</div>
+    <div>
+        Comment #1: <input type="text" value="{data.comment}"/>
+    </div>
+    <div>
+        Comment #2: <input type="text" value="{data.comment}"/>
+    </div>
+    <div>
+        Comment #3: <span class="inputText">{data.comment}</span>
+    </div>
+# /template
+
+var d={comment:"edit me!"}
+
+// display the template in the #output div
+hsp.display(inputSample(d),"output");

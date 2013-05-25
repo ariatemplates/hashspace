@@ -68,6 +68,39 @@ var test2 = require("hsp/rt").template(["person"], function(n) {
 	]
 });
 
+/***
+# template test3(person)
+	<input type="text" value="{person.name}"/>
+# /template
+***/
+var test3 = require("hsp/rt").template(["person"], function(n) {
+	return [
+		n.elt(
+			"input", 
+			{e1:[1,2,"person","name"]},
+			{"type":"text", "value":["",1]},
+			0
+		)
+	]
+});
+
+var globalObject={value:"foo"};
+/***
+# template test4()
+	<input type="text" value="{globalObject.value}"/>
+# /template
+***/
+var test4 = require("hsp/rt").template([], function(n) {
+	return [
+		n.elt(
+			"input", 
+			{e1:[2,2,globalObject,"value"]},
+			{"type":"text", "value":["",1]},
+			0
+		)
+	]
+});
+
 
 describe("Element Nodes", function () {
 	var ELEMENT_NODE=1;
@@ -156,6 +189,30 @@ describe("Element Nodes", function () {
 		expect(n.node.firstChild.childNodes[1].attributes["class"].value).toEqual("");
 		expect(n.node.firstChild.childNodes[1].firstChild.nodeValue).toEqual("Frequent flyer #: ");
 		expect(n.node.firstChild.childNodes[2].nodeValue).toEqual(" ]");
+		n.$dispose();
+	});
+
+	it("validates input value binding", function() {
+		var dm={idx:1, name:"Omer"};
+		var n=test3(dm);
+		expect(n.node.firstChild.value).toEqual("Omer");
+		n.node.firstChild.value="Marge";
+		expect(dm.name).toEqual("Omer"); // doesn't change has not event has been triggered
+		n.node.firstChild.click();
+		expect(dm.name).toEqual("Marge");
+		
+		n.$dispose();
+	});
+
+	it("validates input value binding for literal data reference", function() {
+		globalObject.value="Omer";
+		var n=test4();
+		expect(n.node.firstChild.value).toEqual("Omer");
+		n.node.firstChild.value="Marge";
+		expect(globalObject.value).toEqual("Omer"); // doesn't change has not event has been triggered
+		n.node.firstChild.click();
+		expect(globalObject.value).toEqual("Marge");
+		
 		n.$dispose();
 	});
 

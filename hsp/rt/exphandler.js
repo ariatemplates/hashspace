@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-var klass=require("../klass");
+var klass=require("../klass"),
+	json=require("../json");
 
 var ExpHandler = klass({
 	/**
@@ -158,7 +159,33 @@ var DataRefExpr=klass({
 		}
 
 		return (v!==undefined)? v : defvalue;
+	},
+
+	/**
+	 * Set the value in the data object referenced by the current expression in the current vscope
+	 * This method shall be used by input elements to push DOM value changes in the data model
+	 */
+	setValue:function(vscope, value) {
+		if (this.isLiteral && this.ppLength<=0) {
+			console.warn("[DataRefExpr.setValue] Global literal values cannot be updated from the DOM - please use object referenes");
+		} else {
+			var v=this.isLiteral? this.root : vscope[this.root], ppl=this.ppLength, goahead=true;
+			if (ppl<1) {
+				return; // this case should not occur
+			}
+			for (var i=0;ppl-1>i;i++) {
+				v=v[this.path[i]];
+				if (v===undefined) {
+					goahead=false;
+					break;
+				}
+			}
+			if (goahead) {
+				json.set(v,this.path[ppl-1],value);
+			}
+		}
 	}
+
 })
 
 /**

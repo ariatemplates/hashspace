@@ -18,7 +18,8 @@
 
 var klass=require("hsp/klass"),
 	doc=require("hsp/document"),
-	TNode=require("hsp/rt/tnode").TNode;
+	TNode=require("hsp/rt/tnode").TNode,
+	hsp=require("hsp/rt");
 
 /**
  * Generic element node
@@ -41,6 +42,7 @@ var EltNode = klass({
 	$constructor:function(tag, exps, attcfg, ehcfg, children) {
 		TNode.$constructor.call(this, exps);
 		this.tag=tag;
+		this.isInput=(this.tag==="input");
 		this.createAttList(attcfg, ehcfg);
 		if (children && children!==0) {
 			this.children=children;
@@ -49,6 +51,9 @@ var EltNode = klass({
 
 	$dispose:function() {
 		var evh=this.evtHandlers, nd=this.node;
+		if (this.isInput) {
+			this.inputValueExpIdx=null;	
+		}
 		if (evh) {
 			// remove all event handlers
 			var rmEL=(nd.removeEventListener!==undefined); // tells if removeEventListener is supported
@@ -77,18 +82,41 @@ var EltNode = klass({
 		// attach event listener
 		var evh=this.evtHandlers,hnd,cb;
 		var addEL=(nd.addEventListener!==undefined); // tells if addEventListener is supported
-		if (evh) {
+		if (evh || this.isInput) {
+			if (!addEL) {
+				// create a callback function if addEventListener is not supported
+				var self=this;
+				this._attachEventFn=function(evt) {
+					self.handleEvent(evt);
+				}
+			}
+
+			var evts={};
 			// set or updates the event handlers
-			for (var i=0, sz=evh.length;sz>i;i++) {
-				hnd=evh[i];
-				if (addEL) {
-					nd.addEventListener(hnd.evtType,this,false);
-				} else {
-					var self=this;
-					this._attachEventFn=function(evt) {
-						self.handleEvent(evt);
+			if (evh) {
+				for (var i=0, sz=evh.length;sz>i;i++) {
+					hnd=evh[i];
+					evts[hnd.evtType]=true;
+					if (addEL) {
+						nd.addEventListener(hnd.evtType,this,false);
+					} else {
+						nd.attachEvent("on"+hnd.evtType,this._attachEventFn);
 					}
-					nd.attachEvent("on"+hnd.evtType,this._attachEventFn);
+				}
+			}
+
+			if (this.isInput) {
+				// ensure we listen to click, keydown and keyup
+				var et, inputEvts=["click", "keydown", "keyup"];
+				for (var idx in inputEvts) {
+					et=inputEvts[idx];
+					if (!evts[et]) {
+						if (addEL) {
+							nd.addEventListener(et,this,false);
+						} else {
+							nd.attachEvent("on"+et,this._attachEventFn);
+						}
+					}
 				}
 			}
 		}
@@ -100,6 +128,16 @@ var EltNode = klass({
 	 */
 	handleEvent:function(evt) {
 		var evh=this.evtHandlers, et=evt.type;
+
+		// if the element is an input tag we synchronize the value
+		if (this.isInput && this.inputValueExpIdx) {
+			var exp=this.eh.getExpr(this.inputValueExpIdx);
+			if (exp.setValue) {
+                exp.setValue(this.vscope,this.node.value);
+                hsp.refresh(); // to force synchronous change
+			} 
+		}
+
 		if (evh) {
 			for (var i=0, sz=evh.length;sz>i;i++) {
 				if (evh[i].evtType===et) {
@@ -125,15 +163,24 @@ var EltNode = klass({
 	 * Refresh the node attributes (even if adirty is false)
 	 */
 	refreshAttributes:function() {
-		var nd=this.node, atts=this.atts, att, eh=this.eh, vs=this.vscope;
+		var nd=this.node, atts=this.atts, att, eh=this.eh, vs=this.vscope, nm;
 		this.adirty=false;
 		if (!atts) return;
 
 		for (var i=0, sz=this.atts.length;sz>i;i++) {
 			att=atts[i];
-			if (att.name==="class") {
+			if (this.isInput && !this.inputValueExp && att.name==="value") {
+				if (att.textcfg && att.textcfg.length===2 && att.textcfg[0]==='') {
+					this.inputValueExpIdx=att.textcfg[1];
+				}
+			}
+			nm=att.name;
+			if (nm==="class") {
 				// issue on IE8 with the class attribute?
 				nd.className=att.getValue(eh,vs,"");
+			} else if (nm==="value") {
+				// value attribute must be changed directly as the node attribute is only used for the default value
+				nd.value=att.getValue(eh,vs,"");
 			} else {
 				nd.setAttribute(att.name,att.getValue(eh,vs,null));
 			}

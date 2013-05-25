@@ -28,6 +28,13 @@ module.exports = [
         files: [
             {src:"subtemplates.hsp", main:true}
         ]
+    }, {
+        title:"Input fields with bi-directional bindings",
+        folder:"inputsample",
+        description:"description.md",
+        files: [
+            {src:"inputsample.hsp", main:true}
+        ]
     }
 
 ]
