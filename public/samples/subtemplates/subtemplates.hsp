@@ -4,7 +4,7 @@
         {foreach p in persons}
             {personDescription(p)}
             // add a separator between each person
-            {if !p_islast} <br/> {/if}
+            {if !p_islast} <hr/> {/if}
         {/foreach}
     </div>
 # /template

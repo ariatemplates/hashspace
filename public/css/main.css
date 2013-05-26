@@ -93,7 +93,7 @@ a:hover {
 /* ************************************ */
 /* Samples */
 
-input {
+input[type=text] {
     font-size: 14px;
     width: 20em;
     border:1px solid #AAAAAA;
@@ -102,7 +102,11 @@ input {
     border-radius: 3px;
 }
 
-.inputText {
+.section {
+    padding: 5px;
+}
+
+.textValue {
     font-size: 14px;
     padding: 1px 2px;
     margin:1px;

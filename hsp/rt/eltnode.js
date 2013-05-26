@@ -52,7 +52,7 @@ var EltNode = klass({
 	$dispose:function() {
 		var evh=this.evtHandlers, nd=this.node;
 		if (this.isInput) {
-			this.inputValueExpIdx=null;	
+			this.inputModelExpIdx=null;	
 		}
 		if (evh) {
 			// remove all event handlers
@@ -130,10 +130,14 @@ var EltNode = klass({
 		var evh=this.evtHandlers, et=evt.type;
 
 		// if the element is an input tag we synchronize the value
-		if (this.isInput && this.inputValueExpIdx) {
-			var exp=this.eh.getExpr(this.inputValueExpIdx);
+		if (this.isInput && this.inputModelExpIdx) {
+			var exp=this.eh.getExpr(this.inputModelExpIdx);
 			if (exp.setValue) {
-                exp.setValue(this.vscope,this.node.value);
+				var v=this.node.value, tp=this.node.type;
+				if (tp==="checkbox") {
+					v=this.node.checked;
+				}
+                exp.setValue(this.vscope,v);
                 hsp.refresh(); // to force synchronous change
 			} 
 		}
@@ -163,28 +167,68 @@ var EltNode = klass({
 	 * Refresh the node attributes (even if adirty is false)
 	 */
 	refreshAttributes:function() {
-		var nd=this.node, atts=this.atts, att, eh=this.eh, vs=this.vscope, nm;
+		var nd=this.node, atts=this.atts, att, eh=this.eh, vs=this.vscope, nm, v;
 		this.adirty=false;
 		if (!atts) return;
 
+		var modelRefs=null, updateChecked=false;
 		for (var i=0, sz=this.atts.length;sz>i;i++) {
 			att=atts[i];
-			if (this.isInput && !this.inputValueExp && att.name==="value") {
+			if (this.isInput && !this.inputModelExpIdx && (att.name==="value" || att.name==="#model")) {
 				if (att.textcfg && att.textcfg.length===2 && att.textcfg[0]==='') {
-					this.inputValueExpIdx=att.textcfg[1];
+					if (!modelRefs) {
+						modelRefs=[];
+					}
+					modelRefs[att.name]=att.textcfg[1];				
 				}
 			}
 			nm=att.name;
-			if (nm==="class") {
+			if (nm.match(/^#/)) {
+				// this is an hashspace extension attribute
+				if (nm==="#model") {
+					continue;
+				}
+				
+			} else if (nm==="class") {
 				// issue on IE8 with the class attribute?
 				nd.className=att.getValue(eh,vs,"");
 			} else if (nm==="value") {
 				// value attribute must be changed directly as the node attribute is only used for the default value
-				nd.value=att.getValue(eh,vs,"");
+				if (!this.isInput || nd.type==="radio") {
+					nd.value=att.getValue(eh,vs,"");
+				}
 			} else {
 				nd.setAttribute(att.name,att.getValue(eh,vs,null));
 			}
 		}
+
+		if (modelRefs) {
+			// set the inputModelExpIdx property that reference the expression index to use for the model binding
+			var ref=modelRefs["#model"];
+			if (!ref) {
+				ref=modelRefs["value"];
+			}
+			if (ref) {
+				this.inputModelExpIdx=ref;
+			}
+		}
+
+		if (this.inputModelExpIdx) {
+			// update the checked state (must be done at the end as the value attribute may not have been set)
+			var exp=this.eh.getExpr(this.inputModelExpIdx), v1=''+exp.getValue(vs,"");
+			if (nd.type==="radio") {
+				var v2=''+nd.value;
+				nd.checked=(v1===v2);
+			} else if (nd.type==="checkbox") {
+				var v2=''+nd.checked;
+				if (v1!==v2) {
+					nd.checked=!nd.checked;
+				}
+			} else {
+				nd.value=v1;
+			}
+		}
+
 	}
 
 });

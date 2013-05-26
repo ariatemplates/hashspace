@@ -154,8 +154,12 @@ HTMLName
   = first:[a-z] next:([a-z] / [0-9] / "-")* 
   {return first + next.join("");}
 
+HTMLAttName
+  = first:[a-z#] next:([a-z] / [0-9] / "-")* 
+  {return first + next.join("");}
+
 HTMLAttribute
-  = name:HTMLName _ "=" _ "\"" value:HTMLAttributeValue "\""
+  = name:HTMLAttName _ "=" _ "\"" value:HTMLAttributeValue "\""
   {return {type:"attribute", name:name, value:value, line:line, column:column}}
 
 HTMLAttributeValue
