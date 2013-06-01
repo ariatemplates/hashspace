@@ -1,0 +1,19 @@
+##### Template:
+# template test(path, ctl, person)
+	<img onclick="{doClick(1)}"/>
+# /template
+
+##### Parsed Tree
+"skip"
+
+##### Syntax Tree
+"skip"
+
+##### Template code
+test=[
+    n.elt(	"img", 
+            {e1:[4,1,doClick,0,1]},
+            0,
+            {"click":1}
+    )
+]

@@ -262,8 +262,13 @@ function formatExpression(expression, firstIdx, walker) {
 							res.push(',1,'+argExprIdx[i]);
 						}
 					}
-					res.push("],");
-					res.push(argExprs.join(","));
+					if (argExprs && argExprs.length>0) {
+						res.push("],");
+						res.push(argExprs.join(","));
+					} else {
+						res.push("]");
+					}
+					
 				} else {
 					res.push("]");
 				}
