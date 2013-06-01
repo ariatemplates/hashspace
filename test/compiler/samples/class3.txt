@@ -1,0 +1,23 @@
+##### Template:
+# template test(msg)
+	<div class="{msg.category, 'warning':msg.urgent, 'msg'}">
+    Hello World
+  </div>
+# /template
+
+##### Parsed Tree
+"skip"
+
+##### Syntax Tree
+"skip"
+
+##### Template Code
+test=[
+    n.elt(  "div", 
+            {e1:[6,function(a0,a1) {return [a0,((a1)? ''+"warning":''),"msg"].join(' ');},2,3],e2:[1,2,"msg","category"],e3:[1,2,"msg","urgent"]},
+            {"class":["",1]},
+            0,[
+                n.$text(0,["Hello World "])
+            ]
+    )
+]

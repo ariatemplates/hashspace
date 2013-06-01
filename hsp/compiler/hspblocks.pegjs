@@ -175,40 +175,68 @@ HTMLAttributeChar // TODO look at W3C specs
     / [^{\"\n\r]
 
 ExpressionBlock
-  = "{" ubflag:":"? e:HExpression* "}" // we need to keep a list of expression to match expressions starting with a valid part
+  = "{" ubflag:":"? e:HExpression* "}" // keep a list of expression to match expressions starting with a valid part
   {
     var r={};
     if (e.length==1) {
       r=e[0];
       if (r.type!=="invalidexpression") {
-        r.expType=r.type; r.type="expression";
+        r.expType=r.type; 
+        r.type="expression";
       }
-      r.bound=(ubflag.length==0); r.line=line; r.column=column;
+      r.bound=(ubflag.length==0);
+      if (!r.category) {
+        r.category="jsexpression";
+      }
     } else {
-      var code=[], itm;
+      var code=[], itm, valid=true, t;
       for (var i=0, sz=e.length;sz>i;i++) {
-        itm=e[i];
-        if (itm.value) {
-          code.push(itm.value);
-        } else if (itm.code) {
-          code.push(itm.code);
-        } else {
-          code.push("(...)"); // TODO
+        t=e[i].type;
+        if (t==="invalidexpression") {
+          valid=false;
+          break;
         }
       }
-      r.type="expression"; r.category="invalidexpression"; r.code=code.join(''); r.line=line; r.column=column;
+
+      if (valid) {
+        r.type="expression";
+        r.category="jsexpression";
+        r.expType="CssClassExpression"
+        r.list=e;
+      } else {
+        // invalid expression
+        for (var i=0, sz=e.length;sz>i;i++) {
+          itm=e[i];
+          if (itm.value) {
+            code.push(itm.value);
+          } else if (itm.code) {
+            code.push(itm.code);
+          } else {
+            code.push("(...)"); // TODO
+          }
+        }
+        r.type="expression"; r.category="invalidexpression"; r.code=code.join('');
+      }
     }
+    r.line=line; 
+    r.column=column;
     return r;
   }
 
 HExpression
-  = HExpressionContent 
-    / "(" _ exp:HExpressionContent _ ")" {return exp}
+  =   HExpressionCssClassElt 
+    / HExpressionContent 
+    / "," __ cce:HExpressionCssClassElt {return cce}
+    / "," __ exp:HExpressionContent {return exp}
     / InvalidExpressionValue
 
 HExpressionContent
-  =  ce:ConditionalExpressionNoIn 
+  =  ce:ConditionalExpressionNoIn
   {if (!ce.category) ce.category="jsexpression"; ce.expType=ce.type;ce.line=line;ce.column=column;return ce;}
+
+HExpressionCssClassElt
+  = head:LogicalORExpression __ ":" __ tail:LogicalORExpression 
+  {return {type:"CssClassElement", left:head, right:tail};}
 
 InvalidExpressionValue
   = chars:[^}]+

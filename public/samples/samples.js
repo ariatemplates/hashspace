@@ -22,6 +22,13 @@ module.exports = [
             {src:"list.hsp", main:true}
         ]
     }, {
+        title:"CSS Class expressions",
+        folder:"cssclass",
+        description:"description.md",
+        files: [
+            {src:"cssclass.hsp", main:true}
+        ]
+    }, {
         title:"Sub-templates",
         folder:"subtemplates",
         description:"description.md",

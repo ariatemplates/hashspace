@@ -134,3 +134,31 @@ input[type=text] {
 .subtemplates .value {
     font-weight: bold;
 }
+
+.msg {
+    margin:10px;
+    padding:7px;
+}
+
+.urgent {
+    color:red;
+    font-weight: bold;
+    display:block;
+    margin:20px;
+    padding:7px;
+    background-color: #444444;
+    color: #FFFFFF;
+}
+
+.personal {
+    font-family: Courier;
+}
+
+.professional {
+    font-family: Times;
+    font-size:1.4em;
+}
+
+.note {
+    font-style: italic;
+}

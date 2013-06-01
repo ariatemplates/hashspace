@@ -1,0 +1,95 @@
+##### Template:
+# template test(msg)
+	<div class="{'warning':msg.urgent==='1'}">
+    Hello World
+  </div>
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template", "name": "test", "args": ["msg"], "closed":true, "content": [
+      {
+        "type": "element", "name": "div", "closed": false, "attributes": [
+          {
+            "type": "attribute",
+            "name": "class",
+            "value": [{
+                "type": "expression",
+                "category": "jsexpression",
+                "expType": "CssClassElement",
+                "bound": true,
+                "left": { "type": "expression", "category": "string", "value": "warning"},
+                "right": {
+                  "type": "BinaryExpression",
+                  "operator": "===",
+                  "left": {
+                    "type": "PropertyAccess",
+                    "base": {
+                      "type": "Variable",
+                      "name": "msg",
+                      "code": "msg"
+                    },
+                    "name": "urgent"
+                  },
+                  "right": {
+                    "type": "expression",
+                    "category": "string",
+                    "value": "1",
+                    "code": "1"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {"type": "text","value": "Hello World "},
+      {"type": "endelement","name": "div"}
+    ]
+  }
+]
+
+
+##### Syntax Tree
+[
+  {
+    "type": "template","name": "test","args": ["msg"],"export": false, "content": [
+      {
+        "type": "element","name": "div","closed": false,"attributes": [
+          {
+            "name":"class",
+            "type": "expression",
+            "category": "jsexpression",
+            "objectrefs": [
+              {"type": "expression", "category": "objectref","path": ["msg","urgent"]}
+            ],
+            "code": "(((a0 === \"1\"))? ''+\"warning\":'')",
+            "line": 2,
+            "column": 14
+          }
+        ],
+        "content": [
+          {"type": "text","value": "Hello World "}
+        ]
+      }
+    ]
+  },
+  {
+    "type": "plaintext",
+    "value": "\r\n"
+  }
+]
+
+
+##### Template Code
+test=[
+    n.elt(  "div", 
+            {e1:[6,function(a0) {return (((a0 === "1"))? ''+"warning":'');},2],e2:[1,2,"msg","urgent"]},
+            {"class":["",1]},
+            0,[
+                n.$text(0,["Hello World "])
+            ]
+    )
+]

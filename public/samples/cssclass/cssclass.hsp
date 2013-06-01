@@ -1,0 +1,29 @@
+var json=require("hsp/json");
+
+# template message(msg)
+    <a onclick="{toggleUrgency()}">Change Urgency</a> - 
+    <a onclick="{setCategory('personal')}">Set "Personal"</a> - 
+    <a onclick="{setCategory('professional')}">Set "Professional"</a>
+    <div class="{'msg', 'urgent':msg.urgency===1, msg.category}">
+        Message: {msg.text}
+    </div>
+    <div class="note">
+        Class value: "{'msg', 'urgent':msg.urgency===1, msg.category}"
+    </div>
+# /template
+
+var msg={
+    text:"Hello World",
+    urgency:0
+}
+
+// display the template in the #output div
+hsp.display(message(msg),"output");
+
+function toggleUrgency() {
+    json.set(msg,"urgency",msg.urgency? 0 : 1);
+}
+
+function setCategory(cat) {
+    json.set(msg,"category",cat);
+}

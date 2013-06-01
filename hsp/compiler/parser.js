@@ -490,6 +490,7 @@ var HExpression = klass({
 		if (node.expType) {
 			node.type=node.expType;
 		}
+
 		if (node.category!=="jsexpression") {
 			// we only reprocess jsexpression
 			this._st=node;
@@ -503,6 +504,9 @@ var HExpression = klass({
 			// if we have only one variable, we can simplify the syntaxtree
 			if (code==="a0") {
 				this._st=this._objectRefs[0];
+			} else if (code.match(/^ *$/)) {
+				// there is no code to display
+				this._st={"type": "text", "value": code};
 			}
 
 			// add line / column nbr if present
@@ -599,6 +603,20 @@ var HExpression = klass({
 					args2[i]=e.getSyntaxTree();
 				}
 				n.args=args2;
+				break;
+			case "CssClassElement":
+				r="(("+this._process(node.right)+")? ''+"+this._process(node.left)+":'')";
+				break;
+			case "CssClassExpression":
+				var ls=node.list, sz=ls.length, code=[];
+				for (var i=0;sz>i;i++) {
+					code[i]=this._process(ls[i]);
+				}
+				if (sz<1) {
+					r='';
+				} else {
+					r="["+code.join(",")+"].join(' ')";
+				}
 				break;
 			default:
 				this._logError(node.type+'(s) are not supported yet');
