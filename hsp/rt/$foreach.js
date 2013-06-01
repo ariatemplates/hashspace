@@ -137,6 +137,11 @@ var $ForEachNode = klass({
 				this.createChildNodeInstances(col,df);
 				this.node.insertBefore(df,this.node2);
 
+				// update the node reference on all child nodes
+				for (var i=0, sz=this.childNodes.length;sz>i;i++) {
+					this.childNodes[i].node=this.node;
+				}
+
 				// TODO delete and recreate foreach items on a doc fragment
 				// Note: updateCollection could be used as well in this case - but when the whole collection
 				// is changed, it is likely that all items are different - and as such the creation

@@ -127,7 +127,7 @@ var EltNode = klass({
 	 * Event Listener callback
 	 */
 	handleEvent:function(evt) {
-		var evh=this.evtHandlers, et=evt.type;
+		var evh=this.evtHandlers, et=evt.type, result=null;
 
 		// if the element is an input tag we synchronize the value
 		if (this.isInput && this.inputModelExpIdx) {
@@ -145,11 +145,15 @@ var EltNode = klass({
 		if (evh) {
 			for (var i=0, sz=evh.length;sz>i;i++) {
 				if (evh[i].evtType===et) {
-					evh[i].executeCb(evt, this.eh, this.vscope);
+					result=evh[i].executeCb(evt, this.eh, this.vscope);
 					break;
 				}
 			}
 		}
+		if (result===false) {
+			evt.preventDefault();
+		}
+		return result;
 	},
 
 	/**

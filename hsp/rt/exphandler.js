@@ -280,9 +280,9 @@ var FuncRefExpr=klass({
 		}
 		// set back original event in the scope
 		if (evt1===undefined) {
-			delete vscope["event"]
+			delete vscope["event"];
 		} else {
-			vscope["event"]=evt1;	
+			vscope["event"]=evt1;
 		}
 
 		var ctxt=null;
@@ -291,7 +291,7 @@ var FuncRefExpr=klass({
 			ctxt=vscope[this.root];
 		}
 
-		fn.apply(ctxt,cbargs);
+		return fn.apply(ctxt,cbargs);
 	}
 })
 

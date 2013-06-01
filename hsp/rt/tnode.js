@@ -266,7 +266,7 @@ TCbAtt = klass({
 	 */
 	executeCb:function(evt, eh, vscope) {
 		var cbExp=eh.getExpr(this.expIdx);
-		cbExp.executeCb(evt, this.evtType, eh, vscope);
+		return cbExp.executeCb(evt, this.evtType, eh, vscope);
 	}
 });
 

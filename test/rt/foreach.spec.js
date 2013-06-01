@@ -163,6 +163,26 @@ var test4 = require("hsp/rt").template(["things"], function(n) {
 	]
 });
 
+/***
+# template test5(persons) 
+	{foreach person in persons)}
+		{person.name}
+	{/foreach}
+# /template
+***/
+var test5 = require("hsp/rt").template(["persons"], function(n) {
+	return [
+		n.$foreach(
+			{e1: [1,1,"persons"]}, 
+			"person_key",
+			"person", 
+			0, 
+			1, 
+			[n.$text({e1: [1,2,"person","name"]}, ["", 1])]
+		)
+	]
+});
+
 describe("ForEach Node", function () {
 	var ELEMENT_NODE=1;
 	var TEXT_NODE=3;
@@ -554,6 +574,31 @@ describe("ForEach Node", function () {
 		expect(r).toEqual(str4);
 
 		n.$dispose();
+	});
+
+	it("tests array delete / refill", function() {
+		var ds=[{name:"Omer"}];
+		var n=test5(ds);
+		//console.log(n);
+		console.dir(n.node);
+
+		expect(n.node.childNodes.length).toEqual(5);
+		expect(n.node.childNodes[2].nodeValue).toEqual("Omer");
+
+		json.splice(ds,0,1);
+		hsp.refresh();
+		expect(n.node.childNodes.length).toEqual(2);
+
+		json.splice2(ds,0,ds.length,[
+			{name:"Marge"}
+		]);
+		hsp.refresh();
+		expect(n.node.childNodes.length).toEqual(5);
+		expect(n.node.childNodes[2].nodeValue).toEqual("Marge");
+
+		json.splice(ds,0,1);
+		hsp.refresh();
+		expect(n.node.childNodes.length).toEqual(2);
 	});
 
 });
