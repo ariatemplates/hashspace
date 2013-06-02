@@ -171,38 +171,46 @@ var EltNode = klass({
 	 * Refresh the node attributes (even if adirty is false)
 	 */
 	refreshAttributes:function() {
-		var nd=this.node, atts=this.atts, att, eh=this.eh, vs=this.vscope, nm, v;
+		var nd=this.node, atts=this.atts, att, eh=this.eh, vs=this.vscope, nm, v, modelRefs=null;
 		this.adirty=false;
-		if (!atts) return;
 
-		var modelRefs=null, updateChecked=false;
-		for (var i=0, sz=this.atts.length;sz>i;i++) {
-			att=atts[i];
-			if (this.isInput && !this.inputModelExpIdx && (att.name==="value" || att.name==="#model")) {
-				if (att.textcfg && att.textcfg.length===2 && att.textcfg[0]==='') {
-					if (!modelRefs) {
-						modelRefs=[];
+		if (atts) {
+			for (var i=0, sz=this.atts.length;sz>i;i++) {
+				att=atts[i];
+				if (this.isInput && !this.inputModelExpIdx && (att.name==="value" || att.name==="#model")) {
+					if (att.textcfg && att.textcfg.length===2 && att.textcfg[0]==='') {
+						if (!modelRefs) {
+							modelRefs=[];
+						}
+						modelRefs[att.name]=att.textcfg[1];				
 					}
-					modelRefs[att.name]=att.textcfg[1];				
+				}
+				nm=att.name;
+				if (nm.match(/^#/)) {
+					// this is an hashspace extension attribute
+					if (nm==="#model") {
+						continue;
+					}
+					
+				} else if (nm==="class") {
+					// issue on IE8 with the class attribute?
+					nd.className=att.getValue(eh,vs,"");
+				} else if (nm==="value") {
+					// value attribute must be changed directly as the node attribute is only used for the default value
+					if (!this.isInput || nd.type==="radio") {
+						nd.value=att.getValue(eh,vs,"");
+					}
+				} else {
+					nd.setAttribute(att.name,att.getValue(eh,vs,null));
 				}
 			}
-			nm=att.name;
-			if (nm.match(/^#/)) {
-				// this is an hashspace extension attribute
-				if (nm==="#model") {
-					continue;
-				}
-				
-			} else if (nm==="class") {
-				// issue on IE8 with the class attribute?
-				nd.className=att.getValue(eh,vs,"");
-			} else if (nm==="value") {
-				// value attribute must be changed directly as the node attribute is only used for the default value
-				if (!this.isInput || nd.type==="radio") {
-					nd.value=att.getValue(eh,vs,"");
-				}
-			} else {
-				nd.setAttribute(att.name,att.getValue(eh,vs,null));
+		}
+
+		if (this.htmlCbs) {
+			var cb;
+			for (var i=0, sz=this.htmlCbs.length;sz>i;i++) {
+				cb=this.htmlCbs[i];
+				nd.setAttribute("on"+cb.evtType,cb.htmlCb);
 			}
 		}
 

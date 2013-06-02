@@ -86,6 +86,23 @@ var test3 = require("hsp/rt").template(["person","ctl"], function(n) {
 	]
 });
 
+
+/***
+# template test4()
+	<img onclick="this.cbatt=123;return false;"/>
+# /template
+***/
+var test4 = require("hsp/rt").template([], function(n) {
+	return [
+		n.elt(	"img", 
+            0,
+            0,
+            {"click":"this.cbatt=123;return false;"}
+    	)
+	]
+});
+
+
 var doClickCount=0, doClickEvtType="", doClickStrArg="";
 function doClick(str,evt) {
 	doClickCount++;
@@ -184,4 +201,13 @@ describe("Event Handlers", function () {
 		n.$dispose();
 	});
 	
+	it("tests standard html event handlers", function() {
+		var n=test4();
+		var img=n.node.firstChild;
+		expect(img.cbatt).toEqual(undefined);
+		img.click();
+		expect(img.cbatt).toEqual(123);
+		n.$dispose();
+	});
+
 });

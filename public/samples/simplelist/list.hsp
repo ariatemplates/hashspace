@@ -1,18 +1,21 @@
 var json=require("hsp/json");
 
 # template list(persons)
-	<a onclick="{addElement()}">Add element</a> - 
-	<a onclick="{deleteElement()}">Delete element</a> - 
-	<a onclick="{changeAll()}">Change all elements</a>
-    <ul>
-        {foreach p in persons}
-        	<li>
-                {p.firstName} {p.lastName}
-                {if p_isfirst}<span class="info">(first)</span>{/if}
-                {if p_islast}<span class="info">(last)</span>{/if}
-            </li>
-        {/foreach}
-    </ul>
+    // onselectstart: prevent double-click selection on a elements
+    <div onselectstart="return false"> 
+    	<a onclick="{addElement()}">Add element</a> - 
+    	<a onclick="{deleteElement()}">Delete element</a> - 
+    	<a onclick="{changeAll()}">Change all elements</a>
+        <ul>
+            {foreach p in persons}
+            	<li>
+                    {p.firstName} {p.lastName}
+                    {if p_isfirst}<span class="info">(first)</span>{/if}
+                    {if p_islast}<span class="info">(last)</span>{/if}
+                </li>
+            {/foreach}
+        </ul>
+    </div>
 # /template
 
 var persons=[

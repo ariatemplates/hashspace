@@ -30,6 +30,7 @@ var TNode=klass({
 	childNodes:null,// array of child node instances
 	adirty:false,	// true if some of the node attributes need to be refreshed
 	cdirty:false,	// true if the node contains dirty sub-nodes
+	htmlCbs:null,   // array: list of the html callbacks - if any
 
 	$constructor:function(exps) {
 		this.isStatic=(exps===0);
@@ -51,7 +52,7 @@ var TNode=klass({
 			}
 			delete this.childNodes;
 		}
-
+		this.htmlCbs=null;
 		delete this.node;
 		delete this.parent;
 		delete this.root;
@@ -68,9 +69,16 @@ var TNode=klass({
 	 */
 	createAttList:function(attcfg,ehcfg) {
 		if (ehcfg) {
-			evh=[];
+			var evh=[], cb;
 			for (var k in ehcfg) {
-				evh.push(new TCbAtt(k,ehcfg[k]));
+				cb=new TCbAtt(k,ehcfg[k]);
+				if (cb.isHtmlCallback) {
+					if (!this.htmlCbs) {
+						this.htmlCbs=[];
+					}
+					this.htmlCbs.push(cb);
+				}
+				evh.push(cb);
 			}
 			this.evtHandlers=evh;
 		}
@@ -252,11 +260,17 @@ TCbAtt = klass({
 	/**
 	 * Simple attribute constructor
 	 * @param {String} type the type of the event hanlder attribute - e.g. "click"
-	 * @param {Number} expIdx the index of the associated callback expression - e.g. 2
+	 * @param {Number} cbArg either the index of the associated callback expression (e.g. 2) or the code to execute in case of HTML handler
 	 */
-	$constructor:function(type, expIdx) {
+	$constructor:function(type, cbArg) {
 		this.evtType=type;
-		this.expIdx=expIdx;
+		var isHtmlCallback=(typeof cbArg !== 'number');
+		if (isHtmlCallback) {
+			this.isHtmlCallback=true;
+			this.htmlCb=cbArg;
+		} else {
+			this.expIdx=cbArg;
+		}
 	},
 
 	/**
@@ -265,8 +279,12 @@ TCbAtt = klass({
 	 * through addEventListener
 	 */
 	executeCb:function(evt, eh, vscope) {
-		var cbExp=eh.getExpr(this.expIdx);
-		return cbExp.executeCb(evt, this.evtType, eh, vscope);
+		if (this.expIdx) {
+			var cbExp=eh.getExpr(this.expIdx);
+			if (cbExp) {
+				return cbExp.executeCb(evt, this.evtType, eh, vscope);	
+			}
+		}
 	}
 });
 

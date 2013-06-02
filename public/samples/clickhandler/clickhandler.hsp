@@ -1,6 +1,6 @@
 
 # template message(msg)
-    <div title="click me!" onclick="{changeMessage()}">
+    <div title="click me!" onclick="{changeMessage()}" onselectstart="return false">
         {if msg.isWarning}<div class="warning">WARNING: </div>{/if}
         {msg.text}
     </div>

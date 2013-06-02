@@ -579,9 +579,7 @@ describe("ForEach Node", function () {
 	it("tests array delete / refill", function() {
 		var ds=[{name:"Omer"}];
 		var n=test5(ds);
-		//console.log(n);
-		console.dir(n.node);
-
+		
 		expect(n.node.childNodes.length).toEqual(5);
 		expect(n.node.childNodes[2].nodeValue).toEqual("Omer");
 
