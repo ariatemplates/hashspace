@@ -1,0 +1,19 @@
+##### Template:
+# template test(path, ctl, person)
+	<img onclick="return false"/>
+# /template
+
+##### Parsed Tree
+"skip"
+
+##### Syntax Tree
+"skip"
+
+##### Template code
+test=[
+    n.elt(	"img", 
+            0,
+            0,
+            {"click":"return false"}
+    )
+]

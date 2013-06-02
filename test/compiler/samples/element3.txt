@@ -1,0 +1,23 @@
+##### Template:
+# template test(person)
+	<div title="">
+		Hello World
+	</div>
+# /template
+
+##### Parsed Tree
+"skip"
+
+##### Syntax Tree
+"skip"
+
+##### Template Code
+test=[
+  n.elt(  "div", 
+          0,
+          {"title":""},
+          0,[
+            n.$text(0,["Hello World "])
+          ]
+  )
+]

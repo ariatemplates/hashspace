@@ -370,10 +370,12 @@ var SyntaxTree=klass({
 			att=atts[i];
 			var sz2=att.value.length;
 			if (sz2===0) {
-				// we should normally not get there as the parser shall not generate this case
-				this._logError("Missing attribute value: "+att.name, att);
-				continue; // ignore this attribute
-			} else if (sz2===1) {
+				// this case arises when the attibute is empty - so let's create an empty text node
+				att.value.push({type:"text", value:""})
+				sz2=1;
+			}
+
+			if (sz2===1) {
 				// literal or expression
 				type=att.value[0].type;
 			
