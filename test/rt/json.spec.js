@@ -120,15 +120,17 @@ describe("Json Observer", function () {
 		json.push(obj2.propC,"v4");
 		expect(obj2.propC[4]).toEqual("v4");
 		expect(obj2.propC.length).toEqual(5);
-		expect(chg1.oldValue).toEqual(null);
-		expect(chg1.name).toEqual(4);
-		expect(chg1.type).toEqual("new");
+		// chg1 corresponds to the length change
+		expect(chg1.oldValue).toEqual(4);
+		expect(chg1.name).toEqual("length");
+		expect(chg1.type).toEqual("updated");
 
 		var r=json.push(obj2.propC,"v5","v6");
 		expect(r).toEqual(7);
-		expect(chgsz1).toEqual(2);
-		expect(chg1.name).toEqual(6); // last change first
-		expect(chg1.type).toEqual("new");
+		// chg1 also corresponds to length update
+		expect(chgsz1).toEqual(1);
+		expect(chg1.name).toEqual("length"); // last change first
+		expect(chg1.type).toEqual("updated");
 		expect(obj2.propC[6]).toEqual("v6");
 
 		json.unobserve(obj, fn1);

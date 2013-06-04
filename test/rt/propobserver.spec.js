@@ -141,4 +141,50 @@ describe("Property Observer", function () {
 		expect(obj["+json:observers"]).toEqual(undefined);
 	});
 
+	it("test prop observer on array length", function() {
+		var arr=["Omer"];
+
+		var o=new PropObserver(arr);
+		var p=new BasicListener();
+
+		o.addObserver(p,"length");
+		expect(arr.length).toEqual(1);
+		expect(p.count).toEqual(0);
+		
+		json.set(arr,1,"Marge");
+		expect(arr.length).toEqual(2);
+		expect(arr[1]).toEqual("Marge");
+		expect(p.count).toEqual(1);
+
+		// splice with length change
+		json.splice(arr,1,0,"Bart");
+		expect(arr.length).toEqual(3);
+		expect(p.count).toEqual(2);
+
+		// splice with no length change
+		json.splice(arr,1,1,"Bart2");
+		expect(arr.length).toEqual(3);
+		expect(p.count).toEqual(2);
+
+		// splice2 with length change
+		json.splice2(arr,1,1);
+		expect(arr.length).toEqual(2);
+		expect(p.count).toEqual(3);
+
+		// shift test
+		var x=json.shift(arr);
+		expect(x).toEqual("Omer");
+		expect(arr.length).toEqual(1);
+		expect(p.count).toEqual(4);
+
+		// pop test
+		json.splice(arr,0,0,"Omer");
+		x=json.pop(arr);
+		expect(x).toEqual("Marge");
+		expect(arr.length).toEqual(1);
+		expect(p.count).toEqual(6);
+
+		o.$dispose();
+	});
+
 });

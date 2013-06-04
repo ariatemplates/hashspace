@@ -39,7 +39,9 @@ function notifyObservers (container, property, newval, oldval, chgtype, chgeset)
     if (ln) {
         // call the listeners
         var elt;
-        if (!chgeset) chgeset=[{type:chgtype, object:container, name:property, newValue:newval, oldValue:oldval}];
+        if (!chgeset) {
+        	chgeset=[{type:chgtype, object:container, name:property, newValue:newval, oldValue:oldval}];
+        }
         for (var i=0,sz=ln.length;sz>i;i++) {
         	elt=ln[i];
         	if (elt.constructor===Function) elt(chgeset);
@@ -61,6 +63,7 @@ module.exports={
 		}
 		var exists = object.hasOwnProperty(property);
         var oldVal = object[property];
+        var sz1 = object.length;
         object[property] = value;
 
         if (!exists) {
@@ -69,6 +72,12 @@ module.exports={
         	// do nothing if the value did not change or was not created:
         	notifyObservers(object, property, value, oldVal, "updated");
         }
+        if (object.constructor===Array) {
+        	var sz2=object.length;
+        	if (sz1!==sz2) {
+        		notifyObservers(object, "length", sz2, sz1, "updated");
+        	}
+        } 
         return value;
 	},
 
@@ -101,6 +110,10 @@ module.exports={
 			res=Array.prototype.push.apply(array,args);
 			notifyObservers(array, null, null, null, null, chgeset);
 		}
+		var sz2=array.length;
+		if (sz!==sz2) {
+			notifyObservers(array, "length", sz2, sz, "updated");
+		}
 		return res;
 	},
 
@@ -117,12 +130,16 @@ module.exports={
 	splice:function(array, index, howMany) {
 		// Note change set doesn't comply with object.observe specs (should be a list of change descriptors) 
 		// but we don't need a more complex implementation for hashspace
-		var a=arguments, args=[];
+		var a=arguments, args=[], sz1=array.length;;
 		for (var i=1;a.length>i;i++) args.push(a[i]);
 
 		res=Array.prototype.splice.apply(array,args);
+		var sz2=array.length;
 
 		notifyObservers(array, index, null, null, "splice"); // NB: splice is not a valid change type according to Object.observe spec
+		if (sz1!==sz2) {
+			notifyObservers(array, "length", sz2, sz1, "updated");
+		}
 		return res;
 	},
 
@@ -131,10 +148,18 @@ module.exports={
 	 * @param {Array} arrayArg the items that must be inserted at the index position
 	 */
 	splice2:function(array, index, howMany, arrayArg) {
+		var sz1=array.length;
+		if (!arrayArg) {
+			arrayArg=[];
+		} 
 		arrayArg.splice(0,0,index,howMany);
 		res=Array.prototype.splice.apply(array,arrayArg);
+		var sz2=array.length;
 
 		notifyObservers(array, index, null, null, "splice"); // NB: splice is not a valid change type according to Object.observe spec
+		if (sz1!==sz2) {
+			notifyObservers(array, "length", sz2, sz1, "updated");
+		}
 		return res;
 	},
 
@@ -144,8 +169,29 @@ module.exports={
 	 */
 	shift:function(array) {
 		// Note change set doesn't comply with object.observe specs - same as for splice
+		var sz1=array.length;
 		res=array.shift();
-		notifyObservers(array, 0, null, null, "shift"); // NB: splice is not a valid change type according to Object.observe spec
+		var sz2=array.length;
+		notifyObservers(array, 0, null, null, "shift");
+		if (sz1!==sz2) {
+			notifyObservers(array, "length", sz2, sz1, "updated");
+		}
+		return res;
+	},
+
+	/**
+	 * Removes the last element from an array and returns that value to the caller.
+	 * @param {Array} array the array on which the shift should be performed
+	 */
+	pop:function(array) {
+		// Note change set doesn't comply with object.observe specs - same as for splice
+		var sz1=array.length;
+		res=array.pop();
+		var sz2=array.length;
+		notifyObservers(array, 0, null, null, "pop");
+		if (sz1!==sz2) {
+			notifyObservers(array, "length", sz2, sz1, "updated");
+		}
 		return res;
 	},
 
