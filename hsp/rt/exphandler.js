@@ -100,6 +100,15 @@ var LiteralExpr=klass({
 
 	getValue:function() {
 		return this.value;
+	},
+
+	/**
+	 * Return the list of [object,property] pairs that have to be observed
+	 * null should be returned if nothing should be observed (i.e. unbound property)
+	 * @see $RootNode.createExpressionObservers
+	 */
+	getObservablePairs:function(vscope) {
+		return null;
 	}
 })
 
@@ -110,6 +119,8 @@ var LiteralExpr=klass({
  *  2: literal data ref 	- e.g. {e1:[2,2,person,"name"]}
  */
 var DataRefExpr=klass({
+	bound:false,	// default bound value
+
 	/**
 	 * Class constructor
 	 * @param {Array} desc the expression descriptor - e.g. [1,2,"person","name"]
@@ -183,6 +194,40 @@ var DataRefExpr=klass({
 			if (goahead) {
 				json.set(v,this.path[ppl-1],value);
 			}
+		}
+	},
+
+	/**
+	 * Return the list of [object,property] pairs that have to be observed
+	 * null should be returned if nothing should be observed (i.e. unbound property)
+	 * @see $RootNode.createExpressionObservers
+	 */
+	getObservablePairs:function(vscope) {
+		if (!this.bound) {
+			return null;
+		}
+		var ppl=this.ppLength;
+		if (ppl<1) {
+			return null; // this case should not occur
+		}
+		var v=this.isLiteral? this.root : vscope[this.root];
+		if (v===undefined) {
+			return null;
+		}
+		if (ppl===1) {
+			// optimize standard case
+			return [ [v,this.path[0]] ];
+		} else {
+			var r=[], p=this.path, pp;
+			for (var i=0;ppl>i;i++) {
+				pp=p[i];
+				r.push([v,pp]);
+				v=v[pp];
+				if (v===undefined) {
+					break;
+				}
+			}
+			return r;
 		}
 	}
 
@@ -342,5 +387,14 @@ var FuncExpr=klass({
 			}
 
 		}
+	},
+
+	/**
+	 * Return the list of [object,property] pairs that have to be observed
+	 * null should be returned if nothing should be observed (i.e. unbound property)
+	 * @see $RootNode.createExpressionObservers
+	 */
+	getObservablePairs:function(vscope) {
+		return null;
 	}
 });

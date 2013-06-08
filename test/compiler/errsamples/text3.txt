@@ -1,13 +1,14 @@
 ##### Template:
 # template hello(person)
-    {foo[2].bar[3]} Hello World!
+    {foo[2].bar["hello"]]} Hello World!
 # /template
 
 ##### Errors:
 [
   {
-    "description": "Long expression paths are not supported yet",
+    "description": "Invalid expression",
     "line": 2,
-    "column": 5
+    "column": 5,
+    "code": "foo.2.bar.hello]"
   }
 ]

@@ -571,9 +571,14 @@ var HExpression = klass({
 				break;
 			case "PropertyAccess":
 				// this is an object ref
-				var n=node, p=[];
+				var n=node, p=[],nm;
 				while (n) {
-					p.push(n.name);
+					nm=n.name;
+					if (nm.type && nm.type==="expression") {
+						p.push(nm.value)
+					} else {
+						p.push(nm);
+					}
 					n=n.base;
 				}
 				p.reverse();

@@ -285,18 +285,6 @@ JSObjectRef "JS object reference"
   = start:Identifier tail:(( "." pp:Identifier) {return pp}/ ( "[" idx:[0-9]+ "]") {return parseInt(idx.join(''),10)})*
   {var r=[start]; if (tail && tail.length) r=r.concat(tail);return {category:"objectref", path:r, code:r.join('.')}}
 
-ArgExpression
-  = JSLiteral 
-  / "event" {return {category:"event", code:"event"}}
-  / JSObjectRef
-
-JSFunctionCall "JS function reference"
-  = fnpath:JSObjectRef S? "(" S? 
-   args:(arg1:ArgExpression args2:( (S? "," S? arg:ArgExpression S?) {return arg} )* 
-      {var r=[]; if(arg1) {r.push(arg1);if(args2 && args2.length) r=r.concat(args2)};return r;} )? 
-   S? ")" S?
-  {if (args==='') args=[];return {category:"functionref", path:fnpath.path, args:args, code:fnpath.code+"("+args.join(",")+")"}} 
-
 JSLiteral
   = NullLiteral       { return {type:"expression", category: "null", code:"null"};}
   / v:BooleanLiteral  { return {type:"expression", category: "boolean", value:v.value, code:""+v.value};}
@@ -573,7 +561,16 @@ MemberExpression // changed
         };
       }
       result.code=base.code
-      if (accessors.length) result.code+="."+accessors.join(".");
+      if (accessors.length) {
+        var acc;
+        for (var i=0, sz=accessors.length;sz>i;i++) {
+          acc=accessors[i];
+          if (acc.code) {
+            accessors[i]=acc.code;
+          }
+        }
+        result.code+="."+accessors.join(".");
+      }
       return result;
     }
 

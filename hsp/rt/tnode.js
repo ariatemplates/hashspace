@@ -52,6 +52,9 @@ var TNode=klass({
 			}
 			delete this.childNodes;
 		}
+
+		// TODO delete Expression observers !!!!
+		
 		this.htmlCbs=null;
 		delete this.node;
 		delete this.parent;

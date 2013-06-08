@@ -232,48 +232,52 @@ function formatExpression(expression, firstIdx, walker) {
 				}
 			}
 
-			if (path>2) {
-				walker.logError("Long expression paths are not supported yet");
+			var res, rootRef=path[0];
+			if (isRootInScope || root==="event") {
+				rootRef='"'+rootRef+'"';
+			}
+			nextIndex++;
+			var psz=path.length;
+			if (psz===1) {
+				res=['e',exprIdx,':[',arg1,',1,',rootRef];
 			} else {
-				var res, rootRef=path[0];
-				if (isRootInScope || root==="event") {
-					rootRef='"'+rootRef+'"';
-				}
-				nextIndex++;
-				if (path.length===1) {
-					res=['e',exprIdx,':[',arg1,',1,',rootRef];
-				} else if (path.length===2) {
-					res=['e',exprIdx,':[',arg1,',2,',rootRef,',"',path[1],'"'];
-				} else {
-					walker.logError("Long expression paths are not supported yet", expression);
-					res=[];
-				}
-				if (args && args.length>0) {
-					var acat, arg;
-					for (var i=0, sz=args.length;sz>i;i++) {
-						arg=args[i];
-						acat=arg.category;
-						if (acat==="string") {
-							res.push(',0,"'+escapeNewLines(arg.value.replace(/"/g, "\\\""))+'"');
-						} else if (acat==="boolean" || acat==="number") {
-							res.push(',0,'+arg.value);
-						} else {
-							// this is not a literal
-							res.push(',1,'+argExprIdx[i]);
-						}
-					}
-					if (argExprs && argExprs.length>0) {
-						res.push("],");
-						res.push(argExprs.join(","));
+				var p=[], pitm;
+				for (var i=0;psz>i;i++) {
+					pitm=path[i];
+					if ((typeof pitm)==="string") {
+						p.push('"'+pitm+'"');
 					} else {
-						res.push("]");
+						p.push(pitm);
 					}
-					
+				}
+				res=['e',exprIdx,':[',arg1,',',psz,',',p.join(',')];
+			}
+
+			if (args && args.length>0) {
+				var acat, arg;
+				for (var i=0, sz=args.length;sz>i;i++) {
+					arg=args[i];
+					acat=arg.category;
+					if (acat==="string") {
+						res.push(',0,"'+escapeNewLines(arg.value.replace(/"/g, "\\\""))+'"');
+					} else if (acat==="boolean" || acat==="number") {
+						res.push(',0,'+arg.value);
+					} else {
+						// this is not a literal
+						res.push(',1,'+argExprIdx[i]);
+					}
+				}
+				if (argExprs && argExprs.length>0) {
+					res.push("],");
+					res.push(argExprs.join(","));
 				} else {
 					res.push("]");
 				}
-				code=res.join("");
+				
+			} else {
+				res.push("]");
 			}
+			code=res.join("");
 		}
 		
 	} else if (cat === 'boolean' || cat === 'number') {

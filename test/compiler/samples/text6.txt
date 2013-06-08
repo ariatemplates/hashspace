@@ -1,0 +1,15 @@
+##### Template:
+# template hello(foo)
+	{foo[2].bar["hello"]} Hello
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code
+hello=[
+  n.$text({e1:[1,4,"foo",2,"bar","hello"]},["",1," Hello "])
+]

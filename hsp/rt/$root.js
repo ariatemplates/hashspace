@@ -99,17 +99,19 @@ var $RootNode = klass({
 	 * @param {TNode} ni the node instance that should be notified of the changes
 	 */
 	createExpressionObservers:function(ni) {
-		var e, vs=ni.vscope, eh=ni.eh;
+		var vs=ni.vscope, eh=ni.eh, op, sz;
 		if (!eh) return; // no expression is associated to this node
 		for (var k in eh.exps) {
-			e=eh.exps[k];
-			if (e.bound===true) {
-				// create or reuse prop observer for this expression
-				var nm=e.onm? e.onm : e.root;
-				var t=vs[nm]; // target object
-				if (!t) continue;
-				var pp=e.pnm? e.pnm : e.path[0];
-				this.createObjectObserver(ni,t,pp);			
+
+			op=eh.exps[k].getObservablePairs(vs);
+			if (!op) continue;
+			sz=op.length;
+			if (sz===1) {
+				this.createObjectObserver(ni,op[0][0],op[0][1]);
+			} else {
+				for (var i=0;sz>i;i++) {
+					this.createObjectObserver(ni,op[i][0],op[i][1]);
+				}
 			}
 		}
 	},
