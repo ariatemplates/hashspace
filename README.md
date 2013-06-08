@@ -29,12 +29,10 @@ Currently only some parts of the runtime are developed:
 - array data-bindings (i.e. automatic refresh of foreach nodes when the foreach array is changed)
 
 
-Running the Samples
--------------------
 To run and update the samples in a live environment, you will have to install [grunt][grunt] and then:
 - run *grunt* to launch a local web-server that can compile templates on the fly (cf. hsp/grunt folder)
-- open *http://localhost:8000* in your favorite browser..
-- choose your sample from the sample list
+- open *http://localhost:8000* in your favorite browser and choose an example from the sample list
+- or open *http://localhost:8000/todomvc* to play with the todomvc sample..
 
 Running Tests
 -------------
