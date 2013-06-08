@@ -1,0 +1,109 @@
+
+/*
+ * Copyright 2012 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+/**
+ * Main template
+ * @param ds the data set
+ * @parm ctl the controller to containing the event handler callbacks
+ */
+# export template todos(ds, ctl)
+	<section id="todoapp" onselectstart="return false;">
+		<header id="header">
+			<h1>todos</h1>
+			<form id="todo-form" onsubmit="{ctl.addTodo()}">
+				// TODO support autofocus attribute
+				<input id="new-todo" autocomplete="false" placeholder="What needs to be done?" value="{ds.newTodo.title}"/>
+			</form>
+		</header>
+		{if ds.todos.length}
+			<section id="main">
+				// TODO remove fixed ids
+				<input id="toggle-all" type="checkbox" value="{ds.allChecked}" title="Mark all done" onchange="{ctl.toggleAllDone()}"/>
+				<label for="toggle-all">Mark all as complete</label>
+				<ul id="todo-list"> 
+					{foreach todo in ds.todos}
+						{if ctl.isInFilter(todo)}
+							{todoItem(todo, ds, ctl)}
+						{/if}
+					{/foreach}
+				</ul>
+			</section>
+			<footer id="footer">
+				<span id="todo-count">
+					<strong>{ds.remainingCount}</strong>
+					// TODO better way to pluralize
+					{if ds.remainingCount===1} item left {else} items left {/if}
+				</span>
+				<ul id="filters">
+					{filterLink(ds, ctl, "All", "all")}
+					{filterLink(ds, ctl, "Active", "active")}
+					{filterLink(ds, ctl, "Completed", "completed")}
+				</ul>
+				{if ds.doneCount}
+					<button id="clear-completed" onclick="{ctl.clearDoneTodos()}">Clear completed ({ds.doneCount})</button>
+				{/if}
+			</footer>
+		{/if}
+	</section>
+	<footer id="info">
+		<p>Double-click to edit a todo</p>
+		<p>Credits: <a href="https://github.com/b-laporte">Bertrand Laporte</a> -
+			code derived from the <a href="http://todomvc.com/architecture-examples/angularjs">angular JS Todo example</a>
+		</p>
+		<p>Should be soon part of <a href="http://todomvc.com">TodoMVC</a></p>
+	</footer>
+# /template
+
+
+/**
+ * template displaying the todo element
+ * @param todo the todo data model
+ * @param ctl the general controller
+ */
+# template todoItem(todo, ds, ctl) 
+	<li class="{'completed':todo.completed, 'editing':todo.editMode}">
+
+		{if todo.editMode}
+			<form onsubmit="{ctl.doneEditing(todo)}"> 
+				<input type="text" class="edit" title="{ds.editTodo.title}" #model="{ds.editTodo.title}" onblur="{ctl.doneEditing(todo)}"/> 
+				// TODO todo-focus="todo == editedTodo"
+			</form>
+		{else}
+			<div class="view">
+				<input class="toggle" type="checkbox" value="{todo.completed}" onchange="{ctl.syncData()}"/>
+				<label ondblclick="{ctl.editTodo(todo)}">{todo.title}</label>
+				<button class="destroy" onclick="{ctl.removeTodo(todo)}"></button>
+			</div>
+		{/if}
+	</li>
+# /template
+
+
+/**
+ * display a link to activate a filter on the todo list
+ * @param ds the data set
+ * @param ctl the general controller
+ * @param {String} label the label to display in the link - e.g. "All"
+ * @param {String} filterCode the corresponding filter code used in the data model - e.g. "all"
+ */
+# template filterLink(ds, ctl, label, filterCode)	
+	<li>
+		<a onclick="{ctl.selectFilter(filterCode)}" class="{'selected':ds.filter===filterCode}">
+			{label}
+		</a>
+	</li>
+# /template
