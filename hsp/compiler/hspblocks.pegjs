@@ -159,8 +159,8 @@ HTMLAttName
   {return first + next.join("");}
 
 HTMLAttribute
-  = name:HTMLAttName _ "=" _ "\"" value:HTMLAttributeValue "\""
-  {return {type:"attribute", name:name, value:value, line:line, column:column}}
+  = name:HTMLAttName v:(_ "=" _ "\"" value:HTMLAttributeValue "\"" {return value;})?
+  {return {type:"attribute", name:name, value:v, line:line, column:column}}
 
 HTMLAttributeValue
   = (HTMLAttributeText / ExpressionBlock)*

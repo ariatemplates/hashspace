@@ -369,16 +369,22 @@ var SyntaxTree=klass({
 		for (var i=0, sz=atts.length;sz>i;i++) {
 			att=atts[i];
 			var sz2=att.value.length;
+
 			if (sz2===0) {
 				// this case arises when the attibute is empty - so let's create an empty text node
-				att.value.push({type:"text", value:""})
+				if (att.value==='') {
+					// attribute has no value - e.g. autocomplete in an input element
+					att2={name:att.name, type:"name", line:att.line, column:att.column}
+					n.attributes.push(att2);
+					continue;
+				} else {
+					att.value.push({type:"text", value:""})
+				}
 				sz2=1;
 			}
-
 			if (sz2===1) {
 				// literal or expression
 				type=att.value[0].type;
-			
 				if (type==="text" || type==="expression") {
 					if (type==="expression") {
 						var v=att.value[0], cat=v.category;

@@ -26,7 +26,7 @@
 			<h1>todos</h1>
 			<form id="todo-form" onsubmit="{ctl.addTodo()}">
 				// TODO support autofocus attribute
-				<input id="new-todo" autocomplete="false" placeholder="What needs to be done?" value="{ds.newTodo.title}"/>
+				<input id="new-todo" autocomplete="off" autofocus placeholder="What needs to be done?" value="{ds.newTodo.title}"/>
 			</form>
 		</header>
 		{if ds.todos.length}

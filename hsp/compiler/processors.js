@@ -143,7 +143,6 @@ exports["element"] = function (node, walker) {
 	// we should generate sth like
 	// n.elt("div",	{e1:[0,0,"arg"]}, {"title":["",1]},	0, [...])
 	var attcontent="0", evtcontent="0", exprcode="0", atts=node.attributes, sz=atts.length;
-
 	if (sz>0) {
 		var list, aname, attlist=[], evtlist=[], exprlist=[], att, type, exprIdx=1;
 
@@ -176,6 +175,8 @@ exports["element"] = function (node, walker) {
 					exprlist.push(tb.expArg.slice(1,-1));
 				}
 				list.push('"'+aname+'":'+tb.blockArgs);
+			} else if (type==="name") {
+				list.push('"'+aname+'":null');
 			} else {
 				walker.logError("Invalid attribute type: "+type);
 			}

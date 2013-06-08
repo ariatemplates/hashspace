@@ -91,7 +91,9 @@ var TNode=klass({
 		for (var k in attcfg) {
 			if (attcfg.hasOwnProperty(k)) {
 				itm=attcfg[k];
-				if (typeof(itm)=="string") {
+				if (itm===null) {
+					atts.push(new TSimpleAtt(k,k));
+				} else if (typeof(itm)=="string") {
 					atts.push(new TSimpleAtt(k,itm));
 				} else if (itm.constructor===Array) {
 					// attribute using a txtcfg structure to reference expressions

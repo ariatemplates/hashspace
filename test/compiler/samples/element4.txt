@@ -1,0 +1,19 @@
+##### Template:
+# template test(person)
+	<input type="text" autocomplete/>
+# /template
+
+##### Parsed Tree
+"skip"
+
+##### Syntax Tree
+"skip"
+
+##### Template Code
+test=[
+  n.elt(  "input", 
+          0,
+          {"type":"text","autocomplete":null},
+          0
+  )
+]
