@@ -1,0 +1,25 @@
+##### Template:
+# template filterLink(ds, ctl, label, filterCode)   
+    <a onclick="{ctl.selectFilter(filterCode)}" title="{label}">
+        {label}
+    </a>
+# /template
+
+##### Parsed Tree
+"skip"
+
+##### Syntax Tree
+"skip"
+
+##### Template Code
+filterLink=[
+    n.elt("a",
+        {   e1:[3,2,"ctl","selectFilter",1,2],
+            e2:[1,1,"filterCode"],
+            e3:[1,1,"label"]
+        },
+        {"title":["",3]},
+        {"click":1},
+        [n.$text({e1:[1,1,"label"]},["",1," "])]
+    )
+]

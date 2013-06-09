@@ -231,13 +231,15 @@ function formatExpression(expression, firstIdx, walker) {
 					argExprIdx[i]=e.exprIdx;
 					idx=e.nextIndex;
 				}
+				nextIndex=idx;
+			} else {
+				nextIndex++;
 			}
 
 			var res, rootRef=path[0];
 			if (isRootInScope || root==="event") {
 				rootRef='"'+rootRef+'"';
 			}
-			nextIndex++;
 			var psz=path.length;
 			if (psz===1) {
 				res=['e',exprIdx,':[',arg1,',1,',rootRef];
