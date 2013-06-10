@@ -227,7 +227,7 @@ var EltNode = klass({
 
 		if (this.inputModelExpIdx) {
 			// update the checked state (must be done at the end as the value attribute may not have been set)
-			var exp=this.eh.getExpr(this.inputModelExpIdx), v1=''+exp.getValue(vs,"");
+			var exp=this.eh.getExpr(this.inputModelExpIdx), v1=''+exp.getValue(vs,this.eh,"");
 			if (nd.type==="radio") {
 				var v2=''+nd.value;
 				nd.checked=(v1===v2);

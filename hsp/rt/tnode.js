@@ -287,7 +287,7 @@ TCbAtt = klass({
 		if (this.expIdx) {
 			var cbExp=eh.getExpr(this.expIdx);
 			if (cbExp) {
-				return cbExp.executeCb(evt, this.evtType, eh, vscope);	
+				return cbExp.executeCb(evt, eh, vscope);	
 			}
 		}
 	}

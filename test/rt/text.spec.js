@@ -86,6 +86,34 @@ var hello6 = require("hsp/rt").template([], function(n) {
 	]
 });
 
+/***
+# template hello7(d)
+    {concat(d.firstName,d.lastName)}
+# /template
+***/
+var hello7 = require("hsp/rt").template(["d"], function(n){
+  return [n.$insert({e1:[4,1,concat,1,2,1,3],e2:[1,2,"d","firstName"],e3:[1,2,"d","lastName"]},1)];
+});
+
+function concat(x,y) {
+    return x+"-"+y;
+}
+
+function compare(x,y) {
+	var r=(x===y);
+    return r;
+}
+
+/***
+# template hello8(d)
+    {if compare(d.firstName,d.lastName)}
+        OK
+    {/if}
+# /template
+***/
+var hello8 = require("hsp/rt").template(["d"], function(n){
+  return [n.$if({e1:[4,1,compare,1,2,1,3],e2:[1,2,"d","firstName"],e3:[1,2,"d","lastName"]},1,[n.$text(0,["OK "])])];
+});
 
 
 describe("Text Nodes", function () {
@@ -201,6 +229,34 @@ describe("Text Nodes", function () {
 		var n=hello6();
 
 		expect(n.node.firstChild.nodeValue).toEqual("blah blah");
+		n.$dispose();
+	});
+
+	it("tests refresh when function arguments change",function() {
+		var d={firstName:"Omer",lastName:"Simpson"}
+		var n=hello7(d);
+
+		expect(n.node.firstChild.nodeValue).toEqual("Omer-Simpson");
+
+		json.set(d,"firstName","Marge");
+		hsp.refresh();
+
+		expect(n.node.firstChild.nodeValue).toEqual("Marge-Simpson");
+
+		n.$dispose();
+	});
+
+	it("tests if update when expression function arguments change",function() {
+		var d={firstName:"Omer",lastName:"Simpson"}
+		var n=hello8(d);
+
+		expect(n.node.childNodes.length).toEqual(2);
+
+		json.set(d,"firstName","Simpson");
+		hsp.refresh();
+
+		expect(n.node.childNodes.length).toEqual(3);
+
 		n.$dispose();
 	});
 

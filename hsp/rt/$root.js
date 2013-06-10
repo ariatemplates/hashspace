@@ -102,8 +102,7 @@ var $RootNode = klass({
 		var vs=ni.vscope, eh=ni.eh, op, sz;
 		if (!eh) return; // no expression is associated to this node
 		for (var k in eh.exps) {
-
-			op=eh.exps[k].getObservablePairs(vs);
+			op=eh.exps[k].getObservablePairs(eh,vs);
 			if (!op) continue;
 			sz=op.length;
 			if (sz===1) {
@@ -220,8 +219,10 @@ var $InsertNode = klass({
 	createNodeInstance:function(parent) {
 		var ni=TNode.createNodeInstance.call(this,parent);
 
-		var v=ni.eh.getValue(ni.expIdx, ni.vscope, null);
-		if (v && v.fn) {
+		var v=ni.eh.getExpr(ni.expIdx);
+		if (v && v.getFuncRef) {
+			v=v.getFuncRef(ni.vscope, null);
+
 			ni.func=v.fn;
 			ni.tplArgs=v.args;
 			

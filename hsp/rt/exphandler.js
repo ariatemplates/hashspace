@@ -31,8 +31,8 @@ var ExpHandler = klass({
 	 *  0: unbound data ref 	- e.g. {e1:[0,1,"item_key"]}
 	 *  1: bound data ref 		- e.g. {e1:[1,2,"person","name"]}
 	 *  2: literal data ref 	- e.g. {e1:[2,2,person,"name"]}
-	 *  3: callback expression 	- e.g. {e1:[3,2,"ctl","deleteItem",1,2,1,0]}
-	 *  4: callback literal 	- e.g. {e1:[4,1,myfunc,1,2,1,0]}
+	 *  3: function call    	- e.g. {e1:[3,2,"ctl","deleteItem",1,2,1,0]}
+	 *  4: function call literal- e.g. {e1:[4,1,myfunc,1,2,1,0]}
 	 *  5: literal value 		- e.g. {e1:[5,"some value"]}
 	 *  6: function expression  - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}
 	 */
@@ -72,7 +72,7 @@ var ExpHandler = klass({
      * Return the value of an expression
      */
 	getValue:function(eIdx, vscope, defvalue) {
-		return this.exps["e"+eIdx].getValue(vscope, defvalue);
+		return this.exps["e"+eIdx].getValue(vscope, this, defvalue);
 	},
 
 	/**
@@ -98,7 +98,7 @@ var LiteralExpr=klass({
 		this.value=desc[1];
 	},
 
-	getValue:function() {
+	getValue:function(vscope, eh, defvalue) {
 		return this.value;
 	},
 
@@ -107,7 +107,7 @@ var LiteralExpr=klass({
 	 * null should be returned if nothing should be observed (i.e. unbound property)
 	 * @see $RootNode.createExpressionObservers
 	 */
-	getObservablePairs:function(vscope) {
+	getObservablePairs:function(eh,vscope) {
 		return null;
 	}
 })
@@ -148,7 +148,7 @@ var DataRefExpr=klass({
 	/**
 	 * Get the value associated to the expression in a given scope
 	 */
-	getValue:function(vscope, defvalue) {
+	getValue:function(vscope, eh, defvalue) {
 		var v=this.isLiteral? this.root : vscope[this.root], ppl=this.ppLength;
 
 		if (!v) {
@@ -202,7 +202,7 @@ var DataRefExpr=klass({
 	 * null should be returned if nothing should be observed (i.e. unbound property)
 	 * @see $RootNode.createExpressionObservers
 	 */
-	getObservablePairs:function(vscope) {
+	getObservablePairs:function(eh,vscope) {
 		if (!this.bound) {
 			return null;
 		}
@@ -261,7 +261,7 @@ var FuncRefExpr=klass({
 	 * if the callback reference leads to an undefined function, the defvalue argument is returned
 	 * e.g. {fn:[object ref],scope:[object ref],args:[argument array]} - args and scope properties can be null
 	 */
-	getValue:function(vscope, defvalue) {
+	getFuncRef:function(vscope, defvalue) {
 		var v=this.isLiteral? this.root : vscope[this.root], ppl=this.ppLength, scope=null;
 		if (!v) {
 			// root not found
@@ -288,10 +288,18 @@ var FuncRefExpr=klass({
 	},
 
 	/**
+	 * Get the value associated to the expression in a given scope
+	 */
+	getValue:function(vscope, eh, defvalue) {
+		var res=this.executeCb({}, eh, vscope);
+		return (res===undefined)? defvalue : res;
+	},
+
+	/**
 	 * Execute Callback method of the Callback expressions 
 	 */
-	executeCb:function(evt, evtType, eh, vscope) {
-		var v=this.getValue(vscope, null);
+	executeCb:function(evt, eh, vscope) {
+		var v=this.getFuncRef(vscope, null);
 
 		var fn;
 		if (!v) {
@@ -337,6 +345,20 @@ var FuncRefExpr=klass({
 		}
 
 		return fn.apply(ctxt,cbargs);
+	},
+
+	/**
+	 * Return the list of [object,property] pairs that have to be observed
+	 * null should be returned if nothing should be observed (i.e. unbound property)
+	 * @see $RootNode.createExpressionObservers
+	 */
+	getObservablePairs:function(eh,vscope) {
+		// call the parent method for the method root
+		var r=DataRefExpr.getObservablePairs.call(this,eh,vscope);
+
+		// get the observable pairs for each of the function arguments
+
+		return r;
 	}
 })
 
@@ -367,7 +389,7 @@ var FuncExpr=klass({
 	 * Return the value processed by the function expression
 	 * if one of the argument is undefined and leads to an invalid execution, the defvalue argument is returned
 	 */
-	getValue:function(vscope, defvalue) {
+	getValue:function(vscope, eh, defvalue) {
 		if (!this.args) {
 			try {
 				return this.fn.call({});
@@ -394,7 +416,8 @@ var FuncExpr=klass({
 	 * null should be returned if nothing should be observed (i.e. unbound property)
 	 * @see $RootNode.createExpressionObservers
 	 */
-	getObservablePairs:function(vscope) {
+	getObservablePairs:function(eh,vscope) {
+		// TODO return observable pairs for each of the function aguments
 		return null;
 	}
 });
