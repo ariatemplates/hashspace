@@ -164,7 +164,7 @@ var TodoModule=klass({
 	/**
 	 * Tells if a todo item should be displayed based on the current ui filter
 	 */
-	isInFilter:function(todo) {
+	isInFilter:function(todo,filter) {
 		var f=this.ds.filter;
 		if (f==="active" && todo.completed) return false;
 		if (f==="completed" && !todo.completed) return false;
@@ -175,10 +175,8 @@ var TodoModule=klass({
 	 * Select a new filter
 	 */
 	selectFilter:function(filter) {
-		console.log("filter:"+filter)
 		if (filter === "all" || filter === "active" || filter === "completed") {
 			json.set(this.ds,"filter",filter);
-			console.log("filter change: "+filter);
 		}
 	}
 });

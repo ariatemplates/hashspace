@@ -36,7 +36,7 @@
 				<label for="toggle-all">Mark all as complete</label>
 				<ul id="todo-list"> 
 					{foreach todo in ds.todos}
-						{if ctl.isInFilter(todo)}
+						{if ctl.isInFilter(todo,ds.filter)}
 							{todoItem(todo, ds, ctl)}
 						{/if}
 					{/foreach}
@@ -102,7 +102,7 @@
  */
 # template filterLink(ds, ctl, label, filterCode)	
 	<li>
-		<a onclick="{ctl.selectFilter(filterCode)}" class="{'selected':ds.filter===filterCode}">
+		<a onclick="{ctl.selectFilter(filterCode)}" title="{label}" class="{'selected':ds.filter===filterCode}">
 			{label}
 		</a>
 	</li>
