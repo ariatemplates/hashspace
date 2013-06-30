@@ -1,24 +1,32 @@
 
 # export template mainLayout(data,ctl) 
-    <div class="playground" onmouseover="{ctl.hideSampleList()}">
-        <div class="descriptionContainer">
-            {sampleList(data,ctl)}
-
-            // TODO remove this fixed id
-            <div id="description">
-                
+    <div class="main">
+        <div class="header">
+            <div class="hashspace">
+                <span class="hash">#</span>
+                <span class="name">hashspace</span>
             </div>
         </div>
+        <div class="playground" onmouseover="{ctl.hideSampleList()}">
+            <div class="descriptionContainer">
+                {sampleList(data,ctl)}
 
-        <div class="editorContainer">
-            <div class="editorTabs">
-                {foreach file in data.files}
-                    {file.src}
-                {/foreach}
+                // TODO remove this fixed id
+                <div id="description">
+                    
+                </div>
             </div>
 
-            // TODO remove this fixed id
-            <div id="playgroundEditor"></div>
+            <div class="editorContainer">
+                <div class="editorTabs">
+                    {foreach file in data.files}
+                        {file.src}
+                    {/foreach}
+                </div>
+
+                // TODO remove this fixed id
+                <div id="playgroundEditor"></div>
+            </div>
         </div>
     </div>
 # /template

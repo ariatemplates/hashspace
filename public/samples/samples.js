@@ -7,6 +7,13 @@ module.exports = [
         files: [
             {src:"hello.hsp", main:true}
         ]
+    },{
+        title:"Dynamic update: timer example",
+        folder:"timer",
+        description:"description.md",
+        files: [
+            {src:"timer.hsp", main:true}
+        ]
     }, {
         title:"Simple event handler",
         folder:"clickhandler",
@@ -15,8 +22,15 @@ module.exports = [
             {src:"clickhandler.hsp", main:true}
         ]
     }, {
-        title:"Simple list",
+        title:"Simple list and contextual event handlers",
         folder:"simplelist",
+        description:"description.md",
+        files: [
+            {src:"simplelist.hsp", main:true}
+        ]
+    }, {
+        title:"Dynamic list update",
+        folder:"listupdate",
         description:"description.md",
         files: [
             {src:"list.hsp", main:true}
@@ -41,6 +55,13 @@ module.exports = [
         description:"description.md",
         files: [
             {src:"inputsample.hsp", main:true}
+        ]
+    }, {
+        title:"Simple todo list",
+        folder:"todolist",
+        description:"description.md",
+        files: [
+            {src:"todolist.hsp", main:true}
         ]
     }
 

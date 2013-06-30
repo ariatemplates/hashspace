@@ -9,6 +9,9 @@ var hsp=require("hsp/rt"),
     md=require("./markdown"),
     json=require("hsp/json");
 
+var count=0;        // number of playgrounds that have been created
+var playgrounds={}; // collection of playground instances
+
 var Playground = module.exports = klass({
     containerId:"",
 
@@ -17,6 +20,10 @@ var Playground = module.exports = klass({
      * @param {String} containerId the id of the html element where the playground should be displayed
      */
     $constructor:function(containerId) {
+        count++;
+        this.idx=count;
+        playgrounds['p'+this.idx]=this; // register in the global list - cf. notifyScriptError
+
         this.containerId=containerId;
         this.data={
             sampleIndex:-1,
@@ -27,6 +34,11 @@ var Playground = module.exports = klass({
         }
 
         hsp.useLogger(this.logErrors.bind(this));
+    },
+
+    $dispose:function() {
+        // deregister from main collection
+        playgrounds['p'+this.idx]=null;
     },
 
     /**
@@ -63,6 +75,14 @@ var Playground = module.exports = klass({
     },
 
     /**
+     * static method called 
+     */
+    notifyScriptError:function(playgroundIdx,errorDescription,fileName) {
+        var err={description:''+errorDescription};
+        playgrounds['p'+playgroundIdx].logErrors(fileName,[err]);
+    },
+
+    /**
      * Compile and update the code associated to one of the sample files
      */
     compileAndUpdate:function(fileName,newCode) {
@@ -82,7 +102,18 @@ var Playground = module.exports = klass({
                     if (require.cache[moduleName]) {
                         require.cache[moduleName]=null;
                     }
-                    noder.execute(code,moduleName); //.then(function (module) {});
+
+                    // add try catch to display js errors
+                    var code2=([
+                        'try {',
+                        code,
+                        '} catch(ex) {',
+                        'var Playground=require("playground/playground");',
+                        'Playground.notifyScriptError('+self.idx+',ex,__filename);',
+                        '}'
+                    ]).join('\n');
+
+                    noder.execute(code2,moduleName); //.then(function (module) {});
                 } catch (ex) {
                     console.warn("[compileAndUpdate] "+ex.message+" (line:"+ex.line+", column:"+ex.column+")");
                 }

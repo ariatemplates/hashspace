@@ -20,9 +20,6 @@ var msg={
     urgency:0
 }
 
-// display the template in the #output div
-hsp.display(message(msg),"output");
-
 function toggleUrgency() {
     json.set(msg,"urgency",msg.urgency? 0 : 1);
 }
@@ -30,3 +27,6 @@ function toggleUrgency() {
 function setCategory(cat) {
     json.set(msg,"category",cat);
 }
+
+// display the template in the #output div
+hsp.display(message(msg),"output");

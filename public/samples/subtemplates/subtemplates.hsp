@@ -26,7 +26,7 @@
 # /template
 
 var persons=[
-    {firstName:"Omer",lastName:"Simpsons"},
+    {firstName:"Homer",lastName:"Simpsons"},
     {firstName:"Marge",lastName:"Simpsons"},
     {firstName:"Bart"},
     {firstName:"Lisa"},

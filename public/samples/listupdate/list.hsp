@@ -3,9 +3,11 @@ var json=require("hsp/json");
 # template list(persons)
     // onselectstart: prevent double-click selection on a elements
     <div onselectstart="return false"> 
-    	<a onclick="{addElement()}">Add element</a> - 
-    	<a onclick="{deleteElement()}">Delete element</a> - 
-    	<a onclick="{changeAll()}">Change all elements</a>
+        <div class="msg">
+        	<a onclick="{addElement()}">Add element</a> - 
+        	<a onclick="{deleteElement()}">Delete element</a> - 
+        	<a onclick="{changeAll()}">Change all elements</a>
+        </div>
         <ul>
             {foreach p in persons}
             	<li>
@@ -16,18 +18,18 @@ var json=require("hsp/json");
             {/foreach}
         </ul>
     </div>
+    <div class="msg">
+        Number of people in the list: {persons.length}
+    </div>
 # /template
 
 var persons=[
-	{firstName:"Omer",lastName:"Simpsons"},
+	{firstName:"Homer",lastName:"Simpsons"},
 	{firstName:"Marge",lastName:"Simpsons"},
 	{firstName:"Bart"},
 	{firstName:"Lisa"},
 	{firstName:"Maggy"}
 ]
-
-// display the template in the #output div
-hsp.display(list(persons),"output");
 
 var count=0;
 
@@ -52,3 +54,7 @@ function changeAll() {
 		{firstName:"Kenny", lastName:"Garrett"}
 	]);
 }
+
+// display the template in the #output div
+hsp.display(list(persons),"output");
+

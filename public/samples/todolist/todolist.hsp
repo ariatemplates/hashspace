@@ -1,0 +1,39 @@
+var klass=require("hsp/klass"),
+    json=require("hsp/json");
+
+# template todolist(todo)
+    <div>
+        <h3>TODO...</h3>
+        <ul>
+        {foreach itm in todo.data.items}
+            <li>{itm}</li>
+        {/foreach}
+        </ul>
+        <form onsubmit="{todo.addItem()}">
+            <input type="text" value="{todo.data.newTodoItem}" />
+            <button>{'Add #' + (todo.data.items.length + 1)}</button>
+        </form>
+    </div>
+# /template
+
+// todo controller
+var TodoCtl=klass({
+    $constructor:function() {
+        this.data = {       // todo data model
+            newTodoItem:'', // value of the new todo item
+            items:[]        // todo list
+        }
+    },
+    addItem:function() {
+        var d=this.data, items=d.items;
+        // add new item to the todo list
+        json.splice(items,items.length,0,d.newTodoItem);
+        // empty new todo field value
+        json.set(d,"newTodoItem","");
+        // return false to prevent default behaviour
+        return false;
+    }
+});
+
+// display the template in the #output div
+hsp.display(todolist(new TodoCtl()),"output");

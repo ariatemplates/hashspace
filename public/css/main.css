@@ -1,18 +1,45 @@
 
+@import url(http://fonts.googleapis.com/css?family=Ubuntu:300,400);
+
+body {
+    padding:0px;
+    margin:0px;
+}
+
 /* main css */
 
-.playground {
-    /*position: relative;*/
-    font-family: Helvetica, Arial;
+.main {
+    font-family: 'Ubuntu', sans-serif;
     font-size:14px;
     color: #444444;
     cursor:default;
-    width: 100%;
-    height: 90%;
+    margin: 0px 3%;
+}
+
+.hashspace {
+    float:left;
+    background-color:#27AAFC;
+    padding: 25px 20px 15px 15px;
+    margin-bottom:10px;
+    font-size:18px;
+}
+
+.hashspace .hash {
+    color:#FFFFFF;
+    padding-right:3px;
+}
+
+.hashspace .name {
+    color:#444444;
+}
+
+.playground {
+    /*position: relative;*/
+    clear:both;
 }
 
 a {
-    color:#5F9FD5;
+    color:#279CE6;
 }
 
 a:hover {
@@ -21,7 +48,8 @@ a:hover {
 
 .playground .descriptionContainer {
     float:left;
-    width: 50%;
+    width: 48%;
+    margin-right:2%;
 }
 
 .playground .editorContainer {
@@ -30,19 +58,28 @@ a:hover {
 }
 
 .playground .output {
-    /*border:1px solid #999999;*/
+    font-weight:300;
     padding: 10px 10px 10px 10px;
-    margin-right: 10px;
-    background-color: #F2F2F2
+    background-color: #444444;/*#F2F2F2*/
+    color:#FFFFFF;
 }
 
 .playground .editorTabs {
     height:25px;
 }
 
+#description {
+    font-weight:300;
+}
+
 #playgroundeditor {
     position:relative;
-    height:100%;
+    height:600px;
+    margin-bottom:20px;
+}
+
+ul {
+    padding-left:20px;
 }
 
 /* ************************************ */
@@ -68,7 +105,7 @@ a:hover {
 }
 
 .sampleList div:hover{
-    background-color:#777777;
+    background-color:#555555;
     color:white;
 }
 
@@ -102,6 +139,11 @@ input[type=text] {
     border-radius: 3px;
 }
 
+#output ul {
+    margin:0px;
+    padding-left:30px;
+}
+
 .section {
     padding: 5px;
 }
@@ -114,17 +156,18 @@ input[type=text] {
 
 .warning {
     display: inline-block;
-    color:red;
-    font-weight:bold;
+    color:#FF4DBE;
+    font-weight:400;
 }
 
 .info {
     display: inline-block;
-    color:green;
-    font-weight:bold;
+    color:#FF4DBE;
+    font-weight:400;
 }
 
 .subtemplates .label {
+    color:#999999;
     float:left;;
     width:100px;  
     text-align: right;
@@ -132,7 +175,13 @@ input[type=text] {
 }
 
 .subtemplates .value {
-    font-weight: bold;
+    font-style:italic;
+    color:#27AAFC;
+}
+
+.subtemplates hr {
+    color:#555555;
+    height:0px;
 }
 
 .msg {
@@ -141,24 +190,49 @@ input[type=text] {
 }
 
 .urgent {
-    color:red;
-    font-weight: bold;
+    font-weight: 400;
     display:block;
     margin:20px;
     padding:7px;
-    background-color: #444444;
-    color: #FFFFFF;
+    background-color: #555555;
 }
 
 .personal {
-    font-family: Courier;
+    color:#FF4DBE;
 }
 
 .professional {
-    font-family: Times;
+    font-family: Helvetica, Arial;
     font-size:1.4em;
+    padding-top:0.7em;
 }
 
 .note {
     font-style: italic;
+}
+
+.details {
+    font-style: italic;
+}
+
+.section {
+    color:#999999;
+}
+
+.special {
+    color:#27AAFC;
+}
+
+.info2 {
+    color:#27AAFC;
+    font-weight:300;
+    padding:5px;
+}
+
+.section label {
+    color:#FFFFFF;
+}
+
+.section .textvalue {
+    color:#FF4DBE;
 }
