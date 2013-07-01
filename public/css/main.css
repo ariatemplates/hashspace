@@ -113,7 +113,7 @@ ul {
 /* Error list */
 
 .errorlist .description {
-    color:red;
+    color:#FF8800;
 }
 
 .errorlist ul {
@@ -123,8 +123,7 @@ ul {
 .errorlist .code {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Droid Sans Mono', 'Consolas', monospace;
     font-size: 12px;
-    color:#777777;
-    background-color:#EEEEEE;
+    color:#AAAAAA;
 }
 
 /* ************************************ */
