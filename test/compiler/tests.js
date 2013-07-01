@@ -25,7 +25,7 @@ describe('Block Parser: ', function(){
 				'var z;'
 				].join("\n");
 
-		assert.equal(tpl,s,"sample content");
+		assert.equal(tpl.replace(/\r/g,""),s,"sample content");
 	});
 
 	it ('tests testutils.compareJSCode', function(){
@@ -118,13 +118,13 @@ describe('Block Parser: ', function(){
 				'  return [n.$text(0,["Hello Again!"])];',
 				'});',
 				'var z;'
-				].join("\r\n");
+				].join("\n");
 
 		assert.equal(r.errors.length,0,"no compilation error");
 		//console.log(s.length) // 587
 		//console.log(r.code.length) // 591		
 		//assert.equal(r.code,s,"template generated code"); // strange issue with non visible characters
-		assert.equal(ut.compareJSCode(r.code, s),"","template generated code");
+		assert.equal(ut.compareJSCode(r.code.replace(/\r/g,""), s),"","template generated code");
 	});
 
 	it ('validates full compiled template with export', function(){
@@ -137,13 +137,13 @@ describe('Block Parser: ', function(){
 				'var hello4 = exports.hello4 = require("hsp/rt").template([], function(n){',
 				'  return [n.$text(0,["Hello World!"])];',
 				'});'
-				].join("\r\n");
+				].join("\n");
 
 		assert.equal(r.errors.length,0,"no compilation error");
 		//console.log(s.length) // 587
 		//console.log(r.code.length) // 591		
 		//assert.equal(r.code,s,"template generated code"); // strange issue with non visible characters
-		assert.equal(ut.compareJSCode(r.code, s),"","template generated code");
+		assert.equal(ut.compareJSCode(r.code.replace(/\r/g,""), s),"","template generated code");
 	});
 });
 
