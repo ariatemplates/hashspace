@@ -111,6 +111,8 @@ var SyntaxTree=klass({
 		n.name=b.name;
 		n.args=b.args;
 		n.export=b.mod==="export";
+		n.startLine=b.line;
+		n.endLine=b.endLine;
 		n.content=[];
 		out.push(n);
 

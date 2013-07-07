@@ -22,7 +22,10 @@ RequireBlock "require block" // TODO: finalize!
 
 TemplateBlock "template block"
   = start:TemplateStart content:TemplateContent? end:TemplateEnd? 
-  {start.content=content;start.closed=(end!=="");return start}
+  { start.content=content;
+    if (end) {start.closed=true;start.endLine=end.line;};
+    return start;
+  }
 
 TemplateStart "template statement"
   = _ "# " _ m:(("template") / (c:[a-zA-Z0-9]+ _ "template") {return c.join('')})
@@ -52,7 +55,7 @@ InvalidTplArgs
 
 TemplateEnd "template end statement"
   = _ "# " _ "/template" _ (EOL / EOF) 
-  {return {type:"/template"}} 
+  {return {type:"/template",line:line,column:column}} 
 
 TemplateContent "template content" // TODO: CSSClassExpression
   = _ blocks:(  TplTextBlock 

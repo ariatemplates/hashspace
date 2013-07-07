@@ -1,0 +1,13 @@
+##### Template:
+.var x=23;
+function foo() {
+    return x;
+}
+
+# template test(person)
+    <div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
+        <span>Hello {person.name}!</span>
+    </div>
+# /template
+
+##### Errors:

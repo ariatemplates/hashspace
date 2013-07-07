@@ -103,7 +103,6 @@ describe('Block Parser: ', function(){
 
 		var s=[	
 				compiler.HEADER,
-				'',
 				'var x="text1";',
 				'function func() {var x="text2"};',
 				'',
@@ -125,6 +124,9 @@ describe('Block Parser: ', function(){
 		//console.log(r.code.length) // 591		
 		//assert.equal(r.code,s,"template generated code"); // strange issue with non visible characters
 		assert.equal(ut.compareJSCode(r.code.replace(/\r/g,""), s),"","template generated code");
+
+		var lm=[ 0, 7, 8, 9, 10, 10, 10, 15, 16, 17, 18, 19, 19, 19, 19, 24 ];
+		assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "","line map comparison")
 	});
 
 	it ('validates full compiled template with export', function(){

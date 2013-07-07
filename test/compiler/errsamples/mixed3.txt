@@ -1,0 +1,11 @@
+##### Template:
+// line 1
+# template test(person)
+    <div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
+        <span>Hello {person.name}!</span>
+    </div>
+# /template
+// line 7
+.var foo=42;
+
+##### Errors:
