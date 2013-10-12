@@ -1,0 +1,118 @@
+##### Template:
+# template test(x)
+   {if x==1} 
+   	one 
+   {else if x==2}
+   	two
+   {else}
+   	neither one nor two
+   {/if}
+# /template
+
+##### Parsed Tree
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["x"],
+    "content": [
+      {
+        "type": "if",
+        "condition": {
+          "type": "BinaryExpression",
+          "category": "jsexpression",
+          "expType": "BinaryExpression",
+          "operator": "==",
+          "left": {"type": "Variable","name": "x","code": "x"},
+          "right": {"type": "expression","category": "number","value": 1,"code": "1"}
+        }
+      },
+      {"type": "text","value": "one  "},
+      {
+        "type": "elseif",
+        "condition": {
+          "type": "BinaryExpression",
+          "category": "jsexpression",
+          "expType": "BinaryExpression", 
+          "operator": "==",
+		  "left": {"type": "Variable","name": "x","code": "x"},
+          "right": {"type": "expression","category": "number","value": 2,"code": "2"}
+        },
+        "line": 4,
+        "column": 4
+      },
+      {"type": "text","value": "two "},
+      {"type": "else"},
+      {"type": "text","value": "neither one nor two "},
+      {"type": "endif"}
+    ],
+    "closed": true,
+    "endLine": 9
+  }
+]
+
+##### Syntax Tree:
+
+
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": ["x"],
+    "export": false,
+    "startLine": 1,
+    "endLine": 9,
+    "content": [
+      {
+        "type": "if",
+        "condition": {
+          "type": "expression",
+          "category": "jsexpression",
+          "objectrefs": [
+            { "type": "expression","category": "objectref","path": ["x"]}
+          ],
+          "code": "(a0 == 1)",
+          "line": 2,
+          "column": 8,
+          "bound": true
+        },
+        "content1": [{"type": "text","value": "one  "}],
+        "content2": [
+          {
+            "type": "if",
+            "condition": {
+              "type": "expression",
+              "category": "jsexpression",
+			  "objectrefs": [
+	            { "type": "expression","category": "objectref","path": ["x"]}
+	          ],
+              "code": "(a0 == 2)",
+              "line": 4,
+              "column": 13,
+              "bound": true
+            },
+            "content1": [{"type": "text","value": "two "}],
+            "content2": [{"type": "text","value": "neither one nor two "}]
+          }
+        ]
+      }
+    ]
+  }
+]
+
+##### Template Code
+test=[
+	n.$if(	{e1:[6,function(a0) {return (a0 == 1);},2],e2:[1,1,"x"]}, 1, [
+			n.$text(0,["one  "])
+		],[
+			n.$if({e1:[6,function(a0) {return (a0 == 2);},2],e2:[1,1,"x"]}, 1,[
+					n.$text(0,["two "])
+				],[
+					n.$text(0,["neither one nor two "])
+				]
+			)
+		]
+	)
+]
+

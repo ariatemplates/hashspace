@@ -40,6 +40,21 @@ body {
 
 a {
     color:#279CE6;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+li {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 a:hover {
@@ -147,6 +162,10 @@ input[type=text] {
     padding: 5px;
 }
 
+.section2 {
+    padding-top: 5px;
+}
+
 .textValue {
     font-size: 14px;
     padding: 1px 2px;
@@ -232,6 +251,6 @@ input[type=text] {
     color:#FFFFFF;
 }
 
-.section .textvalue {
+.textvalue {
     color:#FF4DBE;
 }

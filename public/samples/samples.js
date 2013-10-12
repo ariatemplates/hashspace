@@ -7,7 +7,7 @@ module.exports = [
         files: [
             {src:"hello.hsp", main:true}
         ]
-    },{
+    }, {
         title:"Dynamic update: timer example",
         folder:"timer",
         description:"description.md",
@@ -20,6 +20,13 @@ module.exports = [
         description:"description.md",
         files: [
             {src:"clickhandler.hsp", main:true}
+        ]
+    }, {
+        title:"Using conditions: if, else, etc.",
+        folder:"conditions",
+        description:"description.md",
+        files: [
+            {src:"conditions.hsp", main:true}
         ]
     }, {
         title:"Simple list and contextual event handlers",

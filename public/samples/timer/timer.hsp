@@ -6,9 +6,8 @@ var klass=require("hsp/klass"),
 # /template
 
 // klass is a little utility to create a JS object constructor 
-// from an enhanced JSON structure - main benefits are
-// to simplify prototypal inheritance and to ease code reading
-// note: a normal could be used as well
+// from a simple JSON structure - main goals are to
+// to simplify prototypal inheritance and ease code reading
 var Timer=klass({
     $constructor:function() {
         this.secondsElapsed=0;

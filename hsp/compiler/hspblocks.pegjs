@@ -94,8 +94,8 @@ IfBlock "if statement"
   {return {type:"if", condition:expr, line:line, column:column}}
 
 ElseIfBlock "elseif statement" 
-  = "{" _ "else " _ "if" _ expr:( HExpression / ( "(" _ expr2:HExpression _ ")" ) {return expr2}) _ "}" EOS?
-  {return {type:"elseif", value:expr, line:line, column:column}}
+  = "{" _ "else " _ "if" _ expr:HExpression _ "}" EOS?
+  {return {type:"elseif", condition:expr, line:line, column:column}}
 
 ElseBlock
   = "{" _ "else" _ "}" EOS?

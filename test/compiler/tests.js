@@ -79,18 +79,19 @@ describe('Block Parser: ', function(){
 				// validate generated code
 				if (!r.codeFragments) assert.fail("Missing Generated code");
 				else {
+					//console.log(r.codeFragments[k])
 					assert.equal(ut.compareJSCode(r.codeFragments[k], sample.codeFragments[k]), "", k+" code fragment comparison");
 				}
 			}
 		}
 	}
 
-	var samples=[	"template1", "template2", "text1", "text2", "text3", "text5", "text6", "if1", "if2", "if3", "comment",
-					"foreach1", "foreach2", "foreach3", "element1", "element2", "element3", "element4", "element5",
+	var samples=[	"template1", "template2", "text1", "text2", "text3", "text5", "text6", "if1", "if2", "if3", "if4", 
+					"comment", "foreach1", "foreach2", "foreach3", "element1", "element2", "element3", "element4", "element5",
 					"evthandler1", "evthandler2", "evthandler3",
 					"jsexpression1", "jsexpression2", "jsexpression3", "jsexpression4", "jsexpression5", 
 					"class1", "class2", "class3", "class4", "insert1", "insert2"];
-	//samples=["element4"];
+	//samples=["if4"];
 
 	for (var i=0, sz=samples.length;sz>i;i++) {
 		// create one test for each sample

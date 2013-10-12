@@ -280,16 +280,17 @@ var SyntaxTree=klass({
 					out2=n.content2;
 					lastValidIdx=idx2;
 				} else if (type==="elseif") {
-					n=new Node("if");
-					n.condition=blocks[idx2].condition; // TODO reprocess
-					n.content1=[];
-					out2.push(n);
-					out2=n.content1;
+					// consider as a standard else statement
+					n.content2=[];
+					out2=n.content2;
 					lastValidIdx=idx2;
+					endFound=true;
+
+					// process as if it were an if node
+					idx2=this._if(idx2,blocks,out2);
 				}
 			}
 		}
-
 		return idx2;
 	},
 
