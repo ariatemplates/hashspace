@@ -31,7 +31,8 @@ module.exports = function (grunt) {
       }
     });
 
+    grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadTasks('hsp/grunt');
 
-    grunt.registerTask('default', 'hspserver watch');
+    grunt.registerTask('default', ['hspserver','watch']);
 };
