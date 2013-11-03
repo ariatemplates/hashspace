@@ -181,7 +181,7 @@ function jsonContains (big, small, optKey) {
             return "";
         } else {
         	if (small!==big) {
-                if (big.replace && small===big.replace(/\r/g,"")) {
+                if (big && big.replace && small===big.replace(/\r/g,"")) {
                     return "";
                 }
         		return "Different value found for "+optKey+" : '"+escapeNewLines(small)+"' found insted of '"+escapeNewLines(big)+"'";

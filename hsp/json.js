@@ -20,6 +20,7 @@
  * Name of the listener property used as meta-data
  */
 var OBSERVER_PROPERTY="+json:observers";
+var EVTOBSERVER_PROPERTY="+json:evtobservers";
 
 /**
  * Notifies JSON listeners that a value on the object they listen to has changed
@@ -62,23 +63,23 @@ module.exports={
 			return;
 		}
 		var exists = object.hasOwnProperty(property);
-        var oldVal = object[property];
-        var sz1 = object.length;
-        object[property] = value;
+    var oldVal = object[property];
+    var sz1 = object.length;
+    object[property] = value;
 
-        if (!exists) {
-        	notifyObservers(object, property, value, oldVal, "new");
-        } else if (oldVal !== value) {
-        	// do nothing if the value did not change or was not created:
-        	notifyObservers(object, property, value, oldVal, "updated");
-        }
-        if (object.constructor===Array) {
-        	var sz2=object.length;
-        	if (sz1!==sz2) {
-        		notifyObservers(object, "length", sz2, sz1, "updated");
-        	}
-        } 
-        return value;
+    if (!exists) {
+    	notifyObservers(object, property, value, oldVal, "new");
+    } else if (oldVal !== value) {
+    	// do nothing if the value did not change or was not created:
+    	notifyObservers(object, property, value, oldVal, "updated");
+    }
+    if (object.constructor===Array) {
+    	var sz2=object.length;
+    	if (sz1!==sz2) {
+    		notifyObservers(object, "length", sz2, sz1, "updated");
+    	}
+    } 
+    return value;
 	},
 
 	/**
@@ -199,30 +200,71 @@ module.exports={
 	 * Adds an observer to an object.
 	 */
 	observe:function(object, callback) {
-		if (typeof(object)!="object") return;
-		if (!object[OBSERVER_PROPERTY]) object[OBSERVER_PROPERTY]=[];
-		object[OBSERVER_PROPERTY].push(callback);
+		observe(object, callback, OBSERVER_PROPERTY);
 	},
 
 	/** 
 	 * Removes a callback from the observer list
 	 */
 	unobserve:function(object, callback) {
-		if (typeof(object)!="object") return;
-		var obs=object[OBSERVER_PROPERTY];
-		if (!obs) return;
-		var elt, res=[];
-		for (var i=0, sz=obs.length;sz>i;i++) {
-			elt=obs[i];
-			if (elt!==callback) res.push(elt);
-		}
+		unobserve(object, callback, OBSERVER_PROPERTY);
+	},
 
-		// delete observer property if there is no more observers
-		if (res.length==0) {
-			delete object[OBSERVER_PROPERTY];
-		} else {
-			object[OBSERVER_PROPERTY]=res;
-		}
+	/**
+	 * Adds an event observer to an object.
+	 */
+	observeEvents:function(object, callback) {
+		observe(object, callback, EVTOBSERVER_PROPERTY);
+	},
+
+	/** 
+	 * Removes a callback from the event observer list
+	 */
+	unobserveEvents:function(object, callback) {
+		unobserve(object, callback, EVTOBSERVER_PROPERTY);
+	},
+
+	/**
+	 * Raise an event associated to an object
+	 */
+	raiseEvent:function(object, eventName, eventArg) {
+		var ln=object[EVTOBSERVER_PROPERTY];
+    if (ln) {
+        // call the listeners
+        var elt, evt={name:eventName, object:object, argument:eventArg};
+        for (var i=0,sz=ln.length;sz>i;i++) {
+        	elt=ln[i];
+        	if (elt.constructor===Function) elt(evt);
+        	// else elt is not a function!
+        }
+    }
 	}
 
 }
+
+function observe(object, callback, metaProperty) {
+	// metaProperty = OBSERVER_PROPERTY || EVTOBSERVER_PROPERTY
+	if (typeof(object)!="object") return;
+		if (!object[metaProperty]) object[metaProperty]=[];
+		object[metaProperty].push(callback);
+}
+
+function unobserve(object, callback, metaProperty) {
+	// metaProperty = OBSERVER_PROPERTY || EVTOBSERVER_PROPERTY
+	if (typeof(object)!="object") return;
+	var obs=object[metaProperty];
+	if (!obs) return;
+	var elt, res=[];
+	for (var i=0, sz=obs.length;sz>i;i++) {
+		elt=obs[i];
+		if (elt!==callback) res.push(elt);
+	}
+
+	// delete observer property if there is no more observers
+	if (res.length==0) {
+		delete object[metaProperty]; // TODO remove delete to benefit from v8 optimizations?
+	} else {
+		object[metaProperty]=res;
+	}
+}
+

@@ -76,10 +76,11 @@ describe('Block Parser: ', function(){
 			assert.equal(r.errors.length,0,"No compilation errors");
 			
 			for (var k in sample.codeFragments) {
+				//console.log("compilation result ["+k+"]: "+r.codeFragments[k]);
+
 				// validate generated code
 				if (!r.codeFragments) assert.fail("Missing Generated code");
 				else {
-					//console.log(r.codeFragments[k])
 					assert.equal(ut.compareJSCode(r.codeFragments[k], sample.codeFragments[k]), "", k+" code fragment comparison");
 				}
 			}
@@ -89,9 +90,10 @@ describe('Block Parser: ', function(){
 	var samples=[	"template1", "template2", "text1", "text2", "text3", "text5", "text6", "if1", "if2", "if3", "if4", 
 					"comment", "foreach1", "foreach2", "foreach3", "element1", "element2", "element3", "element4", "element5",
 					"evthandler1", "evthandler2", "evthandler3",
+					"component1", "component2", "component3", "component4",
 					"jsexpression1", "jsexpression2", "jsexpression3", "jsexpression4", "jsexpression5", 
 					"class1", "class2", "class3", "class4", "insert1", "insert2"];
-	//samples=["if4"];
+	//samples=["component4"];
 
 	for (var i=0, sz=samples.length;sz>i;i++) {
 		// create one test for each sample
@@ -147,6 +149,22 @@ describe('Block Parser: ', function(){
 		//console.log(r.code.length) // 591		
 		//assert.equal(r.code,s,"template generated code"); // strange issue with non visible characters
 		assert.equal(ut.compareJSCode(r.code.replace(/\r/g,""), s),"","template generated code");
+	});
+
+	it ('validates full compiled template with component', function(){
+		var sample=ut.getSampleContent("component2");
+		var r=compiler.compile(sample.template, "component2");
+
+		var s=[	
+				compiler.HEADER,
+				'',
+				'var mycomponent = require("hsp/rt").template({ctl:[foo,"foo","ComponentController"],ref:"c"}, function(n){',
+				'  return [n.$text(0,["some text..."])];',
+				'});'
+				].join("\n");
+
+		assert.equal(r.errors.length,0,"no compilation error");
+		assert.equal(ut.compareJSCode(r.code.replace(/\r/g,""), s),"","template generated code for components");
 	});
 });
 

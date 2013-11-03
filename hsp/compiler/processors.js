@@ -19,8 +19,12 @@ exports["template"] = function (node, walker) {
 	var tplName = node.name;
 
 	// add template arguments to the scope
-	for (var i=0, sz=node.args.length;sz>i;i++) {
-		walker.addScopeVariable(node.args[i]);
+	if (node.args) {
+		for (var i=0, sz=node.args.length;sz>i;i++) {
+			walker.addScopeVariable(node.args[i]);
+		}
+	} else if (node.controller) {
+		walker.addScopeVariable(node.controller.ref);	// the controller reference - e.g. "c"
 	}
 
 	var tplCode=["[", walker.walk(node.content, module.exports).join(","), "]"].join("");
@@ -36,11 +40,22 @@ exports["template"] = function (node, walker) {
 	}
 
 	var CRLF='\r\n';
-	return [
-		'var ',tplName,exp,' = require("hsp/rt").template([',walker.each(node.args, argAsString),'], function(n){',CRLF,
-		'  return ',tplCode,';',CRLF,
-		'});',CRLF
-	].join("");
+
+	if (node.controller) {
+		var p=node.controller.path;
+		return [
+			'var ',tplName,exp,' = require("hsp/rt").template({ctl:[',p[0],',',walker.each(p, argAsString),'],ref:"',
+			node.controller.ref,'"}, function(n){',CRLF,
+			'  return ',tplCode,';',CRLF,
+			'});',CRLF
+		].join("");
+	} else {
+		return [
+			'var ',tplName,exp,' = require("hsp/rt").template([',walker.each(node.args, argAsString),'], function(n){',CRLF,
+			'  return ',tplCode,';',CRLF,
+			'});',CRLF
+		].join("");
+	}
 };
 
 /**
@@ -137,9 +152,9 @@ exports["insert"] = function (node, walker) {
 };
 
 /*
- * Manage html element nodes
+ * Manage element and component nodes
  */
-exports["element"] = function (node, walker) {
+function elementOrComponent (node, walker) {
 	// we should generate sth like
 	// n.elt("div",	{e1:[0,0,"arg"]}, {"title":["",1]},	0, [...])
 	var attcontent="0", evtcontent="0", exprcode="0", atts=node.attributes, sz=atts.length;
@@ -195,7 +210,19 @@ exports["element"] = function (node, walker) {
 		c=',['+walker.walk(node.content, module.exports).join(",")+']';
 	}
 
-	return ['n.elt("',node.name,'",',exprcode,',',attcontent,',',evtcontent,c,')'].join('');
+	return [exprcode,',',attcontent,',',evtcontent,c].join('');
+};
+
+exports["element"] = function (node, walker) {
+	var s=elementOrComponent (node, walker);
+	return ['n.elt("',node.name,'",',s,')'].join('');
+};
+
+exports["component"] = function (node, walker) {
+	var s=elementOrComponent (node, walker);
+	var p=node.ref.path;
+
+	return ['n.cpt([',p[0],',"',p.join('","'),'"],',s,')'].join('');
 };
 
 /**

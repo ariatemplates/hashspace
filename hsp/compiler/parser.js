@@ -109,7 +109,12 @@ var SyntaxTree=klass({
 	_template:function(idx,blocks,out) {
 		var n=new Node("template"), b=blocks[idx];
 		n.name=b.name;
-		n.args=b.args;
+		if (b.controller) {
+			n.controller=b.controller;
+			n.controller.ref=b.controllerRef;
+		} else {
+			n.args=b.args;
+		}
 		n.export=b.mod==="export";
 		n.startLine=b.line;
 		n.endLine=b.endLine;
@@ -134,7 +139,7 @@ var SyntaxTree=klass({
 	 * Catch invalid template definitions
 	 */
 	_invalidtemplate:function(idx,blocks,out) {
-		this._logError("Invalid template arguments",blocks[idx]);
+		this._logError("Invalid template declaration",blocks[idx]);
 		return idx;
 	},
 
@@ -361,17 +366,43 @@ var SyntaxTree=klass({
 	 * Element block management
 	 */
 	_element:function(idx,blocks,out) {
-		var n=new Node("element"), b=blocks[idx];
+		return this._elementOrComponent("element",idx,blocks,out);
+	},
+
+	/**
+	 * Component block management
+	 */
+	_component:function(idx,blocks,out) {
+		return this._elementOrComponent("component",idx,blocks,out);
+	},
+
+	/**
+	 *	Processing function for elements and components
+	 * @arg blockType {String} "element" or "component"
+	 */
+	_elementOrComponent:function(blockType,idx,blocks,out) {
+		var n=new Node(blockType), b=blocks[idx];
 		n.name=b.name;
 		n.closed=b.closed;
+		if (b.ref) {
+			// only for components
+			n.ref=b.ref;
+		}
 
 		// Handle attributes
-		var atts=b.attributes, att, att2, type;
+		var atts=b.attributes, att, att2, type, lc;
 		n.attributes=[];
 
 		for (var i=0, sz=atts.length;sz>i;i++) {
 			att=atts[i];
 			var sz2=att.value.length;
+
+			// check if attribute contains uppercase
+			lc=att.name.toLowerCase();
+			if (lc!==att.name) {
+				this._logError("Invalid attribute name - must be lower case: "+att.name,b);
+				continue;
+			}
 
 			if (sz2===0) {
 				// this case arises when the attibute is empty - so let's create an empty text node
@@ -444,15 +475,15 @@ var SyntaxTree=klass({
 
 			while(!endFound) {
 				idx2=this._advance(idx2+1, blocks, out2, function(type, name) {
-					return (type==="endelement"); // && name===ename
+					return (type==="end"+blockType); // && name===ename
 				});
 				if (idx2<0 || !blocks[idx2]) {
-					this._logError("Missing end element </"+ename+">",b);
+					this._logError("Missing end "+blockType+" </"+ename+">",b);
 					endFound=true;
 				} else {
 					if (blocks[idx2].name!==ename) {
-						this._logError("Missing end element </"+ename+">",b);
-						idx2-=1; // the current end element may be caught by a container element
+						this._logError("Missing end "+blockType+" </"+ename+">",b);
+						idx2-=1; // the current end element/component may be caught by a container element
 					}
 					endFound=true;
 				}

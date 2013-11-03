@@ -29,9 +29,9 @@ TemplateBlock "template block"
 
 TemplateStart "template statement"
   = _ "# " _ m:(("template") / (c:[a-zA-Z0-9]+ _ "template") {return c.join('')})
-    _ name:Identifier _ args:(ArgumentsDefinition / invarg:InvalidTplArgs)? _  EOL 
+    S+ name:Identifier args:(TemplateController / ArgumentsDefinition / invarg:InvalidTplArgs)? _  EOL 
   {
-    var mod="";
+    var mod=""; // modifier (e.g. "export")
     if (m!=="template") {
       mod=m;
     }
@@ -41,16 +41,24 @@ TemplateStart "template statement"
       }
       return {type:"invalidtemplate", line:line, column:column, code: "# "+mod+"template "+name+" "+args.invalidTplArg}
     } else {
+      if (args && args.ctl && args.constructor!==Array) {
+        // this template uses a controller
+        return {type:"template", name:name, mod:mod, controller:args.ctl, controllerRef: args.ctlref, line:line, column:column}
+      }
       return {type:"template", name:name, mod:mod, args:(args==='')? []:args, line:line, column:column}
     }
   }
 
+TemplateController "controller"
+  = S+ "using" S+ ref:Identifier _ ":" _ ctl:JSObjectRef
+  {return {ctl:ctl, ctlref:ref}}
+
 ArgumentsDefinition "arguments"
-  = "(" _ first:Identifier? others:((_ "," _ arg:Identifier) {return arg})* _ ")" 
+  = _ "(" _ first:Identifier? others:((_ "," _ arg:Identifier) {return arg})* _ ")" 
   {var args = first ? [first] : []; if (others && others.length) args=args.concat(others);return args;}
 
 InvalidTplArgs
-  = chars:[^\n\r]+ &EOL
+  = _ chars:[^\n\r]+ &EOL
   {return {invalidTplArg:chars.join('')}}
 
 TemplateEnd "template end statement"
@@ -63,6 +71,7 @@ TemplateContent "template content" // TODO: CSSClassExpression
                 / IfBlock / ElseIfBlock / ElseBlock / EndIfBlock 
                 / ForeachBlock / EndForeachBlock
                 / HTMLElement / EndHTMLElement
+                / HspComponent
                 / ExpressionBlock
                 / InvalidHTMLElement
                 / InvalidBlock)* 
@@ -149,6 +158,10 @@ EndHTMLElement // TODO support comments inside Element
   = "</" name:HTMLName S? ">" EOS?
   {return {type:"endelement", name:name, line:line, column:column}}
 
+HspComponent
+  = "<#" ref:JSObjectRef  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
+  {return {type:"component", ref:ref, closed:(end!==""), attributes:atts, line:line, column:column}}
+
 InvalidHTMLElement
   = "<" code:[^\r\n]* EOL
   {return {type:"invalidelement", code:'<'+code.join(''), line:line, column:column}}
@@ -158,12 +171,15 @@ HTMLName
   {return first + next.join("");}
 
 HTMLAttName
-  = first:[a-z#] next:([a-z] / [0-9] / "-")* 
+  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-")* 
+  // uppercase chars are considered as error in the parse post-processor
   {return first + next.join("");}
 
 HTMLAttribute
   = name:HTMLAttName v:(_ "=" _ "\"" value:HTMLAttributeValue "\"" {return value;})?
-  {return {type:"attribute", name:name, value:v, line:line, column:column}}
+  {
+    return {type:"attribute", name:name, value:v, line:line, column:column}
+  }
 
 HTMLAttributeValue
   = (HTMLAttributeText / ExpressionBlock)*

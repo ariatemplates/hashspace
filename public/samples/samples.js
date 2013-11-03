@@ -70,6 +70,21 @@ module.exports = [
         files: [
             {src:"todolist.hsp", main:true}
         ]
+    }, {
+        title:"Simple component - Timer",
+        folder:"component1",
+        description:"description.md",
+        files: [
+            {src:"timer.hsp", main:true}
+        ]
+    }, {
+        title:"Component with bound properties: Number field",
+        folder:"component2",
+        description:"description.md",
+        files: [
+            {src:"nbrfield.hsp", main:true}
+        ]
     }
+    // TODO add component with events
 
 ]

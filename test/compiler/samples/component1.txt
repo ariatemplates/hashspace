@@ -1,0 +1,81 @@
+##### Template:
+
+# template foo()
+  foo
+  <#mylib.mycpt att1="foo" att2="bar"/>
+  bar
+# /template
+
+##### Parsed Tree:
+
+[
+  {"type": "plaintext","value": "\n"},
+  {
+    "type": "template",
+    "name": "foo",
+    "args": [],
+    "content": [
+      { "type": "text","value": "foo " },
+      {
+        "type": "component",
+        "ref": {"category": "objectref", "path": ["mylib","mycpt"],"code": "mylib.mycpt"},
+        "closed": true,
+        "attributes": [
+          {
+            "type": "attribute",
+            "name": "att1",
+            "value": [{"type": "text","value": "foo"}]
+          },
+          {
+            "type": "attribute",
+            "name": "att2",
+            "value": [{"type": "text","value": "bar"}]
+          }
+        ],
+        "line": 4,
+        "column": 3
+      },
+      { "type": "text","value": "bar" }
+    ],
+    "closed": true,
+    "endLine": 6
+  }
+]
+
+##### Syntax Tree:
+
+[
+  {"type": "plaintext","value": "\n"},
+  {
+    "type": "template",
+    "name": "foo",
+    "args": [],
+    "export": false,
+    "content": [
+      { "type": "text","value": "foo " },
+      {
+        "type": "component",
+        "closed": true,
+        "ref": {
+          "category": "objectref", "path": ["mylib","mycpt"], "code": "mylib.mycpt"
+        },
+        "attributes": [
+          { "type": "text","value": "foo","name": "att1" },
+          { "type": "text","value": "bar","name": "att2" }
+        ],
+        "content": []
+      },
+      {
+        "type": "text",
+        "value": "bar"
+      }
+    ]
+  }
+]
+
+##### Template Code:
+foo=[
+  n.$text(0,["foo "]),
+  n.cpt([mylib,"mylib","mycpt"],0,{"att1":"foo","att2":"bar"},0),
+  n.$text(0,["bar"])
+]

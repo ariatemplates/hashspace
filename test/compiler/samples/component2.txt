@@ -1,0 +1,51 @@
+##### Template:
+
+# template mycomponent using c:foo.ComponentController 
+  some text...
+# /template
+
+##### Parsed Tree:
+[
+  {"type": "plaintext","value": "\n"},
+  {
+    "type": "template",
+    "name": "mycomponent",
+    "mod": "",
+    "controller": {
+      "category": "objectref",
+      "path": ["foo","ComponentController"],
+      "code": "foo.ComponentController"
+    },
+    "line": 2,
+    "column": 1,
+    "content": [{"type": "text", "value": "some text...", "line": 3, "column": 3}],
+    "closed": true,
+    "endLine": 4
+  }
+]
+
+##### Syntax Tree:
+[
+  {"type": "plaintext","value": "\n"},
+  {
+    "type": "template",
+    "name": "mycomponent",
+    "controller": {
+      "category": "objectref",
+      "path": ["foo","ComponentController"],
+      "code": "foo.ComponentController"
+    },
+    "export": false,
+    "startLine": 2,
+    "endLine": 4,
+    "content": [
+      {"type": "text","value": "some text..."}
+    ]
+  }
+]
+
+##### Template Code:
+mycomponent=[
+  n.$text(0,["some text..."])
+]
+

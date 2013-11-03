@@ -61,7 +61,7 @@ exports.compile = function (template, fileName, includeSyntaxTree, bypassJSvalid
 		if (includeSyntaxTree===true) {
 			res.codeFragments=w.templates;
 		}
-
+		
 		res.code=HEADER+out.join('\r\n');
 		res.errors=w.errors;
 

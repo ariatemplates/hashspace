@@ -254,3 +254,11 @@ input[type=text] {
 .textvalue {
     color:#FF4DBE;
 }
+
+input.nbrfield {
+    width:100px;
+}
+
+.nbrfield .error {
+    background-color: orange;
+}

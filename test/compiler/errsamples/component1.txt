@@ -1,0 +1,13 @@
+##### Template:
+# template test(person)
+    <#mycomponent value="foo" someAtt="bar"/>
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Invalid attribute name - must be lower case: someAtt",
+    "line": 2,
+    "column": 5
+  }
+]

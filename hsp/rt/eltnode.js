@@ -137,8 +137,8 @@ var EltNode = klass({
 				if (tp==="checkbox") {
 					v=this.node.checked;
 				}
-                exp.setValue(this.vscope,v);
-                hsp.refresh(); // to force synchronous change
+        exp.setValue(this.vscope,v);
+        hsp.refresh(); // to force synchronous change
 			} 
 		}
 

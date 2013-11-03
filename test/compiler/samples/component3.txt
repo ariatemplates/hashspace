@@ -1,0 +1,26 @@
+##### Template:
+
+# template nbrfield using c:lib.NbrField
+  <input type="text" #model="{c.fieldValue}" class="{'nbrfield','error': c.invalidValue, 'mandatory': c.attributes.mandatory}"/>
+  <input type="button" value="..." onclick="{c.resetField()}"/>
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code:
+nbrfield=[
+  n.elt("input",
+    {e1:[1,2,"c","fieldValue"],e2:[6,function(a0,a1) {return ["nbrfield",((a0)? ''+"error":''),((a1)? ''+"mandatory":'')].join(' ');},3,4],e3:[1,2,"c","invalidValue"],e4:[1,3,"c","attributes","mandatory"]},
+    {"type":"text","#model":["",1],"class":["",2]},
+    0
+  ),
+  n.elt("input",
+    {e1:[3,2,"c","resetField"]},
+    {"type":"button","value":"..."},
+    {"click":1}
+  )
+]

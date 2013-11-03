@@ -1,0 +1,18 @@
+##### Template:
+
+# template test(d)
+  <input type="text" value="{d.value}"/>
+  <#lib.nbrfield value="{d.value}" min="-10" max="10" onreset="{notifyReset(123)}"/>
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code:
+test=[
+  n.elt("input",{e1:[1,2,"d","value"]},{"type":"text","value":["",1]},0),
+  n.cpt([lib,"lib","nbrfield"],{e1:[1,2,"d","value"],e2:[4,1,notifyReset,0,123]},{"value":["",1],"min":"-10","max":"10"},{"reset":2})
+]

@@ -1,0 +1,94 @@
+var klass=require("hsp/klass"),
+    json=require("hsp/json");
+
+// Component controller
+NbrField = klass({ 
+  $constructor:function() { 
+    this.attributes={ 
+      defaultvalue:0, 
+      value:0, 
+      min:-Number.MAX_VALUE, 
+      max:Number.MAX_VALUE 
+    } 
+    this.internalValue=0; // bound to value
+    this.isValid=true;    // bound to internalValue, min and max
+  },
+  /** 
+   * notify the controller that an external object (template or host) updated an attribute
+   */
+  onAttributeChange:function(change) { 
+    var name=change.name, value=change.newValue, n=getNumber(value); 
+    if (n!==null) { 
+      if (name==="value") { 
+        json.set(this,"internalValue",n); 
+        this.checkValidity(); 
+      } else if (name==="min" || name==="max") { 
+        this.checkValidity(); 
+      } 
+    } else { 
+      // invalid value: set property to its default value 
+      var defaults={defaultvalue:0,value:0,min:Number.MIN_VALUE,max:Number.MAX_VALUE}; 
+      json.set(this.attributes,name,defaults[name]); 
+    } 
+  }, 
+  /** 
+   * Notify the controller that the template changed an internal property 
+   */ 
+  onPropertyChange:function(change) { 
+    if (change.name==="internalValue") { 
+      // validate and expose as attribute if ok
+      json.set(this.attributes,"value",this.checkValidity()? this.internalValue : this.attributes.defaultvalue); 
+    } 
+  }, 
+  /** 
+   * Check if the internal value is valid and update the isValid property accordingly 
+   */ 
+  checkValidity:function() { 
+    var n=getNumber(this.internalValue); 
+    var v=(n===null)? false : (n>=this.attributes.min) && (n<=this.attributes.max); 
+    if (n!==null) {
+      this.internalValue=n; // to have a number type
+    }
+    json.set(this,"isValid",v); 
+    return v; 
+  },
+  /**
+   * Reset the field value
+   */
+  resetField:function() {
+    var v1=this.attributes.value, v2=this.attributes.defaultvalue;
+    json.set(this,"internalValue",v2);
+    json.set(this.attributes,"value",v2);
+    this.checkValidity();
+    json.raiseEvent(this,"reset",{oldValue:v1,newValue:v2});
+  }
+})
+
+// transform a string to a number 
+var NBR_DIGITS=/^(\-|\.|\+)?\d+(\.)?(\d+)?$/; 
+function getNumber(s) { 
+    s=""+s; 
+    if (!NBR_DIGITS.test(s)) return null; 
+    return Number(s); 
+}
+
+// component template associated with the NbrField controller
+# export template nbrfield using c:NbrField
+  <span class="nbrfield">
+    <input type="text" #model="{c.internalValue}" 
+    class="{'nbrfield', 'error': !c.isValid, 'mandatory': c.attributes.mandatory}"/>
+    <button onclick="{c.resetField()}">reset</button>
+  </span>
+# /template
+
+// component usage
+# template test(d)
+  Component #1: <#nbrfield value="{d.value1}" min="-10" max="1000"/><br/>
+  Value in the data model: <span class="textValue">{d.value1}</span> (min:-10 / max:1000 / default:0)
+  <hr/>
+  Component #2: <#nbrfield value="{d.value2}"/><br/>
+  Value in the data model: <span class="textValue">{d.value2}</span>
+# /template
+
+// display the template in the #output div
+hsp.display(test({value1:123}),"output");
