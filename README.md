@@ -29,20 +29,18 @@ Currently only some parts of the runtime are developed:
 - array data-bindings (i.e. automatic refresh of foreach nodes when the foreach array is changed)
 
 
-To run and update the samples in a live environment, you will have to install [grunt][grunt] and then:
-- run *grunt* to launch a local web-server that can compile templates on the fly (cf. hsp/grunt folder)
+To run and update the samples in a live environment, first run *npm install* and then:
+- run *npm run-script grunt* to launch a local web-server that can compile templates on the fly (cf. hsp/grunt folder)
 - open *http://localhost:8000* in your favorite browser and choose an example from the sample list
 - or open *http://localhost:8000/todomvc* to play with the todomvc sample..
 
 Running Tests
 -------------
-To run the project you will have to install [grunt][grunt] and [mocha][mocha]
-
 For the compiler test:
-- run *mocha test*
+- run *npm run-script mocha*
 
 For the browser runtime tests:
-- run *grunt* - this will launch a local webserver and a watch task on your files
+- run *npm run-script grunt* - this will launch a local webserver and a watch task on your files
 - and access *http://localhost:8000/test/rt* to run the tests in your favorite browsers
 
 
