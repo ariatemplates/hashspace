@@ -76,7 +76,7 @@ describe('Block Parser: ', function(){
 			assert.equal(r.errors.length,0,"No compilation errors");
 			
 			for (var k in sample.codeFragments) {
-				//console.log("compilation result ["+k+"]: "+r.codeFragments[k]);
+				//console.log("compilation result ["+k+"]\n\n"+r.codeFragments[k]+"\n\n");
 
 				// validate generated code
 				if (!r.codeFragments) assert.fail("Missing Generated code");
@@ -93,7 +93,7 @@ describe('Block Parser: ', function(){
 					"component1", "component2", "component3", "component4",
 					"jsexpression1", "jsexpression2", "jsexpression3", "jsexpression4", "jsexpression5", 
 					"class1", "class2", "class3", "class4", "insert1", "insert2"];
-	//samples=["component4"];
+	//samples=[""];
 
 	for (var i=0, sz=samples.length;sz>i;i++) {
 		// create one test for each sample

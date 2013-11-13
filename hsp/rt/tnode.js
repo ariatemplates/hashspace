@@ -249,6 +249,14 @@ TExpAtt = klass({
 	 */
 	getValue:function(eh, vscope, defvalue) {
 		var tcfg=this.textcfg, sz=tcfg.length, buf=[];
+
+		// expressions used in custom components may return objects that should not be
+		// concatenated to a string:
+		if (sz===2 && tcfg[0]==="") {
+			// this is a single expression
+			return eh.getValue(tcfg[1], vscope, defvalue)
+		}
+
 		for (var i=0;sz>i;i++) {
 			// odd elements are variables
 			if (i%2) buf.push(eh.getValue(tcfg[i], vscope, defvalue));

@@ -78,16 +78,23 @@ var $RootNode = klass({
 			this.ctlObserver=ctlObserver;
 			this.controller=ctlObserver.cpt;
 
-			// TODO init controller attributes
+			// init controller attributes
 			if (ctlInitAtts && this.controller && this.controller.attributes) {
 				var atts=this.controller.attributes;
 				for (var k in ctlInitAtts) {
 					json.set(atts,k,ctlInitAtts[k]);
 				}
 			}
+		} else if (this.$constructor===$CptNode) {
+			// this is a template insertion - we need to init the vscope
+			if (ctlInitAtts) {
+				for (var k in ctlInitAtts) {
+					vscope[k]=ctlInitAtts[k];
+				}
+			}
 		}
 		var ch=[];
-		if (nodedefs.constructor===Array) {
+		if (nodedefs.constructor===Array) {	
 			for (var i=0,sz=nodedefs.length;sz>i;i++) {
 				ch.push(nodedefs[i].createNodeInstance(this))
 			}
@@ -240,10 +247,7 @@ var $InsertNode = klass({
 	 * $InsertNode generator
 	 * @param {Map<Expression>|int} exps the map of the expressions used by the node. 
 	 *   0 is passed if no  expression is used 
-	 * @param {Function} tplfn the template function that should be called
-	 * @param {Array} args the array of arguments to pass to the template. Warning: each argument uses 2 items in 
-	 * 		this array: the odd item is eiter 0 or 1: 0=arg is a literal value / 1=arg is an expression
-	 *                  the even item is the argument value (i.e. value or expression index)
+	 * @param {int} the index of the expression referencing the template
 	 */
 	$constructor:function(exps, expIdx) {
 		this.isInsertNode=true;
@@ -377,10 +381,15 @@ var $CptNode = klass({
 		this.attcfg=attcfg;
 		$RootNode.$constructor.call(this);
 		this.createAttList(attcfg, ehcfg);
-		this.controller=null; // different for each instance
+		this.controller=null; 	// different for each instance
+		this._scopeChgeCb=null;	// used by component w/o any controller to observe the template scope 
 	},
 
 	$dispose:function() {
+		if (this._scopeChgeCb) {
+			json.unobserve(this.vscope,this._scopeChgeCb);
+      		this._scopeChgeCb=null;
+		}
 		$RootNode.$dispose.call(this);
 		this.tplfunction=null;
 		this.exps=null;
@@ -402,6 +411,7 @@ var $CptNode = klass({
 		// get the expression associated to the insert node
 		if (tpl && typeof(tpl)==='function') {
 			ni.tplfunction=tpl;
+
 			// prepare init arguments
 			var initArgs={};
 			if (ni.atts) {
@@ -413,8 +423,16 @@ var $CptNode = klass({
 			}
 			// call template to create child nodes
 			tpl.call(ni,initArgs);
-
-			ni.ctlObserver.nodeInstance=ni;
+			
+			if (ni.ctlObserver) {
+				ni.ctlObserver.nodeInstance=ni;
+			}
+			if (!ni.controller) {
+				// the component is a template without any controller
+				// so we have to observe the template scope to be able to propagate changes to the parent scope
+				ni._scopeChgeCb=ni.onScopeChange.bind(ni);
+      			json.observe(ni.vscope,ni._scopeChgeCb);
+			}
 		} else {
 			console.error("Invalid component reference: "+this.tplPath.slice(1).join("."));
 		}
@@ -428,6 +446,8 @@ var $CptNode = klass({
 		var nd=this.node, atts=this.atts, att, eh=this.eh, pvs=this.parent.vscope, cAtts, v;
 		this.adirty=false;
 		if (atts && this.controller && this.controller.attributes) {
+			// this template has a controller
+			// let's propagate the new attribute values to the controller attributes
 			cAtts=this.controller.attributes;
 			for (var i=0, sz=this.atts.length;sz>i;i++) {
 				att=atts[i];
@@ -436,6 +456,28 @@ var $CptNode = klass({
 					// values may have different types - this is why we have to check that values are different to avoid creating loops	
 					json.set(cAtts,att.name,v);
 				}
+			}
+		} else if (atts) {
+			// this template has no controller
+			// let's propagate the new attribute values to the current scope
+			var vscope=this.vscope;
+			for (var i=0, sz=this.atts.length;sz>i;i++) {
+				att=atts[i];
+				json.set(vscope,att.name,att.getValue(eh,pvs,null));
+			}
+		}
+	},
+
+	/**
+	 * Callback called by the json observer when the scope changes
+	 * This callback is only called when the component template has no controller
+	 * Otherwise the controller observer directly calls onAttributeChange
+	 */
+	onScopeChange:function(changes) {
+		if (changes.constructor===Array) {
+			// cpt observer always return the first element of the array
+			if (changes.length>0) {
+				this.onAttributeChange(changes[0]);
 			}
 		}
 	},
@@ -447,7 +489,7 @@ var $CptNode = klass({
 		var expIdx=-1;
 		// set the new attribute value in the parent scope to propagate change
 		var cfg=this.attcfg[change.name]; // change.name is the property name
-		if (cfg.constructor===Array && cfg.length===2 && cfg[0]==="") {
+		if (cfg && cfg.constructor===Array && cfg.length===2 && cfg[0]==="") {
 			// cfg is a text concatenation with an empty prefix - so 2nd element is the expression index
 			expIdx=cfg[1];
 		}

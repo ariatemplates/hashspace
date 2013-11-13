@@ -188,13 +188,13 @@ module.exports.template = function(arg, contentFunction) {
 			ctl=new Ctl(); // new cpt controller
 			cptObs=new cpt.CptObserver(ctl); // new observer
 			args[1]=ctl;
-			if (arguments.length>0) {
-				cptInitArgs=arguments[0];
-			}
 		} else {
 			for (var i=0;sz>i;i++) {
 				args[1+2*i]=arguments[i];
 			}
+		}
+		if (arguments.length>0) {
+			cptInitArgs=arguments[0];
 		}
 		return ng.process(this,args,cptObs,cptInitArgs);
 	}
