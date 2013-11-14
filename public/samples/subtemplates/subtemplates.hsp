@@ -2,7 +2,7 @@
 # export template personList(persons)
     <div class="subtemplates">
         {foreach p in persons}
-            {personDescription(p)}
+            <#personDescription person="{p}"/>
             // add a separator between each person
             {if !p_islast} <hr/> {/if}
         {/foreach}
@@ -11,8 +11,8 @@
 
 # export template personDescription(person)
     <div class="person">
-        {item("First Name: ",person.firstName)}
-        {item("Last Name: ",person.lastName)}
+        <#item label="First Name: " value="{person.firstName}"/>
+        <#item label="Last Name: " value="{person.lastName}"/>
     </div>
 # /template
 

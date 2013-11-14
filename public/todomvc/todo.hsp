@@ -37,7 +37,7 @@
 				<ul id="todo-list"> 
 					{foreach todo in ds.todos}
 						{if ctl.isInFilter(todo,ds.filter)}
-							{todoItem(todo, ds, ctl)}
+							<#todoItem todo="{todo}" ds="{ds}" ctl="{ctl}"/>
 						{/if}
 					{/foreach}
 				</ul>
@@ -49,9 +49,10 @@
 					{if ds.remainingCount===1} item left {else} items left {/if}
 				</span>
 				<ul id="filters">
-					{filterLink(ds, ctl, "All", "all")}
-					{filterLink(ds, ctl, "Active", "active")}
-					{filterLink(ds, ctl, "Completed", "completed")}
+					//ds, ctl, label, filterCode
+					<#filterLink ds="{ds}" ctl="{ctl}" label="All" filter="all"/>
+					<#filterLink ds="{ds}" ctl="{ctl}" label="Active" filter="active"/>
+					<#filterLink ds="{ds}" ctl="{ctl}" label="Completed" filter="completed"/>
 				</ul>
 				{if ds.doneCount}
 					<button id="clear-completed" onclick="{ctl.clearDoneTodos()}">Clear completed ({ds.doneCount})</button>
@@ -98,11 +99,11 @@
  * @param ds the data set
  * @param ctl the general controller
  * @param {String} label the label to display in the link - e.g. "All"
- * @param {String} filterCode the corresponding filter code used in the data model - e.g. "all"
+ * @param {String} filter the corresponding filter code used in the data model - e.g. "all"
  */
-# template filterLink(ds, ctl, label, filterCode)	
+# template filterLink(ds, ctl, label, filter)	
 	<li>
-		<a onclick="{ctl.selectFilter(filterCode)}" title="{label}" class="{'selected':ds.filter===filterCode}">
+		<a onclick="{ctl.selectFilter(filterCode)}" title="{label}" class="{'selected':ds.filter===filter}">
 			{label}
 		</a>
 	</li>
