@@ -19,10 +19,13 @@
         "jasmine-node": "1.0.26",
         "socket.io" : "0.9.13",
         "express" : "3.0.6",
-        "request" : "2.12.0"
+        "request" : "2.12.0",
+        "mocha-runner" : "0.0.3"
     },
     "scripts": {
-        "test": "node node_modules/grunt/bin/grunt test"
+        "test" : "node node_modules/grunt/bin/grunt test",
+        "grunt" : "node hsp/grunt/grunt-cli.js",
+        "mocha" : "node test/runner/mocha-cli.js"
     },
     "config": {
         "test-browsers": "Firefox"
