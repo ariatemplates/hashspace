@@ -1,17 +1,14 @@
 
-This example shows a simple component which purpose is to enter a numeric value. The value entered by the user will be considered as valid if it can be interpreted as a number, and if it is included withing the *min* and *max* boundaries. When the value is incorrect, the field background is set to orange. On top of this, the component shows a button along with the field in order to let the user reset the field value.
+This example shows a simple component that allows to enter a numeric value. The value entered by the user will be considered as valid if it can be interpreted as a number, and if it is included withing the *min* and *max* boundaries. When the value is incorrect, the field background is set to orange. The component also shows a button next to the field in order to let the user reset the value to a predetermined value.
 
 [#output]
 
-It is interesting to note that this component exposes 4 public attributes, and 2 internal values (*internalValue* and *isValid*) to the component template. Of course, only the attributes are accessible to the component's caller. The difficulty is that attributes and properties are bound. Indeed:
+This component exposes 4 public attributes and 2 internal values (*internalValue* and *isValid*) to the component template. Of course, only the attributes are accessible to the component's host template. The main point of this example is to show how internal properties can be synchronized with public attributes - for instance:
 
-- when the *internalValue* - that is bound to the field - changes, its value should be propagated to the value attribute only if it is considered valid
-- same for the *value* attribute that should be propagated to the field only if valid
+- when the *internalValue* changes, its value should be propagated to the value attribute only if it is considered valid
+- the *value* attribute should be propagated to the field only if valid
 - the *isValid* property has to change depending on the *internalValue* and on the attribute values, etc.
 
-To manage these internal constraints the controller can implement two methods that will be automatically called:
+To manage these internal constraints the controller can implement onXxxChange() methods that will be automatically called when properties or bound attributes are updated
 
-- **onAttributeChange()** that is called when an attribute is changed by the host or the component templates
-- **onPropertyChange()** that is called when an internal property is changed by the component template
-
-It is important to note that **change handlers are not called when changes are performed by the controller itself**. This allows avoiding infinite loops and strange side effects.
+It is important to note that **change handlers are not called when changes are performed by the controller itself** - i.e. **if a controller property is changed in a change handler, the change handler of the corresponding property will not be called**. This allows avoiding infinite loops and strange side effects.

@@ -1,4 +1,4 @@
-
+ 
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,52 +27,60 @@ function getNumber(s) {
     return Number(s); 
 }
 
+var lastNewMinValue=null;
+
 var lib={};
 // sample controller
 lib.NbrField = klass({ 
-  $constructor:function() { 
-    this.attributes={ 
-      defaultvalue:0, 
-      value:0, 
-      min:-Number.MAX_VALUE, 
-      max:Number.MAX_VALUE 
-    } 
-    this.internalValue=0; // bound to value
-    this.isValid=true;    // bound to internalValue, min and max
+  attributes: {
+    defaultvalue:0, 
+    value:{type:"float",defaultValue:0,binding:"2-way"},
+    min:{type:"float",defaultValue:-Number.MAX_VALUE,binding:"1-way"},
+    max:Number.MAX_VALUE 
   },
+
+  init:function() { 
+    this.internalValue=this.value;  // bound to value
+    this.isValid=true;              // bound to internalValue, min and max
+    this.checkValidity();
+  },
+
   /** 
-   * notify the controller that an external object (template or host) updated an attribute
+   * attribute change handlers
+   * notify the controller that an external object (template or host) updated the value attribute
    */
-  onAttributeChange:function(change) { 
-    var name=change.name, value=change.newValue, n=getNumber(value); 
-    if (n!==null) { 
-      if (name==="value") { 
-        json.set(this,"internalValue",n); 
-        this.checkValidity(); 
-      } else if (name==="min" || name==="max") { 
-        this.checkValidity(); 
-      } 
-    } else { 
-      // invalid value: set property to its default value 
-      var defaults={defaultvalue:0,value:0,min:Number.MIN_VALUE,max:Number.MAX_VALUE}; 
-      json.set(this.attributes,name,defaults[name]); 
-    } 
-  }, 
+  onValueChange:function(newValue,oldValue) {
+    var n=getNumber(newValue);
+    json.set(this,"internalValue",n!==null? n : 0); 
+    this.checkValidity(); 
+  },
+
+  onMinChange:function(newValue,oldValue) {
+    lastNewMinValue=newValue;
+    this.checkValidity(); 
+  },
+
+  onMaxChange:function(newValue,oldValue) {
+    var n=getNumber(newValue);
+    json.set(this,"max",n!==null? n : Number.MAX_VALUE); 
+    this.checkValidity(); 
+  },
+
   /** 
-   * Notify the controller that the template changed an internal property 
+   * property change handler
+   * notify the controller that the template changed an internal property 
    */ 
-  onPropertyChange:function(change) { 
-    if (change.name==="internalValue") { 
-      // validate and expose as attribute if ok
-      json.set(this.attributes,"value",this.checkValidity()? this.internalValue : this.attributes.defaultvalue); 
-    } 
+  onInternalValueChange:function(newValue,oldValue) { 
+    // validate and expose as attribute if ok
+    json.set(this,"value",this.checkValidity()? this.internalValue : this.defaultvalue); 
   }, 
+
   /** 
    * Check if the internal value is valid and update the isValid property accordingly 
    */ 
   checkValidity:function() { 
     var n=getNumber(this.internalValue); 
-    var v=(n===null)? false : (n>=this.attributes.min) && (n<=this.attributes.max); 
+    var v=(n===null)? false : (n>=this.min) && (n<=this.max); 
     if (n!==null) {
       this.internalValue=n; // to have a number type
     }
@@ -83,9 +91,9 @@ lib.NbrField = klass({
    * Reset the field value
    */
   resetField:function() {
-    var v1=this.attributes.value, v2=this.attributes.defaultvalue;
+    var v1=this.value, v2=this.defaultvalue;
     json.set(this,"internalValue",v2);
-    json.set(this.attributes,"value",v2);
+    json.set(this,"value",v2);
     this.checkValidity();
     json.raiseEvent(this,"reset",{oldValue:v1,newValue:v2});
   }
@@ -94,7 +102,7 @@ lib.NbrField = klass({
 /***
 // this template can be generated through the component3.txt test
 # template nbrfield using c:lib.NbrField
-  <input type="text" #model="{c.internalValue}" class="{'nbrfield','error': c.invalidValue, 'mandatory': c.attributes.mandatory}"/>
+  <input type="text" #model="{c.internalValue}" class="{'nbrfield','error': c.invalidValue, 'mandatory': c.mandatory}"/>
   <input type="button" value="..." onclick="{c.resetField()}"/>
 # /template
 ***/
@@ -103,7 +111,7 @@ var nbrfield = require("hsp/rt").template({ctl:[lib,"lib","NbrField"],ref:"c"}, 
     n.elt("input",
       {e1:[1,2,"c","internalValue"],e2:[6,function(a0,a1) {
           return ["nbrfield",((a0)? ''+"error":''),((a1)? ''+"mandatory":'')].join(' ');
-      },3,4],e3:[1,2,"c","invalidValue"],e4:[1,3,"c","attributes","mandatory"]},
+      },3,4],e3:[1,2,"c","invalidValue"],e4:[1,2,"c","mandatory"]},
       {"type":"text","#model":["",1],"class":["",2]},
       0
     ),
@@ -139,34 +147,85 @@ function notifyReset(arg) {
   lastResetArg=arg;
 }
 
+var TypedCtl=klass({
+  attributes:{
+    attint:{type:"int",defaultValue:42},
+    attfloat:{type:"float",defaultValue:'12.3'},
+    attstring:{type:"string",defaultValue:123},
+    attbool:{type:"bool",defaultValue:false}
+  }
+})
+
 describe("Component Nodes", function () {
   var ELEMENT_NODE=1;
   var TEXT_NODE=3;
 
-  it("tests component observer", function() {
-    var c=new lib.NbrField();
-    var co=new cpt.CptObserver(c);
+  it("tests component wrapper", function() {
+    var cw=new cpt.CptWrapper(lib.NbrField);
+    cw.init();
 
-    expect(co.cpt).toEqual(c);
-    expect(c.attributes.value).toEqual(0);
+    var c=cw.cpt;
+    expect(c.value).toEqual(0);
     expect(c["+json:observers"].length).toEqual(1);
-    expect(c.attributes["+json:observers"].length).toEqual(1);
 
-    json.set(c.attributes,"value",42);
+    json.set(c,"value",42);
     expect(c.internalValue).toEqual(42);
+
+    // test internal binding conversion
+    expect(c.attributes.value._binding).toEqual(2);
     
     json.set(c,"internalValue",12);
-    expect(c.attributes.value).toEqual(12);
+    expect(c.value).toEqual(12);
     expect(c.isValid).toEqual(true);
 
     json.set(c,"internalValue","foo");
-    expect(c.attributes.value).toEqual(0);
+    expect(c.value).toEqual(0);
     expect(c.isValid).toEqual(false);
 
-    co.$dispose();
-    expect(co.cpt).toEqual(null);
+    cw.$dispose();
+    expect(cw.cpt).toEqual(null);
     expect(c["+json:observers"]).toEqual(undefined);
-    expect(c.attributes["+json:observers"]).toEqual(undefined);
+    expect(c["+json:observers"]).toEqual(undefined);
+  });
+
+  it("tests component wrapper typed attributes + default value", function() {
+    var cw=new cpt.CptWrapper(TypedCtl);
+    cw.init();
+    var c=cw.cpt;
+
+    expect(c.attint).toEqual(42);
+    expect(c.attfloat).toEqual(12.3);
+    expect(c.attstring).toEqual('123');
+    expect(c.attbool).toEqual(false);
+
+    cw.$dispose();
+  });
+
+  it("tests component wrapper typed attributes + init value", function() {
+    var cw=new cpt.CptWrapper(TypedCtl);
+    cw.init({attint:"12",attfloat:"190.2",attbool:'true'});
+    var c=cw.cpt;
+
+    expect(c.attint).toEqual(12);
+    expect(c.attfloat).toEqual(190.2);
+    expect(c.attbool).toEqual(true);
+
+    cw.$dispose();
+  });
+
+  it("tests attribute type conversion before change callback is called", function() {
+    var cw=new cpt.CptWrapper(lib.NbrField);
+    cw.init({min:-123});
+    var c=cw.cpt;
+
+    expect(c.min).toEqual(-123);
+
+    // simulate external change
+    json.set(c,"min","-10");
+    expect(lastNewMinValue).toEqual(-10);
+    expect(c.min).toEqual(-10);
+
+    cw.$dispose();
   });
 
   it("tests a component template load", function() {
@@ -180,25 +239,25 @@ describe("Component Nodes", function () {
     textInput.value="42";
     textInput.click();
 
-    expect(n.controller.attributes.value).toEqual(42);
+    expect(n.controller.value).toEqual(42);
     expect(n.controller.isValid).toEqual(true);
 
     textInput.value="foo";
     textInput.click();
 
-    expect(n.controller.attributes.value).toEqual(0);
+    expect(n.controller.value).toEqual(0);
     expect(n.controller.isValid).toEqual(false);
 
     textInput.value="123.4";
     textInput.click();
 
-    expect(n.controller.attributes.value).toEqual(123.4);
+    expect(n.controller.value).toEqual(123.4);
     expect(n.controller.isValid).toEqual(true);
 
     button.click(); // reset
     hsp.refresh();  // controller to DOM is only propagated after refresh
 
-    expect(n.controller.attributes.value).toEqual(0);
+    expect(n.controller.value).toEqual(0);
     expect(n.controller.internalValue).toEqual(0);
     expect(textInput.value).toEqual('0');
     expect(n.controller.isValid).toEqual(true);

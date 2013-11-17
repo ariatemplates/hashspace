@@ -40,10 +40,10 @@ var NodeGenerator = klass({
 	 * This creates a new set of node instances from the node definitions passed in the ng constructor
 	 * @param {Array} scopevars the list of the scope variables (actually the template arguments) - e.g. ["person",person]
 	 *                odd indexes correspond to argument values / even indexes correspond to argument names
-	 * @param {Object} ctlObserver the controller observer - if any
+	 * @param {Object} ctlWrapper the controller observer - if any
 	 * @param {Map} ctlInitAtts the init value of the controller attributes (optional) - e.g. {value:'123',mandatory:true}
 	 */
-	process:function(tplctxt, scopevars, ctlObserver, ctlInitArgs) {
+	process:function(tplctxt, scopevars, ctlWrapper, ctlInitArgs) {
 		var vs={}, nm, argNames=[]; // array of argument names
 		if (scopevars) {
 			for (var i=0, sz=scopevars.length;sz>i;i+=2) {
@@ -58,9 +58,9 @@ var NodeGenerator = klass({
 		if (tplctxt.$constructor && (tplctxt.$constructor===$InsertNode || tplctxt.$constructor===$CptNode)) {
 			// we use the insert node as root node
 			root=tplctxt;
-			root.init(vs, this.nodedefs, argNames, ctlObserver, ctlInitArgs);
+			root.init(vs, this.nodedefs, argNames, ctlWrapper, ctlInitArgs);
 		} else {
-			root=new $RootNode(vs, this.nodedefs, argNames, ctlObserver, ctlInitArgs);
+			root=new $RootNode(vs, this.nodedefs, argNames, ctlWrapper, ctlInitArgs);
 		}
 
 		return root;
@@ -171,7 +171,7 @@ module.exports.template = function(arg, contentFunction) {
 	}
 
 	var f=function() {
-		var cptObs=null, cptInitArgs=null;
+		var cw=null, cptInitArgs=null;
 		if (!ng.nodedefs) {
 			try {
 				ng.nodedefs=contentFunction(nodes);
@@ -185,9 +185,8 @@ module.exports.template = function(arg, contentFunction) {
 			}
 		}
 		if (hasController) {
-			ctl=new Ctl(); // new cpt controller
-			cptObs=new cpt.CptObserver(ctl); // new observer
-			args[1]=ctl;
+			cw=new cpt.CptWrapper(Ctl); // new observer
+			args[1]=cw.cpt;
 		} else {
 			for (var i=0;sz>i;i++) {
 				args[1+2*i]=arguments[i];
@@ -196,7 +195,7 @@ module.exports.template = function(arg, contentFunction) {
 		if (arguments.length>0) {
 			cptInitArgs=arguments[0];
 		}
-		return ng.process(this,args,cptObs,cptInitArgs);
+		return ng.process(this,args,cw,cptInitArgs);
 	}
 	f.isTemplate=true;
 	return f;

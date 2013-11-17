@@ -1,6 +1,6 @@
 // Mocha test suite
 var assert = require("assert");
-var jsv = require("../../hsp/jsvalidator/validator");
+var jsv = require("../../../hsp/jsvalidator/validator");
 
 describe('JS Validator: ', function(){
 

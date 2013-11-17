@@ -1,7 +1,7 @@
 // Mocha tests
 var assert = require("assert");
-var parser = require("../../hsp/compiler/parser");
-var compiler = require("../../hsp/compiler/compiler");
+var parser = require("../../../hsp/compiler/parser");
+var compiler = require("../../../hsp/compiler/compiler");
 var ut = require("./utils/testutils");
 
 describe('Block Parser: ', function(){

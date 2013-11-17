@@ -1,6 +1,6 @@
 // Mocha tests
 var assert = require("assert");
-var compiler = require("../../hsp/compiler/compiler");
+var compiler = require("../../../hsp/compiler/compiler");
 var ut = require("./utils/testutils");
 
 describe('Template compilation errors: ', function(){

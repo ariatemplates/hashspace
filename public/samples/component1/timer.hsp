@@ -3,19 +3,12 @@ var klass=require("hsp/klass"),
 
 // klass is a utility to create JS objects with constructors & prototypes
 var Timer=klass({
-    $constructor:function() {
-        this.attributes={
-          initvalue:0
-        }
-        this.secondsElapsed=0;
-        setInterval(this.tick.bind(this),1000);
+    attributes: {
+      initvalue:{type:"int",defaultValue:0,binding:"none"}
     },
-    onAttributeChange:function(change) {
-      if (change.name==="initvalue" && !this._initialized) {
-        this._initialized=true; // to prevent multiple inits if initvalue is bound to a changing value
-        var v=parseInt(change.newValue,10);
-        json.set(this,"secondsElapsed",Number.isNaN(v)? 0 : v);
-      }
+    init:function() {
+        this.secondsElapsed=this.initvalue;
+        setInterval(this.tick.bind(this),1000);
     },
     tick:function() {
         json.set(this,"secondsElapsed",this.secondsElapsed+1);

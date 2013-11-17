@@ -39,10 +39,10 @@ var $RootNode = klass({
 	 * @param {Array|TNode} nodedefs the list of the node generators associated to the template
 	 *			(will be used to recursively generate the child nodes) (optional for sub-classes)
 	 * @param {Array} argnames the list of the template argument names (optional) - e.g. ["vscope","nodedefs","argnames"]
-	 * @param {Object} ctlObserver the controller observer - if any
+	 * @param {Object} ctlWrapper the controller observer - if any
 	 * @param {Map} ctlInitAtts the init value of the controller attributes (optional) - e.g. {value:'123',mandatory:true}
 	 */
-	$constructor:function(vscope, nodedefs, argnames, ctlObserver, ctlInitAtts) {
+	$constructor:function(vscope, nodedefs, argnames, ctlWrapper, ctlInitAtts) {
 		if (this.isInsertNode){
 			TNode.$constructor.call(this,this.exps);
 		} else {
@@ -57,8 +57,8 @@ var $RootNode = klass({
 		this.propObs=[];
 		this.argNames=null;
 
-		if (vscope || nodedefs || argnames || ctlObserver) {
-			this.init(vscope, nodedefs, argnames, ctlObserver, ctlInitAtts);
+		if (vscope || nodedefs || argnames || ctlWrapper) {
+			this.init(vscope, nodedefs, argnames, ctlWrapper, ctlInitAtts);
 		}
 	},
 
@@ -68,23 +68,18 @@ var $RootNode = klass({
 	 * @param {Array|TNode} nodedefs the list of the node generators associated to the template
 	 *			(will be used to recursively generate the child nodes)
 	 * @param {Array} argnames the list of the template argument names (optional) - e.g. ["vscope","nodedefs","argnames"]
-	 * @param {Object} ctlObserver the controller observer - if any
+	 * @param {Object} ctlWrapper the controller observer - if any
 	 * @param {Map} ctlInitAtts the init value of the controller attributes (optional) - e.g. {value:'123',mandatory:true}
 	 */
-	init:function(vscope, nodedefs, argnames, ctlObserver, ctlInitAtts) {
+	init:function(vscope, nodedefs, argnames, ctlWrapper, ctlInitAtts) {
 		this.vscope=vscope;
-		if (ctlObserver) {
+		if (ctlWrapper) {
 			// attach the controller objects to the node
-			this.ctlObserver=ctlObserver;
-			this.controller=ctlObserver.cpt;
+			this.ctlWrapper=ctlWrapper;
+			this.controller=ctlWrapper.cpt;
 
 			// init controller attributes
-			if (ctlInitAtts && this.controller && this.controller.attributes) {
-				var atts=this.controller.attributes;
-				for (var k in ctlInitAtts) {
-					json.set(atts,k,ctlInitAtts[k]);
-				}
-			}
+			this.ctlWrapper.init(ctlInitAtts);
 		} else if (this.$constructor===$CptNode) {
 			// this is a template insertion - we need to init the vscope
 			if (ctlInitAtts) {
@@ -114,9 +109,9 @@ var $RootNode = klass({
 			o.$dispose();
 		}
 		delete this.propObs;
-		if (this.ctlObserver) {
-			this.ctlObserver.$dispose();
-			this.ctlObserver=null;
+		if (this.ctlWrapper) {
+			this.ctlWrapper.$dispose();
+			this.ctlWrapper=null;
 			this.controller=null;
 		}
 		TNode.$dispose.call(this);
@@ -424,14 +419,14 @@ var $CptNode = klass({
 			// call template to create child nodes
 			tpl.call(ni,initArgs);
 			
-			if (ni.ctlObserver) {
-				ni.ctlObserver.nodeInstance=ni;
+			if (ni.ctlWrapper) {
+				ni.ctlWrapper.nodeInstance=ni;
 			}
 			if (!ni.controller) {
 				// the component is a template without any controller
 				// so we have to observe the template scope to be able to propagate changes to the parent scope
 				ni._scopeChgeCb=ni.onScopeChange.bind(ni);
-      			json.observe(ni.vscope,ni._scopeChgeCb);
+      	json.observe(ni.vscope,ni._scopeChgeCb);
 			}
 		} else {
 			console.error("Invalid component reference: "+this.tplPath.slice(1).join("."));
@@ -443,18 +438,20 @@ var $CptNode = klass({
 	 * Refresh the node attributes (even if adirty is false)
 	 */
 	refreshAttributes:function() {
-		var nd=this.node, atts=this.atts, att, eh=this.eh, pvs=this.parent.vscope, cAtts, v;
+		var nd=this.node, atts=this.atts, att, eh=this.eh, pvs=this.parent.vscope, ctl=this.controller, v;
 		this.adirty=false;
-		if (atts && this.controller && this.controller.attributes) {
+		if (atts && ctl && ctl.attributes) {
 			// this template has a controller
 			// let's propagate the new attribute values to the controller attributes
-			cAtts=this.controller.attributes;
 			for (var i=0, sz=this.atts.length;sz>i;i++) {
 				att=atts[i];
-				v=att.getValue(eh,pvs,null);
-				if (''+v != ''+cAtts[att.name]) {
-					// values may have different types - this is why we have to check that values are different to avoid creating loops	
-					json.set(cAtts,att.name,v);
+				// propagate changes for 1- and 2-way bound attributes
+				if (ctl.attributes[att.name]._binding!==0) {
+					v=att.getValue(eh,pvs,null);
+					if (''+v != ''+ctl[att.name]) {
+						// values may have different types - this is why we have to check that values are different to avoid creating loops	
+						json.set(ctl,att.name,v);
+					}
 				}
 			}
 		} else if (atts) {
@@ -471,7 +468,8 @@ var $CptNode = klass({
 	/**
 	 * Callback called by the json observer when the scope changes
 	 * This callback is only called when the component template has no controller
-	 * Otherwise the controller observer directly calls onAttributeChange
+	 * Otherwise the cpt node is automatically set dirty and controller attributes will
+	 * be refreshed through refresh() - then the controller will directly call onAttributeChange()
 	 */
 	onScopeChange:function(changes) {
 		if (changes.constructor===Array) {

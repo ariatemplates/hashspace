@@ -9,11 +9,6 @@ The differences with the non-componentized timer sample are that:
 
 - the *timer* template doesn't use function arguments, but declares its controller through the **using [name]:[controller]** syntax
 - the controller instance (in this case *Timer*) is automatically created when the component is used - this is why the two *timer* instances show different values
-- the controller public attributes (here *initvalue*) have to be declared through the an **attributes** collection attached to the controller instance
-- when an attribute is set by an external object (e.g. the host or the component template), the **onAttributeChange** method is called, which allows to synchronize internal properties bound to public attributes (such as the *elapsedTime* property in this example)
-- the *onAttributeChange* method takes a **change** argument that has the following properties (similar to Object.observe() btw.):
-  - **name**: the name of the property that changed
-  - **object**: the object holding the property that changed (here the *attributes* controller property)
-  - **type**: the change type - e.g. *new*, *updated*, *splice*, *shift* or *pop*
-  - **newValue**: the new value of the property
-  - **oldValue**: the previous value of the property
+- **the controller *init* function is automatically called once all attributes have been created and intialized** with the values provided by the component host. The *init* method allows then to create and initialize internal properties that will be exposed to the template only. It is important to note that attributes will be automatically created and don't need to be created in the controller's constructor (empty in this example).
+- the controller public attributes (here *initvalue*) have to be declared through the an **attributes** collection attached to the controller prototype
+- when an attribute is set by an external object (e.g. the host or the component template), the **on[AttributeName]Change** method is called if the attribute binding is declared as *1-way* or *2-way*. This allows to synchronize internal properties bound to public attributes - but we don't need this possibility in this example.

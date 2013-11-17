@@ -25,7 +25,7 @@
     "scripts": {
         "test" : "node node_modules/grunt/bin/grunt test",
         "grunt" : "node hsp/grunt/grunt-cli.js",
-        "mocha" : "node test/runner/mocha-cli.js"
+        "mocha" : "node public/test/runner/mocha-cli.js"
     },
     "config": {
         "test-browsers": "Firefox"
