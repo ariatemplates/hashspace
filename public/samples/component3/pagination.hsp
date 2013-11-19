@@ -1,0 +1,76 @@
+var klass=require("hsp/klass"),
+    json=require("hsp/json");
+    
+function calculateNoOfPages(collectionSize, pageSize) {
+    return Math.ceil(collectionSize / pageSize);
+}
+
+function rebuildPagesModel(noOfPages) {
+    var pages = [];
+    for (var i=0; i<noOfPages; i++) {
+        pages.push(i);    
+    }
+    return pages;
+}
+
+var Pagination=klass({
+    attributes: {
+      "collectionsize":{type:"int",defaultValue:0,binding:"1-way"},
+      "pagesize":{type:"int",defaultValue:10,binding:"1-way"},
+      "activepage":{type:"int",defaultValue:0,binding:"2-way"}
+    },
+    rebuildInternalModel: function() {
+       json.set(this, 'noOfPages', calculateNoOfPages(this.collectionsize, this.pagesize));        
+       json.set(this, 'pages',  rebuildPagesModel(this.noOfPages));
+       this.selectPage(this.activepage); 
+    },
+    init:function() {
+       this.rebuildInternalModel(); 
+    },
+    selectPage: function(newPageNo) {
+        newPageNo = Math.min(Math.max(0, newPageNo), this.noOfPages-1);       
+        json.set(this, 'activepage', newPageNo);    
+    },
+    onCollectionsizeChange: function(newSize) {
+        json.set(this, 'collectionsize', newSize);
+        this.rebuildInternalModel(); 
+    },
+    onPagesizeChange: function(newSize) {
+       json.set(this, 'pagesize', newSize);
+       this.rebuildInternalModel(); 
+    }
+});
+
+# template pagination using p:Pagination
+    <ul class="pagination">
+        <li class="{'disabled':p.activepage===0}">
+            <a onclick="{p.selectPage(p.activepage-1)}">Previous</a>
+        </li>
+        {foreach page in p.pages}
+            <li class="{'active':page==p.activepage}">
+                <a onclick="{p.selectPage(page)}">{page + 1}</a>
+            </li>
+        {/foreach}        
+        <li class="{'disabled':p.activepage>=p.noOfPages-1}">
+            <a onclick="{p.selectPage(p.activepage+1)}">Next</a>
+        </li>
+    </ul>
+# /template
+ 
+# template paginationTest(model)
+  
+  <label>Active page: <input type="number"  #model="{model.active}"/></label><br/>
+  <label>Collection size: <input type="number"  #model="{model.collectionSize}"/></label><br/>
+  <label>Page size: <input type="number"  #model="{model.pageSize}"/></label><br/>
+  
+  <#pagination activepage="{model.active}" collectionsize="{model.collectionSize}" pagesize="{model.pageSize}"/>
+# /template
+
+var model = {
+    active: 4,
+    collectionSize: 99,
+    pageSize: 10
+}
+
+// display the test template in the #output div
+hsp.display(paginationTest(model),"output");

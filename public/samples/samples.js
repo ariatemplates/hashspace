@@ -84,6 +84,13 @@ module.exports = [
         files: [
             {src:"nbrfield.hsp", main:true}
         ]
+    } , {
+        title:"Component with internal model and events: Pagination",
+        folder:"component3",
+        description:"description.md",
+        files: [
+            {src:"pagination.hsp", main:true}
+        ]
     }
     // TODO add component with events
 
