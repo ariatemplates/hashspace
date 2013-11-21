@@ -5,9 +5,9 @@ Here is one of the most simple example that can be written with hashspace
 
 To be more precise, the next example is even more simple as hashspace templates don't require to use html elements, and can be used without any parameters (feel free to update it in the live editor on your right):
 
-`# template hello`  
-`         Hello World! `  
-`# /template`  
+  `# template hello ` 
+  `        Hello World! ` 
+  `# /template `   
 
 Anyway, the most important point to understand is that **the hashsapce compiler transforms templates into javascript functions** that have the same name and arguments as the template definition.
 

@@ -27,6 +27,10 @@ module.exports.createElement=function(type) {
 	return doc.createElement(type);
 }
 
+module.exports.createElementNS=function(ns,type) {
+	return doc.createElementNS(ns,type);
+}
+
 module.exports.createTextNode=function(text) {
 	return doc.createTextNode(text);
 }

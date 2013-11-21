@@ -78,6 +78,13 @@ module.exports = [
             {src:"timer.hsp", main:true}
         ]
     }, {
+        title:"SVG component - Clock",
+        folder:"clock",
+        description:"description.md",
+        files: [
+            {src:"clock.hsp", main:true}
+        ]
+    }, {
         title:"Component with bound properties: Number field",
         folder:"component2",
         description:"description.md",

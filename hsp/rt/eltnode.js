@@ -75,7 +75,15 @@ var EltNode = klass({
 	 */
 	createNode:function() {
 		this.TYPE=this.tag; // for debugging purposes
-		var nd=doc.createElement(this.tag);
+		var nd;
+		if (this.tag==="svg") {
+			this.nodeNS="http://www.w3.org/2000/svg";
+		}
+		if (this.nodeNS) {			
+			nd=doc.createElementNS(this.nodeNS, this.tag);
+		} else {
+			nd=doc.createElement(this.tag);
+		}
 		this.node=nd;
 		this.refreshAttributes();
 
@@ -194,7 +202,12 @@ var EltNode = klass({
 					
 				} else if (nm==="class") {
 					// issue on IE8 with the class attribute?
-					nd.className=att.getValue(eh,vs,"");
+					if (this.nodeNS) {
+						nd.setAttribute("class",att.getValue(eh,vs,""));
+					} else {
+						nd.className=att.getValue(eh,vs,"");
+					}
+					
 				} else if (nm==="value") {
 					// value attribute must be changed directly as the node attribute is only used for the default value
 					if (!this.isInput || nd.type==="radio") {

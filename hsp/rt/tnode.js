@@ -31,6 +31,7 @@ var TNode=klass({
 	adirty:false,	// true if some of the node attributes need to be refreshed
 	cdirty:false,	// true if the node contains dirty sub-nodes
 	htmlCbs:null,   // array: list of the html callbacks - if any
+	nodeNS:null,	// string: node namespace - if any
 
 	$constructor:function(exps) {
 		this.isStatic=(exps===0);
@@ -148,6 +149,7 @@ var TNode=klass({
 		var ni=klass.createObject(this);
 		ni.vscope=parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
 		ni.parent=parent;
+		ni.nodeNS=parent.nodeNS;
 		ni.root=parent.root;
 		ni.root.createExpressionObservers(ni);
 

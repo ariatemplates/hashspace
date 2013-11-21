@@ -400,8 +400,8 @@ var SyntaxTree=klass({
 			// check if attribute contains uppercase
 			lc=att.name.toLowerCase();
 			if (lc!==att.name) {
-				this._logError("Invalid attribute name - must be lower case: "+att.name,b);
-				continue;
+				//this._logError("Invalid attribute name - must be lower case: "+att.name,b);
+				//continue;
 			}
 
 			if (sz2===0) {
