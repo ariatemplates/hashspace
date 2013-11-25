@@ -167,6 +167,10 @@ input[type=text] {
     padding-top: 5px;
 }
 
+.section3 {
+  padding-bottom: 10px;
+}
+
 .textValue {
     font-size: 14px;
     padding: 1px 2px;

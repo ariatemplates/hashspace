@@ -14,25 +14,20 @@
  */
 
 module.exports = function (grunt) {
-   
-    grunt.initConfig({
-      hspserver: {
-        port: 8000,
-        base: __dirname,
-        templateExtension: "hsp"
-      },
-      watch: {
-        files: ['*.*'],
-        tasks: []
-      },
-      test: {
-        //files: ['test/*.js', 'test/parser/*.js']
-        files: ['test/compiler/*.js']
-      }
-    });
+  grunt.initConfig({
+    hspserver: {
+      port: 8000,
+      base: __dirname,
+      templateExtension: "hsp"
+    },
+    watch: {
+      files: ['*.*'],
+      tasks: []
+    }
+  });
 
-    grunt.loadNpmTasks('grunt-contrib-watch');
-    grunt.loadTasks('hsp/grunt');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadTasks('hsp/grunt');
 
-    grunt.registerTask('default', ['hspserver','watch']);
+  grunt.registerTask('default', ['hspserver','watch']);
 };

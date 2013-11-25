@@ -23,16 +23,18 @@ var Pagination=klass({
     attributes: {
       "collectionsize":{type:"int", defaultValue:0, binding:"1-way"},
       "pagesize":{type:"int", defaultValue:10, binding:"1-way"},
-      "activepage":{type:"int", defaultValue:0, binding:"2-way"}
-      //"onpageselect":{type:"callback"} should be supported soon
+      "activepage":{type:"int", defaultValue:0, binding:"2-way"},
+      "onpageselect":{type:"callback"}
     },
     init:function() {
        rebuildInternalModel(this); 
     },
     selectPage: function(newPageNo) {
-        newPageNo = Math.min(Math.max(0, newPageNo), this.noOfPages-1);       
-        json.set(this, 'activepage', newPageNo);
-        //this.onpageselect({pageNumber:this.activepage}); should be supported soon
+        newPageNo = Math.min(Math.max(0, newPageNo), this.noOfPages-1);
+        if (this.activepage!==newPageNo) {
+          json.set(this, 'activepage', newPageNo);
+          this.onpageselect({pageNumber:this.activepage});
+        }
     },
     onCollectionsizeChange: function() {       
         rebuildInternalModel(this); 
@@ -59,18 +61,26 @@ var Pagination=klass({
 # /template
  
 # template paginationTest(model)
-  
-  <label class="fieldlabel">Active page: </label><input type="number"  #model="{model.active}"/><br/>
-  <label class="fieldlabel">Collection size: </label><input type="number"  #model="{model.collectionSize}"/><br/>
-  <label class="fieldlabel">Page size: </label><input type="number"  #model="{model.pageSize}"/><br/>
-  <br/>
-  <#pagination activepage="{model.active}" collectionsize="{model.collectionSize}" pagesize="{model.pageSize}"/>
+  <div class="section3">
+    <label class="fieldlabel">Active page: </label><input type="number"  #model="{model.active}"/><br/>
+    <label class="fieldlabel">Collection size: </label><input type="number"  #model="{model.collectionSize}"/><br/>
+    <label class="fieldlabel">Page size: </label><input type="number"  #model="{model.pageSize}"/><br/>
+    Last page selection  <i> - from event</i>: <span class="textValue">{model.lastSelectedPage}</span>
+  </div>
+  <#pagination activepage="{model.active}" collectionsize="{model.collectionSize}" pagesize="{model.pageSize}"
+  onpageselect="{updateSelectionCount(event.pageNumber)}"/>
+
 # /template
 
 var model = {
     active: 4,
     collectionSize: 99,
-    pageSize: 10
+    pageSize: 10,
+    lastSelectedPage: "(...)"
+}
+
+function updateSelectionCount(newPageNumber) {
+  json.set(model,"lastSelectedPage",newPageNumber);
 }
 
 // display the test template in the #output div

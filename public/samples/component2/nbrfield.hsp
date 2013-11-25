@@ -4,10 +4,11 @@ var klass=require("hsp/klass"),
 // Component controller
 var NbrField = klass({ 
   attributes:{ 
-    value:{type:"float",defaultValue:0,binding:"2-way"}, 
-    defaultvalue:{type:"float",defaultValue:0}, 
-    min:{type:"float",defaultValue:-Number.MAX_VALUE,binding:"1-way"}, 
-    max:{type:"float",defaultValue:Number.MAX_VALUE,binding:"1-way"}
+    "value":{type:"float",defaultValue:0,binding:"2-way"}, 
+    "defaultvalue":{type:"float",defaultValue:0}, 
+    "min":{type:"float",defaultValue:-Number.MAX_VALUE,binding:"1-way"}, 
+    "max":{type:"float",defaultValue:Number.MAX_VALUE,binding:"1-way"},
+    "onreset":{type:"callback"}
   },
   /**
    * init method called when all attributes have been initialized
@@ -58,7 +59,7 @@ var NbrField = klass({
     json.set(this,"internalValue",v2);
     json.set(this,"value",v2);
     this.checkValidity();
-    json.raiseEvent(this,"reset",{oldValue:v1,newValue:v2});
+    this.onreset({oldValue:v1,newValue:v2}); // call back event listener
   }
 })
 

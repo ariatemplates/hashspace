@@ -36,6 +36,10 @@ var ATTRIBUTE_TYPES={
   "object":{
     defaultValue:null,
     convert:function(v,attcfg) {return v;}
+  },
+  "callback": {
+    defaultValue:null,
+    convert:function(v) {return v;}
   }
 }
 
@@ -83,6 +87,17 @@ var CptWrapper = exports.CptWrapper = klass({
       if (atts) {
         for (var k in atts) {
           att=atts[k];
+          if (k.match(/^on/)) {
+            // this is a callback 
+            if (!att.type) {
+              console.error("Attribute type 'callback' should be set to '"+k+"'");
+            } else if(att.type!=="callback") {
+              console.error("Attribute type 'callback' should be set to '"+k+"' instead of: "+att.type);
+              att.type="callback";
+            }
+            continue;
+          }
+
           bnd=att.binding;
           // set the internal _binding value 0=none 1=1-way 2=2-way
           if (bnd) {
@@ -99,7 +114,9 @@ var CptWrapper = exports.CptWrapper = klass({
 
           // check type
           if (att.type) {
-            if (ATTRIBUTE_TYPES[att.type]===undefined) {
+            if (att.type==="callback") {
+              console.error("Attribute of type 'callback' must start with 'on' - please rename: "+k);
+            } else if (ATTRIBUTE_TYPES[att.type]===undefined) {
               console.error("Invalid attribute type: "+att.type);
               att.type='string';
             }
@@ -116,10 +133,6 @@ var CptWrapper = exports.CptWrapper = klass({
     if (this._cptChgeCb) {
       json.unobserve(this.cpt,this._cptChgeCb);
       this._cptChgeCb=null;
-    }
-    if (this._evtCb) {
-      json.unobserveEvents(this.cpt,this._evtCb);
-      this._evtCb=null;
     }
     this.cpt=null;
     this.nodeInstance=null;
@@ -158,7 +171,11 @@ var CptWrapper = exports.CptWrapper = klass({
               attType=ATTRIBUTE_TYPES['string'];
             }
           }
-
+          if (att.type==="callback") {
+            // create an even callback function
+            this.createEventFunction(k.slice(2));
+            continue;
+          }
           // determine value
           v='';
           if (iAtt!==undefined) {
@@ -176,12 +193,10 @@ var CptWrapper = exports.CptWrapper = klass({
               v=att; // todo clone objects
             }
           }
-
           // convert value type if applicable
           if (hasType) {
             v=attType.convert(v,att);
           }
-
           // init the component attribute with the right value
           cpt[k]=v;
         }
@@ -194,17 +209,28 @@ var CptWrapper = exports.CptWrapper = klass({
 
       this._cptChgeCb=this.onCptChange.bind(this);
       json.observe(cpt,this._cptChgeCb);
+    }
+  },
 
-      this._evtCb=this.onEvent.bind(this);
-      json.observeEvents(cpt,this._evtCb);
+  /**
+   * Create an event function on the component controller in order to ease event notification
+   * e.g. to raise the 'select' event, developers should simply write in the controller: this.onselect({foo:"bar"});
+   **/
+  createEventFunction:function(evtType) {
+    var self=this;
+    this.cpt["on"+evtType] = function(evtData) {
+      if (!evtData) {
+        evtData={};
+      }
+      if (!evtData.type) {
+        evtData.type=evtType;
+      }
+      if (self.nodeInstance && self.nodeInstance.onEvent) {
+        self.nodeInstance.onEvent(evtData);
+      }
     }
   },
   
-  onEvent:function(evt) {
-    if (this.nodeInstance && this.nodeInstance.onEvent) {
-      this.nodeInstance.onEvent(evt);
-    }
-  },
   /***
    * Check if not already in event handler stack and call the change event handler
    */

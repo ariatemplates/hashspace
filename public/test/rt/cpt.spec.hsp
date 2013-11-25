@@ -33,10 +33,12 @@ var lib={};
 // sample controller
 lib.NbrField = klass({ 
   attributes: {
-    defaultvalue:0, 
-    value:{type:"float",defaultValue:0,binding:"2-way"},
-    min:{type:"float",defaultValue:-Number.MAX_VALUE,binding:"1-way"},
-    max:Number.MAX_VALUE 
+    "defaultvalue":0, 
+    "value":{type:"float",defaultValue:0,binding:"2-way"},
+    "min":{type:"float",defaultValue:-Number.MAX_VALUE,binding:"1-way"},
+    "max":Number.MAX_VALUE,
+    "onbeforereset":{type:"callback"},
+    "onafterreset":{type:"callback"}
   },
 
   init:function() { 
@@ -92,59 +94,39 @@ lib.NbrField = klass({
    */
   resetField:function() {
     var v1=this.value, v2=this.defaultvalue;
+    this.onbeforereset();
     json.set(this,"internalValue",v2);
     json.set(this,"value",v2);
     this.checkValidity();
-    json.raiseEvent(this,"reset",{oldValue:v1,newValue:v2});
+    this.onafterreset({oldValue:v1,newValue:v2});
   }
 })
 
-/***
-// this template can be generated through the component3.txt test
+
 # template nbrfield using c:lib.NbrField
   <input type="text" #model="{c.internalValue}" class="{'nbrfield','error': c.invalidValue, 'mandatory': c.mandatory}"/>
   <input type="button" value="..." onclick="{c.resetField()}"/>
 # /template
-***/
-var nbrfield = require("hsp/rt").template({ctl:[lib,"lib","NbrField"],ref:"c"}, function(n){
-  return [
-    n.elt("input",
-      {e1:[1,2,"c","internalValue"],e2:[6,function(a0,a1) {
-          return ["nbrfield",((a0)? ''+"error":''),((a1)? ''+"mandatory":'')].join(' ');
-      },3,4],e3:[1,2,"c","invalidValue"],e4:[1,2,"c","mandatory"]},
-      {"type":"text","#model":["",1],"class":["",2]},
-      0
-    ),
-    n.elt("input",
-      {e1:[3,2,"c","resetField"]},
-      {"type":"button","value":"..."},
-      {"click":1}
-    )
-  ];
-});
 
 lib.nbrfield=nbrfield;
-/***
+
 # template test(d)
   <input type="text" value="{d.value}"/>
-  <#lib.nbrfield value="{d.value}" min="-10" max="10"/>
+  <#lib.nbrfield value="{d.value}" min="-10" max="10" onbeforereset="{notifyReset(123,event)}" 
+  onafterreset="{notifyReset2(event.type,event)}"/>
 # /template
-***/
-var test = require("hsp/rt").template(["d"], function(n) {
-  return [
-    n.elt("input",{e1:[1,2,"d","value"]},{"type":"text","value":["",1]},0),
-    n.cpt([lib,"lib","nbrfield"],
-      {e1:[1,2,"d","value"],e2:[4,1,notifyReset,0,123]},
-      {"value":["",1],"min":"-10","max":"10"},
-      {"reset":2}
-    )
-  ];
-});
 
-var resetCount=0, lastResetArg=0;
-function notifyReset(arg) {
+var resetCount=0, lastResetArg=0, lastEvtType="";
+function notifyReset(arg,evt) {
   resetCount++;
   lastResetArg=arg;
+  lastEvtType=evt.type;
+}
+
+var lastEvtType2="", lastEvtOldValue2=-1;
+function notifyReset2(type,evt) {
+  lastEvtType2=type;
+  lastEvtOldValue2=evt.oldValue;
 }
 
 var TypedCtl=klass({
@@ -267,8 +249,6 @@ describe("Component Nodes", function () {
   });
 
 it("tests a component inside another template", function() {
-    resetCount=0;
-    lastResetArg=0;
     var d={value:'42'};
     var n=test(d);
 
@@ -304,10 +284,28 @@ it("tests a component inside another template", function() {
 
     expect(textInput.value).toEqual('0');
     expect(cptInput.value).toEqual('0');
-    expect(resetCount).toEqual(1);
-    expect(lastResetArg).toEqual(123);
-
+    
     n.$dispose();
+  });
+
+  it("tests a component event callback", function() {
+    resetCount=0;
+    lastResetArg=0;
+    lastEvtType="";
+    lastEvtType2="";
+    var d={value:'42'};
+    var n=test(d);
+
+    var cptButton=n.node.childNodes[2];
+
+    cptButton.click();
+    hsp.refresh();
+
+    expect(resetCount).toEqual(1); //validate that "onbeforereset" callback has been called
+    expect(lastEvtType).toEqual("beforereset");
+    expect(lastResetArg).toEqual(123);
+    expect(lastEvtType2).toEqual("afterreset");
+    expect(lastEvtOldValue2).toEqual(42);
   });
 
 });

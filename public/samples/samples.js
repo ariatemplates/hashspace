@@ -71,14 +71,14 @@ module.exports = [
             {src:"todolist.hsp", main:true}
         ]
     }, {
-        title:"Simple component - Timer",
+        title:"Simple component: Timer",
         folder:"component1",
         description:"description.md",
         files: [
             {src:"timer.hsp", main:true}
         ]
     }, {
-        title:"SVG component - Clock",
+        title:"SVG component: Clock",
         folder:"clock",
         description:"description.md",
         files: [
@@ -92,7 +92,7 @@ module.exports = [
             {src:"nbrfield.hsp", main:true}
         ]
     } , {
-        title:"Component with internal model and events: Pagination",
+        title:"Component triggering events: Pagination",
         folder:"component3",
         description:"description.md",
         files: [

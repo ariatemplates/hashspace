@@ -502,10 +502,9 @@ var $CptNode = klass({
 
 	/***
 	 * Callback called by the controller observer when the controller raises an event
-	 * @see json.raiseEvent()
 	 */
 	onEvent:function (evt) {
-		var evh=this.evtHandlers, et=evt.name;
+		var evh=this.evtHandlers, et=evt.type;
 		if (evh) {
 			for (var i=0, sz=evh.length;sz>i;i++) {
 				if (evh[i].evtType===et) {

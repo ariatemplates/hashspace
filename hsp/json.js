@@ -20,7 +20,6 @@
  * Name of the listener property used as meta-data
  */
 var OBSERVER_PROPERTY="+json:observers";
-var EVTOBSERVER_PROPERTY="+json:evtobservers";
 
 /**
  * Notifies JSON listeners that a value on the object they listen to has changed
@@ -208,36 +207,6 @@ module.exports={
 	 */
 	unobserve:function(object, callback) {
 		unobserve(object, callback, OBSERVER_PROPERTY);
-	},
-
-	/**
-	 * Adds an event observer to an object.
-	 */
-	observeEvents:function(object, callback) {
-		observe(object, callback, EVTOBSERVER_PROPERTY);
-	},
-
-	/** 
-	 * Removes a callback from the event observer list
-	 */
-	unobserveEvents:function(object, callback) {
-		unobserve(object, callback, EVTOBSERVER_PROPERTY);
-	},
-
-	/**
-	 * Raise an event associated to an object
-	 */
-	raiseEvent:function(object, eventName, eventArg) {
-		var ln=object[EVTOBSERVER_PROPERTY];
-    if (ln) {
-        // call the listeners
-        var elt, evt={name:eventName, object:object, argument:eventArg};
-        for (var i=0,sz=ln.length;sz>i;i++) {
-        	elt=ln[i];
-        	if (elt.constructor===Function) elt(evt);
-        	// else elt is not a function!
-        }
-    }
 	}
 
 }
