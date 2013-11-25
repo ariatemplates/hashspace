@@ -17,7 +17,7 @@ var ClockController=klass({
 			this.minuteMarkers[i]={major:(i%5===0)};
 		}
 		this.onCityChange();
-		setInterval(this.tick.bind(this),1000);
+		setInterval(this.tick.bind(this),100);
 	},
 	onCityChange:function() {
 		// dynamic city change: check city validity and refresh the display
@@ -35,6 +35,7 @@ var ClockController=klass({
 		json.set(this,"hours",d.getHours());
 		json.set(this,"minutes",d.getMinutes());
 		json.set(this,"seconds",d.getSeconds());
+		json.set(this,"milliseconds",d.getMilliseconds());
 		json.set(this,"cityName",CITIES[this.city].city);
 	}
 });
@@ -56,7 +57,7 @@ var ClockController=klass({
 	        // minute hand
         	<line class="minute" y1="4" y2="-30" transform="rotate({6*c.minutes+c.seconds/10})"/>
         	// second hand
-        	<g transform="rotate({6*c.seconds})">
+        	<g transform="rotate({6*(c.seconds+c.milliseconds*0.001)})">
 	          <line class="second" y1="10" y2="-38"/>
 	          <line class="second-counterweight" y1="10" y2="2"/>
 	        </g>
