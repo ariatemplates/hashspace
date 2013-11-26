@@ -67,8 +67,8 @@ var Pagination=klass({
     <label class="fieldlabel">Page size: </label><input type="number"  #model="{model.pageSize}"/><br/>
     Last page selection  <i> - from event</i>: <span class="textValue">{model.lastSelectedPage}</span>
   </div>
-  <#pagination activepage="{model.active}" collectionsize="{model.collectionSize}" pagesize="{model.pageSize}"
-  onpageselect="{updateSelectionCount(event.pageNumber)}"/>
+  <#pagination activepage="{model.active}" collectionsize="{model.collectionSize}" 
+    pagesize="{model.pageSize}" onpageselect="{updateSelection(event.pageNumber)}"/>
 
 # /template
 
@@ -79,7 +79,7 @@ var model = {
     lastSelectedPage: "(...)"
 }
 
-function updateSelectionCount(newPageNumber) {
+function updateSelection(newPageNumber) {
   json.set(model,"lastSelectedPage",newPageNumber);
 }
 
