@@ -34,15 +34,21 @@ To run and update the samples in a live environment, first run *npm install* and
 - open *http://localhost:8000* in your favorite browser and choose an example from the sample list
 - or open *http://localhost:8000/todomvc* to play with the todomvc sample..
 
-Running Tests
--------------
+## Development
+
+### Preparing your environment
+
+- install Grunt cli globally: `npm install -g grunt-cli`
+- install local npm modules: `npm install`
+
+### Running Tests
+
 For the compiler test:
-- run *npm run-script mocha*
+- run `grunt mochaTest`
 
 For the browser runtime tests:
-- run *npm run-script grunt* - this will launch a local webserver and a watch task on your files
+- run *grunt* - this will launch a local webserver and a watch task on your files
 - and access *http://localhost:8000/test/rt* to run the tests in your favorite browsers
-
 
 [key_features_blog]: http://ariatemplates.com/blog/2012/11/key-features-for-client-side-templates/
 [todomvc]: http://addyosmani.github.com/todomvc/

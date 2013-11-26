@@ -1,33 +1,26 @@
 {
-    "author": "ariatemplates <contact@ariatemplates.com> (http://github.com/ariatemplates)",
-    "name": "hashspace-prototype",
-    "description": "hashspace runtime prototype",
-    "version": "0.0.1-SNAPSHOT",
-    "homepage": "",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/ariatemplates/hashspace.git"
-    },
-    "dependencies": {
-        "acorn":"0.1.0",
-        "pegjs" : "0.7.0"
-    },
-    "devDependencies": {
-        "grunt": "0.4.0",
-        "grunt-jasmine-node": "0.0.2",
-        "grunt-contrib-watch": "0.5.3",
-        "jasmine-node": "1.0.26",
-        "socket.io" : "0.9.13",
-        "express" : "3.0.6",
-        "request" : "2.12.0",
-        "mocha-runner" : "0.0.3"
-    },
-    "scripts": {
-        "test" : "node node_modules/grunt/bin/grunt test",
-        "grunt" : "node hsp/grunt/grunt-cli.js",
-        "mocha" : "node public/test/runner/mocha-cli.js"
-    },
-    "config": {
-        "test-browsers": "Firefox"
-    }
+  "author": "ariatemplates <contact@ariatemplates.com> (http://github.com/ariatemplates)",
+  "name": "hashspace-prototype",
+  "description": "hashspace runtime prototype",
+  "version": "0.0.1-SNAPSHOT",
+  "homepage": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariatemplates/hashspace.git"
+  },
+  "dependencies": {
+    "acorn": "0.1.0",
+    "pegjs": "0.7.0"
+  },
+  "devDependencies": {
+    "grunt": "0.4.0",
+    "grunt-contrib-watch": "0.5.3",
+    "socket.io": "0.9.13",
+    "express": "3.0.6",
+    "request": "2.12.0",
+    "grunt-mocha-test": "~0.7.0"
+  },
+  "config": {
+    "test-browsers": "Firefox"
+  }
 }
