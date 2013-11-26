@@ -200,7 +200,35 @@ var $RootNode = klass({
 			// recursively updates all reference to the previous doc fragment node
 			this.replaceNodeBy(df,domElt);
 		}
-	}	
+	},
+
+	/**
+	 * Wrapper to HTML5 queryselector	- mainly used for unit tests
+	 */
+	querySelector:function(selectors) {
+		var n=this.node;
+		if (n.querySelector) {
+			return n.querySelector(selectors);
+		} else {
+			// TODO use polyfill
+			console.error("[$Root] querySelector() is not supported by this browser");
+		}
+		return null;
+	},
+
+	/**
+	 * Wrapper to HTML5 querySelectorAll	- mainly used for unit tests
+	 */
+	querySelectorAll:function(selectors) {
+		var n=this.node;
+		if (n.querySelector) {
+			return n.querySelectorAll(selectors);
+		} else {
+			// TODO use polyfill
+			console.error("[$Root] querySelectorAll() is not supported by this browser");
+		}
+		return null;
+	}
 });
 
 /**
