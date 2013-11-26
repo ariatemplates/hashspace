@@ -15,6 +15,17 @@
 
 module.exports = function (grunt) {
   grunt.initConfig({
+    mochaTest: {
+      test: {
+        options: {
+          reporter: 'spec'
+        },
+        src: [
+          'public/test/compiler/*.js',
+          'public/test/jsvalidator/*.js'
+        ]
+      }
+    },
     hspserver: {
       port: 8000,
       base: __dirname,
@@ -27,6 +38,7 @@ module.exports = function (grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadTasks('hsp/grunt');
 
   grunt.registerTask('default', ['hspserver','watch']);
