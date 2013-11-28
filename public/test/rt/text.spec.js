@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -307,6 +306,5 @@ describe("Text Nodes", function () {
     });
 
 });
-
 
 // TODO test root node with multiple chile nodes
