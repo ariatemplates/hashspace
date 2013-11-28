@@ -2,5 +2,18 @@ language: node_js
 node_js:
   - "0.10"
 
+env:
+  global:
+    - SAUCE_USERNAME=ariatemplates
+    - SAUCE_ACCESS_KEY=620e638e-90d2-48e1-b66c-f9505dcb888b
+
 before_install:
  - npm install --quiet -g grunt-cli
+
+before_script:
+ - curl https://gist.github.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash
+ - export DISPLAY=:99.0
+ - sh -e /etc/init.d/xvfb start
+
+script:
+ - grunt ci
