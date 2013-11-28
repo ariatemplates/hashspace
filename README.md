@@ -50,8 +50,22 @@ To run and update the samples in a live environment, first run *npm install* and
 For jshint validation:
 - run `grunt checkStyle`
 
-For the compiler test:
+To run all the tests (compiler and runtime):
+- `grunt test`
+
+To run all the tests on SauceLabs browsers:
+- `grunt karma:sauce`
+
+You can work in the TDD mode as well:
+- `grunt tdd`
+
+For the compiler test only:
 - run `grunt mochaTest`
+
+For the browser-based runtime tests only:
+- run `grunt karma:unit` (you can also work in the TDD mode by running `grunt karma:tdd`)
+
+To do the health check on the project (before commit, for example) run `grunt test`. This will run
 
 For the browser runtime tests:
 - run *grunt* - this will launch a local webserver and a watch task on your files
