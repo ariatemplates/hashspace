@@ -1,0 +1,17 @@
+*        text=auto
+
+*.css    text
+*.hsp    text
+*.htm    text diff=html
+*.html   text diff=html
+*.js     text
+*.json   text
+*.md     text
+*.pegjs  text
+*.txt    text
+*.xml    text
+
+*.png    binary
+*.jpg    binary
+*.gif    binary
+*.swf    binary
