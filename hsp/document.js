@@ -16,29 +16,28 @@
 
 // Document object wrapper
 // used by the hash_space runtime
+var doc = window.document;
 
-var doc=window.document;
+module.exports.createDocumentFragment = function () {
+    return doc.createDocumentFragment();
+};
 
-module.exports.createDocumentFragment=function() {
-	return doc.createDocumentFragment();
-}
+module.exports.createElement = function (type) {
+    return doc.createElement(type);
+};
 
-module.exports.createElement=function(type) {
-	return doc.createElement(type);
-}
+module.exports.createElementNS = function (ns, type) {
+    return doc.createElementNS(ns, type);
+};
 
-module.exports.createElementNS=function(ns,type) {
-	return doc.createElementNS(ns,type);
-}
+module.exports.createTextNode = function (text) {
+    return doc.createTextNode(text);
+};
 
-module.exports.createTextNode=function(text) {
-	return doc.createTextNode(text);
-}
+module.exports.createComment = function (text) {
+    return doc.createComment(text);
+};
 
-module.exports.createComment=function(text) {
-	return doc.createComment(text);
-}
-
-module.exports.getElementById=function(eltId) {
-	return doc.getElementById(eltId);
-}
+module.exports.getElementById = function (eltId) {
+    return doc.getElementById(eltId);
+};

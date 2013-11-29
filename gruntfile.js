@@ -39,6 +39,9 @@ module.exports = function (grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-verifylowercase');
+  grunt.loadNpmTasks('grunt-leading-indent');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadTasks('hsp/grunt');
 
   grunt.registerTask('default', ['hspserver','watch']);

@@ -16,82 +16,79 @@
 
 /**
  * Shortcut to create a JS Object
- * @param {JSON} klassdef the object prototype containing the following special properties
- *    $constructor: {function} the object constructor (optional - a new function is automatically created if not provided)
- *    
- *
+ * @param {JSON} klassdef the object prototype containing the following special properties $constructor: {function} the
+ * object constructor (optional - a new function is automatically created if not provided)
  * @return {function} the object constructor
  */
-var klass = function(klassdef) {
-	var $c=klassdef.$constructor;
-	if (!$c) {
-		// no constructor is provided - let's create one
-		var ext=klassdef.$extends;
-		if (ext) {
-			$c=function() {
-				ext.apply(this,arguments);
-			}
-		} else {
-			$c=new Function();
-		}
-		klassdef.$constructor=$c;
-	}
-	if (klassdef.$extends) {
-		// create the new prototype from the parent prototype
-		if (!klassdef.$extends.prototype) throw new Error("[klass] $extends attribute must be a function");
-		var p=createObject(klassdef.$extends.prototype);
+var klass = function (klassdef) {
+    var $c = klassdef.$constructor;
+    if (!$c) {
+        // no constructor is provided - let's create one
+        var ext = klassdef.$extends;
+        if (ext) {
+            $c = function () {
+                ext.apply(this, arguments);
+            };
+        } else {
+            $c = new Function();
+        }
+        klassdef.$constructor = $c;
+    }
+    if (klassdef.$extends) {
+        // create the new prototype from the parent prototype
+        if (!klassdef.$extends.prototype)
+            throw new Error("[klass] $extends attribute must be a function");
+        var p = createObject(klassdef.$extends.prototype);
 
-		// add prototype properties to the prototype and to the constructor function to allow syntax shortcuts
-		// such as ClassA.$constructor()
-		for (var k in klassdef) {
-			if (klassdef.hasOwnProperty(k)) {
-				p[k]=$c[k]=klassdef[k];
-			}
-		}
-		$c.prototype=p;
-	} else {
-		$c.prototype=klassdef;
+        // add prototype properties to the prototype and to the constructor function to allow syntax shortcuts
+        // such as ClassA.$constructor()
+        for (var k in klassdef) {
+            if (klassdef.hasOwnProperty(k)) {
+                p[k] = $c[k] = klassdef[k];
+            }
+        }
+        $c.prototype = p;
+    } else {
+        $c.prototype = klassdef;
 
-		// add prototype properties to the constructor function to allow syntax shortcuts
-		// such as ClassA.$constructor()
-		for (var k in klassdef) {
-			if (klassdef.hasOwnProperty(k)) {
-				$c[k]=klassdef[k];
-			}
-		}
-	}
+        // add prototype properties to the constructor function to allow syntax shortcuts
+        // such as ClassA.$constructor()
+        for (var k in klassdef) {
+            if (klassdef.hasOwnProperty(k)) {
+                $c[k] = klassdef[k];
+            }
+        }
+    }
 
-	return $c;
+    return $c;
 };
 
 // helper function used to create object
-function F() {};
+function F () {}
 
 /**
  * Polyfill for the browsers that don't support ES5
  */
-function createObject(o) {
-	if (Object.create) {
-		return Object.create(o);
-	} else {
-		F.prototype=o;
-		return new F();
-	}
+function createObject (o) {
+    if (Object.create) {
+        return Object.create(o);
+    } else {
+        F.prototype = o;
+        return new F();
+    }
 }
 
-klass.createObject=createObject;
+klass.createObject = createObject;
 
-var metaDataCounter=0;
+var metaDataCounter = 0;
 /**
- * Generate a unique meta-data prefix
- * Can be used to store object-specific data into another object without
- * much risk of collision (i.e. provided that the object doesn't use properties with
- * the "+XXXX:XXXXXXXX" pattern)
+ * Generate a unique meta-data prefix Can be used to store object-specific data into another object without much risk of
+ * collision (i.e. provided that the object doesn't use properties with the "+XXXX:XXXXXXXX" pattern)
  */
-function createMetaDataPrefix() {
-	metaDataCounter++;
-	return "+"+metaDataCounter+":";
+function createMetaDataPrefix () {
+    metaDataCounter++;
+    return "+" + metaDataCounter + ":";
 }
-klass.createMetaDataPrefix=createMetaDataPrefix;
+klass.createMetaDataPrefix = createMetaDataPrefix;
 
-module.exports=klass;
+module.exports = klass;

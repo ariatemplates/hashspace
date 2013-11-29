@@ -4,337 +4,354 @@
 var _ = require("underscore");
 
 exports.create = function (tree) {
-	var isTree = tree && tree.type === "template" && tree.name && tree.content;
+    var isTree = tree && tree.type === "template" && tree.name && tree.content;
 
-	// Prototype of any element that is contained in the tree
-	var contentElement = {
-		/**
-		 * Whether an element is of a given type
-		 * @return {String} type Type to be checked
-		 * @throws
-		 */
-		ofType : function (type) {
-			if (!this.element) {
-				throw new Error("Element " + this.path + " is undefined.");
-			}
-			if (this.element.type !== type) {
-				// Surely enough this is not a text node
-				throw new Error("Element " + this.path + " is not of type '" + type + "' but '" + this.element.type + "'.");
-			}
-		},
+    // Prototype of any element that is contained in the tree
+    var contentElement = {
+        /**
+         * Whether an element is of a given type
+         * @return {String} type Type to be checked
+         * @throws
+         */
+        ofType : function (type) {
+            if (!this.element) {
+                throw new Error("Element " + this.path + " is undefined.");
+            }
+            if (this.element.type !== type) {
+                // Surely enough this is not a text node
+                throw new Error("Element " + this.path + " is not of type '" + type + "' but '" + this.element.type
+                        + "'.");
+            }
+        },
 
-		/**
-		 * Whether the element is a text node
-		 * @param  {String}  content [Optional] Text node content (trimmed for comparison)
-		 * @throws
-		 */
-		isText : function (content) {
-			this.ofType("text");
+        /**
+         * Whether the element is a text node
+         * @param {String} content [Optional] Text node content (trimmed for comparison)
+         * @throws
+         */
+        isText : function (content) {
+            this.ofType("text");
 
-			if (content && this.element.value.trim() !== content.trim()) {
-				// Content is different from what expected
-				throw new Error("Text Element " + this.path + " doesn't match '" + content.trim() + "'. Value: '" + this.element.value + "'.");
-			}
-		},
+            if (content && this.element.value.trim() !== content.trim()) {
+                // Content is different from what expected
+                throw new Error("Text Element " + this.path + " doesn't match '" + content.trim() + "'. Value: '"
+                        + this.element.value + "'.");
+            }
+        },
 
-		/**
-		 * Whether the element is a certain instruction
-		 * @param  {String}  name Instruction name
-		 * @throws
-		 */
-		isInstruction : function (name) {
-			this.ofType("instruction");
+        /**
+         * Whether the element is a certain instruction
+         * @param {String} name Instruction name
+         * @throws
+         */
+        isInstruction : function (name) {
+            this.ofType("instruction");
 
-			if (this.element.name !== name) {
-				throw new Error("Instruction " + this.path + " is not of type '" + name + ", got '" + this.element.name + "'.");
-			}
-		},
+            if (this.element.name !== name) {
+                throw new Error("Instruction " + this.path + " is not of type '" + name + ", got '" + this.element.name
+                        + "'.");
+            }
+        },
 
-		/**
-		 * Whether the element is an HTML element.
-		 * @param  {String}  tagName Tag name
-		 * @throws
-		 */
-		isElement : function (tagName) {
-			this.ofType("element");
+        /**
+         * Whether the element is an HTML element.
+         * @param {String} tagName Tag name
+         * @throws
+         */
+        isElement : function (tagName) {
+            this.ofType("element");
 
-			if (this.element.name !== tagName) {
-				throw new Error("Element " + this.path + " is not a " + tagName + " but a " + this.element.name);
-			}
-		},
+            if (this.element.name !== tagName) {
+                throw new Error("Element " + this.path + " is not a " + tagName + " but a " + this.element.name);
+            }
+        },
 
-		/**
-		 * Whether this element is an HTML element attribute
-		 * @param  {String}  name      Attribute name
-		 * @param  {Boolean} isStatic  true if static, default true
-		 * @param  {String}  isSingle  Whether it's wrapped in single quote or not. default false
-		 * @throws
-		 */
-		isAttribute : function (name, isStatic, isSingle) {
-			if (this.element.type !== "ElementAttribute") {
-				throw new Error("Element " + this.path + " is not an attribute but a " + this.element.type);
-			}
-			if (this.element.name !== name) {
-				throw new Error("Attribute " + this.path + " does not have name '" + name + "' but '" + this.element.name + "'");
-			}
-			isStatic = isStatic !== false;
-			if (this.element.isStatic !== isStatic) {
-				throw new Error("Attribute " + this.path + " has 'isStatic' set to '" + this.element.isStatic + "' expecting '" + isStatic + "'");
-			}
-			var quote = isSingle ? "'" : '"';
-			if (this.element.quote !== quote) {
-				throw new Error("Attribute " + this.path + " has 'quote' set to _" + this.element.quote + "_ expecting _" + quote + "_");
-			}
-		},
+        /**
+         * Whether this element is an HTML element attribute
+         * @param {String} name Attribute name
+         * @param {Boolean} isStatic true if static, default true
+         * @param {String} isSingle Whether it's wrapped in single quote or not. default false
+         * @throws
+         */
+        isAttribute : function (name, isStatic, isSingle) {
+            if (this.element.type !== "ElementAttribute") {
+                throw new Error("Element " + this.path + " is not an attribute but a " + this.element.type);
+            }
+            if (this.element.name !== name) {
+                throw new Error("Attribute " + this.path + " does not have name '" + name + "' but '"
+                        + this.element.name + "'");
+            }
+            isStatic = isStatic !== false;
+            if (this.element.isStatic !== isStatic) {
+                throw new Error("Attribute " + this.path + " has 'isStatic' set to '" + this.element.isStatic
+                        + "' expecting '" + isStatic + "'");
+            }
+            var quote = isSingle ? "'" : '"';
+            if (this.element.quote !== quote) {
+                throw new Error("Attribute " + this.path + " has 'quote' set to _" + this.element.quote
+                        + "_ expecting _" + quote + "_");
+            }
+        },
 
-		/**
-		 * Whether the current element is a variable or not. The path should be an array, while isBindModified is
-		 * optional and defaults to false
-		 * @param  {Array}   path            Path variable 'a.b.c' -> ['a', 'b', 'c']
-		 * @param  {Boolean} isBindModified  Whether this variable has a binding modifier or not
-		 * @throws
-		 */
-		isVariable : function (path, isBindModified) {
-			isBindModified = isBindModified === true;
-			this.ofType("value");
+        /**
+         * Whether the current element is a variable or not. The path should be an array, while isBindModified is
+         * optional and defaults to false
+         * @param {Array} path Path variable 'a.b.c' -> ['a', 'b', 'c']
+         * @param {Boolean} isBindModified Whether this variable has a binding modifier or not
+         * @throws
+         */
+        isVariable : function (path, isBindModified) {
+            isBindModified = isBindModified === true;
+            this.ofType("value");
 
-			var elementPath = this.element.args.join(".");
-			var expectedPath = path.join(".");
-			if (elementPath !== expectedPath) {
-				throw new Error("Variable path in " + this.path + " is different from '" + expectedPath + "', got '" + elementPath + "'.");
-			}
-			if (this.element.bind !== isBindModified) {
-				throw new Error("Variable binding in " + this.path + " is different from '" + isBindModified + "', got '" + this.element.bind + "'.");
-			}
-		},
+            var elementPath = this.element.args.join(".");
+            var expectedPath = path.join(".");
+            if (elementPath !== expectedPath) {
+                throw new Error("Variable path in " + this.path + " is different from '" + expectedPath + "', got '"
+                        + elementPath + "'.");
+            }
+            if (this.element.bind !== isBindModified) {
+                throw new Error("Variable binding in " + this.path + " is different from '" + isBindModified
+                        + "', got '" + this.element.bind + "'.");
+            }
+        },
 
-		/**
-		 * Whether the current element is a for loop.
-		 * @param  {String} iterator     Name of the variable created by the loop
-		 * @param  {String} keyword      Like 'in' or 'of'
-		 * @param  {Array}  collection   Path of the element on which we loop
-		 * @throws
-		 */
-		isForLoop : function (iterator, keyword, collection) {
-			this.ofType("instruction");
-			if (this.element.name !== "foreach") {
-				throw new Error("Element " + this.path + " is not a for loop. " + this.element.type + " " + this.element.name);
-			}
-			if (this.element.args.iterator !== iterator) {
-				throw new Error("Iterator in for loop " + this.path + " is not '" + iterator + "', got '" + this.element.args.iterator + "'.");
-			}
-			if (this.element.args.keyword !== keyword) {
-				throw new Error("Keyword in for loop " + this.path + " is not '" + keyword + "', got '" + this.element.args.keyword + "'.");
-			}
-			if (this.element.args.collection.type !== "ObjectIdentifier") {
-				throw new Error("Collection in for loop " + this.path + " must be 'ObjectIdentifier', got '" + this.element.args.keyword + "'.");
-			}
-			var collectionString = this.element.args.collection.path.join(".");
-			if (collectionString !== collection.join(".")) {
-				throw new Error("Collection in for loop " + this.path + " is not '" + collection + "', got '" + this.element.args.collection.path + "'.");
-			}
-		},
+        /**
+         * Whether the current element is a for loop.
+         * @param {String} iterator Name of the variable created by the loop
+         * @param {String} keyword Like 'in' or 'of'
+         * @param {Array} collection Path of the element on which we loop
+         * @throws
+         */
+        isForLoop : function (iterator, keyword, collection) {
+            this.ofType("instruction");
+            if (this.element.name !== "foreach") {
+                throw new Error("Element " + this.path + " is not a for loop. " + this.element.type + " "
+                        + this.element.name);
+            }
+            if (this.element.args.iterator !== iterator) {
+                throw new Error("Iterator in for loop " + this.path + " is not '" + iterator + "', got '"
+                        + this.element.args.iterator + "'.");
+            }
+            if (this.element.args.keyword !== keyword) {
+                throw new Error("Keyword in for loop " + this.path + " is not '" + keyword + "', got '"
+                        + this.element.args.keyword + "'.");
+            }
+            if (this.element.args.collection.type !== "ObjectIdentifier") {
+                throw new Error("Collection in for loop " + this.path + " must be 'ObjectIdentifier', got '"
+                        + this.element.args.keyword + "'.");
+            }
+            var collectionString = this.element.args.collection.path.join(".");
+            if (collectionString !== collection.join(".")) {
+                throw new Error("Collection in for loop " + this.path + " is not '" + collection + "', got '"
+                        + this.element.args.collection.path + "'.");
+            }
+        },
 
-		/**
-		 * Whether the current element is an if statement.
-		 * @param  {Array}    condition Path of the condition element
-		 * @param  {Boolean}  haveElse  Whether the if has an else block. Default false
-		 * @throws
-		 */
-		isIf : function (condition, haveElse) {
-			haveElse = haveElse === true;
-			this.ofType("instruction");
+        /**
+         * Whether the current element is an if statement.
+         * @param {Array} condition Path of the condition element
+         * @param {Boolean} haveElse Whether the if has an else block. Default false
+         * @throws
+         */
+        isIf : function (condition, haveElse) {
+            haveElse = haveElse === true;
+            this.ofType("instruction");
 
-			if (this.element.name !== "if") {
-				throw new Error("Element " + this.path + " is not an if statement. " + this.element.type + " " + this.element.name);
-			}
-			var conditionString = this.element.args.path.join(".");
-			if (conditionString !== condition.join(".")) {
-				throw new Error("Condition of 'if' statement " + this.path + " is not '" + condition + "', got '" + this.element.args.path + "'.");
-			}
-		},
+            if (this.element.name !== "if") {
+                throw new Error("Element " + this.path + " is not an if statement. " + this.element.type + " "
+                        + this.element.name);
+            }
+            var conditionString = this.element.args.path.join(".");
+            if (conditionString !== condition.join(".")) {
+                throw new Error("Condition of 'if' statement " + this.path + " is not '" + condition + "', got '"
+                        + this.element.args.path + "'.");
+            }
+        },
 
-		/**
-		 * Whether this node is a callback for a given type
-		 * @param  {String}  event     Event name
-		 * @param  {String}  isSingle  Whether it's wrapped in single quote or not. default false
-		 * @return {Boolean}
-		 */
-		isCallback : function (event, isSingle) {
-			if (this.element.type !== "EventCallback") {
-				throw new Error("Element " + this.path + " is not a callback but a " + this.element.type);
-			}
-			if (this.element.name !== event) {
-				throw new Error("Callback " + this.path + " does not react to '" + event + "' but to '" + this.element.event + "'");
-			}
-			var quote = isSingle ? "'" : '"';
-			if (this.element.quote !== quote) {
-				throw new Error("Callback " + this.path + " has 'quote' set to _" + this.element.quote + "_ expecting _" + quote + "_");
-			}
-		},
+        /**
+         * Whether this node is a callback for a given type
+         * @param {String} event Event name
+         * @param {String} isSingle Whether it's wrapped in single quote or not. default false
+         * @return {Boolean}
+         */
+        isCallback : function (event, isSingle) {
+            if (this.element.type !== "EventCallback") {
+                throw new Error("Element " + this.path + " is not a callback but a " + this.element.type);
+            }
+            if (this.element.name !== event) {
+                throw new Error("Callback " + this.path + " does not react to '" + event + "' but to '"
+                        + this.element.event + "'");
+            }
+            var quote = isSingle ? "'" : '"';
+            if (this.element.quote !== quote) {
+                throw new Error("Callback " + this.path + " has 'quote' set to _" + this.element.quote
+                        + "_ expecting _" + quote + "_");
+            }
+        },
 
-		/**
-		 * Return a property of the current element
-		 * @param  {String} what Property name
-		 * @return {Object}
-		 */
-		get : function (what) {
-			return this.element[what];
-		},
+        /**
+         * Return a property of the current element
+         * @param {String} what Property name
+         * @return {Object}
+         */
+        get : function (what) {
+            return this.element[what];
+        },
 
-		/**
-		 * Return an helper around the n-th element contained in this element.
-		 * @param  {Number} position Index
-		 * @return {Object}
-		 */
-		n : function (position) {
-			return Object.create(contentElement, {
-				element : {
-					writable : false,
-					configurable : false,
-					value : this.element.content[position]
-				},
-				path : {
-					writable : false,
-					configurable : false,
-					value : this.path + ".content[" + position + "]"
-				}
-			});
-		},
+        /**
+         * Return an helper around the n-th element contained in this element.
+         * @param {Number} position Index
+         * @return {Object}
+         */
+        n : function (position) {
+            return Object.create(contentElement, {
+                element : {
+                    writable : false,
+                    configurable : false,
+                    value : this.element.content[position]
+                },
+                path : {
+                    writable : false,
+                    configurable : false,
+                    value : this.path + ".content[" + position + "]"
+                }
+            });
+        },
 
-		/**
-		 * Return an helper around the k-th element contained in the j-th content of this element.
-		 * This is useful for elements with multiple content blocks
-		 * @param  {Number} j Primary index, content[j]
-		 * @param  {Number} k Secondary index, content[j][k]
-		 * @return {Object}
-		 */
-		nn : function (j, k) {
-			return Object.create(contentElement, {
-				element : {
-					writable : false,
-					configurable : false,
-					value : this.element.content[j][k]
-				},
-				path : {
-					writable : false,
-					configurable : false,
-					value : this.path + ".content[" + j + "][" + k + "]"
-				}
-			});
-		},
+        /**
+         * Return an helper around the k-th element contained in the j-th content of this element. This is useful for
+         * elements with multiple content blocks
+         * @param {Number} j Primary index, content[j]
+         * @param {Number} k Secondary index, content[j][k]
+         * @return {Object}
+         */
+        nn : function (j, k) {
+            return Object.create(contentElement, {
+                element : {
+                    writable : false,
+                    configurable : false,
+                    value : this.element.content[j][k]
+                },
+                path : {
+                    writable : false,
+                    configurable : false,
+                    value : this.path + ".content[" + j + "][" + k + "]"
+                }
+            });
+        },
 
-		/**
-		 * Get an array of properties
-		 * @param  {String} what Element property
-		 * @return {Object}
-		 */
-		more : function (what) {
-			return Object.create(ArrayElement, {
-				array : {
-					writable : false,
-					configurable : false,
-					value : this.element[what]
-				},
-				path : {
-					writable : false,
-					configurable : false,
-					value : this.path + "." + what
-				}
-			});
-		}
-	};
+        /**
+         * Get an array of properties
+         * @param {String} what Element property
+         * @return {Object}
+         */
+        more : function (what) {
+            return Object.create(ArrayElement, {
+                array : {
+                    writable : false,
+                    configurable : false,
+                    value : this.element[what]
+                },
+                path : {
+                    writable : false,
+                    configurable : false,
+                    value : this.path + "." + what
+                }
+            });
+        }
+    };
 
-	var ArrayElement = {
-		/**
-		 * Assert that this array have exactly i elements
-		 * @throws
-		 */
-		length : function (i) {
-			if (this.array.length !== i) {
-				throw new Error("Array " + this.path + " has length " + this.array.length + " instead of " + i);
-			}
-		},
+    var ArrayElement = {
+        /**
+         * Assert that this array have exactly i elements
+         * @throws
+         */
+        length : function (i) {
+            if (this.array.length !== i) {
+                throw new Error("Array " + this.path + " has length " + this.array.length + " instead of " + i);
+            }
+        },
 
-		/**
-		 * Return an helper around the n-th element of this array.
-		 * @param  {Number} position Index
-		 * @return {Object}
-		 */
-		n : function (position) {
-			return Object.create(contentElement, {
-				element : {
-					writable : false,
-					configurable : false,
-					value : this.array[position]
-				},
-				path : {
-					writable : false,
-					configurable : false,
-					value : this.path + "[" + position + "]"
-				}
-			});
-		}
-	};
+        /**
+         * Return an helper around the n-th element of this array.
+         * @param {Number} position Index
+         * @return {Object}
+         */
+        n : function (position) {
+            return Object.create(contentElement, {
+                element : {
+                    writable : false,
+                    configurable : false,
+                    value : this.array[position]
+                },
+                path : {
+                    writable : false,
+                    configurable : false,
+                    value : this.path + "[" + position + "]"
+                }
+            });
+        }
+    };
 
-	return Object.create({
-		/**
-		 * Is this a valid parsed tree
-		 * @return {Boolean}
-		 */
-		isTree : function () {
-			return isTree;
-		},
+    return Object.create({
+        /**
+         * Is this a valid parsed tree
+         * @return {Boolean}
+         */
+        isTree : function () {
+            return isTree;
+        },
 
-		/**
-		 * Whether the tree has as many content nodes as specified.
-		 * @param  {Number}  howMany How many content nodes we expect, if null anything bigger than 0
-		 * @return {Boolean}
-		 */
-		hasContent : function (howMany) {
-			if (!isTree) {
-				throw new Error("Invalid parse tree");
-			}
+        /**
+         * Whether the tree has as many content nodes as specified.
+         * @param {Number} howMany How many content nodes we expect, if null anything bigger than 0
+         * @return {Boolean}
+         */
+        hasContent : function (howMany) {
+            if (!isTree) {
+                throw new Error("Invalid parse tree");
+            }
 
-			if (_.isNumber(howMany)) {
-				return tree.content.length === howMany;
-			} else {
-				return tree.content.length > 0;
-			}
-		},
+            if (_.isNumber(howMany)) {
+                return tree.content.length === howMany;
+            } else {
+                return tree.content.length > 0;
+            }
+        },
 
-		/**
-		 * Return an helper around the n-th element of the template, 0 based index.
-		 * @param  {Number} position Index
-		 * @return {Object}
-		 */
-		n : function (position) {
-			return Object.create(contentElement, {
-				element : {
-					writable : false,
-					configurable : false,
-					value : this.tree.content[position]
-				},
-				path : {
-					writable : false,
-					configurable : false,
-					value : "tree.content[" + position + "]"
-				}
-			});
-		},
+        /**
+         * Return an helper around the n-th element of the template, 0 based index.
+         * @param {Number} position Index
+         * @return {Object}
+         */
+        n : function (position) {
+            return Object.create(contentElement, {
+                element : {
+                    writable : false,
+                    configurable : false,
+                    value : this.tree.content[position]
+                },
+                path : {
+                    writable : false,
+                    configurable : false,
+                    value : "tree.content[" + position + "]"
+                }
+            });
+        },
 
-		/**
-		 * Log in the console the tree structure.
-		 * @param  {Object} tree
-		 */
-		log : function (tree) {
-			console.log(require("util").inspect(this.tree, false, null, true));
-		}
-	}, {
-		tree : {
-			writable : false,
-			configurable : false,
-			value : tree
-		}
-	});
+        /**
+         * Log in the console the tree structure.
+         * @param {Object} tree
+         */
+        log : function (tree) {
+            console.log(require("util").inspect(this.tree, false, null, true));
+        }
+    }, {
+        tree : {
+            writable : false,
+            configurable : false,
+            value : tree
+        }
+    });
 };
