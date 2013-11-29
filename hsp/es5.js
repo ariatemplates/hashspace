@@ -16,11 +16,9 @@
 
 // Add some ECMAScript 5 support for IE 6/7/8
 // all polyfills from Mozilla Developer Network
-
-
 // Array.indexOf
 if (!Array.prototype.indexOf) {
-    Array.prototype.indexOf = function (searchElement /*, fromIndex */ ) {
+    Array.prototype.indexOf = function (searchElement /*, fromIndex */) {
         "use strict";
         if (this == null) {
             throw new TypeError();
@@ -35,7 +33,7 @@ if (!Array.prototype.indexOf) {
             n = Number(arguments[1]);
             if (n != n) { // shortcut for verifying if it's NaN
                 n = 0;
-            } else if (n != 0 && n != Infinity && n != -Infinity) {
+            } else if (n !== 0 && n != Infinity && n != -Infinity) {
                 n = (n > 0 || -1) * Math.floor(Math.abs(n));
             }
         }
@@ -49,30 +47,24 @@ if (!Array.prototype.indexOf) {
             }
         }
         return -1;
-    }
+    };
 }
 
 // Function.bind
 if (!Function.prototype.bind) {
-  Function.prototype.bind = function (oThis) {
-    if (typeof this !== "function") {
-      // closest thing possible to the ECMAScript 5 internal IsCallable function
-      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
-    }
- 
-    var aArgs = Array.prototype.slice.call(arguments, 1), 
-        fToBind = this, 
-        fNOP = function () {},
-        fBound = function () {
-          return fToBind.apply(this instanceof fNOP && oThis
-                                 ? this
-                                 : oThis,
-                               aArgs.concat(Array.prototype.slice.call(arguments)));
+    Function.prototype.bind = function (oThis) {
+        if (typeof this !== "function") {
+            // closest thing possible to the ECMAScript 5 internal IsCallable function
+            throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+        }
+
+        var aArgs = Array.prototype.slice.call(arguments, 1), fToBind = this, fNOP = function () {}, fBound = function () {
+            return fToBind.apply(this instanceof fNOP && oThis ? this : oThis, aArgs.concat(Array.prototype.slice.call(arguments)));
         };
- 
-    fNOP.prototype = this.prototype;
-    fBound.prototype = new fNOP();
- 
-    return fBound;
-  };
+
+        fNOP.prototype = this.prototype;
+        fBound.prototype = new fNOP();
+
+        return fBound;
+    };
 }

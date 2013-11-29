@@ -30,7 +30,7 @@ Currently only some parts of the runtime are developed:
 
 
 To run and update the samples in a live environment, first run *npm install* and then:
-- run *npm run-script grunt* to launch a local web-server that can compile templates on the fly (cf. hsp/grunt folder)
+- run *grunt* to launch a local web-server that can compile templates on the fly (cf. hsp/grunt folder)
 - open *http://localhost:8000* in your favorite browser and choose an example from the sample list
 - or open *http://localhost:8000/todomvc* to play with the todomvc sample..
 
@@ -42,6 +42,9 @@ To run and update the samples in a live environment, first run *npm install* and
 - install local npm modules: `npm install`
 
 ### Running Tests
+
+For jshint validation:
+- run `grunt checkStyle`
 
 For the compiler test:
 - run `grunt mochaTest`
