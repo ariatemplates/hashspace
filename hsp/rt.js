@@ -1,4 +1,3 @@
-
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -113,7 +112,7 @@ refresh.addTemplate = function (tpl) {
 module.exports.display = function (tplResult, container, replace) {
     // TODO - Validate argument types / implement nice error messages
     var c = container;
-    if (typeof(container === "string")) {
+    if ((typeof container) === "string") {
         c = doc.getElementById(container);
     }
     if (c && tplResult) {
