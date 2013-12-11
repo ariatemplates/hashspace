@@ -18,12 +18,11 @@
     "grunt": "0.4.0",
     "grunt-contrib-jshint": "0.6.3",
     "grunt-contrib-watch": "0.5.3",
-    "socket.io": "0.9.13",
     "express": "3.0.6",
     "request": "2.12.0",
     "grunt-mocha-test": "~0.7.0"
   },
-  "config": {
-    "test-browsers": "Firefox"
+  "scripts": {
+    "test": "grunt test"
   }
 }
