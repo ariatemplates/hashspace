@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/ariatemplates/hashspace.png)](http://travis-ci.org/ariatemplates/hashspace)
+
 hashspace
 =========
 

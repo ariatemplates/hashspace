@@ -44,5 +44,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadTasks('hsp/grunt');
 
-  grunt.registerTask('default', ['hspserver','watch']);
+  grunt.registerTask('default', ['checkStyle', 'mochaTest']);
+  grunt.registerTask('server', ['hspserver','watch']);
 };
