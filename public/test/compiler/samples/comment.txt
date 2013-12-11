@@ -27,7 +27,7 @@
       {"type": "text","value": " "},
       {"type": "comment","value": " comment 2"},
       {"type": "text","value": " "},
-      {"type": "comment","value": " another comment\r\n\t   on multiple \r\n\t   lines \r\n\t   # /template\r\n\t   "},
+      {"type": "comment","value": " another comment\n\t   on multiple \n\t   lines \n\t   # /template\n\t   "},
       {"type": "text","value": " ... "},
       {"type": "endif"}
     ]
