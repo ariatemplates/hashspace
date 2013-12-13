@@ -142,7 +142,7 @@ var DataRefExpr = klass({
     getValue : function (vscope, eh, defvalue) {
         var v = this.isLiteral ? this.root : vscope[this.root], ppl = this.ppLength;
 
-        if (!v) {
+        if (typeof v == "undefined") {
             // root not found
             return defvalue;
         }
