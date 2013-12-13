@@ -278,7 +278,8 @@ function formatExpression (expression, firstIdx, walker) {
                 res = ['e', exprIdx, ':[', arg1, ',1,', rootRef];
             } else {
                 var p = [], pitm;
-                for (var i = 0; psz > i; i++) {
+                p.push(rootRef);
+                for (var i = 1; psz > i; i++) {
                     pitm = path[i];
                     if ((typeof pitm) === "string") {
                         p.push('"' + pitm + '"');

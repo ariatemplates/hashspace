@@ -23,10 +23,15 @@ var ExpHandler = klass({
      * functions, and not as argument of the constructor
      * @param {Map<expressionDefinition>} edef list of variable managed by this handler e.g. {e1:[1,2,"person","name"]} >
      * the e1 variable refers to person.name, composed of 2 path fragments ("person" and "name") and is bound to the
-     * data model Possible expression types are 0: unbound data ref - e.g. {e1:[0,1,"item_key"]} 1: bound data ref -
-     * e.g. {e1:[1,2,"person","name"]} 2: literal data ref - e.g. {e1:[2,2,person,"name"]} 3: function call - e.g.
-     * {e1:[3,2,"ctl","deleteItem",1,2,1,0]} 4: function call literal- e.g. {e1:[4,1,myfunc,1,2,1,0]} 5: literal value -
-     * e.g. {e1:[5,"some value"]} 6: function expression - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}
+     * data model
+     * Possible expression types are:
+     * 0: unbound data ref - e.g. {e1:[0,1,"item_key"]}
+     * 1: bound data ref - e.g. {e1:[1,2,"person","name"]}
+     * 2: literal data ref - e.g. {e1:[2,2,person,"name"]}
+     * 3: function call - e.g. {e1:[3,2,"ctl","deleteItem",1,2,1,0]}
+     * 4: function call literal- e.g. {e1:[4,1,myfunc,1,2,1,0]}
+     * 5: literal value - e.g. {e1:[5,"some value"]}
+     * 6: function expression - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}
      */
     $constructor : function (edef) {
         this.exps = {};

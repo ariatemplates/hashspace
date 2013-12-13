@@ -1,0 +1,16 @@
+##### Template:
+var person = {name : "World"};
+# template hello()
+	Hello {person.name}!
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code
+hello=[
+  n.$text({e1:[2,2,person,"name"]},["Hello ",1,"!"])
+]
