@@ -1,0 +1,40 @@
+var klass=require("hsp/klass"),
+    json=require("hsp/json");
+    
+var PanelController = klass({ 
+  attributes: {
+    "expanded":{type:"boolean",binding:"2-way"},
+    "head":{type:"template"}, 
+    "body":{type:"template"}
+  }
+});
+
+// sample panel template
+# template panel using c:PanelController
+  <div class="panel">
+    <div class="head">
+      <#c.head/>
+    </div>
+    <div class="body">
+      <#c.body/>
+    </div>
+  </div>
+# /template
+
+# template test(m)
+  Sample panel:
+  <#panel>
+    <#body>
+      Some text: {m.p1.text}!
+    </#body>
+  </#panel>
+# /template
+
+var model={
+  p1:{
+    text:"Hello World"
+  }
+}
+
+// display the test template in the #output div
+hsp.display(test(model),"output");

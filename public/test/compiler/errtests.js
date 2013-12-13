@@ -22,11 +22,11 @@ describe('Template compilation errors: ', function () {
 
     var samples = ["text1", "text2", "text3", "if1", "if2", "if3", "if4", "if5", "if6", "if7", "foreach1", "foreach2",
             "foreach3", "element1", "element2", "element3", "element4", "element5", "element6", "element7", "element8",
-            "insert", "template1", "template2", "template3", "template4", "jsexpression1", "jsexpression2"];
-    // samples=["component1"];
+            "insert", "template1", "template2", "template3", "template4", "jsexpression1", "jsexpression2", "component"];
+    //samples=["component"];
     for (var i = 0, sz = samples.length; sz > i; i++) {
         // create one test for each sample
-        it('tests error sample ' + samples[i], testFn.bind({
+        it('tests error sample ('+samples[i]+')', testFn.bind({
             name : samples[i]
         }));
     }

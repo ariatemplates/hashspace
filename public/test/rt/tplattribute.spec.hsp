@@ -1,0 +1,84 @@
+ 
+/*
+ * Copyright 2013 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var hsp=require("hsp/rt"),
+    json=require("hsp/json"),
+    klass=require("hsp/klass");
+
+// sample controller
+PanelController = klass({ 
+  attributes: {
+    "expanded":{type:"boolean",binding:"2-way"},
+    "head":{type:"template"}, 
+    "body":{type:"template"}
+  }
+});
+
+// sample panel template
+# template panel using c:PanelController
+  <div class="panel">
+    <div class="head">
+      // TODO
+    </div>
+    <div class="body">
+      <#c.body/>
+    </div>
+    {if c.footer}
+      <div class="footer">TODO</div>
+    {/if}
+  </div>
+# /template
+
+# template test1(m)
+  Sample panel:
+  <#panel>
+    <#body>
+      {m.text}!
+    </#body>
+  </#panel>
+# /template
+
+
+describe("Template as component attribute", function () {
+  
+  it("tests template attribute passed as sub-element", function() {
+    var m={text:"Hello World"}
+    var n=test1(m);
+    var head=n.querySelector(".panel .head");
+    var body=n.querySelector(".panel .body");
+
+    expect(head).toNotEqual(null);
+    expect(body).toNotEqual(null);
+    expect(body.innerText).toEqual("Hello World! ");
+
+    // dynamic property change
+    json.set(m,"text","Hello folks");
+    hsp.refresh();
+
+    expect(body.innerText).toEqual("Hello folks! ");
+    
+    n.$dispose();
+  });
+
+  // TODO
+  // properly dispose generated properties
+  // test that template attributes can be passed as text attributes
+  // test that default template attribute can be omitted for only one attribute
+  // test errors when sub-template attribute are improperly mixed
+  // test that template attribute can be generated dynamically
+  // test that template attriubte can be created/deleted dynamically
+
+});

@@ -17,7 +17,7 @@
 var hsp=require("hsp/rt"),
     json=require("hsp/json"),
     klass=require("hsp/klass"),
-    cpt=require("hsp/rt/cpt");
+    cpt=require("hsp/rt/cptwrapper");
 
 // transform a string to a number 
 var NBR_DIGITS=/^(\-|\.|\+)?\d+(\.)?(\d+)?$/; 
@@ -134,7 +134,7 @@ var TypedCtl=klass({
     attint:{type:"int",defaultValue:42},
     attfloat:{type:"float",defaultValue:'12.3'},
     attstring:{type:"string",defaultValue:123},
-    attbool:{type:"bool",defaultValue:false}
+    attbool:{type:"boolean",defaultValue:false}
   }
 })
 

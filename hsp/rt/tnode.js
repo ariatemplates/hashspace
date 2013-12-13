@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-var hsp = require("hsp/rt"), klass = require("hsp/klass"), ExpHandler = require("./exphandler");
+var hsp = require("hsp/rt"), 
+    klass = require("hsp/klass"), 
+    ExpHandler = require("./exphandler");
 
 /**
  * Template node - base class of all nodes
@@ -157,7 +159,9 @@ var TNode = klass({
             ni.node = ni.parent.node;
         } else {
             ni.createNode();
-            ni.parent.node.appendChild(ni.node);
+            if (ni.parent.node) {
+                ni.parent.node.appendChild(ni.node);
+            }
 
             if (this.children) {
                 ni.childNodes = [];

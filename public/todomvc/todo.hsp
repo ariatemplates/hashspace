@@ -103,7 +103,7 @@
  */
 # template filterLink(ds, ctl, label, filter)	
 	<li>
-		<a onclick="{ctl.selectFilter(filterCode)}" title="{label}" class="{'selected':ds.filter===filter}">
+		<a onclick="{ctl.selectFilter(filter)}" title="{label}" class="{'selected':ds.filter===filter}">
 			{label}
 		</a>
 	</li>

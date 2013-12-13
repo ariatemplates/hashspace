@@ -15,7 +15,20 @@
  */
 
 // This module contains the $Root and $Insert nodes used to instantiate new templates
-var klass = require("hsp/klass"), doc = require("hsp/document"), json = require("hsp/json"), PropObserver = require("hsp/propobserver"), tn = require("hsp/rt/tnode"), TNode = tn.TNode;
+
+var klass = require("hsp/klass"), 
+		doc = require("hsp/document"), 
+		json = require("hsp/json"), 
+		PropObserver = require("hsp/propobserver"), 
+		tn = require("hsp/rt/tnode"), 
+		TNode = tn.TNode;
+
+var CPT_TYPES={
+	'$CptAttInsert':require("hsp/rt/cptattinsert").$CptAttInsert,
+	'$CptAttribute':require("hsp/rt/cptattribute").$CptAttribute,
+	'$CptComponent':require("hsp/rt/cptcomponent").$CptComponent,
+	'$CptTemplate':require("hsp/rt/cpttemplate").$CptTemplate
+}
 
 var DOCUMENT_FRAGMENT_NODE = 11;
 
@@ -281,7 +294,6 @@ var $InsertNode = klass({
 
     $dispose : function () {
         $RootNode.$dispose.call(this);
-        delete this.tplfunction;
         delete this.exps;
     },
 
@@ -393,8 +405,9 @@ var $CptNode = klass({
      * objects for more info
      * @param {Map} ehcfg map of the different event hanlder used on the element e.g. {"onclick":1} - where 1 is the
      * expression index associated to the event hanlder callback
+     * @param {Array} children list of child node generators - correponding to pseudo components and attribute content
      */
-    $constructor : function (tplPath, exps, attcfg, ehcfg) {
+    $constructor : function (tplPath, exps, attcfg, ehcfg, children) {
         this.tplPath = tplPath;
         this.isInsertNode = true; // to ensure $RootNode is creating expression listeners
         this.isDOMless = true;
@@ -403,18 +416,28 @@ var $CptNode = klass({
         $RootNode.$constructor.call(this);
         this.createAttList(attcfg, ehcfg);
         this.controller = null; // different for each instance
+        this.ctlAttributes = null;// reference to the controller attributes definition - if any
         this._scopeChgeCb = null; // used by component w/o any controller to observe the template scope
+        this.tplAttribute = null; // if this component is a pseudo-cpt used as template attribute this property is
+        													// used to store tpl attribute characteristics
+        if (children && children !== 0) {
+            this.children = children;
+        }
     },
 
-    $dispose : function () {
+    $dispose:function() {
+        this.cleanObjectProperties();
+    },
+
+    cleanObjectProperties : function () {
         if (this._scopeChgeCb) {
             json.unobserve(this.vscope, this._scopeChgeCb);
             this._scopeChgeCb = null;
         }
         $RootNode.$dispose.call(this);
-        this.tplfunction = null;
         this.exps = null;
         this.controller = null;
+        this.ctlAttributes = null;
     },
 
     /**
@@ -424,90 +447,124 @@ var $CptNode = klass({
      * @return {TNode} the new node instance
      */
     createNodeInstance : function (parent) {
-        var ni = TNode.createNodeInstance.call(this, parent);
+    	var ni=null, vscope=parent.vscope, tp=this.tplPath;
 
+      // determine the type of this component: 
+      // - either a template - e.g. <#mytemplate foo="bar"/> 
+      //   -> instance will extend $CptTemplate
+      // - a component with controller - e.g. <#mycpt foo="bar"/>
+      //   -> instance will extend $CptComponent
+      // - a template attribute content - e.g. body in <#mycpt><#body>foobar</#body></#mycpt>
+      //   -> instance will extend $CptAttribute
+      // - or a template attribute insertion - e.g. <#c.body/>
+      //   -> instance will extend $CptAttInsert
+
+      if (tp.length===3) {
+      	// path is composed of 2 parts - sth like "c.body" where c is the controller reference
+      	// check if we are in the attribute insertion case
+      	var rootRef=tp[1], vsr=vscope[rootRef];
+      	if (vsr) {
+      		var att=vsr[tp[2]]; // attribute on the object reference by the root ref in the current scope
+      		if (att.tplAttribute) {
+      			// this instance is a template attribute insertion
+      			ni=this.createCptIntance("$CptAttInsert",parent);
+      			ni.initCpt(tp[1],tp[2]);
+      		}
+      	}
+      } else if (tp.length===2 && parent.getTplAttribute) {
+      	// path is composed of a unique name (e.g. "header" from <#header>) and parent is a component
+      	// check if we are in the attribute content case
+      	var tpa=parent.getTplAttribute(tp[1]);
+
+      	if (tpa) {
+      		ni=this.createCptIntance("$CptAttribute",parent);
+      		ni.initCpt(tp[1]); // name:tp[1]
+      	}
+      }
+
+			if (!ni) {
         // get the template object
-        var tpl = getObject(this.tplPath, ni.vscope);
+        var tpl = getObject(tp, vscope);
 
         // get the expression associated to the insert node
         if (tpl && typeof(tpl) === 'function') {
-            ni.tplfunction = tpl;
-
-            // prepare init arguments
-            var initArgs = {};
-            if (ni.atts) {
-                var att, pvs = ni.parent.vscope;
-                for (var i = 0, sz = ni.atts.length; sz > i; i++) {
-                    att = ni.atts[i];
-                    initArgs[att.name] = att.getValue(ni.eh, pvs, null);
-                }
-            }
-            // call template to create child nodes
-            tpl.call(ni, initArgs);
-
-            if (ni.ctlWrapper) {
-                ni.ctlWrapper.nodeInstance = ni;
-            }
-            if (!ni.controller) {
-                // the component is a template without any controller
-                // so we have to observe the template scope to be able to propagate changes to the parent scope
-                ni._scopeChgeCb = ni.onScopeChange.bind(ni);
-                json.observe(ni.vscope, ni._scopeChgeCb);
-            }
-        } else {
-            console.error("Invalid component reference: " + this.tplPath.slice(1).join("."));
+          if (tpl.controllerConstructor) {
+          	// template uses a controller
+          	ni=this.createCptIntance("$CptComponent",parent);
+          } else {
+          	ni=this.createCptIntance("$CptTemplate",parent);
+          }
+          ni.initCpt(tpl);
         }
-        return ni;
+      }
+/*
+      // load template arguments
+      if (ni.ctlAttributes && ni.children) {
+      	// create childNodes first as they contain component template attributes
+      	
+      	// TODO change parent node for children
+        var nodes = [], n;
+        for (var i = 0, sz = ni.children.length; sz > i; i++) {
+            n = ni.children[i].createNodeInstance(ni);
+
+            if (n.tplAttribute) {
+            	var nm=n.tplAttribute.name;
+            	// register it in the tplAttributes collection
+            	console.log("add:"+nm)
+            	if (!ni.tplAttributes) {
+            		ni.tplAttributes={};
+            	}
+            	ni.tplAttributes[nm]=n;
+            } else {
+            	// TODO
+            }
+        }
+      }
+*/
+      if (!ni) {
+          console.error("Invalid component reference: " + tp.slice(1).join("."));
+      }
+      return ni;
     },
 
     /**
-     * Refresh the node attributes (even if adirty is false)
+     * Create and return an instance node associated to the component type passed as argument
+     * The method dynamically creates a specialized $CptNode object that will be used as prototype
+     * of the instance node - this allows to avoid mixing methods and keep code clear
+     * @param cptType {string} one of the following: $CptAttInsert / $CptAttribute / $CptComponent / $CptTemplate
      */
-    refreshAttributes : function () {
-        var atts = this.atts, att, eh = this.eh, pvs = this.parent.vscope, ctl = this.controller, v;
-        this.adirty = false;
-        if (atts && ctl && ctl.attributes) {
-            // this template has a controller
-            // let's propagate the new attribute values to the controller attributes
-            for (var i = 0, sz = this.atts.length; sz > i; i++) {
-                att = atts[i];
-                // propagate changes for 1- and 2-way bound attributes
-                if (ctl.attributes[att.name]._binding !== 0) {
-                    v = att.getValue(eh, pvs, null);
-                    if ('' + v != '' + ctl[att.name]) {
-                        // values may have different types - this is why we have to check that values are different to
-                        // avoid creating loops
-                        json.set(ctl, att.name, v);
-                    }
-                }
-            }
-        } else if (atts) {
-            // this template has no controller
-            // let's propagate the new attribute values to the current scope
-            var vscope = this.vscope;
-            for (var i = 0, sz = this.atts.length; sz > i; i++) {
-                att = atts[i];
-                json.set(vscope, att.name, att.getValue(eh, pvs, null));
-            }
-        }
+    createCptIntance:function(cptType,parent) {
+    	if (!this.cptTypes) {
+    		this.cptTypes={};
+    	}
+    	var ct=this.cptTypes[cptType];
+    	if (!ct) {
+    		// build the new type
+    		var proto1=CPT_TYPES[cptType];
+    		var proto2 = klass.createObject(this);
+    		for (var k in proto1) {
+    			if (proto1.hasOwnProperty(k)) {
+    				proto2[k]=proto1[k];
+    			}
+    		}
+
+    		ct=proto2;
+    		this.cptTypes[cptType]=ct;
+    	}
+
+    	// create node instance
+    	var ni=klass.createObject(ct);
+    	ni.vscope = parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
+      ni.parent = parent;
+      ni.nodeNS = parent.nodeNS;
+      ni.root = parent.root;
+      ni.root.createExpressionObservers(ni);
+      ni.node = ni.parent.node;
+    	return ni;
     },
 
     /**
-     * Callback called by the json observer when the scope changes This callback is only called when the component
-     * template has no controller Otherwise the cpt node is automatically set dirty and controller attributes will be
-     * refreshed through refresh() - then the controller will directly call onAttributeChange()
-     */
-    onScopeChange : function (changes) {
-        if (changes.constructor === Array) {
-            // cpt observer always return the first element of the array
-            if (changes.length > 0) {
-                this.onAttributeChange(changes[0]);
-            }
-        }
-    },
-
-    /**
-     * Callback called by the controller observer when a controller attribute is changed
+     * Callback called when a controller attribute or a template attriute has changed
      */
     onAttributeChange : function (change) {
         var expIdx = -1;
@@ -526,21 +583,6 @@ var $CptNode = klass({
         }
     },
 
-    /*******************************************************************************************************************
-     * Callback called by the controller observer when the controller raises an event
-     */
-    onEvent : function (evt) {
-        var evh = this.evtHandlers, et = evt.type;
-        if (evh) {
-            for (var i = 0, sz = evh.length; sz > i; i++) {
-                if (evh[i].evtType === et) {
-                    evh[i].executeCb(evt, this.eh, this.parent.vscope);
-                    break;
-                }
-            }
-        }
-    },
-
     /**
      * Refresh the sub-template arguments and the child nodes, if needed
      */
@@ -548,7 +590,9 @@ var $CptNode = klass({
         if (this.adirty) {
             // one of the component attribute has been changed - we need to propagate the change
             // to the template controller
-            this.refreshAttributes();
+            if (this.refreshAttributes) {
+            	this.refreshAttributes();
+            }
             this.adirty = false;
         }
         TNode.refresh.call(this);

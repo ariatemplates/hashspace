@@ -500,12 +500,24 @@ var SyntaxTree = klass({
                     return (type === "end" + blockType); // && name===ename
                 });
                 if (idx2 < 0 || !blocks[idx2]) {
+                    // we didn't find any endelement or endcomponent
                     this._logError("Missing end " + blockType + " </" + ename + ">", b);
                     endFound = true;
                 } else {
-                    if (blocks[idx2].name !== ename) {
-                        this._logError("Missing end " + blockType + " </" + ename + ">", b);
-                        idx2 -= 1; // the current end element/component may be caught by a container element
+                    // check if the end name is correct
+                    var b2=blocks[idx2];
+                    if (b2.type==="endelement") {
+                        if (blocks[idx2].name !== ename) {
+                            this._logError("Missing end " + blockType + " </" + ename + ">", b);
+                            idx2 -= 1; // the current end element/component may be caught by a container element
+                        }
+                    } else {
+                        // endcomponent
+                        var p1=this._getComponentPathAsString(b.ref), p2=this._getComponentPathAsString(b2.ref);
+                        if (p1!==p2) {
+                            this._logError("Missing end component </#" + p1 + ">", b);
+                            idx2 -= 1; // the current end element/component may be caught by a container element
+                        }
                     }
                     endFound = true;
                 }
@@ -513,6 +525,18 @@ var SyntaxTree = klass({
         }
 
         return idx2;
+    },
+
+    /**
+     * Transform a component path into a string - useful for error checking
+     * If path is invalid null is returned
+     * @param {Object} ref the ref structure returned by the PEG parser for components and endcomponents
+     */
+    _getComponentPathAsString:function(ref) {
+        if (ref.category!=="objectref" || !ref.path || !ref.path.length || !ref.path.join) {
+            return null;
+        }
+        return ref.path.join(".");
     },
 
     /**
@@ -532,10 +556,23 @@ var SyntaxTree = klass({
         return idx;
     },
 
+    /**
+     * Capture isolated end elements to raise an error
+     */
     _endelement : function (idx, blocks, out) {
         // only called in case of error
         var b = blocks[idx], nm = b.name;
         this._logError("End element </" + nm + "> does not match any <" + nm + "> element", b);
+        return idx;
+    },
+
+    /**
+     * Capture isolated end components to raise an error
+     */
+    _endcomponent: function (idx, blocks, out) {
+        // only called in case of error
+        var b = blocks[idx], p = this._getComponentPathAsString(b.ref) ;
+        this._logError("End component </#" + p + "> does not match any <#" + p + "> component", b);
         return idx;
     }
 

@@ -13,7 +13,12 @@
  * limitations under the License.
  */
 
-var json = require("hsp/json"), klass = require("hsp/klass");
+var json = require("hsp/json"), 
+    klass = require("hsp/klass");
+
+function identity(v) {
+    return v;
+}
 
 var ATTRIBUTE_TYPES = {
     "int" : {
@@ -30,7 +35,7 @@ var ATTRIBUTE_TYPES = {
             return isNaN(r) ? getDefaultAttValue(attcfg) : r;
         }
     },
-    "bool" : {
+    "boolean" : {
         defaultValue : true,
         convert : function (v, attcfg) {
             return v === true || v === 1 || v === '1' || v === 'true';
@@ -44,15 +49,15 @@ var ATTRIBUTE_TYPES = {
     },
     "object" : {
         defaultValue : null,
-        convert : function (v, attcfg) {
-            return v;
-        }
+        convert : identity
     },
     "callback" : {
         defaultValue : null,
-        convert : function (v) {
-            return v;
-        }
+        convert : identity
+    },
+    "template" : {
+        defaultValue : null,
+        convert : identity
     }
 };
 
@@ -64,12 +69,12 @@ var BINDING_VALUES = {
 
 function getDefaultAttValue (attcfg) {
     // attcfg.type is always set when called from ATTRIBUTE_TYPES.x.convert()
-    var d = attcfg.defaultValue;
-    if (d === undefined) {
-        return ATTRIBUTE_TYPES[attcfg.type].defaultValue;
+    var d = attcfg.defaultValue, tp=attcfg.type;
+    if (d === undefined || tp==="template") {
+        return ATTRIBUTE_TYPES[tp].defaultValue;
     } else {
         // ensure default has the right type
-        return ATTRIBUTE_TYPES[attcfg.type].convert(d, {
+        return ATTRIBUTE_TYPES[tp].convert(d, {
             type : 'string'
         });
     }
@@ -188,25 +193,28 @@ var CptWrapper = klass({
                         // create an even callback function
                         this.createEventFunction(k.slice(2));
                         continue;
-                    }
-                    // determine value
-                    v = '';
-                    if (iAtt !== undefined) {
-                        v = iAtt;
+                    } else if (att.type === "template") {
+                        v={tplAttribute:true};
                     } else {
-                        if (isAttdefObject) {
-                            v = att.defaultValue;
-                            if (v === undefined && hasType) {
-                                v = attType.defaultValue;
-                            }
+                        // determine value
+                        v = '';
+                        if (iAtt !== undefined) {
+                            v = iAtt;
                         } else {
-                            // attribute directly references the default value
-                            v = att; // todo clone objects
+                            if (isAttdefObject) {
+                                v = att.defaultValue;
+                                if (v === undefined && hasType) {
+                                    v = attType.defaultValue;
+                                }
+                            } else {
+                                // attribute directly references the default value
+                                v = att; // todo clone objects
+                            }
                         }
-                    }
-                    // convert value type if applicable
-                    if (hasType) {
-                        v = attType.convert(v, att);
+                        // convert value type if applicable
+                        if (hasType) {
+                            v = attType.convert(v, att);
+                        }
                     }
                     // init the component attribute with the right value
                     cpt[k] = v;

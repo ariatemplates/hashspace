@@ -16,6 +16,7 @@ exports["plaintext"] = function (node, walker) {
  */
 exports["template"] = function (node, walker) {
     var tplName = node.name;
+    var CRLF = '\r\n';
 
     // add template arguments to the scope
     if (node.args) {
@@ -27,9 +28,22 @@ exports["template"] = function (node, walker) {
     }
 
     var tplCode = ["[", walker.walk(node.content, module.exports).join(","), "]"].join("");
+    var globals = walker._globals;
 
-    // reset template scope
+    // generate globals validation statement - e.g. var _c;try {_c=c} catch(e) {};
+    var gs = [], gsz = globals.length;
+    if (gsz) {
+        gs = ["  var _"+globals.join(',_')+";"];
+        for (var i=0;gsz>i;i++) {
+            gs.push( "try {_" + globals[i] + "=" + globals[i] + "} catch(e) {};");
+        }
+        gs.push(CRLF);
+    }
+    var gss=gs.join("");
+
+    // reset template scope and global list
     walker.resetScope();
+    walker.resetGlobalRefs();
 
     walker.templates[tplName] = tplCode;
 
@@ -38,15 +52,13 @@ exports["template"] = function (node, walker) {
         exp = ' =exports.' + tplName;
     }
 
-    var CRLF = '\r\n';
-
     if (node.controller) {
         var p = node.controller.path;
         return ['var ', tplName, exp, ' = require("hsp/rt").template({ctl:[', p[0], ',', walker.each(p, argAsString),
-                '],ref:"', node.controller.ref, '"}, function(n){', CRLF, '  return ', tplCode, ';', CRLF, '});', CRLF].join("");
+                '],ref:"', node.controller.ref, '"}, function(n){', CRLF, gss, '  return ', tplCode, ';', CRLF, '});', CRLF].join("");
     } else {
         return ['var ', tplName, exp, ' = require("hsp/rt").template([', walker.each(node.args, argAsString),
-                '], function(n){', CRLF, '  return ', tplCode, ';', CRLF, '});', CRLF].join("");
+                '], function(n){', CRLF, gss, '  return ', tplCode, ';', CRLF, '});', CRLF].join("");
     }
 };
 
@@ -214,7 +226,9 @@ exports["component"] = function (node, walker) {
     var s = elementOrComponent(node, walker);
     var p = node.ref.path;
 
-    return ['n.cpt([', p[0], ',"', p.join('","'), '"],', s, ')'].join('');
+    walker.addGlobalRef(p[0]);
+
+    return ['n.cpt([_', p[0], ',"', p.join('","'), '"],', s, ')'].join('');
 };
 
 /**

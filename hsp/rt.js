@@ -16,7 +16,13 @@
 
 // Hash Space runtime
 require("hsp/es5");
-var klass = require("hsp/klass"), doc = require("hsp/document"), $root = require("hsp/rt/$root"), $RootNode = $root.$RootNode, $InsertNode = $root.$InsertNode, $CptNode = $root.$CptNode, cpt = require("hsp/rt/cpt");
+var klass = require("hsp/klass"), 
+    doc = require("hsp/document"), 
+    $root = require("hsp/rt/$root"), 
+    $RootNode = $root.$RootNode, 
+    $InsertNode = $root.$InsertNode, 
+    $CptNode = $root.$CptNode, 
+    cpt = require("hsp/rt/cptwrapper");
 
 var NodeGenerator = klass({
     /**
@@ -139,8 +145,9 @@ module.exports.template = function (arg, contentFunction) {
             args.push(null);
         }
     } else {
+        // this template is associated to a controller
         hasController = true;
-        // arg is a controller - let's create an instance and add its reference to the scope
+        // arg is a controller reference - let's check if it is valid
         Ctl = $root.getObject(arg.ctl);
 
         var err = null;
@@ -166,14 +173,19 @@ module.exports.template = function (arg, contentFunction) {
             } catch (ex) {
                 // TODO: add template and file name in error description
                 if (ex.constructor === ReferenceError) {
-                    throw "Invalid component reference: " + (ex.message || ex.description);
+                    throw "Invalid reference: " + (ex.message || ex.description);
                 } else {
                     throw ex;
                 }
             }
         }
         if (hasController) {
-            cw = new cpt.CptWrapper(Ctl); // new observer
+            cw = new cpt.CptWrapper(Ctl); // will also create a new controller instance
+            if (this.isCptComponent) {
+                // set the nodeInstance reference on the component
+                cw.nodeInstance = this;
+                cw.cpt.nodeInstance = this; // TODO remove
+            }
             args[1] = cw.cpt;
         } else {
             for (var i = 0; sz > i; i++) {
@@ -186,6 +198,7 @@ module.exports.template = function (arg, contentFunction) {
         return ng.process(this, args, cw, cptInitArgs);
     };
     f.isTemplate = true;
+    f.controllerConstructor = Ctl;
     return f;
 };
 

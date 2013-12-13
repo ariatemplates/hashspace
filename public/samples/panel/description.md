@@ -1,0 +1,5 @@
+Panel component
+
+[#output]
+
+[TODO]

@@ -110,6 +110,14 @@ module.exports = [{
                         src : "pagination.hsp",
                         main : true
                     }]
+        }, {
+            title : "Component with template attributes: Panel",
+            folder : "panel",
+            description : "description.md",
+            files : [{
+                        src : "panel.hsp",
+                        main : true
+                    }]
         }
 // TODO add component with events
 

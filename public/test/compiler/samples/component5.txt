@@ -1,0 +1,80 @@
+##### Template:
+# template test()
+  <#panel>
+    <#body class="foo">
+      Hello World!
+    </#body>
+  </#panel>
+# /template
+
+##### Parsed Tree:
+[
+  {
+    "type": "template", "name": "test",
+    "content": [
+      {
+        "type": "component",
+        "ref": { "category": "objectref", "path": ["panel"], "code": "panel"},
+        "closed": false,
+        "attributes": [],
+        "line": 2,
+        "column": 3
+      },
+      {
+        "type": "component",
+        "ref": { "category": "objectref", "path": ["body"],"code": "body"},
+        "closed": false,
+        "attributes": [{"type":"attribute","name": "class","value":[{"type": "text","value": "foo"}],"line": 3,"column": 12}],
+        "line": 3,"column": 5
+      },
+      {
+        "type": "text", "value": "Hello World! ", "line": 4, "column": 7
+      },
+      {
+        "type": "endcomponent",
+        "ref": {"category": "objectref","path": ["body"],"code": "body"},"line": 5,"column": 5
+      },
+      {
+        "type": "endcomponent",
+        "ref": {"category": "objectref","path": ["panel"],"code": "panel"},"line": 6,"column": 3
+      }
+    ],
+    "closed": true,
+    "endLine": 7
+  }
+]
+
+##### Syntax Tree:
+[
+  {
+    "type": "template","name": "test","args": [],"export": false,"startLine": 1,"endLine": 7,
+    "content": [
+      {
+        "type": "component","closed": false,"ref": {"category": "objectref","path": ["panel"],"code": "panel"},
+        "attributes": [],
+        "content": [
+          {
+            "type": "component","closed": false,"ref": {"category": "objectref","path": ["body"],"code": "body"},
+            "attributes": [
+              {"type": "text","value": "foo","name": "class"}
+            ],
+            "content": [
+              {"type": "text","value": "Hello World! "}
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+
+
+##### Template Code:
+test=[
+  n.cpt([_panel,"panel"],0,0,0,[
+    n.cpt([_body,"body"],0,{"class":"foo"},0,[
+      n.$text(0,["Hello World! "])
+    ])
+  ])
+]
+

@@ -195,7 +195,9 @@ var TemplateWalker = klass({
     $extends : TreeWalker,
     $constructor : function () {
         this.templates = {}; // used by processors to store intermediate values in order to ease testing
+        this.globals={};     // global validation code for each template - used for unit testing
         this.errors = [];
+        this.resetGlobalRefs();
         this.resetScope();
     },
 
@@ -215,6 +217,21 @@ var TemplateWalker = klass({
         this.errors.push(desc);
     },
 
+    // reset the list of global variables that have been found since the last reset
+    resetGlobalRefs : function () {
+        this._globals=[];
+        this._globalKeys={};
+    },
+
+    // add a global reference (e.g. "foo") to the current _globals list
+    addGlobalRef : function (ref) {
+        if (!this._globalKeys[ref]) {
+            this._globals.push(ref);
+            this._globalKeys[ref]=true;
+        }
+    },
+
+    // reset the scope variables that are used to determine if a variable name is in the current scope
     resetScope : function () {
         this._scopes = [{}];
         this._scope = this._scopes[0];

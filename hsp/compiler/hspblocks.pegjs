@@ -71,7 +71,7 @@ TemplateContent "template content" // TODO: CSSClassExpression
                 / IfBlock / ElseIfBlock / ElseBlock / EndIfBlock 
                 / ForeachBlock / EndForeachBlock
                 / HTMLElement / EndHTMLElement
-                / HspComponent
+                / HspComponent / EndHspComponent
                 / ExpressionBlock
                 / InvalidHTMLElement
                 / InvalidBlock)* 
@@ -161,6 +161,10 @@ EndHTMLElement // TODO support comments inside Element
 HspComponent
   = "<#" ref:JSObjectRef  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
   {return {type:"component", ref:ref, closed:(end!==""), attributes:atts, line:line, column:column}}
+
+EndHspComponent
+  = "</#" ref:JSObjectRef S? ">" EOS?
+  {return {type:"endcomponent", ref:ref, line:line, column:column}}
 
 InvalidHTMLElement
   = "<" code:[^\r\n]* EOL

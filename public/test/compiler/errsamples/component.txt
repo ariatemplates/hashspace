@@ -1,0 +1,18 @@
+##### Template:
+# template test(person)
+    <#lib.panel title="Some text">
+        foo bar
+    </#lib.pan>
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Missing end component </#lib.panel>",
+    "line": 2,
+    "column": 5
+  },
+  {
+    "description": "End component </#lib.pan> does not match any <#lib.pan> component"
+  }
+]
