@@ -115,6 +115,18 @@ var hello8 = require("hsp/rt").template(["d"], function(n){
   return [n.$if({e1:[4,1,compare,1,2,1,3],e2:[1,2,"d","firstName"],e3:[1,2,"d","lastName"]},1,[n.$text(0,["OK "])])];
 });
 
+/***
+# template hello9()
+    {globalValueInt}
+# /template
+***/
+var globalValueInt=0;
+var hello9 = require("hsp/rt").template([], function(n) {
+    return [
+        n.$text({e1:[2,1,globalValueInt]},["",1])
+    ];
+});
+
 
 describe("Text Nodes", function () {
     var TEXT_NODE = 3;
@@ -249,6 +261,14 @@ describe("Text Nodes", function () {
         var n = hello6();
 
         expect(n.node.firstChild.nodeValue).toEqual("blah blah");
+        n.$dispose();
+    });
+
+    it("tests an expression referencing a global integer value", function () {
+        globalValueInt = 0;
+        var n = hello9();
+
+        expect(n.node.firstChild.nodeValue).toEqual("0");
         n.$dispose();
     });
 
