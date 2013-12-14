@@ -30,9 +30,11 @@ PanelController = klass({
 // sample panel template
 # template panel using c:PanelController
   <div class="panel">
-    <div class="head">
-      // TODO
-    </div>
+    {if c.head}
+      <div class="head">
+        <#c.head/>
+      </div>
+    {/if}
     <div class="body">
       <#c.body/>
     </div>
@@ -51,6 +53,16 @@ PanelController = klass({
   </#panel>
 # /template
 
+# template test2()
+  Sample panel:
+  <#panel body="Hello World!"/>
+# /template
+
+# template test3(m)
+  Sample panel:
+  <#panel body="{m.text}!"/>
+# /template
+
 
 describe("Template as component attribute", function () {
   
@@ -60,7 +72,7 @@ describe("Template as component attribute", function () {
     var head=n.querySelector(".panel .head");
     var body=n.querySelector(".panel .body");
 
-    expect(head).toNotEqual(null);
+    expect(head).toEqual(null);
     expect(body).toNotEqual(null);
     expect(body.innerText).toEqual("Hello World! ");
 
@@ -69,6 +81,37 @@ describe("Template as component attribute", function () {
     hsp.refresh();
 
     expect(body.innerText).toEqual("Hello folks! ");
+    
+    n.$dispose();
+  });
+
+  it("tests template attribute passed as static text attribute", function() {
+    var n=test2();
+    var head=n.querySelector(".panel .head");
+    var body=n.querySelector(".panel .body");
+
+    expect(head).toEqual(null);
+    expect(body).toNotEqual(null);
+    expect(body.innerText).toEqual("Hello World!");
+
+    n.$dispose();
+  });
+
+  it("tests template attribute passed as dynamic text attribute", function() {
+    var m={text:"Hello World"}
+    var n=test3(m);
+    var head=n.querySelector(".panel .head");
+    var body=n.querySelector(".panel .body");
+
+    expect(head).toEqual(null);
+    expect(body).toNotEqual(null);
+    expect(body.innerText).toEqual("Hello World!");
+
+    // dynamic property change
+    json.set(m,"text","Hello folks");
+    hsp.refresh();
+
+    expect(body.innerText).toEqual("Hello folks!");
     
     n.$dispose();
   });

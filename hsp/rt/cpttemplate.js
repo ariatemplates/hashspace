@@ -51,7 +51,7 @@ module.exports.$CptTemplate = {
    * Refresh the node attributes (even if adirty is false)
    */
   refreshAttributes : function () {
-      var atts = this.atts, att, eh = this.eh, pvs = this.parent.vscope, ctl = this.controller, v;
+      var atts = this.atts, att, eh = this.eh, pvs = this.parent.vscope;
       this.adirty = false;
       if (atts) {
           // this template has no controller
@@ -63,4 +63,4 @@ module.exports.$CptTemplate = {
           }
       }
   }
-}
+};

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-var hsp = require("hsp/rt"), 
-    klass = require("hsp/klass"), 
-    ExpHandler = require("./exphandler");
+var hsp = require("hsp/rt");
+var klass = require("hsp/klass");
+var ExpHandler = require("./exphandler");
 
 /**
  * Template node - base class of all nodes

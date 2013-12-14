@@ -1,4 +1,5 @@
 var json = require("hsp/json");
+var $TextNode = require("hsp/rt/$text");
 
 /**
  * $CptComponent contains methods that will be added to the prototype of all
@@ -36,7 +37,8 @@ module.exports.$CptComponent = {
       if (this.tplAttributes) {
         var ctl=this.controller;
         for (var k in this.tplAttributes) {
-          ctl[k].node=this.tplAttributes[k];
+          // set the template attribute value on the controller
+          json.set(ctl,k,{node:this.tplAttributes[k]});
         }
       }
     }
@@ -48,14 +50,32 @@ module.exports.$CptComponent = {
   $dispose:function() {
     this.ctlAttributes=null;
     this.cleanObjectProperties();
+    if (this.tplAttributes) {
+      for (var k in this.tplAttributes) {
+        this.tplAttributes[k].$dispose();
+      }
+    }
+    if (this._attGenerators) {
+      for (var k in this._attGenerators) {
+        this._attGenerators[k].$dispose();
+      }
+    }
   },
 
   loadCptAttributes : function () {
+    // determine the possible template attribute names
+    var tpAttNames={}, ca=this.ctlAttributes;
+    for (var k in ca) {
+      if (ca[k].type==="template") {
+        tpAttNames[k]=true; // k is an a valid template attribute name
+      }
+    }
+
     if (this.children) {
       // create childNodes first as they contain component template attributes
       
       // Analyze the child nodes t
-      var nodes = [], n;
+      var n;
       var cnode=this.node;
       this.node=null;
       for (var i = 0, sz = this.children.length; sz > i; i++) {
@@ -64,7 +84,6 @@ module.exports.$CptComponent = {
           if (n.tplAttribute) {
             var nm=n.tplAttribute.name;
             // register it in the tplAttributes collection
-            console.log("add:"+nm)
             if (!this.tplAttributes) {
               this.tplAttributes={};
             }
@@ -74,6 +93,49 @@ module.exports.$CptComponent = {
           }
       }
       this.node=cnode;
+    }
+
+    // Analyze node attributes to see if a template attribute is passsed as text attribute
+    var atts=this.atts, att, nm;
+    if (atts) {
+      for (var k in atts) {
+        att=atts[k];
+        nm=att.name;
+        if (tpAttNames[nm]) {
+          // nm is a template attribute passed as text attribute
+          if (this.tplAttributes && this.tplAttributes[nm]) {
+            // already defined: raise an error
+            console.error("Component attribute '" + nm + "' is defined multiple times - please check");
+          } else {
+            // add it to the tplAttributes collection
+            
+            // create new tpl Attribute Text Node
+            if (!att.generator) {
+              var gen;
+              if (att.value) {
+                // static value
+                gen = new $TextNode(0,[""+att.value]);
+              } else {
+                // dynamic value using expressions
+                gen = new $TextNode(this.exps,atts[k].textcfg);
+              }
+              if (!this._attGenerators) {
+                this._attGenerators = [];
+              }
+              this._attGenerators.push(gen);
+              att.generator = gen;
+            }
+            var n=att.generator.createNodeInstance(this);
+
+            // add it to the collection
+            if (!this.tplAttributes) {
+              this.tplAttributes={};
+            }
+            this.tplAttributes[nm]=n;
+          }
+
+        }
+      }
     }
   },
 
@@ -111,23 +173,23 @@ module.exports.$CptComponent = {
    * Refresh the node attributes (even if adirty is false)
    */
   refreshAttributes : function () {
-      var atts = this.atts, att, eh = this.eh, pvs = this.parent.vscope, ctl = this.controller, v;
-      this.adirty = false;
-      if (atts && ctl && ctl.attributes) {
-          // this template has a controller
-          // let's propagate the new attribute values to the controller attributes
-          for (var i = 0, sz = this.atts.length; sz > i; i++) {
-              att = atts[i];
-              // propagate changes for 1- and 2-way bound attributes
-              if (ctl.attributes[att.name]._binding !== 0) {
-                  v = att.getValue(eh, pvs, null);
-                  if ('' + v != '' + ctl[att.name]) {
-                      // values may have different types - this is why we have to check that values are different to
-                      // avoid creating loops
-                      json.set(ctl, att.name, v);
-                  }
-              }
+    var atts = this.atts, att, eh = this.eh, pvs = this.parent.vscope, ctl = this.controller, v;
+    this.adirty = false;
+    if (atts && ctl && ctl.attributes) {
+      // this template has a controller
+      // let's propagate the new attribute values to the controller attributes
+      for (var i = 0, sz = this.atts.length; sz > i; i++) {
+        att = atts[i];
+        // propagate changes for 1- and 2-way bound attributes
+        if (ctl.attributes[att.name]._binding !== 0) {
+          v = att.getValue(eh, pvs, null);
+          if ('' + v != '' + ctl[att.name]) {
+            // values may have different types - this is why we have to check that values are different to
+            // avoid creating loops
+            json.set(ctl, att.name, v);
           }
-      } 
+        }
+      }
+    }
   }
-}
+};

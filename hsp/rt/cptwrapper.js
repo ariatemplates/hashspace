@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-var json = require("hsp/json"), 
-    klass = require("hsp/klass");
+var json = require("hsp/json");
+var klass = require("hsp/klass");
 
 function identity(v) {
     return v;
@@ -163,72 +163,73 @@ var CptWrapper = klass({
      * @param {Map} initAttributes map of initial value set by the component host
      */
     init : function (initAttributes) {
-        if (!this.initialized) {
-            this.initialized = true;
-            var cpt = this.cpt, atts = cpt.attributes;
-            if (!cpt) {
-                return; // just in case
-            }
-
-            if (atts) {
-                if (!initAttributes) {
-                    initAttributes = {};
-                }
-
-                // initialize attributes
-                var iAtt, att, isAttdefObject, hasType, v, attType;
-                for (var k in atts) {
-                    att = atts[k];
-                    iAtt = initAttributes[k];
-                    isAttdefObject = (typeof(atts[k]) === 'object');
-                    hasType = (isAttdefObject && atts[k].type);
-                    if (hasType) {
-                        attType = ATTRIBUTE_TYPES[att.type];
-                        if (!attType) {
-                            console.error("Invalid component attribute type: " + att.type);
-                            attType = ATTRIBUTE_TYPES['string'];
-                        }
-                    }
-                    if (att.type === "callback") {
-                        // create an even callback function
-                        this.createEventFunction(k.slice(2));
-                        continue;
-                    } else if (att.type === "template") {
-                        v={tplAttribute:true};
-                    } else {
-                        // determine value
-                        v = '';
-                        if (iAtt !== undefined) {
-                            v = iAtt;
-                        } else {
-                            if (isAttdefObject) {
-                                v = att.defaultValue;
-                                if (v === undefined && hasType) {
-                                    v = attType.defaultValue;
-                                }
-                            } else {
-                                // attribute directly references the default value
-                                v = att; // todo clone objects
-                            }
-                        }
-                        // convert value type if applicable
-                        if (hasType) {
-                            v = attType.convert(v, att);
-                        }
-                    }
-                    // init the component attribute with the right value
-                    cpt[k] = v;
-                }
-            }
-
-            if (cpt.init) {
-                // call init if defined on the component
-                cpt.init();
-            }
-
-            this._cptChgeCb = this.onCptChange.bind(this);
-            json.observe(cpt, this._cptChgeCb);
+        if (this.initialized) {
+            return;
         }
+        this.initialized = true;
+        var cpt = this.cpt, atts = cpt.attributes;
+        if (!cpt) {
+            return; // just in case
+        }
+
+        if (atts) {
+            if (!initAttributes) {
+                initAttributes = {};
+            }
+
+            // initialize attributes
+            var iAtt, att, isAttdefObject, hasType, v, attType;
+            for (var k in atts) {
+                att = atts[k];
+                iAtt = initAttributes[k];
+                isAttdefObject = (typeof(atts[k]) === 'object');
+                hasType = (isAttdefObject && atts[k].type);
+                if (hasType) {
+                    attType = ATTRIBUTE_TYPES[att.type];
+                    if (!attType) {
+                        console.error("Invalid component attribute type: " + att.type);
+                        attType = ATTRIBUTE_TYPES['string'];
+                    }
+                }
+                if (att.type === "callback") {
+                    // create an even callback function
+                    this.createEventFunction(k.slice(2));
+                    continue;
+                } else if (att.type === "template") {
+                    v=null; //{tplAttribute:true};
+                } else {
+                    // determine value
+                    v = '';
+                    if (iAtt !== undefined) {
+                        v = iAtt;
+                    } else {
+                        if (isAttdefObject) {
+                            v = att.defaultValue;
+                            if (v === undefined && hasType) {
+                                v = attType.defaultValue;
+                            }
+                        } else {
+                            // attribute directly references the default value
+                            v = att; // todo clone objects
+                        }
+                    }
+                    // convert value type if applicable
+                    if (hasType) {
+                        v = attType.convert(v, att);
+                    }
+                }
+                // init the component attribute with the right value
+                cpt[k] = v;
+            }
+        }
+
+        if (cpt.init) {
+            // call init if defined on the component
+            cpt.init();
+        }
+
+        this._cptChgeCb = this.onCptChange.bind(this);
+        json.observe(cpt, this._cptChgeCb);
     },
 
     /**

@@ -355,6 +355,14 @@ svg {
   font-size: 15px;
 }
 
+.panel {
+  padding:5px 0 5px 0;
+}
+
+.panel .head {
+  color:#FF4DBE;
+}
+
 // ---------------------------------------------------------------------
 // Pagination classes from bootstrap
 

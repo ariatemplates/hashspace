@@ -3,7 +3,6 @@ var klass=require("hsp/klass"),
     
 var PanelController = klass({ 
   attributes: {
-    "expanded":{type:"boolean",binding:"2-way"},
     "head":{type:"template"}, 
     "body":{type:"template"}
   }
@@ -12,9 +11,9 @@ var PanelController = klass({
 // sample panel template
 # template panel using c:PanelController
   <div class="panel">
-    <div class="head">
-      <#c.head/>
-    </div>
+    {if c.head}
+      <div class="head"> <#c.head/> </div>
+    {/if}
     <div class="body">
       <#c.body/>
     </div>
@@ -22,18 +21,23 @@ var PanelController = klass({
 # /template
 
 # template test(m)
-  Sample panel:
+  <#panel body="Panel A (headless): {m.text}"/>
+
+  <#panel head="Panel B">
+    <#body>{m.text}! <a onclick="{update(10)}">Update model</a></#body>
+  </#panel>
+
   <#panel>
-    <#body>
-      Some text: {m.p1.text}!
-    </#body>
+    <#head>Panel C: <a onclick="{update(1)}">Update model</a></#head>
+    <#body>{m.text}!</#body>
   </#panel>
 # /template
 
-var model={
-  p1:{
-    text:"Hello World"
-  }
+var model={text:"Hello World"}, count=0;
+
+function update(incr) {
+  count+=incr;
+  json.set(model,"text","Hello World ("+count+")");
 }
 
 // display the test template in the #output div

@@ -16,13 +16,13 @@
 
 // Hash Space runtime
 require("hsp/es5");
-var klass = require("hsp/klass"), 
-    doc = require("hsp/document"), 
-    $root = require("hsp/rt/$root"), 
-    $RootNode = $root.$RootNode, 
-    $InsertNode = $root.$InsertNode, 
-    $CptNode = $root.$CptNode, 
-    cpt = require("hsp/rt/cptwrapper");
+var klass = require("hsp/klass");
+var doc = require("hsp/document");
+var $root = require("hsp/rt/$root");
+var $RootNode = $root.$RootNode;
+var $InsertNode = $root.$InsertNode;
+var $CptNode = $root.$CptNode;
+var cpt = require("hsp/rt/cptwrapper");
 
 var NodeGenerator = klass({
     /**

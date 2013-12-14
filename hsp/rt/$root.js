@@ -16,19 +16,19 @@
 
 // This module contains the $Root and $Insert nodes used to instantiate new templates
 
-var klass = require("hsp/klass"), 
-		doc = require("hsp/document"), 
-		json = require("hsp/json"), 
-		PropObserver = require("hsp/propobserver"), 
-		tn = require("hsp/rt/tnode"), 
-		TNode = tn.TNode;
+var klass = require("hsp/klass");
+var doc = require("hsp/document");
+var json = require("hsp/json");
+var PropObserver = require("hsp/propobserver");
+var tn = require("hsp/rt/tnode");
+var TNode = tn.TNode;
 
 var CPT_TYPES={
-	'$CptAttInsert':require("hsp/rt/cptattinsert").$CptAttInsert,
-	'$CptAttribute':require("hsp/rt/cptattribute").$CptAttribute,
-	'$CptComponent':require("hsp/rt/cptcomponent").$CptComponent,
-	'$CptTemplate':require("hsp/rt/cpttemplate").$CptTemplate
-}
+    '$CptAttInsert':require("hsp/rt/cptattinsert").$CptAttInsert,
+    '$CptAttribute':require("hsp/rt/cptattribute").$CptAttribute,
+    '$CptComponent':require("hsp/rt/cptcomponent").$CptComponent,
+    '$CptTemplate':require("hsp/rt/cpttemplate").$CptTemplate
+};
 
 var DOCUMENT_FRAGMENT_NODE = 11;
 
@@ -419,7 +419,7 @@ var $CptNode = klass({
         this.ctlAttributes = null;// reference to the controller attributes definition - if any
         this._scopeChgeCb = null; // used by component w/o any controller to observe the template scope
         this.tplAttribute = null; // if this component is a pseudo-cpt used as template attribute this property is
-        													// used to store tpl attribute characteristics
+                                  // used to store tpl attribute characteristics
         if (children && children !== 0) {
             this.children = children;
         }
@@ -447,7 +447,7 @@ var $CptNode = klass({
      * @return {TNode} the new node instance
      */
     createNodeInstance : function (parent) {
-    	var ni=null, vscope=parent.vscope, tp=this.tplPath;
+      var ni=null, vscope=parent.vscope, tp=this.tplPath;
 
       // determine the type of this component: 
       // - either a template - e.g. <#mytemplate foo="bar"/> 
@@ -460,67 +460,42 @@ var $CptNode = klass({
       //   -> instance will extend $CptAttInsert
 
       if (tp.length===3) {
-      	// path is composed of 2 parts - sth like "c.body" where c is the controller reference
-      	// check if we are in the attribute insertion case
-      	var rootRef=tp[1], vsr=vscope[rootRef];
-      	if (vsr) {
-      		var att=vsr[tp[2]]; // attribute on the object reference by the root ref in the current scope
-      		if (att.tplAttribute) {
-      			// this instance is a template attribute insertion
-      			ni=this.createCptIntance("$CptAttInsert",parent);
-      			ni.initCpt(tp[1],tp[2]);
-      		}
-      	}
+        // path is composed of 2 parts - sth like "c.body" where c is the controller reference
+        // check if we are in the attribute insertion case
+        var rootRef=tp[1], vsr=vscope[rootRef];
+        if (vsr && vsr.attributes) {
+            var att=vsr.attributes[tp[2]]; // attribute on the object reference by the root ref in the current scope
+            if (att && att.type==="template") {
+                // this instance is a template attribute insertion
+                ni=this.createCptIntance("$CptAttInsert",parent);
+                ni.initCpt(tp[1],tp[2]);
+            }
+        }
       } else if (tp.length===2 && parent.getTplAttribute) {
-      	// path is composed of a unique name (e.g. "header" from <#header>) and parent is a component
-      	// check if we are in the attribute content case
-      	var tpa=parent.getTplAttribute(tp[1]);
+        // path is composed of a unique name (e.g. "header" from <#header>) and parent is a component
+        // check if we are in the attribute content case
+        var tpa=parent.getTplAttribute(tp[1]);
 
-      	if (tpa) {
-      		ni=this.createCptIntance("$CptAttribute",parent);
-      		ni.initCpt(tp[1]); // name:tp[1]
-      	}
+        if (tpa) {
+            ni=this.createCptIntance("$CptAttribute",parent);
+            ni.initCpt(tp[1]); // name:tp[1]
+        }
       }
-
-			if (!ni) {
+      if (!ni) {
         // get the template object
         var tpl = getObject(tp, vscope);
 
         // get the expression associated to the insert node
         if (tpl && typeof(tpl) === 'function') {
           if (tpl.controllerConstructor) {
-          	// template uses a controller
-          	ni=this.createCptIntance("$CptComponent",parent);
+            // template uses a controller
+            ni=this.createCptIntance("$CptComponent",parent);
           } else {
-          	ni=this.createCptIntance("$CptTemplate",parent);
+            ni=this.createCptIntance("$CptTemplate",parent);
           }
           ni.initCpt(tpl);
         }
       }
-/*
-      // load template arguments
-      if (ni.ctlAttributes && ni.children) {
-      	// create childNodes first as they contain component template attributes
-      	
-      	// TODO change parent node for children
-        var nodes = [], n;
-        for (var i = 0, sz = ni.children.length; sz > i; i++) {
-            n = ni.children[i].createNodeInstance(ni);
-
-            if (n.tplAttribute) {
-            	var nm=n.tplAttribute.name;
-            	// register it in the tplAttributes collection
-            	console.log("add:"+nm)
-            	if (!ni.tplAttributes) {
-            		ni.tplAttributes={};
-            	}
-            	ni.tplAttributes[nm]=n;
-            } else {
-            	// TODO
-            }
-        }
-      }
-*/
       if (!ni) {
           console.error("Invalid component reference: " + tp.slice(1).join("."));
       }
@@ -534,33 +509,33 @@ var $CptNode = klass({
      * @param cptType {string} one of the following: $CptAttInsert / $CptAttribute / $CptComponent / $CptTemplate
      */
     createCptIntance:function(cptType,parent) {
-    	if (!this.cptTypes) {
-    		this.cptTypes={};
-    	}
-    	var ct=this.cptTypes[cptType];
-    	if (!ct) {
-    		// build the new type
-    		var proto1=CPT_TYPES[cptType];
-    		var proto2 = klass.createObject(this);
-    		for (var k in proto1) {
-    			if (proto1.hasOwnProperty(k)) {
-    				proto2[k]=proto1[k];
-    			}
-    		}
+        if (!this.cptTypes) {
+            this.cptTypes={};
+        }
+        var ct=this.cptTypes[cptType];
+        if (!ct) {
+            // build the new type
+            var proto1=CPT_TYPES[cptType];
+            var proto2 = klass.createObject(this);
+            for (var k in proto1) {
+                if (proto1.hasOwnProperty(k)) {
+                proto2[k]=proto1[k];
+            }
+        }
 
-    		ct=proto2;
-    		this.cptTypes[cptType]=ct;
-    	}
+        ct=proto2;
+            this.cptTypes[cptType]=ct;
+        }
 
-    	// create node instance
-    	var ni=klass.createObject(ct);
-    	ni.vscope = parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
-      ni.parent = parent;
-      ni.nodeNS = parent.nodeNS;
-      ni.root = parent.root;
-      ni.root.createExpressionObservers(ni);
-      ni.node = ni.parent.node;
-    	return ni;
+        // create node instance
+        var ni=klass.createObject(ct);
+        ni.vscope = parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
+        ni.parent = parent;
+        ni.nodeNS = parent.nodeNS;
+        ni.root = parent.root;
+        ni.root.createExpressionObservers(ni);
+        ni.node = ni.parent.node;
+        return ni;
     },
 
     /**
@@ -591,7 +566,7 @@ var $CptNode = klass({
             // one of the component attribute has been changed - we need to propagate the change
             // to the template controller
             if (this.refreshAttributes) {
-            	this.refreshAttributes();
+                this.refreshAttributes();
             }
             this.adirty = false;
         }

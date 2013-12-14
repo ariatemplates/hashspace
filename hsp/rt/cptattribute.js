@@ -9,18 +9,16 @@ var doc = require("hsp/document");
 module.exports.$CptAttribute = {
   initCpt:function(name) {
     //nothing to do
-    console.log("$CptAttribute init: "+name)
     this.tplAttribute={name:name};
     this.node=doc.createDocumentFragment();
 
     // create sub-nodes
     if (this.children) {
-    	this.childNodes=[];
-    	for (var i = 0, sz = this.children.length; sz > i; i++) {
-	      this.childNodes[i] = this.children[i].createNodeInstance(this);
-	 	}
+      this.childNodes=[];
+      for (var i = 0, sz = this.children.length; sz > i; i++) {
+        this.childNodes[i] = this.children[i].createNodeInstance(this);
+      }
     }
-    
   },
 
   /**
@@ -29,4 +27,4 @@ module.exports.$CptAttribute = {
   $dispose:function() {
     this.cleanObjectProperties();
   }
-}
+};
