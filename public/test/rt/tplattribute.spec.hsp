@@ -23,7 +23,7 @@ PanelController = klass({
   attributes: {
     "expanded":{type:"boolean",binding:"2-way"},
     "head":{type:"template"}, 
-    "body":{type:"template"}
+    "body":{type:"template", defaultContent:true}
   }
 });
 
@@ -61,6 +61,11 @@ PanelController = klass({
 # template test3(m)
   Sample panel:
   <#panel body="{m.text}!"/>
+# /template
+
+# template test4(m)
+  Sample panel:
+  <#panel>{m.text}!</#panel>
 # /template
 
 
@@ -116,10 +121,25 @@ describe("Template as component attribute", function () {
     n.$dispose();
   });
 
+  it("tests default template attribute passed as node content", function() {
+    var m={text:"Hello World"}
+    var n=test4(m);
+    var body=n.querySelector(".panel .body");
+
+    expect(body).toNotEqual(null);
+    expect(body.innerText).toEqual("Hello World!");
+
+    // dynamic property change
+    json.set(m,"text","Hello folks");
+    hsp.refresh();
+
+    expect(body.innerText).toEqual("Hello folks!");
+    
+    n.$dispose();
+  });
+
   // TODO
   // properly dispose generated properties
-  // test that template attributes can be passed as text attributes
-  // test that default template attribute can be omitted for only one attribute
   // test errors when sub-template attribute are improperly mixed
   // test that template attribute can be generated dynamically
   // test that template attriubte can be created/deleted dynamically

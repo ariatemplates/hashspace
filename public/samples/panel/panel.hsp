@@ -4,7 +4,7 @@ var klass=require("hsp/klass"),
 var PanelController = klass({ 
   attributes: {
     "head":{type:"template"}, 
-    "body":{type:"template"}
+    "body":{type:"template",defaultContent:true}
   }
 });
 
@@ -23,13 +23,13 @@ var PanelController = klass({
 # template test(m)
   <#panel body="Panel A (headless): {m.text}"/>
 
-  <#panel head="Panel B">
-    <#body>{m.text}! <a onclick="{update(10)}">Update model</a></#body>
+  <#panel head="Panel B ({m.text}!)">
+    {m.text}! <a onclick="{update(1)}">Update model</a>
   </#panel>
 
   <#panel>
-    <#head>Panel C: <a onclick="{update(1)}">Update model</a></#head>
-    <#body>{m.text}!</#body>
+    <#head>Panel C: <a onclick="{update(10)}">Update model</a></#head>
+    <#body>{m.text}! <a onclick="{update(100)}">Update model</a></#body>
   </#panel>
 # /template
 

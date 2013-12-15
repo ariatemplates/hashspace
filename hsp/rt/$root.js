@@ -537,7 +537,7 @@ var $CptNode = klass({
         ni.node = ni.parent.node;
         return ni;
     },
-
+    
     /**
      * Callback called when a controller attribute or a template attriute has changed
      */

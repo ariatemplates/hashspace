@@ -1,5 +1,7 @@
 var json = require("hsp/json");
 var $TextNode = require("hsp/rt/$text");
+var TNode = require("hsp/rt/tnode").TNode;
+var doc = require("hsp/document");
 
 /**
  * $CptComponent contains methods that will be added to the prototype of all
@@ -62,26 +64,42 @@ module.exports.$CptComponent = {
     }
   },
 
+  /**
+   * Load the component sub-nodes that correspond to template attributes
+   */
   loadCptAttributes : function () {
     // determine the possible template attribute names
-    var tpAttNames={}, ca=this.ctlAttributes;
+    var tpAttNames={}, ca=this.ctlAttributes, defaultTplAtt=null, lastTplAtt=null, count=0;
     for (var k in ca) {
       if (ca[k].type==="template") {
-        tpAttNames[k]=true; // k is an a valid template attribute name
+        // k is defined in the controller attributes collection
+        // so k is a valid template attribute name
+        tpAttNames[k]=true;
+        count++;
+        if (ca[k].defaultContent) {
+          defaultTplAtt=k;
+        }
+        lastTplAtt=k;
       }
+    }
+
+    // if there is only one template attribute it will be automatically considered as default
+    if (!defaultTplAtt && count===1) {
+      defaultTplAtt=lastTplAtt;
     }
 
     if (this.children) {
       // create childNodes first as they contain component template attributes
       
-      // Analyze the child nodes t
-      var n;
+      // Analyze the child nodes
+      var n, tplAttFound=false, cn=[];
       var cnode=this.node;
       this.node=null;
       for (var i = 0, sz = this.children.length; sz > i; i++) {
           n = this.children[i].createNodeInstance(this);
 
           if (n.tplAttribute) {
+            tplAttFound=true;
             var nm=n.tplAttribute.name;
             // register it in the tplAttributes collection
             if (!this.tplAttributes) {
@@ -89,13 +107,44 @@ module.exports.$CptComponent = {
             }
             this.tplAttributes[nm]=n;
           } else {
-            // TODO
+            // ignore this node (could be a $if or $foreach)
           }
+          cn.push(n);
       }
       this.node=cnode;
+
+      // if there is a default template and no explicit tpl attributes found let's consider
+      // the content as associated to the default template
+      if (!tplAttFound) {
+        if (!defaultTplAtt) {
+          console.error("Component content cannot be associated to any component attribute");
+        } else {
+          // create a TNode to gather all chil nodes and register it in the tplAttributes collection
+          var t=new TNode(0);
+          t.isDOMless=true; // to minimize initialization (cf. TNode)
+
+          var ni=t.createNodeInstance(this);
+
+          // use a doc fragment to gather all node instance nodes
+          ni.node=doc.createDocumentFragment();
+          ni.isDOMless=false;
+          t.childNodes=cn;
+
+          // register all child nodes as child of the new TNode
+          for (var k in cn) {
+            cn[k].parent=ni;
+            ni.node.appendChild(cn[k].node);
+          }
+
+          // register the node in the tplAttributes collection
+          this.tplAttributes={};
+          this.tplAttributes[defaultTplAtt]=ni;
+        }
+      }
+      
     }
 
-    // Analyze node attributes to see if a template attribute is passsed as text attribute
+    // Analyze node attributes to see if a template attribute is passed as text attribute
     var atts=this.atts, att, nm;
     if (atts) {
       for (var k in atts) {
@@ -133,7 +182,6 @@ module.exports.$CptComponent = {
             }
             this.tplAttributes[nm]=n;
           }
-
         }
       }
     }
