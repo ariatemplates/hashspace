@@ -2,7 +2,7 @@ var parser = require("./parser");
 var klass = require("../klass");
 var TreeWalker = require("./treeWalker").TreeWalker;
 var processors = require("./processors");
-var jsv = require("../jsvalidator/validator");
+var jsv = require("./jsvalidator/validator");
 
 /**
  * Header added to all generated JS file

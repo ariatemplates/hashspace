@@ -118,6 +118,14 @@ module.exports = [{
                         src : "panel.hsp",
                         main : true
                     }]
+        }, {
+            title : "Gestures",
+            folder : "gestures",
+            description : "description.md",
+            files : [{
+                        src : "gestures.hsp",
+                        main : true
+                    }]
         }
 // TODO add component with events
 

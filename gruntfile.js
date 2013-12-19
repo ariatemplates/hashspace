@@ -22,7 +22,7 @@ module.exports = function (grunt) {
         },
         src: [
           'public/test/compiler/*.js',
-          'public/test/jsvalidator/*.js'
+          'public/test/compiler/jsvalidator/*.js',
         ]
       }
     },
