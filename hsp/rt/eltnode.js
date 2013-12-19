@@ -15,7 +15,11 @@
  */
 
 // Element Node used for any standard HTML element (i.e. having attributes and child elements)
-var klass = require("hsp/klass"), doc = require("hsp/document"), TNode = require("hsp/rt/tnode").TNode, hsp = require("hsp/rt");
+var klass = require("hsp/klass");
+var doc = require("hsp/document");
+var TNode = require("hsp/rt/tnode").TNode;
+var hsp = require("hsp/rt");
+var gestures = require("hsp/gestures/gestures");
 
 /**
  * Generic element node Add attribute support on top of TNode - used for div, spans, ul, li, h1, etc
@@ -42,6 +46,7 @@ var EltNode = klass({
         if (children && children !== 0) {
             this.children = children;
         }
+        this.gesturesEventHandlers = null;
     },
 
     $dispose : function () {
@@ -60,6 +65,10 @@ var EltNode = klass({
                     nd.detachEvent("on" + evh[i].evtType, this._attachEventFn);
                 }
             }
+        }
+        if (this.gesturesEventHandlers) {
+            this.gesturesEventHandlers.$dispose();
+            this.gesturesEventHandlers = null;
         }
         this._attachEventFn = null;
         TNode.$dispose.call(this);
@@ -99,11 +108,18 @@ var EltNode = klass({
             if (evh) {
                 for (var i = 0, sz = evh.length; sz > i; i++) {
                     hnd = evh[i];
-                    evts[hnd.evtType] = true;
-                    if (addEL) {
-                        nd.addEventListener(hnd.evtType, this, false);
+                    if (gestures.isGesture(hnd.evtType)) {
+                        if (this.gesturesEventHandlers == null) {
+                            this.gesturesEventHandlers = new gestures.Gestures();
+                        }
+                        this.gesturesEventHandlers.startGesture(hnd.evtType, nd, this);
                     } else {
-                        nd.attachEvent("on" + hnd.evtType, this._attachEventFn);
+                        evts[hnd.evtType] = true;
+                        if (addEL) {
+                            nd.addEventListener(hnd.evtType, this, false);
+                        } else {
+                            nd.attachEvent("on" + hnd.evtType, this._attachEventFn);
+                        }
                     }
                 }
             }

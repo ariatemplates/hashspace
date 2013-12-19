@@ -1,0 +1,21 @@
+var json=require("hsp/json");
+
+# template gestures(msgList)
+    <div class="touchboard" style="height:200px; background: #27AAFC;text-align:center;" ontap="{addMsg(event)}" ontapstart="{addMsg(event)}" ontapcancel="{addMsg(event)}">
+    	<h1>TOUCH ME</h1>
+    </div>
+    <div class="msglist">
+    	{foreach msg in msgList}
+    		<div>{msg}</div>
+    	{/foreach}
+    </div>
+# /template
+
+var eventLog = [];
+
+function addMsg(evt) {
+	json.push(eventLog, evt.duration + "ms - " + evt.type + " from " + evt.target.tagName);
+}
+
+// display the template in the #output div
+hsp.display(gestures(eventLog),"output");
