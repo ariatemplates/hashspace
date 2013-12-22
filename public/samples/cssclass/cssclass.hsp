@@ -29,4 +29,4 @@ function setCategory(cat) {
 }
 
 // display the template in the #output div
-hsp.display(message(msg),"output");
+message(msg).render("output");

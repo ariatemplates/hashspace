@@ -223,7 +223,7 @@ describe("ForEach Node", function () {
         var n = test1("index", ds);
 
         var elt = doc.createElement("div");
-        n.appendToDOM(elt);
+        n.render(elt);
 
         expect(test1SpanNodeValue(elt, 1)).toEqual("index 1: Marge (5 chars)");
         expect(test1SpanNodeValue(elt, 3)).toEqual("index 3: Lisa (4 chars)");
@@ -257,7 +257,7 @@ describe("ForEach Node", function () {
         var n = test1("index", ds);
 
         var elt = doc.createElement("div");
-        n.appendToDOM(elt);
+        n.render(elt);
 
         n.childNodes[0].moveItem(3, 1); // Lisa should replace Marge
         hsp.refresh();
@@ -338,7 +338,7 @@ describe("ForEach Node", function () {
         var n = test1("index", ds);
 
         var elt = doc.createElement("div");
-        n.appendToDOM(elt);
+        n.render(elt);
 
         // new array: ["Omer", "Bart", "Lisa", "Marge"]
         json.splice(ds, 1, 0, "Bart", "Lisa");
@@ -374,7 +374,7 @@ describe("ForEach Node", function () {
         var n = test1("index", ds);
 
         var elt = doc.createElement("div");
-        n.appendToDOM(elt);
+        n.render(elt);
 
         // new item: ["Bart", "Lisa", "Marge", "Maggie"]
         json.shift(ds);
@@ -526,13 +526,13 @@ describe("ForEach Node", function () {
         n.$dispose();
     });
 
-    it("tests node appendToDOM", function () {
+    it("tests node render", function () {
         var ds = ["oranges"];
         var n = test3(ds);
 
-        // simulate appendToDOM with another doc fragment
+        // simulate render with another doc fragment
         var elt = doc.createElement("div");
-        n.appendToDOM(elt);
+        n.render(elt);
 
         expect(elt.childNodes.length).toEqual(2 + 5);
 
@@ -547,9 +547,9 @@ describe("ForEach Node", function () {
         var ds = ["AA", "BB"];
         var n = test4(ds);
 
-        // simulate appendToDOM with another doc fragment
+        // simulate render with another doc fragment
         var elt = doc.createElement("div");
-        n.appendToDOM(elt);
+        n.render(elt);
 
         var str1 = "# foreach+# item+# if+First +# /if+AA+# /item+# item+# if+# if+ and last +# /if+# /if+BB+# /item+# /foreach";
         var str2 = "# foreach+# item+# if+First +# /if+AA+# /item+# item+# if+# if+ then +# /if+# /if+CC+# /item+# item+# if+# if+ and last +# /if+# /if+BB+# /item+# /foreach";
@@ -569,9 +569,9 @@ describe("ForEach Node", function () {
         var ds = ["AA", "BB"];
         var n = test4(ds);
 
-        // simulate appendToDOM with another doc fragment
+        // simulate render with another doc fragment
         var elt = doc.createElement("div");
-        n.appendToDOM(elt);
+        n.render(elt);
 
         var str1 = "# foreach+# item+# if+First +# /if+AA+# /item+# item+# if+# if+ and last +# /if+# /if+BB+# /item+# /foreach";
         var str2 = "# foreach+# item+# if+First +# /if+AA+# /item+# item+# if+# if+ then +# /if+# /if+BB+# /item+# item+# if+# if+ and last +# /if+# /if+CC+# /item+# /foreach";

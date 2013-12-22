@@ -34,4 +34,4 @@ var persons=[
 ]
 
 // display the template in the #output div
-hsp.display(personList(persons),"output");
+personList(persons).render("output");

@@ -91,4 +91,4 @@ function getNumber(s) {
 # /template
 
 // display the template in the #output div
-hsp.display(test({value1:123}),"output");
+test({value1:123}).render("output");

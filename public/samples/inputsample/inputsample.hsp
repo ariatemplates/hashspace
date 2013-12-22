@@ -29,4 +29,4 @@
 var d={comment:"edit me!", isChecked:false, selection:"B"}
 
 // display the template in the #output div
-hsp.display(inputSample(d),"output");
+inputSample(d).render("output");

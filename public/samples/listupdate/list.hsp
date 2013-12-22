@@ -56,5 +56,5 @@ function changeAll() {
 }
 
 // display the template in the #output div
-hsp.display(list(persons),"output");
+list(persons).render("output");
 

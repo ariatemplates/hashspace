@@ -36,4 +36,4 @@ var NumberTester=klass({
 });
 
 // display the template in the #output div
-hsp.display(test(new NumberTester()),"output");
+test(new NumberTester()).render("output");

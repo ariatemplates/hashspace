@@ -18,4 +18,4 @@ function addMsg(evt) {
 }
 
 // display the template in the #output div
-hsp.display(gestures(eventLog),"output");
+gestures(eventLog).render("output");

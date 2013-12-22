@@ -41,4 +41,4 @@ function update(incr) {
 }
 
 // display the test template in the #output div
-hsp.display(test(model),"output");
+test(model).render("output");

@@ -113,18 +113,18 @@ refresh.addTemplate = function (tpl) {
 module.exports.display = function (tplResult, container, replace) {
     // TODO - Validate argument types / implement nice error messages
     var c = container;
-    if (typeof(container === "string")) {
+    if (typeof(container) === "string") {
         c = doc.getElementById(container);
     }
     if (c && tplResult) {
-        if (tplResult.appendToDOM === undefined || tplResult.appendToDOM.constructor !== Function) {
+        if (tplResult.render === undefined || tplResult.render.constructor !== Function) {
             throw new Error("[hsp.display] Invalid argument: tplResult is not a valid template result");
         } else {
             if (replace !== false) {
                 // remove previous content
                 c.innerHTML = "";
             }
-            tplResult.appendToDOM(c);
+            tplResult.render(c);
         }
     }
 };

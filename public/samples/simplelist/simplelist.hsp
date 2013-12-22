@@ -32,5 +32,5 @@ var d={
 }
 
 // display the template in the #output div
-hsp.display(people(d),"output");
+people(d).render("output");
 

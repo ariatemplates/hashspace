@@ -26,4 +26,4 @@ var Timer=klass({
 # /template
 
 // display the test template in the #output div
-hsp.display(test(),"output");
+test().render("output");

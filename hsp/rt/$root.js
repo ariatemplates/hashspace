@@ -199,18 +199,26 @@ var $RootNode = klass({
 
     /**
      * Append this root element to the DOM
-     * @param {DOMElement} domElt the DOM element to which the template will be appended through the appendChild
+     * @param {DOMElement|String} domElt the DOM element to which the template will be appended through the appendChild
      * DOMElement method
      */
-    appendToDOM : function (domElt) {
+    render : function (domElt) {
+        var c = domElt; // container
+        if (typeof(c) === "string") {
+            c = doc.getElementById(c);
+            if (c === null) {
+                console.error("[hashspace] Template cannot be rendered - Invalid element id: "+domElt);
+                return;
+            }
+        }
         var df = this.node; // should be a doc fragment
         if (df.nodeType !== DOCUMENT_FRAGMENT_NODE) {
             console.log("[hashspace] root element can only be appended once in the DOM");
         } else {
-            domElt.appendChild(df);
+            c.appendChild(df);
 
             // recursively updates all reference to the previous doc fragment node
-            this.replaceNodeBy(df, domElt);
+            this.replaceNodeBy(df, c);
         }
     },
 

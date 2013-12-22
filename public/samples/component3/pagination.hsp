@@ -84,4 +84,4 @@ function updateSelection(newPageNumber) {
 }
 
 // display the test template in the #output div
-hsp.display(paginationTest(model),"output");
+paginationTest(model).render("output");

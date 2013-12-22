@@ -19,4 +19,4 @@ var Timer=klass({
 });
 
 // display the template in the #output div
-hsp.display(elapsedTime(new Timer()),"output");
+elapsedTime(new Timer()).render("output");

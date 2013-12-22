@@ -74,4 +74,4 @@ var ClockController=klass({
 # /template
 
 // display the template in the #output div
-hsp.display(demo(),"output");
+demo().render("output");
