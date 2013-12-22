@@ -156,6 +156,7 @@ var EltNode = klass({
                 if (tp === "checkbox") {
                     v = this.node.checked;
                 }
+                this._lastValue = v; // to avoid refreshing the field and move the cursor
                 exp.setValue(this.vscope, v);
                 hsp.refresh(); // to force synchronous change
             }
@@ -261,7 +262,10 @@ var EltNode = klass({
                     nd.checked = !nd.checked;
                 }
             } else {
-                nd.value = v1;
+                if (this._lastValue !== v1) {
+                    nd.value = v1;
+                }
+                this._lastValue = null;
             }
         }
 
