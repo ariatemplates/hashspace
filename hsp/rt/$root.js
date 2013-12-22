@@ -201,8 +201,11 @@ var $RootNode = klass({
      * Append this root element to the DOM
      * @param {DOMElement|String} domElt the DOM element to which the template will be appended through the appendChild
      * DOMElement method
+     * @param {string|DOMElement} container the HTML container element or its id
+     * @param {Boolean} replace if true, the template result will replace the element content - otherwise it will be
+     * appended (default: true)
      */
-    render : function (domElt) {
+    render : function (domElt, replace) {
         var c = domElt; // container
         if (typeof(c) === "string") {
             c = doc.getElementById(c);
@@ -215,6 +218,10 @@ var $RootNode = klass({
         if (df.nodeType !== DOCUMENT_FRAGMENT_NODE) {
             console.log("[hashspace] root element can only be appended once in the DOM");
         } else {
+            if (replace !== false) {
+                // remove previous content
+                c.innerHTML = "";
+            }
             c.appendChild(df);
 
             // recursively updates all reference to the previous doc fragment node

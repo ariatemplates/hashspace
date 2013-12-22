@@ -17,7 +17,6 @@
 // Hash Space runtime
 require("hsp/es5");
 var klass = require("hsp/klass");
-var doc = require("hsp/document");
 var $root = require("hsp/rt/$root");
 var $RootNode = $root.$RootNode;
 var $InsertNode = $root.$InsertNode;
@@ -112,19 +111,11 @@ refresh.addTemplate = function (tpl) {
  */
 module.exports.display = function (tplResult, container, replace) {
     // TODO - Validate argument types / implement nice error messages
-    var c = container;
-    if (typeof(container) === "string") {
-        c = doc.getElementById(container);
-    }
-    if (c && tplResult) {
+    if (container && tplResult) {
         if (tplResult.render === undefined || tplResult.render.constructor !== Function) {
             throw new Error("[hsp.display] Invalid argument: tplResult is not a valid template result");
         } else {
-            if (replace !== false) {
-                // remove previous content
-                c.innerHTML = "";
-            }
-            tplResult.render(c);
+            tplResult.render(container, replace);
         }
     }
 };
