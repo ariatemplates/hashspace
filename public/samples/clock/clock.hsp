@@ -11,7 +11,7 @@ var ClockController=klass({
 	attributes:{
 		"city":{type:"string",binding:"1-way",defaultValue:"PAR"}
 	},
-	init:function() {
+	$init:function() {
 		this.minuteMarkers=[]; // list of minute markers
 		for (var i=0;60>i;i++) {
 			this.minuteMarkers[i]={major:(i%5===0)};

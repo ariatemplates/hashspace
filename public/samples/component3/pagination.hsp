@@ -26,7 +26,7 @@ var Pagination=klass({
       "activepage":{type:"int", defaultValue:0, binding:"2-way"},
       "onpageselect":{type:"callback"}
     },
-    init:function() {
+    $init:function() {
        rebuildInternalModel(this); 
     },
     selectPage: function(newPageNo) {

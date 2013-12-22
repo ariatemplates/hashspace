@@ -153,7 +153,11 @@ var CptWrapper = klass({
             json.unobserve(this.cpt, this._cptChgeCb);
             this._cptChgeCb = null;
         }
-        this.cpt = null;
+        var c=this.cpt;
+        if (c && c.$dispose) {
+            c.$dispose();
+            this.cpt = null;
+        }
         this.nodeInstance = null;
     },
 
@@ -223,9 +227,9 @@ var CptWrapper = klass({
             }
         }
 
-        if (cpt.init) {
+        if (cpt.$init) {
             // call init if defined on the component
-            cpt.init();
+            cpt.$init();
         }
 
         this._cptChgeCb = this.onCptChange.bind(this);

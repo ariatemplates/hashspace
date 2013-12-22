@@ -8,7 +8,7 @@ var Cpt1 = klass({
     max:{type:"int",defaultValue:1000,binding:"1-way"},
     defaultvalue:{type:"int",defaultValue:0,binding:"none"} // used in case of error
   },
-  init:function() {
+  $init:function() {
     this.onMaxChangeCount=0;
     this.onDefaultValueChangeCount=0;
   },

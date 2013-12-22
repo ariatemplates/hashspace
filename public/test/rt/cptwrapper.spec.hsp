@@ -41,10 +41,14 @@ lib.NbrField = klass({
     "onafterreset":{type:"callback"}
   },
 
-  init:function() { 
+  $init:function() { 
     this.internalValue=this.value;  // bound to value
     this.isValid=true;              // bound to internalValue, min and max
     this.checkValidity();
+  },
+
+  $dispose:function() {
+    this.isValid=null;
   },
 
   /** 
@@ -244,8 +248,10 @@ describe("Component Nodes", function () {
     expect(textInput.value).toEqual('0');
     expect(n.controller.isValid).toEqual(true);
 
+    var c = n.controller;
     n.$dispose();
     expect(n.controller).toEqual(null);
+    expect(c.isValid).toEqual(null);
   });
 
 it("tests a component inside another template", function() {

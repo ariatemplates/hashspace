@@ -13,7 +13,7 @@ var NbrField = klass({
   /**
    * init method called when all attributes have been initialized
    */
-  init:function() { 
+  $init:function() { 
     // set and init internal properties
     this.internalValue=''+this.value; // type:string but bound to value
     this.isValid=true;                // bound to internalValue, min and max

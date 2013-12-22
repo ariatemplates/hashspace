@@ -6,12 +6,16 @@ var Timer=klass({
     attributes: {
       initvalue:{type:"int",defaultValue:0,binding:"none"}
     },
-    init:function() {
-        this.secondsElapsed=this.initvalue;
-        setInterval(this.tick.bind(this),1000);
+    $init:function() {
+      this.secondsElapsed=this.initvalue;
+      this._intervalId=setInterval(this.tick.bind(this),1000);
+    },
+    $dispose:function() {
+      clearInterval(this._intervalId);
     },
     tick:function() {
-        json.set(this,"secondsElapsed",this.secondsElapsed+1);
+      console.log("tick");
+      json.set(this,"secondsElapsed",this.secondsElapsed+1);
     }
 });
 
