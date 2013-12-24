@@ -105,7 +105,7 @@ exports.compile = function (template, fileName, includeSyntaxTree, bypassJSvalid
         }
     }
 
-    res.code += getErrorScript(res.errors);
+    res.code += getErrorScript(res.errors, fileName);
 
     if (includeSyntaxTree !== true) {
         res.syntaxTree = null;
@@ -118,10 +118,10 @@ exports.compile = function (template, fileName, includeSyntaxTree, bypassJSvalid
  * Generate an error script to include in the template compiled script in order to show errors in the browser when the
  * script is loaded
  */
-function getErrorScript (errors) {
+function getErrorScript (errors, fileName) {
     var r = '';
     if (errors && errors.length) {
-        r = ['\r\nrequire("hsp/rt").logErrors(__filename,', JSON.stringify(errors, null), ');\r\n'].join("");
+        r = ['\r\nrequire("hsp/rt").logErrors("', fileName, '",', JSON.stringify(errors, null), ');\r\n'].join("");
     }
     return r;
 }

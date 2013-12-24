@@ -13,16 +13,20 @@
     "pegjs": "0.7.0"
   },
   "devDependencies": {
-    "grunt-verifylowercase": "0.2.0",
-    "grunt-leading-indent": "0.1.0",
-    "grunt": "0.4.0",
-    "grunt-contrib-jshint": "0.6.3",
-    "grunt-contrib-watch": "0.5.3",
+    "grunt-verifylowercase": "~0.2.0",
+    "grunt-leading-indent": "~0.1.0",
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "0.7.2",
+    "grunt-contrib-watch": "~0.5.3",
     "express": "3.0.6",
     "request": "2.12.0",
-    "grunt-mocha-test": "~0.7.0"
+    "grunt-mocha-test": "~0.7.0",
+    "grunt-browserify": "~1.3.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-copy": "~0.4.1"
   },
   "scripts": {
-    "test": "grunt test"
+    "test": "grunt test",
+    "prepublish": "grunt package"
   }
 }
