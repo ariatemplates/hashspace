@@ -130,9 +130,9 @@ var $ForEachNode = klass({
                 this.createChildNodeInstances(col, df);
                 this.node.insertBefore(df, this.node2);
 
-                // update the node reference on all child nodes
+                // update the node reference recursively on all child nodes
                 for (var i = 0, sz = this.childNodes.length; sz > i; i++) {
-                    this.childNodes[i].node = this.node;
+                    this.childNodes[i].replaceNodeBy(df, this.node);
                 }
 
                 // TODO delete and recreate foreach items on a doc fragment
