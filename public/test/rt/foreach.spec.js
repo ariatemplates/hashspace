@@ -183,6 +183,21 @@ var test5 = require("hsp/rt").template(["persons"], function(n) {
     ];
 });
 
+/***
+# template test6(itemsList)
+    {foreach item in itemsList}
+        {if item.edit}
+            <input type="text" value="{item.value}"></input>
+        {else}
+            <span>{item.value}</span>
+        {/if}
+    {/foreach}
+# /template
+***/
+var test6 = require("hsp/rt").template(["itemsList"], function(n){
+    return [n.$foreach({e1:[1,1,"itemsList"]},"item_key","item",0,1,[n.$if({e1:[1,2,"item","edit"]},1,[n.elt("input",{e1:[1,2,"item","value"]},{"type":"text","value":["",1]},0)],[n.elt("span",0,0,0,[n.$text({e1:[1,2,"item","value"]},["",1])])])])];
+});
+
 describe("ForEach Node", function () {
     function test1Count (arrayLength) {
         // return number of items produced by test 1
@@ -627,4 +642,32 @@ describe("ForEach Node", function () {
         expect(n.node.childNodes.length).toEqual(2);
     });
 
+    it("tests with independent if child statement", function() {
+        var ds = [];
+        var n = test6(ds);
+
+        var inputNodes = n.querySelectorAll("input");
+        var spanNodes = n.querySelectorAll("span");
+        expect(inputNodes.length).toEqual(0);
+        expect(spanNodes.length).toEqual(0);
+        
+        json.push(ds, {value:"AA", edit: true});
+        hsp.refresh();
+        
+        inputNodes = n.querySelectorAll("input");
+        spanNodes = n.querySelectorAll("span");
+        expect(inputNodes.length).toEqual(1);
+        expect(inputNodes[0].value).toEqual("AA");
+        expect(spanNodes.length).toEqual(0);
+        
+        json.set(ds[0], "edit", false);
+        hsp.refresh();
+        
+        inputNodes = n.querySelectorAll("input");
+        spanNodes = n.querySelectorAll("span");
+        expect(inputNodes.length).toEqual(0);
+        expect(spanNodes.length).toEqual(1);
+        expect(spanNodes[0].innerHTML).toEqual("AA");
+    });
+    
 });
