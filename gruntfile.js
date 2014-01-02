@@ -34,6 +34,73 @@ module.exports = function (grunt) {
     watch: {
       files: ['*.*'],
       tasks: []
+    },
+    copy: {
+      fs_module: {
+        files: [{
+          src: 'hsp/compiler/hspblocks.pegjs',
+          dest: 'build/tmp/fs.js'
+        }],
+        options: {
+          processContent: function (content, srcpath) {
+            return "exports.readFileSync=function(){return " + JSON.stringify(content) + "}";
+          }
+        }
+      }
+    },
+    browserify: {
+      runtime: {
+        files: {
+          'build/hashspace.js': ['hsp/rt.js']
+        },
+        options: {
+          aliasMappings: [
+            {
+              cwd: "hsp",
+              src: ['*.js'],
+              dest: 'hsp'
+            },
+            {
+              cwd: "hsp/rt",
+              src: ['*.js'],
+              dest: 'hsp/rt'
+            },
+            {
+              cwd: "hsp/gestures",
+              src: ['*.js'],
+              dest: 'hsp/gestures'
+            }
+          ]
+        }
+      },
+      compiler: {
+        files: {
+          'build/hashspace.compiler.js': ['hsp/compiler/compiler.js']
+        },
+        options: {
+          aliasMappings: [
+            {
+              cwd: "hsp/compiler",
+              src: ['compiler.js'],
+              dest: 'hsp'
+            }
+          ],
+          shim: {
+            fs: {
+              path: 'build/tmp/fs.js',
+              exports: null
+            }
+          }
+        }
+      }
+    },
+    uglify: {
+      hsp: {
+        files: {
+          'build/hashspace.min.js': ['build/hashspace.js'],
+          'build/hashspace.compiler.min.js': ['build/hashspace.compiler.js']
+        }
+      }
     }
   });
 
@@ -42,8 +109,12 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-verifylowercase');
   grunt.loadNpmTasks('grunt-leading-indent');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadTasks('hsp/grunt');
 
   grunt.registerTask('test', ['checkStyle','mochaTest']);
+  grunt.registerTask('package', ['copy', 'browserify', 'uglify']);
   grunt.registerTask('default', ['hspserver','watch']);
 };
