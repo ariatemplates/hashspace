@@ -301,4 +301,26 @@ describe("Sub-template insertion", function () {
 
         n.$dispose();
     });
+    
+    it("tests scope root data change", function () {
+        var dm = {
+            attributes : {
+                value : "some text"
+            }
+        };
+        var n = test6(dm);
+
+        var input = n.node.childNodes[1];
+        expect(input.value).toEqual("some text");
+
+        // change the whole attributes object, which is a root
+        // element in the scope of the field2 template
+        json.set(dm, "attributes", {
+            value : "new text"
+        });
+        hsp.refresh();
+
+        expect(input.value).toEqual("new text");
+        n.$dispose();
+    });
 });

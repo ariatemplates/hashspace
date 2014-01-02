@@ -123,14 +123,14 @@ var DataRefExpr = klass({
     $constructor : function (desc) {
         var etype = desc[0], pl = desc[1], isLiteral = (etype === 2 || etype === 4), root, path = [], ppl; // pl: path
                                                                                                             // length
-        if (pl === 1 && !isLiteral) {
+        if (!isLiteral) {
             // e.g. {e1:[0,1,"item_key"]} >> this is a scope variable
             root = "#scope";
-            path = [desc[2]];
-            ppl = 1;
+            path = desc.slice(2, pl + 2);
+            ppl = pl;
         } else {
             root = desc[2];
-            path = desc.slice(3, desc[1] + 2);
+            path = desc.slice(3, pl + 2);
             ppl = pl - 1;
         }
 
@@ -265,6 +265,7 @@ var FuncRefExpr = klass({
 
         if (ppl === 1) {
             // short path for std use case
+            scope = v;
             v = v[this.path[0]];
             if (v === undefined) {
                 return defvalue;
@@ -337,13 +338,7 @@ var FuncRefExpr = klass({
             vscope["event"] = evt1;
         }
 
-        var ctxt = null;
-        if (!this.isLiteral) {
-            // TODO change to support long paths
-            ctxt = vscope[this.root];
-        }
-
-        return fn.apply(ctxt, cbargs);
+        return fn.apply(v.scope, cbargs);
     },
 
     /**
