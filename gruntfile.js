@@ -29,11 +29,20 @@ module.exports = function (grunt) {
     karma: {
       options: {
         frameworks: ['jasmine', 'commonjs'],
+        plugins: [
+          // these plugins will be require() by Karma
+          'karma-jasmine',
+          'karma-commonjs',
+          'karma-chrome-launcher',
+          'karma-firefox-launcher',
+          'karma-sauce-launcher',
+          require('./karma-hsp-preprocessor')
+        ],
         files: [
           'hsp/**/*.js',
           'public/test/lib/fireDomEvent.js',
           'public/test/lib/type.js',
-          'public/test/**/*.spec.js'
+          'public/test/**/*.spec.*'
         ],
         exclude: [
           'hsp/grunt/**/*.js',
@@ -43,7 +52,8 @@ module.exports = function (grunt) {
         preprocessors: {
           'hsp/**/*.js': ['commonjs'],
           'public/test/lib/*.js': ['commonjs'],
-          'public/test/**/*.spec.js': ['commonjs']
+          'public/test/**/*.spec.js': ['commonjs'],
+          'public/test/**/*.spec.hsp': ['hsp', 'commonjs']
         },
         commonjsPreprocessor: {
           modulesRoot: '.'
