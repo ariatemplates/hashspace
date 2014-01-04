@@ -1,5 +1,4 @@
-var klass=require("hsp/klass"),
-    json=require("hsp/json");
+var klass=require("hsp/klass"), $set=require("hsp/$set");
 
 // Component controller
 var NbrField = klass({ 
@@ -25,7 +24,7 @@ var NbrField = klass({
    */
   onValueChange:function(newValue,oldValue) {
     var n=getNumber(newValue);
-    json.set(this,"internalValue",n!==null? n : 0); 
+    $set(this,"internalValue",n!==null? n : 0); 
     this.checkValidity(); 
   },
   onMinChange:function(newValue,oldValue) {
@@ -40,7 +39,7 @@ var NbrField = klass({
    */ 
   onInternalValueChange:function(newValue,oldValue) { 
     // validate and expose as attribute if ok
-    json.set(this,"value",this.checkValidity()? parseInt(this.internalValue,10) : this.defaultvalue); 
+    $set(this,"value",this.checkValidity()? parseInt(this.internalValue,10) : this.defaultvalue); 
   }, 
   /** 
    * Check if the internal value is valid and update the isValid property accordingly 
@@ -48,7 +47,7 @@ var NbrField = klass({
   checkValidity:function() { 
     var n=getNumber(this.internalValue); 
     var v=(n===null)? false : (n>=this.min) && (n<=this.max); 
-    json.set(this,"isValid",v); 
+    $set(this,"isValid",v); 
     return v; 
   },
   /**
@@ -56,8 +55,8 @@ var NbrField = klass({
    */
   resetField:function() {
     var v1=this.value, v2=this.defaultvalue;
-    json.set(this,"internalValue",v2);
-    json.set(this,"value",v2);
+    $set(this,"internalValue",v2);
+    $set(this,"value",v2);
     this.checkValidity();
     this.onreset({oldValue:v1,newValue:v2}); // call back event listener
   }

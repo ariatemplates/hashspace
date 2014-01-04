@@ -1,4 +1,4 @@
-var json=require("hsp/json");
+var $set=require("hsp/$set");
 
 # template message(msg)
     // onselectstart: prevent double-click selection on a elements
@@ -21,11 +21,11 @@ var msg={
 }
 
 function toggleUrgency() {
-    json.set(msg,"urgency",msg.urgency? 0 : 1);
+    $set(msg,"urgency",msg.urgency? 0 : 1);
 }
 
 function setCategory(cat) {
-    json.set(msg,"category",cat);
+    $set(msg,"category",cat);
 }
 
 // display the template in the #output div

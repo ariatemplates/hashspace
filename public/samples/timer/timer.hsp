@@ -1,5 +1,4 @@
-var klass=require("hsp/klass"),
-    json=require("hsp/json");
+var klass=require("hsp/klass"), $set=require("hsp/$set");
 
 # template elapsedTime(timer)
     Seconds Elapsed: {timer.secondsElapsed}
@@ -11,10 +10,13 @@ var klass=require("hsp/klass"),
 var Timer=klass({
     $constructor:function() {
         this.secondsElapsed=0;
-        setInterval(this.tick.bind(this),1000);
+        this._iid=setInterval(this.tick.bind(this),1000);
+    },
+    $dispose:function() {
+    	clearInterval(this._iid);
     },
     tick:function() {
-        json.set(this,"secondsElapsed",this.secondsElapsed+1);
+        $set(this,"secondsElapsed",this.secondsElapsed+1);
     }
 });
 

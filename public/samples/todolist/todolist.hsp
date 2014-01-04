@@ -1,5 +1,4 @@
-var klass=require("hsp/klass"),
-    json=require("hsp/json");
+var klass=require("hsp/klass"), $set=require("hsp/$set");
 
 # template todolist(todo)
     <div>
@@ -27,9 +26,9 @@ var TodoCtl=klass({
     addItem:function() {
         var d=this.data, items=d.items;
         // add new item to the todo list
-        json.splice(items,items.length,0,d.newTodoItem);
+        items.splice(items.length,0,d.newTodoItem);
         // empty new todo field value
-        json.set(d,"newTodoItem","");
+        $set(d,"newTodoItem","");
         // return false to prevent default behaviour
         return false;
     }

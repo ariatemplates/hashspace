@@ -264,7 +264,7 @@ var CptWrapper = klass({
             if (change.length > 0) {
                 chg = change[0];
             } else {
-                console.error('[CptNode] Invalid change');
+                console.error('[CptNode] Invalid change - nbr of changes: '+change.length);
                 return;
             }
         }

@@ -1,4 +1,4 @@
-var klass=require("hsp/klass"), json=require("hsp/json");
+var klass=require("hsp/klass"), $set=require("hsp/$set");
 
 // nt is an instance of NumberTester
 # template test(nt)
@@ -31,7 +31,7 @@ var NumberTester=klass({
         this.number=0;
     },
     increment:function(nbr2) {
-        json.set(this,"number",this.number+nbr2);
+        $set(this,"number",this.number+nbr2);
     }
 });
 

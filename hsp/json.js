@@ -20,37 +20,206 @@
  */
 var OBSERVER_PROPERTY = "+json:observers";
 
+
+// Original array methods
+var AP=Array.prototype;
+var $splice=AP.splice;
+var $push=AP.push;
+var $shift=AP.shift;
+var $pop=AP.pop;
+var $reverse=AP.reverse;
+var $sort=AP.sort;
+var $unshift=AP.unshift;
+
 /**
- * Notifies JSON listeners that a value on the object they listen to has changed
- * @private
- * @param {Object} container reference to the data holder object - e.g. data.search.preferedCity
- * @param {String} property name of the property - e.g. '$value'
- * @param {Object} change object describing the change made to the property (containing oldValue/newValue if the change
- * was made with setValue)
- * @param {Array} listenerToExclude (optional) potential listener callback belonging to the object that raised the
- * @param {string} chgtype the type of change - "updated" or "new" change and which doesn't want to be notified
- */
-function notifyObservers (container, property, newval, oldval, chgtype, chgeset) {
-    // retrieve listeners for this node and its parents
-    // arguments given to the callback
-    var ln = container[OBSERVER_PROPERTY];
-    if (ln) {
-        // call the listeners
-        var elt;
-        if (!chgeset) {
-            chgeset = [{
-                        type : chgtype,
-                        object : container,
-                        name : property,
-                        newValue : newval,
-                        oldValue : oldval
-                    }];
+ * Override Array splice to detect changes an trigger observer callbacks - same arguments as Array.splice: 
+ * cf. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice
+ **/
+Array.prototype.splice=function(index, howMany) {
+    // Note change set doesn't comply with object.observe specs (should be a list of change descriptors)
+    // but we don't need a more complex implementation for hashspace
+    if (this[OBSERVER_PROPERTY]) {
+        // this array is observed
+        var sz1 = this.length;
+        var res = $splice.apply(this, arguments), sz2 = this.length;
+        // NB: splice is not a valid change type according to Object.observe spec
+        var chgset=[changeDesc(this, index, null, null, "splice")];
+        if (sz1 !== sz2) {
+            chgset.push(changeDesc(this, "length", sz2, sz1, "updated"));
         }
+        callObservers(this, chgset);
+        return res;
+    } else {
+        return $splice.apply(this, arguments);
+    }
+};
+
+/**
+ * Same as splice but with an array argument to pass all items that need to be inserted as an array and not as
+ * separate arguments
+ **/
+Array.prototype.splice2=function (index, howMany, arrayArg) {
+    var sz1 = this.length;
+    if (!arrayArg) {
+        arrayArg = [];
+    }
+    arrayArg.splice(0, 0, index, howMany);
+    var res = $splice.apply(this, arrayArg);
+    if (this[OBSERVER_PROPERTY]) {
+        var sz2 = this.length;
+        // NB: splice is not a valid change type according to Object.observe spec
+        var chgset=[changeDesc(this, index, null, null, "splice")];
+        if (sz1 !== sz2) {
+            chgset.push(changeDesc(this, "length", sz2, sz1, "updated"));
+        }
+        callObservers(this, chgset);
+    }
+    return res;
+};
+
+/**
+ * Mutates an array by appending the given elements and returning the new length of the array (same as Array.push)
+ * Uses indefinite optional arguments: push(array, element1[, ...[, elementN]])
+ * @param element1, ..., elementN
+ */
+Array.prototype.push=function () {
+    if (this[OBSERVER_PROPERTY]) {
+        // this array is observed
+        var a = arguments, asz = a.length, sz1 = this.length, arg, sz2, chgset = [];
+        if (asz < 1) {
+            return sz1;
+        }
+        if (asz == 1) {
+            sz2 = $push.call(this,a[0]);
+            chgset.push(changeDesc(this, sz1, a[0], null, "new"));
+        } else {
+            for (var i = 0; asz > i; i++) {
+                arg = a[i];
+                chgset[asz - i - 1] = {
+                    type : "new",
+                    object : this,
+                    name : (sz1 + i),
+                    newValue : arg
+                };
+            }
+            sz2 = $push.apply(this, a);
+        }
+        if (sz1 !== sz2) {
+            chgset.push(changeDesc(this, "length", sz2, sz1, "updated"));
+        }
+        callObservers(this, chgset);
+        return sz2;
+    } else {
+        return $push.apply(this, arguments);
+    }
+};
+
+/**
+ * Removes the first element from an array and returns that element. This method changes the length of the array.
+ */
+Array.prototype.shift = function () {
+    // Note change set doesn't comply with object.observe specs - same as for splice
+    if (this[OBSERVER_PROPERTY]) {
+        var sz1 = this.length;
+        var res = $shift.call(this);
+        var sz2 = this.length;
+        var chgset=[changeDesc(this, 0, null, null, "shift")];
+        if (sz1 !== sz2) {
+            chgset.push(changeDesc(this, "length", sz2, sz1, "updated"));
+        }
+        callObservers(this, chgset);
+        return res;
+    } else {
+        return $shift.call(this);
+    }
+};
+
+/**
+ * Adds one or more elements to the beginning of an array and returns the new length of the array.
+ * e.g. arr.unshift(element1, ..., elementN)
+ */
+Array.prototype.unshift = function () {
+    if (this[OBSERVER_PROPERTY]) {
+        var sz1 = this.length;
+        var sz2 = $unshift.apply(this,arguments);
+        var chgset=[changeDesc(this, 0, null, null, "unshift")];
+        if (sz1 !== sz2) {
+            chgset.push(changeDesc(this, "length", sz2, sz1, "updated"));
+        }
+        callObservers(this, chgset);
+        return sz2;
+    } else {
+        return $unshift.apply(this,arguments);
+    }
+};
+
+/**
+ * Removes the last element from an array and returns that value to the caller.
+ */
+Array.prototype.pop = function () {
+    // Note change set doesn't comply with object.observe specs - same as for splice
+    if (this[OBSERVER_PROPERTY]) {
+        var sz1 = this.length;
+        var res = $pop.call(this);
+        var sz2 = this.length;
+        var chgset=[changeDesc(this, 0, null, null, "pop")];
+        if (sz1 !== sz2) {
+            chgset.push(changeDesc(this, "length", sz2, sz1, "updated"));
+        }
+        callObservers(this, chgset);
+        return res;
+    } else {
+        return $pop.call(this);
+    }
+};
+
+/**
+ * Reverse the array order
+ */
+Array.prototype.reverse = function () {
+    // Note change set doesn't comply with object.observe specs - same as for splice
+    var res = $reverse.call(this);
+    callObservers(this, [changeDesc(this, 0, null, null, "reverse")]);
+    return res;
+};
+
+/**
+ * Sort the array content
+ */
+Array.prototype.sort = function (sortFunction) {
+    // Note change set doesn't comply with object.observe specs - same as for splice
+    var res = $sort.call(this, sortFunction);
+    callObservers(this, [changeDesc(this, 0, null, null, "sort")]);
+    return res;
+};
+
+/**
+ * Return a change descriptor to use for callObservers()
+ */
+function changeDesc(object, property, newval, oldval, chgtype) {
+    return {
+        type : chgtype,
+        object : object,
+        name : property,
+        newValue : newval,
+        oldValue : oldval
+    };
+}
+
+/**
+ * Call all observers for a givent object
+ * @param {Object} object reference to the object that is being observed
+ * @param {Array} chgeset an array of change descriptors (cf. changeDesc())
+ */
+function callObservers(object, chgeset) {
+    var ln = object[OBSERVER_PROPERTY];
+    if (ln) {
+        var elt;
         for (var i = 0, sz = ln.length; sz > i; i++) {
             elt = ln[i];
-            if (elt.constructor === Function)
+            if (elt.constructor === Function) {
                 elt(chgeset);
-            // else elt is not a function!
+            }
         }
     }
 }
@@ -66,150 +235,32 @@ module.exports = {
             console.log("[json.set] Invalid object used to set a value");
             return;
         }
-        var exists = object.hasOwnProperty(property);
-        var oldVal = object[property];
-        var sz1 = object.length;
-        object[property] = value;
+        if (object[OBSERVER_PROPERTY]) {
+            var exists = object.hasOwnProperty(property), oldVal = object[property], sz1 = object.length, chgset=null;
+            object[property] = value;
 
-        if (!exists) {
-            notifyObservers(object, property, value, oldVal, "new");
-        } else if (oldVal !== value) {
-            // do nothing if the value did not change or was not created:
-            notifyObservers(object, property, value, oldVal, "updated");
-        }
-        if (object.constructor === Array) {
-            var sz2 = object.length;
-            if (sz1 !== sz2) {
-                notifyObservers(object, "length", sz2, sz1, "updated");
+            if (!exists) {
+                chgset=[changeDesc(object, property, value, oldVal, "new")];
+            } else if (oldVal !== value) {
+                // do nothing if the value did not change or was not created:
+                chgset=[changeDesc(object, property, value, oldVal, "updated")];
             }
-        }
-        return value;
-    },
-
-    /**
-     * Mutates an array by appending the given elements and returning the new length of the array (same as Array.push)
-     * Uses indefinite optional arguments: push(array, element1[, ...[, elementN]])
-     * @param {Array} array the array on which the splice should be performed
-     * @param element1, ..., elementN
-     */
-    push : function (array) {
-        var a = arguments, asz = a.length, sz = array.length, arg, res;
-        if (asz < 2) {
-            return sz;
-        }
-        if (sz === undefined || !array.push) {
-            console.log("[json.push] Invalid array used to push a new value");
-            return;
-        }
-
-        if (asz == 2) {
-            res = array.push(a[1]);
-            notifyObservers(array, sz, a[1], null, "new");
+            if (object.constructor === Array) {
+                var sz2 = object.length;
+                if (sz1 !== sz2) {
+                    if (!chgset) {
+                        chgset=[];
+                    }
+                    chgset.push(changeDesc(object, "length", sz2, sz1, "updated"));
+                }
+            }
+            if (chgset) {
+                callObservers(object, chgset);
+            }
+            return value;
         } else {
-            var args = [], chgeset = [], idx;
-            for (var i = 1; asz > i; i++) {
-                idx = i - 1;
-                args[idx] = arg = a[i];
-                chgeset[asz - 1 - i] = {
-                    type : "new",
-                    object : array,
-                    name : (sz + idx),
-                    newValue : args[idx]
-                };
-            }
-            res = Array.prototype.push.apply(array, args);
-            notifyObservers(array, null, null, null, null, chgeset);
+            object[property] = value;
         }
-        var sz2 = array.length;
-        if (sz !== sz2) {
-            notifyObservers(array, "length", sz2, sz, "updated");
-        }
-        return res;
-    },
-
-    /**
-     * Changes the content of an array, adding new elements while removing old elements. (same as Array.splice) Uses
-     * indefinite optional arguments: splice (array, index , howMany[, element1[, ...[, elementN]]])
-     * @param {Array} array the array on which the splice should be performed
-     * @param {Number} index the index at which to start changing the array. If negative, will begin that many elements
-     * from the end
-     * @param {Number} howMany An integer indicating the number of old array elements to remove. If howMany is 0, no
-     * elements are removed. In this case, you should specify at least one new element
-     * @param element1, ..., elementN The elements to add to the array. If you don't specify any elements, splice simply
-     * removes elements from the array
-     * @return {Array} An array containing the removed elements. If only one element is removed, an array of one element
-     * is returned.
-     */
-    splice : function (array, index, howMany) {
-        // Note change set doesn't comply with object.observe specs (should be a list of change descriptors)
-        // but we don't need a more complex implementation for hashspace
-        var a = arguments, args = [], sz1 = array.length;
-        for (var i = 1; a.length > i; i++)
-            args.push(a[i]);
-
-        var res = Array.prototype.splice.apply(array, args);
-        var sz2 = array.length;
-
-        notifyObservers(array, index, null, null, "splice"); // NB: splice is not a valid change type according to
-                                                                // Object.observe spec
-        if (sz1 !== sz2) {
-            notifyObservers(array, "length", sz2, sz1, "updated");
-        }
-        return res;
-    },
-
-    /**
-     * Same as splice but with an array argument to pass all items that need to be inserted as an array and not as
-     * separate arguments
-     * @param {Array} arrayArg the items that must be inserted at the index position
-     */
-    splice2 : function (array, index, howMany, arrayArg) {
-        var sz1 = array.length;
-        if (!arrayArg) {
-            arrayArg = [];
-        }
-        arrayArg.splice(0, 0, index, howMany);
-        var res = Array.prototype.splice.apply(array, arrayArg);
-        var sz2 = array.length;
-
-        notifyObservers(array, index, null, null, "splice"); // NB: splice is not a valid change type according to
-                                                                // Object.observe spec
-        if (sz1 !== sz2) {
-            notifyObservers(array, "length", sz2, sz1, "updated");
-        }
-        return res;
-    },
-
-    /**
-     * Removes the first element from an array and returns that element. This method changes the length of the array.
-     * @param {Array} array the array on which the shift should be performed
-     */
-    shift : function (array) {
-        // Note change set doesn't comply with object.observe specs - same as for splice
-        var sz1 = array.length;
-        var res = array.shift();
-        var sz2 = array.length;
-        notifyObservers(array, 0, null, null, "shift");
-        if (sz1 !== sz2) {
-            notifyObservers(array, "length", sz2, sz1, "updated");
-        }
-        return res;
-    },
-
-    /**
-     * Removes the last element from an array and returns that value to the caller.
-     * @param {Array} array the array on which the shift should be performed
-     */
-    pop : function (array) {
-        // Note change set doesn't comply with object.observe specs - same as for splice
-        var sz1 = array.length;
-        var res = array.pop();
-        var sz2 = array.length;
-        notifyObservers(array, 0, null, null, "pop");
-        if (sz1 !== sz2) {
-            notifyObservers(array, "length", sz2, sz1, "updated");
-        }
-        return res;
     },
 
     /**

@@ -79,13 +79,13 @@ describe("Template as component attribute", function () {
 
     expect(head).toEqual(null);
     expect(body).toNotEqual(null);
-    expect(body.innerText).toEqual("Hello World! ");
+    expect(body.innerHTML).toEqual("Hello World! ");
 
     // dynamic property change
     json.set(m,"text","Hello folks");
     hsp.refresh();
 
-    expect(body.innerText).toEqual("Hello folks! ");
+    expect(body.innerHTML).toEqual("Hello folks! ");
     
     n.$dispose();
   });
@@ -97,7 +97,7 @@ describe("Template as component attribute", function () {
 
     expect(head).toEqual(null);
     expect(body).toNotEqual(null);
-    expect(body.innerText).toEqual("Hello World!");
+    expect(body.innerHTML).toEqual("Hello World!");
 
     n.$dispose();
   });
@@ -110,13 +110,13 @@ describe("Template as component attribute", function () {
 
     expect(head).toEqual(null);
     expect(body).toNotEqual(null);
-    expect(body.innerText).toEqual("Hello World!");
+    expect(body.innerHTML).toEqual("Hello World!");
 
     // dynamic property change
     json.set(m,"text","Hello folks");
     hsp.refresh();
 
-    expect(body.innerText).toEqual("Hello folks!");
+    expect(body.innerHTML).toEqual("Hello folks!");
     
     n.$dispose();
   });
@@ -127,13 +127,13 @@ describe("Template as component attribute", function () {
     var body=n.querySelector(".panel .body");
 
     expect(body).toNotEqual(null);
-    expect(body.innerText).toEqual("Hello World!");
+    expect(body.innerHTML).toEqual("Hello World!");
 
     // dynamic property change
     json.set(m,"text","Hello folks");
     hsp.refresh();
 
-    expect(body.innerText).toEqual("Hello folks!");
+    expect(body.innerHTML).toEqual("Hello folks!");
     
     n.$dispose();
   });

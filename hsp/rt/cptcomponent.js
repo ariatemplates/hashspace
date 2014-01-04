@@ -37,10 +37,12 @@ module.exports.$CptComponent = {
     }
     if (this.controller) {
       if (this.tplAttributes) {
-        var ctl=this.controller;
-        for (var k in this.tplAttributes) {
+        var ctl=this.controller, tpa=this.tplAttributes;
+        for (var k in tpa) {
           // set the template attribute value on the controller
-          json.set(ctl,k,{node:this.tplAttributes[k]});
+          if (tpa.hasOwnProperty(k)) {
+            json.set(ctl,k,{node:tpa[k]});
+          }
         }
       }
     }
@@ -52,14 +54,20 @@ module.exports.$CptComponent = {
   $dispose:function() {
     this.ctlAttributes=null;
     this.cleanObjectProperties();
-    if (this.tplAttributes) {
-      for (var k in this.tplAttributes) {
-        this.tplAttributes[k].$dispose();
+    var tpa=this.tplAttributes;
+    if (tpa) {
+      for (var k in tpa) {
+        if (tpa.hasOwnProperty(k)) {
+          tpa[k].$dispose();
+        }
       }
     }
-    if (this._attGenerators) {
-      for (var k in this._attGenerators) {
-        this._attGenerators[k].$dispose();
+    var ag=this._attGenerators;
+    if (ag) {
+      for (var k in ag) {
+        if (ag.hasOwnProperty(k)) {
+          ag[k].$dispose();
+        }
       }
     }
   },
@@ -71,7 +79,7 @@ module.exports.$CptComponent = {
     // determine the possible template attribute names
     var tpAttNames={}, ca=this.ctlAttributes, defaultTplAtt=null, lastTplAtt=null, count=0;
     for (var k in ca) {
-      if (ca[k].type==="template") {
+      if (ca.hasOwnProperty(k) && ca[k].type==="template") {
         // k is defined in the controller attributes collection
         // so k is a valid template attribute name
         tpAttNames[k]=true;
@@ -132,6 +140,7 @@ module.exports.$CptComponent = {
 
           // register all child nodes as child of the new TNode
           for (var k in cn) {
+            if (!cn.hasOwnProperty(k)) continue;
             cn[k].parent=ni;
             ni.node.appendChild(cn[k].node);
           }
@@ -148,6 +157,7 @@ module.exports.$CptComponent = {
     var atts=this.atts, att, nm;
     if (atts) {
       for (var k in atts) {
+        if (!atts.hasOwnProperty(k)) continue;
         att=atts[k];
         nm=att.name;
         if (tpAttNames[nm]) {

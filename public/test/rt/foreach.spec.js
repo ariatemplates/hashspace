@@ -316,9 +316,9 @@ describe("ForEach Node", function () {
         var n = test1("index", ds);
 
         // item move: ["Omer","Maggie","Marge","LISA","BART"]
-        json.splice(ds, 1, 0, "Maggie");
-        json.splice(ds, 3, 1);
-        json.splice(ds, 4, 1, "BART");
+        ds.splice(1, 0, "Maggie");
+        ds.splice(3, 1);
+        ds.splice(4, 1, "BART");
         hsp.refresh();
 
         expect(n.childNodes[0].childNodes.length).toEqual(5);
@@ -337,8 +337,8 @@ describe("ForEach Node", function () {
         var n = test1("index", ds);
 
         // delete item: ["Omer","Marge"]
-        json.splice(ds, 3, 2);
-        json.splice(ds, 1, 1);
+        ds.splice(3, 2);
+        ds.splice(1, 1);
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).toEqual(2);
         expect(n.node.childNodes.length).toEqual(test1Count(2));
@@ -356,7 +356,7 @@ describe("ForEach Node", function () {
         n.render(elt);
 
         // new array: ["Omer", "Bart", "Lisa", "Marge"]
-        json.splice(ds, 1, 0, "Bart", "Lisa");
+        ds.splice(1, 0, "Bart", "Lisa");
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).toEqual(4);
         expect(n.node.childNodes.length).toEqual(test1Count(4));
@@ -373,7 +373,7 @@ describe("ForEach Node", function () {
         var n = test1("index", ds);
 
         // insert item: ["Omer", "Marge", "Bart"]
-        json.push(ds, "Bart");
+        ds.push("Bart");
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).toEqual(3);
         expect(n.node.childNodes.length).toEqual(test1Count(3));
@@ -392,7 +392,7 @@ describe("ForEach Node", function () {
         n.render(elt);
 
         // new item: ["Bart", "Lisa", "Marge", "Maggie"]
-        json.shift(ds);
+        ds.shift();
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).toEqual(4);
         expect(n.node.childNodes.length).toEqual(test1Count(4));
@@ -401,7 +401,7 @@ describe("ForEach Node", function () {
         expect(test1SpanNodeValue(elt, 2)).toEqual("index 2: Marge (5 chars)");
         expect(test1SpanNodeValue(elt, 3)).toEqual("index 3: Maggie (6 chars)");
 
-        json.shift(ds);
+        ds.shift();
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).toEqual(3);
         expect(n.node.childNodes.length).toEqual(test1Count(3));
@@ -486,8 +486,8 @@ describe("ForEach Node", function () {
         var n = test2(ds);
 
         // test dynamic update
-        json.splice(ds.persons, 1, 1); // remove Marge
-        json.push(ds.persons, {
+        ds.persons.splice( 1, 1); // remove Marge
+        ds.persons.push({
             firstName : "Lisa",
             lastName : "SIMPSON"
         }, {
@@ -551,7 +551,7 @@ describe("ForEach Node", function () {
 
         expect(elt.childNodes.length).toEqual(2 + 5);
 
-        json.push(ds, "mangos");
+        ds.push("mangos");
         hsp.refresh();
 
         expect(elt.childNodes.length).toEqual(2 + 5 * 2);
@@ -572,7 +572,7 @@ describe("ForEach Node", function () {
         var r = domToString(elt);
         expect(r).toEqual(str1);
 
-        json.splice(ds, 1, 0, "CC");
+        ds.splice(1, 0, "CC");
         hsp.refresh();
         r = domToString(elt);
         expect(r).toEqual(str2);
@@ -596,19 +596,19 @@ describe("ForEach Node", function () {
         var r = domToString(elt);
         expect(r).toEqual(str1);
 
-        json.push(ds, "CC");
+        ds.push("CC");
         hsp.refresh();
         r = domToString(elt);
 
         expect(r).toEqual(str2);
 
-        json.push(ds, "DD");
+        ds.push("DD");
         hsp.refresh();
         r = domToString(elt);
 
         expect(r).toEqual(str3);
 
-        json.splice(ds, 1, 0, "A2");
+        ds.splice(1, 0, "A2");
         hsp.refresh();
         r = domToString(elt);
 
@@ -619,25 +619,25 @@ describe("ForEach Node", function () {
 
     it("tests array delete / refill", function () {
         var ds = [{
-                    name : "Omer"
-                }];
+            name : "Omer"
+        }];
         var n = test5(ds);
 
         expect(n.node.childNodes.length).toEqual(5);
         expect(n.node.childNodes[2].nodeValue).toEqual("Omer");
 
-        json.splice(ds, 0, 1);
+        ds.splice(0, 1);
         hsp.refresh();
         expect(n.node.childNodes.length).toEqual(2);
 
-        json.splice2(ds, 0, ds.length, [{
-                    name : "Marge"
-                }]);
+        ds.splice2(0, ds.length, [{
+            name : "Marge"
+        }]);
         hsp.refresh();
         expect(n.node.childNodes.length).toEqual(5);
         expect(n.node.childNodes[2].nodeValue).toEqual("Marge");
 
-        json.splice(ds, 0, 1);
+        ds.splice(0, 1);
         hsp.refresh();
         expect(n.node.childNodes.length).toEqual(2);
     });
@@ -651,7 +651,7 @@ describe("ForEach Node", function () {
         expect(inputNodes.length).toEqual(0);
         expect(spanNodes.length).toEqual(0);
         
-        json.push(ds, {value:"AA", edit: true});
+        ds.push({value:"AA", edit: true});
         hsp.refresh();
         
         inputNodes = n.querySelectorAll("input");

@@ -1,5 +1,4 @@
-var klass=require("hsp/klass"),
-    json=require("hsp/json");
+var klass=require("hsp/klass"), $set=require("hsp/$set");
 
 // klass is a utility to create JS objects with constructors & prototypes
 var Timer=klass({
@@ -8,24 +7,24 @@ var Timer=klass({
     },
     $init:function() {
       this.secondsElapsed=this.initvalue;
-      this._intervalId=setInterval(this.tick.bind(this),1000);
+      this._iid=setInterval(this.tick.bind(this),1000);
     },
     $dispose:function() {
-      clearInterval(this._intervalId);
+      clearInterval(this._iid);
     },
     tick:function() {
       console.log("tick");
-      json.set(this,"secondsElapsed",this.secondsElapsed+1);
+      $set(this,"secondsElapsed",this.secondsElapsed+1);
     }
 });
 
 # template timer using t:Timer
-    Elapsed time: {t.secondsElapsed}s
+    Elapsed time: {t.secondsElapsed}s 
 # /template
 
 # template test
   Sample showing two timer instances with different init values:<br/>
-  <#timer/><br/>
+  <#timer/> <br/>
   <#timer initvalue="10"/>
 # /template
 

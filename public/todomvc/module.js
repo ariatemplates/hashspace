@@ -67,7 +67,7 @@ var TodoCtrl = klass({
         var newTodo = this.ds.newTodo;
         if (newTodo.title.length > 0) {
             // ignore empty entries
-            json.push(this.ds.todos, {
+            this.ds.todos.push({
                 title : newTodo.title,
                 completed : false,
                 editMode : false
@@ -113,7 +113,7 @@ var TodoCtrl = klass({
      */
     removeTodo : function (todo) {
         var idx = this.ds.todos.indexOf(todo);
-        json.splice(this.ds.todos, idx, 1);
+        this.ds.todos.splice(idx, 1);
         this.syncData();
     },
 

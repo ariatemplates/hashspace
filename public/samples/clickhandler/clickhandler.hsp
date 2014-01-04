@@ -1,3 +1,4 @@
+var msg={text:""}, count=-1, $set=require("hsp/$set");
 
 # template message(msg)
     <div title="click me!" onclick="{changeMessage()}" onselectstart="return false">
@@ -6,21 +7,19 @@
     </div>
 # /template
 
-var msg={text:""}, count=-1, json=require("hsp/json");
-
 function changeMessage() {
     count++;
     switch(count%3) {
         case 0:
-            json.set(msg,"isWarning",false);
-            json.set(msg,"text","Click me to discover hashspace event hanlders");
+            $set(msg,"isWarning",false);
+            $set(msg,"text","Click me to discover hashspace event hanlders");
             break;
         case 1:
-            json.set(msg,"text","Well done - you called the event handler and updated the data model in a row!");
+            $set(msg,"text","Well done - you called the event handler and updated the data model in a row!");
             break;
         case 2:
-            json.set(msg,"isWarning",true);
-            json.set(msg,"text","If you click again you will be back to first step!");
+            $set(msg,"isWarning",true);
+            $set(msg,"text","If you click again you will be back to first step!");
             break;
     }
 }

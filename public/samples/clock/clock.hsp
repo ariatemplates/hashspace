@@ -1,5 +1,4 @@
-var klass=require("hsp/klass"),
-    json=require("hsp/json");
+var klass=require("hsp/klass"), $set=require("hsp/$set");
 
 var CITIES={
 	"SFO":{city:"San Francisco",offset:-8},
@@ -17,7 +16,10 @@ var ClockController=klass({
 			this.minuteMarkers[i]={major:(i%5===0)};
 		}
 		this.onCityChange();
-		setInterval(this.tick.bind(this),100);
+		this._iid=setInterval(this.tick.bind(this),100);
+	},
+	$dispose:function() {
+		clearInterval(this._iid);
 	},
 	onCityChange:function() {
 		// dynamic city change: check city validity and refresh the display
@@ -32,11 +34,11 @@ var ClockController=klass({
 		var to=CITIES[this.city].offset;
 		var o=d.getTimezoneOffset()/60;
 		d=new Date(d.getTime()+ ((o+to)*3600000)); // date in the target city
-		json.set(this,"hours",d.getHours());
-		json.set(this,"minutes",d.getMinutes());
-		json.set(this,"seconds",d.getSeconds());
-		json.set(this,"milliseconds",d.getMilliseconds());
-		json.set(this,"cityName",CITIES[this.city].city);
+		$set(this,"hours",d.getHours());
+		$set(this,"minutes",d.getMinutes());
+		$set(this,"seconds",d.getSeconds());
+		$set(this,"milliseconds",d.getMilliseconds());
+		$set(this,"cityName",CITIES[this.city].city);
 	}
 });
 

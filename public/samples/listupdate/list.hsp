@@ -1,5 +1,3 @@
-var json=require("hsp/json");
-
 # template list(persons)
     // onselectstart: prevent double-click selection on a elements
     <div onselectstart="return false"> 
@@ -8,7 +6,7 @@ var json=require("hsp/json");
         	<a onclick="{deleteElement()}">Delete element</a> - 
         	<a onclick="{changeAll()}">Change all elements</a>
         </div>
-        <ul>
+        <ol>
             {foreach p in persons}
             	<li>
                     {p.firstName} {p.lastName}
@@ -16,7 +14,7 @@ var json=require("hsp/json");
                     {if p_islast}<span class="info">(last)</span>{/if}
                 </li>
             {/foreach}
-        </ul>
+        </ol>
     </div>
     <div class="msg">
         Number of people in the list: {persons.length}
@@ -36,17 +34,17 @@ var count=0;
 function addElement() {
 	count++;
 	// add one element without removing any at position 1
-    json.splice(persons,1,0,{firstName:"John",lastName:'Doe'+count})
+    persons.splice(1,0,{firstName:"John",lastName:'Doe'+count});
 }
 
 function deleteElement() {
 	// remove one element at position 0
-    json.splice(persons,0,1); 
+    persons.shift(); // same as persons.splice(0,1); 
 }
 
 function changeAll() {
 	// replace all elements (from 0 to persons.length-1) with the array provided as last argument
-	json.splice2(persons,0,persons.length,[
+	persons.splice2(0,persons.length,[
 		{firstName:"Charlie", lastName:"Parker"},
 		{firstName:"Sonny", lastName:"Stitt"},
 		{firstName:"Cannonball", lastName:"Adderley"},
