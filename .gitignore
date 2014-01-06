@@ -2,3 +2,4 @@ node_modules
 .DS_STORE
 ._.DS_STORE
 build
+sauce_connect.log

@@ -51,6 +51,11 @@ For jshint validation:
 For the compiler test:
 - run `grunt mochaTest`
 
+For the browser-based runtime tests:
+- run `grunt karma:unit` (you can also work in the TDD mode by running `grunt karma:tdd`)
+
+To do the health check on the project (before commit, for example) run `grunt test`. This will run
+
 For the browser runtime tests:
 - run *grunt* - this will launch a local webserver and a watch task on your files
 - and access *http://localhost:8000/test/rt* to run the tests in your favorite browsers
