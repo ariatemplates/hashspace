@@ -26,6 +26,100 @@ module.exports = function (grunt) {
         ]
       }
     },
+    karma: {
+      options: {
+        frameworks: ['jasmine', 'commonjs'],
+        plugins: [
+          // these plugins will be require() by Karma
+          'karma-jasmine',
+          'karma-commonjs',
+          'karma-chrome-launcher',
+          'karma-firefox-launcher',
+          'karma-sauce-launcher',
+          require('./karma-hsp-preprocessor')
+        ],
+        files: [
+          'hsp/**/*.js',
+          'public/test/lib/fireDomEvent.js',
+          'public/test/lib/type.js',
+          'public/test/**/*.spec.*'
+        ],
+        exclude: [
+          'hsp/grunt/**/*.js',
+          'hsp/compiler/**/*.js',
+          'public/test/compiler/**/*.spec.js'
+        ],
+        preprocessors: {
+          'hsp/**/*.js': ['commonjs'],
+          'public/test/lib/*.js': ['commonjs'],
+          'public/test/**/*.spec.js': ['commonjs'],
+          'public/test/**/*.spec.hsp': ['hsp', 'commonjs']
+        },
+        commonjsPreprocessor: {
+          modulesRoot: '.'
+        },
+        // global config for SauceLabs
+        sauceLabs: {
+          username: 'ariatemplates',
+          accessKey: '620e638e-90d2-48e1-b66c-f9505dcb888b',
+          testName: '#space runtime tests'
+        },
+        // define SL browsers
+        customLaunchers: {
+          'SL_IE_8': {
+            base: 'SauceLabs',
+            browserName: 'internet explorer',
+            platform: 'Windows 7',
+            version: '8'
+          },
+          'SL_IE_9': {
+            base: 'SauceLabs',
+            browserName: 'internet explorer',
+            platform: 'Windows 2008',
+            version: '9'
+          },
+          'SL_IE_10': {
+            base: 'SauceLabs',
+            browserName: 'internet explorer',
+            platform: 'Windows 2012',
+            version: '10'
+          },
+          'SL_IE_11': {
+            base: 'SauceLabs',
+            browserName: 'internet explorer',
+            platform: 'Windows 8.1',
+            version: '11'
+          },
+          'ANDROID': {
+            base: 'SauceLabs',
+            browserName: 'android',
+            platform: 'Linux',
+            version: '4.0'
+          },
+          'IOS': {
+            base: 'SauceLabs',
+            browserName: 'iphone',
+            platform: 'OS X 10.8',
+            version: '6.0'
+          }
+        }
+        //logLevel: 'LOG_INFO'
+      },
+      unit: {
+        browsers: ['Firefox'],
+        singleRun: true
+      },
+      tdd: {
+        browsers: ['Firefox'],
+        singleRun: false,
+        autoWatch: true
+      },
+      ci: {
+        singleRun: true,
+        browsers: ['Firefox', 'SL_IE_8', 'SL_IE_9', 'SL_IE_10'],
+        reporters: ['progress', 'saucelabs']
+      }
+    },
     hspserver: {
       port: 8000,
       base: __dirname,
@@ -112,9 +206,11 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-karma');
   grunt.loadTasks('hsp/grunt');
 
-  grunt.registerTask('test', ['checkStyle','mochaTest']);
   grunt.registerTask('package', ['copy', 'browserify', 'uglify']);
+  grunt.registerTask('test', ['checkStyle','mochaTest', 'karma:unit']);
+  grunt.registerTask('ci', ['checkStyle','mochaTest', 'karma:ci']);
   grunt.registerTask('default', ['hspserver','watch']);
 };
