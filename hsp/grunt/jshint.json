@@ -80,7 +80,8 @@
         "setInterval" : false,
         "clearTimeout" : false,
         "clearInterval" : false,
-        "window" : false
+        "window" : false,
+        "Event" : false
     },
     "maxerr" : 150,
 

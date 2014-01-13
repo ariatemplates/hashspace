@@ -195,6 +195,7 @@ label[for='toggle-all'] {
     position: relative;
     font-size: 24px;
     border-bottom: 1px dotted #ccc;
+    line-height: 1.2;
 }
 
 #todo-list li:last-child {
@@ -209,7 +210,7 @@ label[for='toggle-all'] {
 #todo-list li.editing .edit {
     display: block;
     width: 506px;
-    padding: 13px 17px 12px 17px;
+    padding: 11px 17px 11px 16px;
     margin: 0 0 0 43px;
 }
 

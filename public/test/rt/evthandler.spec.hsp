@@ -14,91 +14,31 @@
  * limitations under the License.
  */
 
+var ht=require("hsp/utils/hashtester");
 
-/***
 # template test1(person,ctl)
     <div title="test1" onclick="{ctl.handleClick()}">
         Hello {person.name}!
     </div>
 # /template
-***/
-var test1 = require("hsp/rt").template(["person","ctl"], function(n) {
-    return [
-        n.elt(
-            "div",
-            {e1:[3,2,"ctl","handleClick"]},
-            {"title":"test1"},
-            {"click":1},
-            [n.$text({e1:[1,2,"person","name"]},["Hello ",1,"!"])]
-        )
-    ];
-});
 
-/***
 # template test2(label,names,ctl)
-    # foreach (name in names)
-        <span onclick="{ctl.handleClick(name,name_key,"literal arg",event)}">
-            {:label} {name_key}: {:name}
+    {foreach key,name in names}
+        <span onclick="{ctl.handleClick(name,key,'literal arg',event)}">
+            {:label} {key}: {:name}
         </span>
-    # /foreach
+    {/foreach}
 # /template
-***/
-var test2 = require("hsp/rt").template(["label","names","ctl"], function(n) {
-    return [
-        n.$foreach(
-            {e1:[1,1,"names"]},
-            "name_key",
-            "name", // name of the loop variable that should be created
-            0, // for type: 0=in / 1=of / 2=on
-            1, // index of the collection expression
-            [
-                n.elt(
-                    "span",
-                    {e1:[3,2,"ctl","handleClick",1,2,1,3,0,"literal arg",1,4],e2:[0,1,"name"],e3:[0,1,"name_key"],e4:[0,1,"event"]},
-                    0,
-                    {"click":1},
-                    [n.$text({e1:[0,1,"label"],e2:[1,1,"name_key"],e3:[0,1,"name"]},["",1," ",2,": ",3])]
-                )
-            ]
-        )
-    ];
-});
 
-/***
 # template test3(person)
     <div title="test3" onclick="{doClick('blah',event)}">
         Hello {person.name}!
     </div>
 # /template
-***/
 
-var test3 = require("hsp/rt").template(["person","ctl"], function(n) {
-    return [
-        n.elt(
-            "div",
-            {e1:[4,1,doClick,0,'blah',1,2],e2:[0,1,"event"]},
-            {"title":"test3"},
-            {"click":1},
-            [n.$text({e1:[1,2,"person","name"]},["Hello ",1,"!"])]
-        )
-    ];
-});
-
-
-/***
 # template test4()
     <img onclick="this.cbatt=123;return false;"/>
 # /template
-***/
-var test4 = require("hsp/rt").template([], function(n) {
-    return [
-        n.elt("img",
-            0,
-            0,
-            {"click":"this.cbatt=123;return false;"}
-        )
-    ];
-});
 
 
 var doClickCount = 0, doClickEvtType = "", doClickStrArg = "";
@@ -132,7 +72,7 @@ describe("Event Handlers", function () {
             }
         };
         var n = test1(dm, ctl);
-        expect(n.node.firstChild.firstChild.nodeValue).toEqual("Hello Omer!");
+        expect(n.node.firstChild.firstChild.nodeValue).toEqual("Hello Omer! ");
         expect(count).toEqual(0);
 
         n.node.firstChild.click();
@@ -161,8 +101,8 @@ describe("Event Handlers", function () {
         var ds = ["Omer", "Marge", "Bart", "Lisa", "Maggie"];
         var n = test2("index", ds, ctl);
 
-        expect(test2SpanValue(n, 1)).toEqual("index 1: Marge");
-        expect(test2SpanValue(n, 3)).toEqual("index 3: Lisa");
+        expect(test2SpanValue(n, 1)).toEqual("index 1: Marge ");
+        expect(test2SpanValue(n, 3)).toEqual("index 3: Lisa ");
         expect(count).toEqual(0);
 
         test2SpanNode(n, 1).click();
@@ -190,7 +130,7 @@ describe("Event Handlers", function () {
         };
         var n = test3(dm);
 
-        expect(n.node.firstChild.firstChild.nodeValue).toEqual("Hello Omer!");
+        expect(n.node.firstChild.firstChild.nodeValue).toEqual("Hello Omer! ");
         expect(doClickCount).toEqual(0);
 
         n.node.firstChild.click();
@@ -201,12 +141,16 @@ describe("Event Handlers", function () {
     });
 
     it("tests standard html event handlers", function () {
-        var n = test4();
-        var img = n.node.firstChild;
-        expect(img.cbatt).toEqual(undefined);
+        var h=ht.newTestContext();
+        test4().render(h.container);
+
+        var img = h('img');
+        expect(img.$selection[0].cbatt).toEqual(undefined);
         img.click();
-        expect(img.cbatt).toEqual(123);
-        n.$dispose();
+
+        // TODO fix next line in IE8
+        expect(img.$selection[0].cbatt).toEqual(123);
+        h.$dispose();
     });
 
 });

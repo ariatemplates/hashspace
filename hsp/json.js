@@ -141,7 +141,8 @@ Array.prototype.shift = function () {
 Array.prototype.unshift = function () {
     if (this[OBSERVER_PROPERTY]) {
         var sz1 = this.length;
-        var sz2 = $unshift.apply(this,arguments);
+        $unshift.apply(this,arguments);
+        var sz2 = this.length;
         var chgset=[changeDesc(this, 0, null, null, "unshift")];
         if (sz1 !== sz2) {
             chgset.push(changeDesc(this, "length", sz2, sz1, "updated"));

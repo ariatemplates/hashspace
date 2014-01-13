@@ -67,7 +67,7 @@ var klass = function (klassdef) {
 function F () {}
 
 /**
- * Polyfill for the browsers that don't support ES5
+ * Create an empty object that extend another object through prototype inheritance
  */
 function createObject (o) {
     if (Object.create) {

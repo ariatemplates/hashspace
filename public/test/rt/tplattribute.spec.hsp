@@ -15,8 +15,9 @@
  */
 
 var hsp=require("hsp/rt"),
-    json=require("hsp/json"),
-    klass=require("hsp/klass");
+    $set=require("hsp/$set"),
+    klass=require("hsp/klass"),
+    ht=require("hsp/utils/hashtester");
 
 // sample controller
 PanelController = klass({ 
@@ -68,74 +69,74 @@ PanelController = klass({
   <#panel>{m.text}!</#panel>
 # /template
 
+var HEAD=".panel .head";
+var BODY=".panel .body";
 
 describe("Template as component attribute", function () {
   
   it("tests template attribute passed as sub-element", function() {
+    var h=ht.newTestContext();
     var m={text:"Hello World"}
-    var n=test1(m);
-    var head=n.querySelector(".panel .head");
-    var body=n.querySelector(".panel .body");
-
-    expect(head).toEqual(null);
-    expect(body).toNotEqual(null);
-    expect(body.innerHTML).toEqual("Hello World! ");
+    test1(m).render(h.container);
+    var head=h(HEAD);
+    var body=h(BODY);
+    expect(head.length).toEqual(0);
+    expect(body.length).toEqual(1);
+    expect(body.text()).toEqual("Hello World! ");
 
     // dynamic property change
-    json.set(m,"text","Hello folks");
+    $set(m,"text","Hello folks");
     hsp.refresh();
 
-    expect(body.innerHTML).toEqual("Hello folks! ");
+    expect(body.text()).toEqual("Hello folks! ");
     
-    n.$dispose();
+    h.$dispose();
   });
 
   it("tests template attribute passed as static text attribute", function() {
-    var n=test2();
-    var head=n.querySelector(".panel .head");
-    var body=n.querySelector(".panel .body");
+    var h=ht.newTestContext();
+    test2().render(h.container);
+    
+    expect(h(HEAD).length).toEqual(0);
+    expect(h(BODY).length).toEqual(1);
+    expect(h(BODY).text()).toEqual("Hello World!");
 
-    expect(head).toEqual(null);
-    expect(body).toNotEqual(null);
-    expect(body.innerHTML).toEqual("Hello World!");
-
-    n.$dispose();
+    h.$dispose();
   });
 
   it("tests template attribute passed as dynamic text attribute", function() {
+    var h=ht.newTestContext();
     var m={text:"Hello World"}
-    var n=test3(m);
-    var head=n.querySelector(".panel .head");
-    var body=n.querySelector(".panel .body");
-
-    expect(head).toEqual(null);
-    expect(body).toNotEqual(null);
-    expect(body.innerHTML).toEqual("Hello World!");
+    test3(m).render(h.container);
+    
+    expect(h(HEAD).length).toEqual(0);
+    expect(h(BODY).length).toEqual(1);
+    expect(h(BODY).text()).toEqual("Hello World!");
 
     // dynamic property change
-    json.set(m,"text","Hello folks");
+    $set(m,"text","Hello folks");
     hsp.refresh();
 
-    expect(body.innerHTML).toEqual("Hello folks!");
+    expect(h(BODY).text()).toEqual("Hello folks!");
     
-    n.$dispose();
+    h.$dispose();
   });
 
   it("tests default template attribute passed as node content", function() {
+    var h=ht.newTestContext();
     var m={text:"Hello World"}
-    var n=test4(m);
-    var body=n.querySelector(".panel .body");
-
-    expect(body).toNotEqual(null);
-    expect(body.innerHTML).toEqual("Hello World!");
+    test4(m).render(h.container);
+    
+    expect(h(BODY).length).toEqual(1);
+    expect(h(BODY).text()).toEqual("Hello World!");
 
     // dynamic property change
-    json.set(m,"text","Hello folks");
+    $set(m,"text","Hello folks");
     hsp.refresh();
 
-    expect(body.innerHTML).toEqual("Hello folks!");
+    expect(h(BODY).text()).toEqual("Hello folks!");
     
-    n.$dispose();
+    h.$dispose();
   });
 
   // TODO

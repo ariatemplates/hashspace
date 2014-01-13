@@ -14,48 +14,46 @@
  * limitations under the License.
  */
 
+var TodoUICtrl=require("todomvc/todoctrl").TodoUICtrl;
 
 /**
- * Main template
- * @param ds the data set
- * @parm ctl the controller to containing the event handler callbacks
+ * Main TODO template
  */
-# export template todos(ds, ctl)
+# export template todos using c:TodoUICtrl
 	<section id="todoapp" onselectstart="return false;">
 		<header id="header">
 			<h1>todos</h1>
-			<form id="todo-form" onsubmit="{ctl.addTodo()}">
+			<form id="todo-form" onsubmit="{c.addTodo()}">
 				// TODO support autofocus attribute
-				<input id="new-todo" autocomplete="off" autofocus placeholder="What needs to be done?" value="{ds.newTodo.title}"/>
+				<input id="new-todo" autocomplete="off" autofocus placeholder="What needs to be done?" value="{c.newTodo.title}"/>
 			</form>
 		</header>
-		{if ds.todos.length}
+		{if c.todos.length}
 			<section id="main">
 				// TODO remove fixed ids
-				<input id="toggle-all" type="checkbox" value="{ds.allChecked}" title="Mark all done" onchange="{ctl.toggleAllDone()}"/>
+				<input id="toggle-all" type="checkbox" value="{c.allChecked}" title="Mark all done" onchange="{c.toggleAllDone()}"/>
 				<label for="toggle-all">Mark all as complete</label>
 				<ul id="todo-list"> 
-					{foreach todo in ds.todos}
-						{if ctl.isInFilter(todo,ds.filter)}
-							<#todoItem todo="{todo}" ds="{ds}" ctl="{ctl}"/>
+					{foreach todo in c.todos}
+						{if c.isInFilter(todo,c.filter)}
+							<#todoItem todo="{todo}" c="{c}"/>
 						{/if}
 					{/foreach}
 				</ul>
 			</section>
 			<footer id="footer">
 				<span id="todo-count">
-					<strong>{ds.remainingCount}</strong>
+					<strong>{c.remainingCount}</strong>
 					// TODO better way to pluralize
-					{if ds.remainingCount===1} item left {else} items left {/if}
+					{if c.remainingCount===1} item left {else} items left {/if}
 				</span>
 				<ul id="filters">
-					//ds, ctl, label, filterCode
-					<#filterLink ds="{ds}" ctl="{ctl}" label="All" filter="all"/>
-					<#filterLink ds="{ds}" ctl="{ctl}" label="Active" filter="active"/>
-					<#filterLink ds="{ds}" ctl="{ctl}" label="Completed" filter="completed"/>
+					<#filterLink c="{c}" label="All" filter="all"/>
+					<#filterLink c="{c}" label="Active" filter="active"/>
+					<#filterLink c="{c}" label="Completed" filter="completed"/>
 				</ul>
-				{if ds.doneCount}
-					<button id="clear-completed" onclick="{ctl.clearDoneTodos()}">Clear completed ({ds.doneCount})</button>
+				{if c.doneCount}
+					<button id="clear-completed" onclick="{c.clearDoneTodos()}">Clear completed ({c.doneCount})</button>
 				{/if}
 			</footer>
 		{/if}
@@ -73,21 +71,20 @@
 /**
  * template displaying the todo element
  * @param todo the todo data model
- * @param ctl the general controller
+ * @param c the general controller
  */
-# template todoItem(todo, ds, ctl) 
+# template todoItem(todo, c) 
 	<li class="{'completed':todo.completed, 'editing':todo.editMode}">
-
 		{if todo.editMode}
-			<form onsubmit="{ctl.doneEditing(todo)}"> 
-				<input type="text" class="edit" title="{ds.editTodo.title}" #model="{ds.editTodo.title}" onblur="{ctl.doneEditing(todo)}"/> 
-				// TODO todo-focus="todo == editedTodo"
+			<form onsubmit="{c.doneEditing(todo)}" class="editform">
+				// TODO focus on node creation
+				<input type="text" class="edit" title="{c.editTodo.title}" value="{c.editTodo.title}" onblur="{c.doneEditing(todo)}"/>
 			</form>
 		{else}
 			<div class="view">
-				<input class="toggle" type="checkbox" value="{todo.completed}" onchange="{ctl.syncData()}"/>
-				<label ondblclick="{ctl.editTodo(todo)}">{todo.title}</label>
-				<button class="destroy" onclick="{ctl.removeTodo(todo)}"></button>
+				<input class="toggle" type="checkbox" value="{todo.completed}" onchange="{c.syncData()}"/>
+				<label ondblclick="{c.edit(todo)}">{todo.title}</label>
+				<button class="destroy" onclick="{c.remove(todo)}"></button>
 			</div>
 		{/if}
 	</li>
@@ -96,14 +93,13 @@
 
 /**
  * display a link to activate a filter on the todo list
- * @param ds the data set
- * @param ctl the general controller
  * @param {String} label the label to display in the link - e.g. "All"
  * @param {String} filter the corresponding filter code used in the data model - e.g. "all"
+ * @param c the general controller
  */
-# template filterLink(ds, ctl, label, filter)	
+# template filterLink(label, filter, c)	
 	<li>
-		<a onclick="{ctl.selectFilter(filter)}" title="{label}" class="{'selected':ds.filter===filter}">
+		<a onclick="{c.selectFilter(filter)}" title="{label}" class="{label} {'selected':c.filter===filter}">
 			{label}
 		</a>
 	</li>

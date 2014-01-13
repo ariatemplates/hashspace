@@ -41,3 +41,15 @@ module.exports.createComment = function (text) {
 module.exports.getElementById = function (eltId) {
     return doc.getElementById(eltId);
 };
+
+if (doc.createEvent) {
+    module.exports.createEvent = function () {
+        return doc.createEvent.apply(doc,arguments);
+    };
+}
+
+if (doc.createEventObject) {
+    module.exports.createEventObject = function () {
+        return doc.createEventObject.apply(doc,arguments);
+    };
+}

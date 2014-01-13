@@ -16,7 +16,8 @@
 
 var hsp=require("hsp/rt"),
     json=require("hsp/json"),
-    doc=require("hsp/document");
+    doc=require("hsp/document"),
+    ht=require("hsp/utils/hashtester");
 
 /***
 # template test1(label,names)
@@ -643,31 +644,34 @@ describe("ForEach Node", function () {
     });
 
     it("tests with independent if child statement", function() {
+        var h=ht.newTestContext();
         var ds = [];
-        var n = test6(ds);
+        test6(ds).render(h.container);
 
-        var inputNodes = n.querySelectorAll("input");
-        var spanNodes = n.querySelectorAll("span");
+        var inputNodes = h("input");
+        var spanNodes = h("span");
         expect(inputNodes.length).toEqual(0);
         expect(spanNodes.length).toEqual(0);
         
         ds.push({value:"AA", edit: true});
         hsp.refresh();
         
-        inputNodes = n.querySelectorAll("input");
-        spanNodes = n.querySelectorAll("span");
+        inputNodes = h("input");
+        spanNodes = h("span");
         expect(inputNodes.length).toEqual(1);
-        expect(inputNodes[0].value).toEqual("AA");
+        expect(inputNodes.item(0).value()).toEqual("AA");
         expect(spanNodes.length).toEqual(0);
         
         json.set(ds[0], "edit", false);
         hsp.refresh();
         
-        inputNodes = n.querySelectorAll("input");
-        spanNodes = n.querySelectorAll("span");
+        inputNodes = h("input");
+        spanNodes = h("span");
         expect(inputNodes.length).toEqual(0);
         expect(spanNodes.length).toEqual(1);
-        expect(spanNodes[0].innerHTML).toEqual("AA");
+        expect(spanNodes.item(0).text()).toEqual("AA");
+
+        h.$dispose();
     });
     
 });

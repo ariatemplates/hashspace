@@ -196,12 +196,21 @@ describe("Json Observer", function () {
         json.observe(arr, fn1);
         expect(chgsz1).toEqual(0);
 
-        arr.sort(); // default order = lexicographical
-        expect(arr.join("/")).toEqual("A/B/C/D/E");
-        expect(chgsz1).not.toEqual(0); // a change has been raised
-        expect(chgcount).toEqual(1);
-        json.unobserve(arr, fn1);
+        var defaultFnSupported=true;
+        try {
+            arr.sort(); // default order = lexicographical
+        } catch(ex) {
+            defaultFnSupported=false;
+        }
 
+        if (defaultFnSupported) {
+            // IE 8 requires a function to be passed as argument
+            expect(arr.join("/")).toEqual("A/B/C/D/E");
+            expect(chgsz1).not.toEqual(0); // a change has been raised
+            expect(chgcount).toEqual(1);
+            json.unobserve(arr, fn1);
+        }
+        
         reset(0);
         arr=["D3","C1","A4","E2","B5"];
 

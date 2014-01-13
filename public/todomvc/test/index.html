@@ -1,4 +1,3 @@
-
 <!--
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -18,20 +17,21 @@
 
 <html>
 <head>
-<script type="text/javascript" src="/lib/noder.min.js">
-{
-    packaging : {baseUrl : "/"}
-}
-</script>
-<link href="todo.css" type="text/css" rel="stylesheet"/>
+<script type="text/javascript" src="/lib/jasmine.js"></script>
+<script type="text/javascript" src="/lib/jasmine-html.js"></script>
+<link href="/lib/jasmine.css" type="text/css" rel="stylesheet"/>
+<script type="text/javascript" src="/lib/noder.min.js">{packaging : {baseUrl : "/"}}</script>
 </head>
 <body>
 
-<div id="todo"></div>
-
 <script type="noder">
-var todos=require("todomvc/todo.hsp").todos;
-todos().render("todo");
+// load test scripts
+require("todomvc/test/todo.spec.js");
+
+// run tests
+var reporter = new jasmine.TrivialReporter(), env = jasmine.getEnv();
+env.addReporter(reporter);
+env.execute();
 </script>
 
 </body>

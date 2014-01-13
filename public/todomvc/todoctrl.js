@@ -16,32 +16,27 @@
 
 // Parts of this code has been copied from the angular MVC controller at
 // https://github.com/addyosmani/todomvc/blob/gh-pages/architecture-examples/angularjs/js/controllers/todoCtrl.js
-var klass = require("hsp/klass"), hsp = require("hsp/rt"), json = require("hsp/json"), todoTemplate = require("todomvc/todo.hsp").todos;
+var klass = require("hsp/klass"), $set = require("hsp/$set");
 
 /**
  * Main Todo Controller
  */
 
 var TodoCtrl = klass({
+    /**
+     * Object constructor: intialization of the data model
+     */
     $constructor : function () {
-        // todo data model
-        var d = {
-            newTodo : { // todo structure used to create a new todo
-                title : ""
-            },
-            editTodo : { // todo used for the edition so that cancelling edition doesn't result in a change in the
-                            // initial todo
-                title : ""
-            },
-            allChecked : false, // tells if all tasks are checked (cf. syncData)
-            remainingCount : 1, // number of remaining tasks (cf. syncData)
-            doneCount : 0, // number of items done (cf. syncData)
-            todos : [ // todo list - empty by default
-            // sample item: {title:"task text", completed:false, editMode:false}
-            ]
-
-        };
-        this.ds = d; // dataset
+        // todo structure used to create a new todo
+        this.newTodo = {title : ""};
+        // todo used for the edition so that cancelling edition change the initial todo
+        this.editTodo = {title : ""};
+        this.allChecked = false; // tells if all tasks are checked (cf. syncData)
+        this.remainingCount = 1; // number of remaining tasks (cf. syncData)
+        this.doneCount = 0;      // number of items done (cf. syncData)
+        this.todos = [ // todo list - empty by default
+        // sample item: {title:"task text", completed:false, editMode:false}
+        ];
     },
 
     /**
@@ -50,78 +45,94 @@ var TodoCtrl = klass({
      * loops..)
      */
     syncData : function () {
-        var doneCount = 0, d = this.ds, todos = d.todos, sz = todos.length;
+        var doneCount = 0, todos = this.todos, sz = todos.length;
         for (var i = 0; sz > i; i++) {
             if (todos[i].completed)
                 doneCount++;
         }
-        json.set(d, "doneCount", doneCount);
-        json.set(d, "remainingCount", sz - doneCount);
-        json.set(d, "allChecked", doneCount === sz);
+        $set(this, "doneCount", doneCount);
+        $set(this, "remainingCount", sz - doneCount);
+        $set(this, "allChecked", doneCount === sz);
     },
 
     /**
      * add a new todo item from the newTodo structure in the data set
      */
     addTodo : function () {
-        var newTodo = this.ds.newTodo;
+        this.doneEditingAll();
+        var newTodo = this.newTodo;
+        // ignore empty entries
         if (newTodo.title.length > 0) {
-            // ignore empty entries
-            this.ds.todos.push({
+            // put new todo at the beginning of the list
+            this.todos.unshift({
                 title : newTodo.title,
                 completed : false,
                 editMode : false
             });
-            json.set(newTodo, "title", "");
+            $set(newTodo, "title", "");
             this.syncData();
         }
-        return false;
+        return false; // to prevent default behaviour
     },
 
     /**
      * activate the edit mode for the current todo item and copies the todo values in the editTodo structure
      */
-    editTodo : function (todo) {
-        json.set(todo, "editMode", true);
-        json.set(this.ds.editTodo, "title", todo.title);
+    edit : function (todo) {
+        this.doneEditingAll();
+        $set(todo, "editMode", true);
+        $set(this.editTodo, "title", todo.title);
+    },
+
+    /**
+     * remove a todo item from the todo list
+     */
+    remove : function (todo) {
+        var idx = this.todos.indexOf(todo);
+        this.todos.splice(idx, 1);
+        this.syncData();
     },
 
     /**
      * copy the value of the editTodo in the currently edited todo and remove the editMode flag
      */
     doneEditing : function (todo) {
-        var editTodo = this.ds.editTodo;
-        if (!editTodo.title) {
-            this.removeTodo(todo);
+        if (!this.editTodo.title) {
+            this.remove(todo); // remove todo if title is empty
         } else {
-            json.set(todo, "title", editTodo.title);
-            json.set(todo, "editMode", false);
+            $set(todo, "title", this.editTodo.title);
+            $set(todo, "editMode", false);
         }
         return false;
+    },
+
+    /**
+     * automatically close all todo in that may be in edit mode
+     */
+    doneEditingAll : function() {
+        // cancel current edit if any
+        var td;
+        for (var i=this.todos.length-1; i>-1; i--) {
+            td=this.todos[i];
+            if (td.editMode) {
+                this.doneEditing(td);
+            }
+        }
     },
 
     /**
      * cancel the edition for a todo a keeps the previous value
      */
     cancelEditing : function (todo) {
-        json.set(this.ds.editTodo, "title", "");
-        json.set(todo, "editMode", false);
-    },
-
-    /**
-     * remove a todo item from the todo list
-     */
-    removeTodo : function (todo) {
-        var idx = this.ds.todos.indexOf(todo);
-        this.ds.todos.splice(idx, 1);
-        this.syncData();
+        $set(this.editTodo, "title", "");
+        $set(todo, "editMode", false);
     },
 
     /**
      * remove all the completed todos from the todo list
      */
     clearDoneTodos : function () {
-        json.set(this.ds, "todos", this.ds.todos.filter(function (val) {
+        $set(this, "todos", this.todos.filter(function (val) {
             return !val.completed;
         }));
         this.syncData();
@@ -131,9 +142,9 @@ var TodoCtrl = klass({
      * Toggle all todo item completed states
      */
     toggleAllDone : function () {
-        var newState = this.ds.allChecked, todos = this.ds.todos;
+        var newState = this.allChecked, todos = this.todos;
         for (var i = 0, sz = todos.length; sz > i; i++) {
-            json.set(todos[i], "completed", newState);
+            $set(todos[i], "completed", newState);
         }
         this.syncData();
     }
@@ -143,7 +154,7 @@ var TodoCtrl = klass({
 /**
  * UI Module Controller - dealing with the filter part and managing the template display
  */
-var TodoModule = klass({
+exports.TodoUICtrl = klass({
     $extends : TodoCtrl,
 
     /**
@@ -154,22 +165,14 @@ var TodoModule = klass({
         // call super constructor
         TodoCtrl.$constructor.call(this);
         // add ui-items to the datamodel
-        this.ds.filter = "all"; // possible value: "all" or "active" or "completed"
-        this.display(DOMElt);
-    },
-
-    /**
-     * Display the todo list in an html element passed as argument
-     */
-    display : function (DOMElt) {
-        hsp.display(todoTemplate(this.ds, this), DOMElt);
+        this.filter = "all"; // possible value: "all" or "active" or "completed"
     },
 
     /**
      * Tells if a todo item should be displayed based on the current ui filter
      */
     isInFilter : function (todo, filter) {
-        var f = this.ds.filter;
+        var f = this.filter;
         if (f === "active" && todo.completed)
             return false;
         if (f === "completed" && !todo.completed)
@@ -182,9 +185,7 @@ var TodoModule = klass({
      */
     selectFilter : function (filter) {
         if (filter === "all" || filter === "active" || filter === "completed") {
-            json.set(this.ds, "filter", filter);
+            $set(this, "filter", filter);
         }
     }
 });
-
-module.exports = TodoModule;

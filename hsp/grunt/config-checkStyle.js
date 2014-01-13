@@ -28,11 +28,16 @@ module.exports = function (grunt) {
         },
         source : {
             src : ['hsp/**/*.js',
-                    '!hsp/grunt/*.js']
+                    '!hsp/grunt/*.js',
+                    '!hsp/utils/jquery*.min.js']
         },
         public : {
             files : {
-                src : ['public/**/*.js', '!public/test/**/*.js',  '!public/lib/**/*.js', '!public/playground/markdown.js']
+                src : [ 'public/**/*.js',
+                        '!public/**/test/**/*.js',
+                        '!public/lib/**/*.js',
+                        '!public/playground/markdown.js'
+                ]
             },
             options : {
                 "unused" : false,
@@ -42,6 +47,7 @@ module.exports = function (grunt) {
                     "console": false,
                     "document": false,
                     "module": false,
+                    "exports": false,
                     "noder": false,
                     "require": false,
                     "window": false,
@@ -51,12 +57,13 @@ module.exports = function (grunt) {
                     "clearTimeout": false,
                     "clearInterval": false,
                     "test": false,
-                    "Syn": false
+                    "Syn": false,
+                    "Event": false
                 }
             }
         },
         test : {
-            src : ['public/test/**/*.js'],
+            src : ['public/**/test/**/*.js'],
             options : {
                 "node" : true,
                 "globals" : {

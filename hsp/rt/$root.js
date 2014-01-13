@@ -204,6 +204,7 @@ var $RootNode = klass({
      * @param {string|DOMElement} container the HTML container element or its id
      * @param {Boolean} replace if true, the template result will replace the element content - otherwise it will be
      * appended (default: true)
+     * @return {$RootNode} the current node to be able to chain actions
      */
     render : function (domElt, replace) {
         var c = domElt; // container
@@ -211,8 +212,11 @@ var $RootNode = klass({
             c = doc.getElementById(c);
             if (c === null) {
                 console.error("[hashspace] Template cannot be rendered - Invalid element id: "+domElt);
-                return;
+                return this;
             }
+        } else if (!c || !c.appendChild) {
+            console.error("[hashspace] Template cannot be rendered - Invalid element: "+domElt);
+            return this;
         }
         var df = this.node; // should be a doc fragment
         if (df.nodeType !== DOCUMENT_FRAGMENT_NODE) {
@@ -227,34 +231,7 @@ var $RootNode = klass({
             // recursively updates all reference to the previous doc fragment node
             this.replaceNodeBy(df, c);
         }
-    },
-
-    /**
-     * Wrapper to HTML5 queryselector - mainly used for unit tests
-     */
-    querySelector : function (selectors) {
-        var n = this.node;
-        if (n.querySelector) {
-            return n.querySelector(selectors);
-        } else {
-            // TODO use polyfill
-            console.error("[$Root] querySelector() is not supported by this browser");
-        }
-        return null;
-    },
-
-    /**
-     * Wrapper to HTML5 querySelectorAll - mainly used for unit tests
-     */
-    querySelectorAll : function (selectors) {
-        var n = this.node;
-        if (n.querySelector) {
-            return n.querySelectorAll(selectors);
-        } else {
-            // TODO use polyfill
-            console.error("[$Root] querySelectorAll() is not supported by this browser");
-        }
-        return null;
+        return this;
     }
 });
 

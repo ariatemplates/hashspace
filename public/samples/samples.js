@@ -127,6 +127,6 @@ module.exports = [{
                         main : true
                     }]
         }
-// TODO add component with events
+        // TODO add component with events
 
 ];
