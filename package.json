@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "acorn": "0.1.0",
-    "pegjs": "0.7.0"
+    "pegjs": "0.7.0",
+    "uglify-js": "2.4.11"
   },
   "devDependencies": {
     "grunt-verifylowercase": "~0.2.0",
