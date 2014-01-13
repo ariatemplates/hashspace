@@ -1,4 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/ariatemplates/hashspace.png)](http://travis-ci.org/ariatemplates/hashspace)
+[![devDependency Status](https://david-dm.org/ariatemplates/hashspace/status.png?branch=master)](https://david-dm.org/ariatemplates/hashspace#info=dependencies)
+[![devDependency Status](https://david-dm.org/ariatemplates/hashspace/dev-status.png?branch=master)](https://david-dm.org/ariatemplates/hashspace#info=devDependencies)
 
 hashspace
 =========
