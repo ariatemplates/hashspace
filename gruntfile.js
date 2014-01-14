@@ -32,7 +32,7 @@ module.exports = function (grunt) {
         plugins: [
           // these plugins will be require()-d by Karma
           'karma-*',
-          require('./karma-hsp-preprocessor')
+          require('./build/karma-hsp-preprocessor')
         ],
         files: [
           'hsp/**/*.js',
@@ -41,7 +41,6 @@ module.exports = function (grunt) {
           'public/test/**/*.spec.*'
         ],
         exclude: [
-          'hsp/grunt/**/*.js',
           'hsp/compiler/**/*.js',
           'public/test/compiler/**/*.spec.js'
         ],
@@ -229,7 +228,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-karma');
-  grunt.loadTasks('hsp/grunt');
+  grunt.loadTasks('build/grunt');
 
   grunt.registerTask('package', ['copy', 'browserify', 'uglify']);
   grunt.registerTask('test', ['checkStyle','mochaTest', 'karma:unit']);

@@ -3,7 +3,7 @@ var app = express();
 var server = require('http').createServer(app);
 var path = require("path");
 
-var renderer = require("../compiler/renderer");
+var renderer = require("../../hsp/compiler/renderer");
 
 module.exports = function(grunt) {
     grunt.registerTask('hspserver', 'Start a web server to server compiled templates on the fly', function () {

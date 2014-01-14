@@ -1,4 +1,4 @@
-var renderer = require("../hsp/compiler/renderer");
+var renderer = require("../../hsp/compiler/renderer");
 
 var createHspPreprocessor = function () {
 
