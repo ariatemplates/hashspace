@@ -1,5 +1,5 @@
 node_modules
 .DS_STORE
 ._.DS_STORE
-build
+dist
 sauce_connect.log
