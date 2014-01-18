@@ -34,7 +34,8 @@ module.exports = function (grunt) {
                 src : [ 'public/**/*.js',
                         '!public/**/test/**/*.js',
                         '!public/lib/**/*.js',
-                        '!public/playground/markdown.js'
+                        '!public/playground/markdown.js',
+                        '!public/expect.js'
                 ]
             },
             options : {
@@ -75,7 +76,7 @@ module.exports = function (grunt) {
                     "beforeEach" : false,
                     "after" : false,
                     "afterEach" : false,
-                    "expect": false
+                    "expect" : false
                 }
             }
         }

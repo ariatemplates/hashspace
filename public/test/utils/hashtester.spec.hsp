@@ -1,4 +1,5 @@
-var ht=require("hsp/utils/hashtester"), $set=require("hsp/$set");
+var ht=require("hsp/utils/hashtester"), 
+    $set=require("hsp/$set");
 
 # template testContent(data)
     <div class="foo1 foo2">
@@ -12,8 +13,6 @@ var ht=require("hsp/utils/hashtester"), $set=require("hsp/$set");
     </ul>
 # /template
 
-
-
 function increaseCount(d,incr) {
     $set(d,"count",d.count+incr);
 }
@@ -26,9 +25,9 @@ describe("HashTester", function () {
     it("validates container creation", function() {
         var h=ht.newTestContext();
 
-        expect(h.container).not.toEqual(null);
-        expect(h.container.nodeType).toEqual(1);
-
+        expect(h.container).not.to.equal(null);
+        expect(h.container.nodeType).to.equal(1);
+        
         h.$dispose();
     });
 
@@ -38,17 +37,17 @@ describe("HashTester", function () {
 
         // invalid selector
         var x=h(".blah");
-        expect(x.length).toEqual(0);
+        expect(x.length).to.equal(0);
 
         // valid selector
         var sometext=h(".foo1 .sometext");
-        expect(sometext.length).toEqual(1);
-        expect(sometext.text()).toEqual("Here is some text");
+        expect(sometext.length).to.equal(1);
+        expect(sometext.text()).to.equal("Here is some text");
 
         // list of items
         var items=h(".bar li");
-        expect(items.length).toEqual(3);
-        expect(items.item(1).text()).toEqual('item 2');
+        expect(items.length).to.equal(3);
+        expect(items.item(1).text()).to.equal('item 2');
 
         h.$dispose();
     });
@@ -59,8 +58,8 @@ describe("HashTester", function () {
 
         // list of items
         var items=h(".bar").find("li");
-        expect(items.length).toEqual(3);
-        expect(items.item(2).text()).toEqual('item 3');
+        expect(items.length).to.equal(3);
+        expect(items.item(2).text()).to.equal('item 3');
 
         h.$dispose();
     });
@@ -69,10 +68,10 @@ describe("HashTester", function () {
         var h=ht.newTestContext();
         testContent({count:0}).render(h.container);
 
-        expect(h(COUNT).text()).toEqual("0");
+        expect(h(COUNT).text()).to.equal("0");
         h(COUNT).click();
 
-        expect(h(COUNT).text()).toEqual("1");
+        expect(h(COUNT).text()).to.equal("1");
         h.$dispose();
     });
 
@@ -80,10 +79,10 @@ describe("HashTester", function () {
         var h=ht.newTestContext();
         var n=testContent({count:0}).render(h.container);
 
-        expect(h(COUNT).text()).toEqual("0");
+        expect(h(COUNT).text()).to.equal("0");
         h(COUNT).dblclick();
 
-        expect(h(COUNT).text()).toEqual("5");
+        expect(h(COUNT).text()).to.equal("5");
         h.$dispose();
     });
 
@@ -92,8 +91,8 @@ describe("HashTester", function () {
         var n=testContent({count:0}).render(h.container);
 
         var list=h(ITEMS);
-        expect(list.item(0).hasClass("foo2")).toEqual(false);
-        expect(list.item(1).hasClass("foo2")).toEqual(true);
+        expect(list.item(0).hasClass("foo2")).to.equal(false);
+        expect(list.item(1).hasClass("foo2")).to.equal(true);
 
         h.$dispose();
     });

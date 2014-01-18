@@ -72,12 +72,12 @@ describe("Event Handlers", function () {
             }
         };
         var n = test1(dm, ctl);
-        expect(n.node.firstChild.firstChild.nodeValue).toEqual("Hello Omer! ");
-        expect(count).toEqual(0);
+        expect(n.node.firstChild.firstChild.nodeValue).to.equal("Hello Omer! ");
+        expect(count).to.equal(0);
 
         n.node.firstChild.click();
-        expect(count).toEqual(1);
-        expect(lastArg).toEqual(undefined);
+        expect(count).to.equal(1);
+        expect(lastArg).to.equal(undefined);
 
         n.$dispose();
     });
@@ -101,25 +101,25 @@ describe("Event Handlers", function () {
         var ds = ["Omer", "Marge", "Bart", "Lisa", "Maggie"];
         var n = test2("index", ds, ctl);
 
-        expect(test2SpanValue(n, 1)).toEqual("index 1: Marge ");
-        expect(test2SpanValue(n, 3)).toEqual("index 3: Lisa ");
-        expect(count).toEqual(0);
+        expect(test2SpanValue(n, 1)).to.equal("index 1: Marge ");
+        expect(test2SpanValue(n, 3)).to.equal("index 3: Lisa ");
+        expect(count).to.equal(0);
 
         test2SpanNode(n, 1).click();
 
-        expect(count).toEqual(1);
-        expect(lastName).toEqual("Marge");
-        expect(lastIdx).toEqual(1);
-        expect(lastStrArg).toEqual("literal arg");
-        expect(lastEvtType).toEqual("click");
+        expect(count).to.equal(1);
+        expect(lastName).to.equal("Marge");
+        expect(lastIdx).to.equal(1);
+        expect(lastStrArg).to.equal("literal arg");
+        expect(lastEvtType).to.equal("click");
 
         test2SpanNode(n, 3).click();
 
-        expect(count).toEqual(2);
-        expect(lastName).toEqual("Lisa");
-        expect(lastIdx).toEqual(3);
-        expect(lastStrArg).toEqual("literal arg");
-        expect(lastEvtType).toEqual("click");
+        expect(count).to.equal(2);
+        expect(lastName).to.equal("Lisa");
+        expect(lastIdx).to.equal(3);
+        expect(lastStrArg).to.equal("literal arg");
+        expect(lastEvtType).to.equal("click");
 
         n.$dispose();
     });
@@ -130,12 +130,12 @@ describe("Event Handlers", function () {
         };
         var n = test3(dm);
 
-        expect(n.node.firstChild.firstChild.nodeValue).toEqual("Hello Omer! ");
-        expect(doClickCount).toEqual(0);
+        expect(n.node.firstChild.firstChild.nodeValue).to.equal("Hello Omer! ");
+        expect(doClickCount).to.equal(0);
 
         n.node.firstChild.click();
-        expect(doClickCount).toEqual(1);
-        expect(doClickStrArg).toEqual("blah");
+        expect(doClickCount).to.equal(1);
+        expect(doClickStrArg).to.equal("blah");
 
         n.$dispose();
     });
@@ -145,11 +145,11 @@ describe("Event Handlers", function () {
         test4().render(h.container);
 
         var img = h('img');
-        expect(img.$selection[0].cbatt).toEqual(undefined);
+        expect(img.$selection[0].cbatt).to.equal(undefined);
         img.click();
 
         // TODO fix next line in IE8
-        expect(img.$selection[0].cbatt).toEqual(123);
+        expect(img.$selection[0].cbatt).to.equal(123);
         h.$dispose();
     });
 

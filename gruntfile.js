@@ -28,7 +28,7 @@ module.exports = function (grunt) {
     },
     karma: {
       options: {
-        frameworks: ['jasmine', 'commonjs'],
+        frameworks: ['mocha', 'expect', 'commonjs'],
         plugins: [
           // these plugins will be require()-d by Karma
           'karma-*',
@@ -36,8 +36,6 @@ module.exports = function (grunt) {
         ],
         files: [
           'hsp/**/*.js',
-          'public/test/lib/fireDomEvent.js',
-          'public/test/lib/type.js',
           'public/test/**/*.spec.*'
         ],
         exclude: [

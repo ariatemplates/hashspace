@@ -51,34 +51,34 @@ describe("Json Observer", function () {
     it("tests one observer on a map object", function () {
         reset();
         json.set(obj, "propB", "b2");
-        expect(obj.propB).toEqual("b2");
+        expect(obj.propB).to.equal("b2");
 
         json.observe(obj, fn1);
-        expect(obj["+json:observers"].length).toEqual(1);
+        expect(obj["+json:observers"].length).to.equal(1);
 
         json.set(obj, "propB", "b3");
-        expect(chg1.type).toEqual("updated");
-        expect(chgsz1).toEqual(1);
-        expect(chg1.object).toEqual(obj);
-        expect(chg1.name).toEqual("propB");
-        expect(chg1.oldValue).toEqual("b2");
+        expect(chg1.type).to.equal("updated");
+        expect(chgsz1).to.equal(1);
+        expect(chg1.object).to.equal(obj);
+        expect(chg1.name).to.equal("propB");
+        expect(chg1.oldValue).to.equal("b2");
 
         json.set(obj, "propD", "d");
-        expect(chg1.type).toEqual("new");
-        expect(chgsz1).toEqual(1);
-        expect(obj.propD).toEqual("d");
-        expect(chg1.name).toEqual("propD");
-        expect(chg1.oldValue).toEqual(undefined);
+        expect(chg1.type).to.equal("new");
+        expect(chgsz1).to.equal(1);
+        expect(obj.propD).to.equal("d");
+        expect(chg1.name).to.equal("propD");
+        expect(chg1.oldValue).to.equal(undefined);
 
         json.unobserve(obj, fn1);
-        expect(obj["json:observers"]).toEqual(undefined);
+        expect(obj["json:observers"]).to.equal(undefined);
     });
 
     it("tests two observers on a map object", function () {
         reset();
 
         json.observe(obj, fn1);
-        expect(obj["+json:observers"].length).toEqual(1);
+        expect(obj["+json:observers"].length).to.equal(1);
 
         var chg2 = {};
         var chgsz2 = 0;
@@ -87,20 +87,20 @@ describe("Json Observer", function () {
             chgsz2 = changes.length;
         };
         json.observe(obj, fn2);
-        expect(obj["+json:observers"].length).toEqual(2);
+        expect(obj["+json:observers"].length).to.equal(2);
 
         json.set(obj, "propB", "b3");
-        expect(chg1.type).toEqual("updated");
-        expect(chgsz1).toEqual(1);
-        expect(chg1.object).toEqual(obj);
-        expect(chg1.name).toEqual("propB");
-        expect(chg1.oldValue).toEqual("b");
-        expect(chg1).toEqual(chg2);
+        expect(chg1.type).to.equal("updated");
+        expect(chgsz1).to.equal(1);
+        expect(chg1.object).to.equal(obj);
+        expect(chg1.name).to.equal("propB");
+        expect(chg1.oldValue).to.equal("b");
+        expect(chg1).to.equal(chg2);
 
         json.unobserve(obj, fn1);
-        expect(obj["+json:observers"].length).toEqual(1);
+        expect(obj["+json:observers"].length).to.equal(1);
         json.unobserve(obj, fn2);
-        expect(obj["+json:observers"]).toEqual(undefined);
+        expect(obj["+json:observers"]).to.equal(undefined);
     });
 
     it("tests one observer on an array object", function () {
@@ -108,10 +108,10 @@ describe("Json Observer", function () {
         json.observe(obj2.propC, fn1);
 
         json.set(obj2.propC, 1, "v1-2");
-        expect(obj2.propC[1]).toEqual("v1-2");
-        expect(chg1.oldValue).toEqual("v1");
-        expect(chg1.name).toEqual(1);
-        expect(chg1.type).toEqual("updated");
+        expect(obj2.propC[1]).to.equal("v1-2");
+        expect(chg1.oldValue).to.equal("v1");
+        expect(chg1.name).to.equal(1);
+        expect(chg1.type).to.equal("updated");
 
         json.unobserve(obj, fn1);
     });
@@ -121,23 +121,23 @@ describe("Json Observer", function () {
         json.observe(obj2.propC, fn1);
 
         obj2.propC.push("v4");
-        expect(obj2.propC[4]).toEqual("v4");
-        expect(obj2.propC.length).toEqual(5);
+        expect(obj2.propC[4]).to.equal("v4");
+        expect(obj2.propC.length).to.equal(5);
         // chg2 corresponds to the length change
-        expect(chg2.oldValue).toEqual(4);
-        expect(chg2.name).toEqual("length");
-        expect(chg2.type).toEqual("updated");
-        expect(chgcount).toEqual(1);
+        expect(chg2.oldValue).to.equal(4);
+        expect(chg2.name).to.equal("length");
+        expect(chg2.type).to.equal("updated");
+        expect(chgcount).to.equal(1);
 
         chgsz1=0;
         var r = obj2.propC.push("v5", "v6");
-        expect(r).toEqual(7);
+        expect(r).to.equal(7);
         // chg2 also corresponds to length update
-        expect(chgsz1).toEqual(3); // 2 changes with the push + 1 change for length
-        expect(chg3.name).toEqual("length"); // last change first
-        expect(chg3.type).toEqual("updated");
-        expect(obj2.propC[6]).toEqual("v6");
-        expect(chgcount).toEqual(2);
+        expect(chgsz1).to.equal(3); // 2 changes with the push + 1 change for length
+        expect(chg3.name).to.equal("length"); // last change first
+        expect(chg3.type).to.equal("updated");
+        expect(obj2.propC[6]).to.equal("v6");
+        expect(chgcount).to.equal(2);
 
         json.unobserve(obj2.propC, fn1);
     });
@@ -145,18 +145,18 @@ describe("Json Observer", function () {
     it("tests array shift and unshift", function () {
         reset(0);
         json.observe(obj2.propC, fn1);
-        expect(obj2.propC.join("/")).toEqual("v0/v1/v2/v3");
+        expect(obj2.propC.join("/")).to.equal("v0/v1/v2/v3");
 
         var x=obj2.propC.shift();
-        expect(x).toEqual("v0");
-        expect(obj2.propC.length).toEqual(3);
-        expect(obj2.propC.join("/")).toEqual("v1/v2/v3");
-        expect(chgcount).toEqual(1); // a change has been raised
+        expect(x).to.equal("v0");
+        expect(obj2.propC.length).to.equal(3);
+        expect(obj2.propC.join("/")).to.equal("v1/v2/v3");
+        expect(chgcount).to.equal(1); // a change has been raised
 
         var y=obj2.propC.unshift("V0.1","V0.2");
-        expect(y).toEqual(5); // new length
-        expect(obj2.propC.join("/")).toEqual("V0.1/V0.2/v1/v2/v3");
-        expect(chgcount).toEqual(2); // another change has been raised
+        expect(y).to.equal(5); // new length
+        expect(obj2.propC.join("/")).to.equal("V0.1/V0.2/v1/v2/v3");
+        expect(chgcount).to.equal(2); // another change has been raised
 
         json.unobserve(obj2.propC, fn1);
     });
@@ -164,13 +164,13 @@ describe("Json Observer", function () {
     it("tests array pop", function () {
         reset(0);
         json.observe(obj2.propC, fn1);
-        expect(obj2.propC.join("/")).toEqual("v0/v1/v2/v3");
+        expect(obj2.propC.join("/")).to.equal("v0/v1/v2/v3");
 
         var x=obj2.propC.pop();
-        expect(x).toEqual("v3");
-        expect(obj2.propC.length).toEqual(3);
-        expect(obj2.propC.join("/")).toEqual("v0/v1/v2");
-        expect(chgcount).toEqual(1); // a change has been raised
+        expect(x).to.equal("v3");
+        expect(obj2.propC.length).to.equal(3);
+        expect(obj2.propC.join("/")).to.equal("v0/v1/v2");
+        expect(chgcount).to.equal(1); // a change has been raised
 
         json.unobserve(obj2.propC, fn1);
     });
@@ -178,12 +178,12 @@ describe("Json Observer", function () {
     it("tests array reverse", function () {
         reset(0);
         json.observe(obj2.propC, fn1);
-        expect(chgsz1).toEqual(0);
+        expect(chgsz1).to.equal(0);
 
         obj2.propC.reverse();
-        expect(obj2.propC.join("/")).toEqual("v3/v2/v1/v0");
-        expect(chgsz1).not.toEqual(0); // a change has been raised
-        expect(chgcount).toEqual(1);
+        expect(obj2.propC.join("/")).to.equal("v3/v2/v1/v0");
+        expect(chgsz1).not.to.equal(0); // a change has been raised
+        expect(chgcount).to.equal(1);
 
         json.unobserve(obj2.propC, fn1);
     });
@@ -193,7 +193,7 @@ describe("Json Observer", function () {
         var arr=["D","C","A","E","B"];
 
         json.observe(arr, fn1);
-        expect(chgsz1).toEqual(0);
+        expect(chgsz1).to.equal(0);
 
         var defaultFnSupported=true;
         try {
@@ -204,9 +204,9 @@ describe("Json Observer", function () {
 
         if (defaultFnSupported) {
             // IE 8 requires a function to be passed as argument
-            expect(arr.join("/")).toEqual("A/B/C/D/E");
-            expect(chgsz1).not.toEqual(0); // a change has been raised
-            expect(chgcount).toEqual(1);
+            expect(arr.join("/")).to.equal("A/B/C/D/E");
+            expect(chgsz1).not.to.equal(0); // a change has been raised
+            expect(chgcount).to.equal(1);
             json.unobserve(arr, fn1);
         }
         
@@ -214,29 +214,29 @@ describe("Json Observer", function () {
         arr=["D3","C1","A4","E2","B5"];
 
         json.observe(arr, fn1);
-        expect(chgsz1).toEqual(0);
+        expect(chgsz1).to.equal(0);
 
         arr.sort(function (a,b) {
             var x=parseInt(a.slice(1));
             var y=parseInt(b.slice(1));
             return x-y;
         });
-        expect(arr.join("/")).toEqual("C1/E2/D3/A4/B5");
-        expect(chgsz1).not.toEqual(0); // a change has been raised
-        expect(chgcount).toEqual(1);
+        expect(arr.join("/")).to.equal("C1/E2/D3/A4/B5");
+        expect(chgsz1).not.to.equal(0); // a change has been raised
+        expect(chgcount).to.equal(1);
         json.unobserve(arr, fn1);
     });
 
     it("tests array splice", function () {
         reset(0);
         json.observe(obj2.propC, fn1);
-        expect(chgsz1).toEqual(0);
+        expect(chgsz1).to.equal(0);
 
         obj2.propC.splice(1, 2, "a");
-        expect(chgcount).toEqual(1);
-        expect(chgsz1).toEqual(2);
-        expect(obj2.propC.length).toEqual(3);
-        expect(obj2.propC.join("/")).toEqual("v0/a/v3");
+        expect(chgcount).to.equal(1);
+        expect(chgsz1).to.equal(2);
+        expect(obj2.propC.length).to.equal(3);
+        expect(obj2.propC.join("/")).to.equal("v0/a/v3");
 
         json.unobserve(obj2.propC, fn1);
     });
@@ -244,13 +244,13 @@ describe("Json Observer", function () {
     it("tests array splice2", function () {
         reset(0);
         json.observe(obj2.propC, fn1);
-        expect(chgsz1).toEqual(0);
+        expect(chgsz1).to.equal(0);
 
         obj2.propC.splice2(1, 2, ["a", "b", "c"]);
-        expect(chgcount).toEqual(1);
-        expect(chgsz1).toEqual(2);
-        expect(obj2.propC.length).toEqual(5);
-        expect(obj2.propC.join("/")).toEqual("v0/a/b/c/v3");
+        expect(chgcount).to.equal(1);
+        expect(chgsz1).to.equal(2);
+        expect(obj2.propC.length).to.equal(5);
+        expect(obj2.propC.join("/")).to.equal("v0/a/b/c/v3");
 
         json.unobserve(obj2.propC, fn1);
     });

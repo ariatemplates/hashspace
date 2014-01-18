@@ -29,17 +29,17 @@ describe("Touch Event", function () {
         primaryEvent.pageX = 12;
         primaryEvent.pageY = 24;
         primaryEvent.isPrimary = true;
-        expect(touchEvent.getFingerIndex(primaryEvent)).toEqual(0);
+        expect(touchEvent.getFingerIndex(primaryEvent)).to.equal(0);
         var positions = touchEvent.getPositions(primaryEvent);
-        expect(positions.length == 1 && positions[0].x == 12 && positions[0].y == 24).toEqual(true);
+        expect(positions.length == 1 && positions[0].x == 12 && positions[0].y == 24).to.equal(true);
 
         var secondaryEvent = {};
         secondaryEvent.pageX = 13;
         secondaryEvent.pageY = 25;
         secondaryEvent.isPrimary = false;
-        expect(touchEvent.getFingerIndex(secondaryEvent)).toEqual(1);
+        expect(touchEvent.getFingerIndex(secondaryEvent)).to.equal(1);
         var positions = touchEvent.getPositions(secondaryEvent);
-        expect(positions.length == 1 && positions[0].x == 13 && positions[0].y == 25).toEqual(true);
+        expect(positions.length == 1 && positions[0].x == 13 && positions[0].y == 25).to.equal(true);
 
         window.navigator.msPointerEnabled = backup;
     });
@@ -49,9 +49,9 @@ describe("Touch Event", function () {
         event.pageX = 35;
         event.pageY = 36;
         event.isPrimary = true;
-        expect(touchEvent.getFingerIndex(event)).toEqual(0);
+        expect(touchEvent.getFingerIndex(event)).to.equal(0);
         var positions = touchEvent.getPositions(event);
-        expect(positions.length == 1 && positions[0].x == 35 && positions[0].y == 36).toEqual(true);
+        expect(positions.length == 1 && positions[0].x == 35 && positions[0].y == 36).to.equal(true);
     });
 
     it("tests single touch events", function () {
@@ -66,9 +66,9 @@ describe("Touch Event", function () {
                     pageY : 17
                 }];
         startEvent.isPrimary = true;
-        expect(touchEvent.getFingerIndex(startEvent)).toEqual(0);
+        expect(touchEvent.getFingerIndex(startEvent)).to.equal(0);
         var positions = touchEvent.getPositions(startEvent);
-        expect(positions.length == 1 && positions[0].x == 10 && positions[0].y == 17).toEqual(true);
+        expect(positions.length == 1 && positions[0].x == 10 && positions[0].y == 17).to.equal(true);
 
         var moveEvent = {};
         moveEvent.type = touchEvent.touchEventMap.touchmove;
@@ -81,9 +81,9 @@ describe("Touch Event", function () {
                     pageY : 17
                 }];
         moveEvent.isPrimary = true;
-        expect(touchEvent.getFingerIndex(moveEvent)).toEqual(0);
+        expect(touchEvent.getFingerIndex(moveEvent)).to.equal(0);
         var positions = touchEvent.getPositions(moveEvent);
-        expect(positions.length == 1 && positions[0].x == 10 && positions[0].y == 17).toEqual(true);
+        expect(positions.length == 1 && positions[0].x == 10 && positions[0].y == 17).to.equal(true);
 
         var endEvent = {};
         endEvent.type = touchEvent.touchEventMap.touchend;
@@ -93,9 +93,9 @@ describe("Touch Event", function () {
                     pageY : 17
                 }];
         endEvent.isPrimary = true;
-        expect(touchEvent.getFingerIndex(endEvent)).toEqual(0);
+        expect(touchEvent.getFingerIndex(endEvent)).to.equal(0);
         var positions = touchEvent.getPositions(endEvent);
-        expect(positions.length == 1 && positions[0].x == 10 && positions[0].y == 17).toEqual(true);
+        expect(positions.length == 1 && positions[0].x == 10 && positions[0].y == 17).to.equal(true);
     });
 
     it("tests double touch events", function () {
@@ -119,10 +119,10 @@ describe("Touch Event", function () {
                         pageX : 31,
                         pageY : 35
                     }];
-            expect(touchEvent.getFingerIndex(startEvent)).toEqual(102);
+            expect(touchEvent.getFingerIndex(startEvent)).to.equal(102);
             var positions = touchEvent.getPositions(startEvent);
             expect(positions.length == 2 && positions[0].x == 10 && positions[0].y == 17
-                    && positions[1].x == 31 && positions[1].y == 35).toEqual(true);
+                    && positions[1].x == 31 && positions[1].y == 35).to.equal(true);
         }
 
         // Second finger starts after first one is already touching
@@ -138,10 +138,10 @@ describe("Touch Event", function () {
                     pageY : 35
                 }];
         startEvent.isPrimary = false;
-        expect(touchEvent.getFingerIndex(startEvent)).toEqual(1);
+        expect(touchEvent.getFingerIndex(startEvent)).to.equal(1);
         var positions = touchEvent.getPositions(startEvent);
         expect(positions.length == 2 && positions[0].x == 10 && positions[0].y == 17
-                && positions[1].x == 31 && positions[1].y == 35).toEqual(true);
+                && positions[1].x == 31 && positions[1].y == 35).to.equal(true);
 
         // First finger moving
         var moveEvent = {};
@@ -158,10 +158,10 @@ describe("Touch Event", function () {
                     pageY : 35
                 }];
         moveEvent.isPrimary = false;
-        expect(touchEvent.getFingerIndex(moveEvent)).toEqual(1);
+        expect(touchEvent.getFingerIndex(moveEvent)).to.equal(1);
         var positions = touchEvent.getPositions(moveEvent);
         expect(positions.length == 2 && positions[0].x == 10 && positions[0].y == 17
-                && positions[1].x == 31 && positions[1].y == 35).toEqual(true);
+                && positions[1].x == 31 && positions[1].y == 35).to.equal(true);
 
         // Second finger moving
         moveEvent.changedTouches = [{
@@ -169,10 +169,10 @@ describe("Touch Event", function () {
                     pageY : 17
                 }];
         moveEvent.isPrimary = true;
-        expect(touchEvent.getFingerIndex(moveEvent)).toEqual(0);
+        expect(touchEvent.getFingerIndex(moveEvent)).to.equal(0);
         var positions = touchEvent.getPositions(moveEvent);
         expect(positions.length == 2 && positions[0].x == 10 && positions[0].y == 17
-                && positions[1].x == 31 && positions[1].y == 35).toEqual(true);
+                && positions[1].x == 31 && positions[1].y == 35).to.equal(true);
 
         // Both fingers moving together
         if (!isIE10) {
@@ -183,10 +183,10 @@ describe("Touch Event", function () {
                         pageX : 31,
                         pageY : 35
                     }];
-            expect(touchEvent.getFingerIndex(moveEvent)).toEqual(102);
+            expect(touchEvent.getFingerIndex(moveEvent)).to.equal(102);
             var positions = touchEvent.getPositions(moveEvent);
             expect(positions.length == 2 && positions[0].x == 10 && positions[0].y == 17
-                    && positions[1].x == 31 && positions[1].y == 35).toEqual(true);
+                    && positions[1].x == 31 && positions[1].y == 35).to.equal(true);
         }
 
         // One finger ending while the other is still touching
@@ -201,10 +201,10 @@ describe("Touch Event", function () {
                     pageY : 35
                 }];
         endEvent.isPrimary = false;
-        expect(touchEvent.getFingerIndex(endEvent)).toEqual(1);
+        expect(touchEvent.getFingerIndex(endEvent)).to.equal(1);
         var positions = touchEvent.getPositions(endEvent);
         expect(positions.length == 2 && positions[0].x == 10 && positions[0].y == 17
-                && positions[1].x == 31 && positions[1].y == 35).toEqual(true);
+                && positions[1].x == 31 && positions[1].y == 35).to.equal(true);
 
         // Both fingers ending together
         if (!isIE10) {
@@ -216,15 +216,15 @@ describe("Touch Event", function () {
                         pageX : 31,
                         pageY : 35
                     }];
-            expect(touchEvent.getFingerIndex(endEvent)).toEqual(102);
+            expect(touchEvent.getFingerIndex(endEvent)).to.equal(102);
             var positions = touchEvent.getPositions(endEvent);
             expect(positions.length == 2 && positions[0].x == 10 && positions[0].y == 17
-                    && positions[1].x == 31 && positions[1].y == 35).toEqual(true);
+                    && positions[1].x == 31 && positions[1].y == 35).to.equal(true);
         }
     });
 
     it("tests fake event creation", function () {
         var fakeEvent = touchEvent.getFakeEvent("tap", window.document.body);
-        expect(fakeEvent.type).toEqual("tap");
+        expect(fakeEvent.type).to.equal("tap");
     });
 });

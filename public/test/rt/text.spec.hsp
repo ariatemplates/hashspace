@@ -13,86 +13,39 @@
  * limitations under the License.
  */
 
-var hsp=require("hsp/rt");
-var json=require("hsp/json");
+var hsp=require("hsp/rt"),
+    json=require("hsp/json");
 
-/***
 # template hello1()
     Hello World!
 # /template
-***/
-var hello1 = require("hsp/rt").template([], function(n) {
-    return [
-        n.$text(0,["Hello World!"])
-    ];
-});
 
-/***
 # template hello2(person)
     Hello {person.name}!
 # /template
-***/
-var hello2 = require("hsp/rt").template(["person"], function(n) {
-    return [
-        n.$text({e1:[1,2,"person","name"]},["Hello ",1,"!"])
-    ];
-});
 
-/***
 # template hello3(person)
     Hello {person.firstName} {person.lastName}!
 # /template
-***/
-var hello3 = require("hsp/rt").template(["person"], function(n) {
-    return [
-        n.$text({e1:[1,2,"person","firstName"],e2:[1,2,"person","lastName"]},["Hello ",1," ",2,"!"])
-    ];
-});
 
-/***
 // same as hello3 but with unbound variable on the lastName
 # template hello4(person)
     Hello {person.firstName} {:person.lastName}!
 # /template
-***/
-var hello4 = require("hsp/rt").template(["person"], function(n) {
-    return [
-        n.$text({e1:[1,2,"person","firstName"],e2:[0,2,"person","lastName"]},["Hello ",1," ",2,"!"])
-    ];
-});
 
-/***
 // same as hello3 but with a string parameter
 # template hello5(name)
     Hello {name}!
 # /template
-***/
-var hello5 = require("hsp/rt").template(["name"], function(n) {
-    return [
-        n.$text({e1:[1,1,"name"]},["Hello ",1,"!"])
-    ];
-});
 
 var globalValue="foo";
-/***
 # template hello6()
     {globalValue}
 # /template
-***/
-var hello6 = require("hsp/rt").template([], function(n) {
-    return [
-        n.$text({e1:[2,1,globalValue]},["",1])
-    ];
-});
 
-/***
 # template hello7(d)
     {concat(d.firstName,d.lastName)}
 # /template
-***/
-var hello7 = require("hsp/rt").template(["d"], function(n){
-  return [n.$insert({e1:[4,1,concat,1,2,1,3],e2:[1,2,"d","firstName"],e3:[1,2,"d","lastName"]},1)];
-});
 
 function concat(x,y) {
     return x+"-"+y;
@@ -103,28 +56,16 @@ function compare(x,y) {
     return r;
 }
 
-/***
 # template hello8(d)
     {if compare(d.firstName,d.lastName)}
         OK
     {/if}
 # /template
-***/
-var hello8 = require("hsp/rt").template(["d"], function(n){
-  return [n.$if({e1:[4,1,compare,1,2,1,3],e2:[1,2,"d","firstName"],e3:[1,2,"d","lastName"]},1,[n.$text(0,["OK "])])];
-});
 
-/***
+var globalValueInt=0;
 # template hello9()
     {globalValueInt}
 # /template
-***/
-var globalValueInt=0;
-var hello9 = require("hsp/rt").template([], function(n) {
-    return [
-        n.$text({e1:[2,1,globalValueInt]},["",1])
-    ];
-});
 
 
 describe("Text Nodes", function () {
@@ -132,8 +73,8 @@ describe("Text Nodes", function () {
 
     it("checks hello world text node - without any parameter", function () {
         var n = hello1();
-        expect(n.node.firstChild.nodeType).toEqual(TEXT_NODE);
-        expect(n.node.firstChild.nodeValue).toEqual("Hello World!");
+        expect(n.node.firstChild.nodeType).to.equal(TEXT_NODE);
+        expect(n.node.firstChild.nodeValue).to.equal("Hello World!");
         n.$dispose();
     });
 
@@ -141,7 +82,7 @@ describe("Text Nodes", function () {
         var n = hello2({
             name : "Alexandre"
         });
-        expect(n.node.firstChild.nodeValue).toEqual("Hello Alexandre!");
+        expect(n.node.firstChild.nodeValue).to.equal("Hello Alexandre!");
         n.$dispose();
     });
 
@@ -150,7 +91,7 @@ describe("Text Nodes", function () {
             firstName : "Miles",
             lastName : "Davis"
         });
-        expect(n.node.firstChild.nodeValue).toEqual("Hello Miles Davis!");
+        expect(n.node.firstChild.nodeValue).to.equal("Hello Miles Davis!");
         n.$dispose();
     });
 
@@ -160,15 +101,15 @@ describe("Text Nodes", function () {
             lastName : "Kahneman"
         };
         var n = hello3(dm);
-        expect(n.node.firstChild.nodeValue).toEqual("Hello Daniel Kahneman!");
+        expect(n.node.firstChild.nodeValue).to.equal("Hello Daniel Kahneman!");
         json.set(dm, "lastName", "Craig");
-        expect(n.node.firstChild.nodeValue).toEqual("Hello Daniel Kahneman!");
+        expect(n.node.firstChild.nodeValue).to.equal("Hello Daniel Kahneman!");
         n.refresh();
-        expect(n.node.firstChild.nodeValue).toEqual("Hello Daniel Craig!");
+        expect(n.node.firstChild.nodeValue).to.equal("Hello Daniel Craig!");
         json.set(dm, "firstName", "Mickey");
         json.set(dm, "lastName", "Mouse");
         n.refresh();
-        expect(n.node.firstChild.nodeValue).toEqual("Hello Mickey Mouse!");
+        expect(n.node.firstChild.nodeValue).to.equal("Hello Mickey Mouse!");
         n.$dispose();
     });
 
@@ -184,14 +125,14 @@ describe("Text Nodes", function () {
         };
         var n2 = hello3(dm2);
 
-        expect(n1.node.firstChild.nodeValue).toEqual("Hello Daniel Kahneman!");
-        expect(n2.node.firstChild.nodeValue).toEqual("Hello Charles Darwin!");
+        expect(n1.node.firstChild.nodeValue).to.equal("Hello Daniel Kahneman!");
+        expect(n2.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!");
 
         json.set(dm2, "lastName", "Brown");
         hsp.refresh();
 
-        expect(n1.node.firstChild.nodeValue).toEqual("Hello Daniel Kahneman!");
-        expect(n2.node.firstChild.nodeValue).toEqual("Hello Charles Brown!");
+        expect(n1.node.firstChild.nodeValue).to.equal("Hello Daniel Kahneman!");
+        expect(n2.node.firstChild.nodeValue).to.equal("Hello Charles Brown!");
         n1.$dispose();
         n2.$dispose();
     });
@@ -205,15 +146,15 @@ describe("Text Nodes", function () {
         var n2 = hello3(dm);
         var n3 = hello4(dm);
 
-        expect(n1.node.firstChild.nodeValue).toEqual("Hello Charles Darwin!");
-        expect(n2.node.firstChild.nodeValue).toEqual("Hello Charles Darwin!");
-        expect(n3.node.firstChild.nodeValue).toEqual("Hello Charles Darwin!");
+        expect(n1.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!");
+        expect(n2.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!");
+        expect(n3.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!");
 
         json.set(dm, "lastName", "Brown");
         hsp.refresh();
-        expect(n1.node.firstChild.nodeValue).toEqual("Hello Charles Brown!");
-        expect(n2.node.firstChild.nodeValue).toEqual("Hello Charles Brown!");
-        expect(n3.node.firstChild.nodeValue).toEqual("Hello Charles Darwin!"); // unbound case
+        expect(n1.node.firstChild.nodeValue).to.equal("Hello Charles Brown!");
+        expect(n2.node.firstChild.nodeValue).to.equal("Hello Charles Brown!");
+        expect(n3.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!"); // unbound case
 
         n1.$dispose();
         n2.$dispose();
@@ -228,30 +169,30 @@ describe("Text Nodes", function () {
         var n = hello3(dm);
         var ch = n.childNodes[0];
 
-        expect(dm[json.MD_OBSERVERS]).not.toEqual(undefined);
-        expect(dm[n.MD_ID]).not.toEqual(undefined);
-        expect(ch.node).not.toEqual(undefined);
+        expect(dm[json.MD_OBSERVERS]).not.to.equal(undefined);
+        expect(dm[n.MD_ID]).not.to.equal(undefined);
+        expect(ch.node).not.to.equal(undefined);
 
         n.$dispose();
-        expect(dm[json.MD_OBSERVERS]).toEqual(undefined);
-        expect(n.node).toEqual(undefined);
-        expect(ch.node).toEqual(undefined);
-        expect(dm[n.MD_ID]).toEqual(undefined);
-        expect(n.propObs).toEqual(undefined);
+        expect(dm[json.MD_OBSERVERS]).to.equal(undefined);
+        expect(n.node).to.equal(null);
+        expect(ch.node).to.equal(null);
+        expect(dm[n.MD_ID]).to.equal(undefined);
+        expect(n.propObs).to.equal(undefined);
 
         // check that generator is not impacted by the $dispose call
         n = hello3(dm);
-        expect(n.node.firstChild.nodeValue).toEqual("Hello Charles Darwin!");
+        expect(n.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!");
         json.set(dm, "lastName", "Brown");
         hsp.refresh();
-        expect(n.node.firstChild.nodeValue).toEqual("Hello Charles Brown!");
+        expect(n.node.firstChild.nodeValue).to.equal("Hello Charles Brown!");
         n.$dispose();
     });
 
     it("tests a template with a simple string parameter", function () {
         var n = hello5("Bart");
 
-        expect(n.node.firstChild.nodeValue).toEqual("Hello Bart!");
+        expect(n.node.firstChild.nodeValue).to.equal("Hello Bart!");
         n.$dispose();
     });
 
@@ -259,7 +200,7 @@ describe("Text Nodes", function () {
         globalValue = "blah blah";
         var n = hello6();
 
-        expect(n.node.firstChild.nodeValue).toEqual("blah blah");
+        expect(n.node.firstChild.nodeValue).to.equal("blah blah");
         n.$dispose();
     });
 
@@ -267,7 +208,7 @@ describe("Text Nodes", function () {
         globalValueInt = 0;
         var n = hello9();
 
-        expect(n.node.firstChild.nodeValue).toEqual("0");
+        expect(n.node.firstChild.nodeValue).to.equal("0");
         n.$dispose();
     });
 
@@ -278,12 +219,12 @@ describe("Text Nodes", function () {
         };
         var n = hello7(d);
 
-        expect(n.node.firstChild.nodeValue).toEqual("Omer-Simpson");
+        expect(n.node.firstChild.nodeValue).to.equal("Omer-Simpson");
 
         json.set(d, "firstName", "Marge");
         hsp.refresh();
 
-        expect(n.node.firstChild.nodeValue).toEqual("Marge-Simpson");
+        expect(n.node.firstChild.nodeValue).to.equal("Marge-Simpson");
 
         n.$dispose();
     });
@@ -295,12 +236,12 @@ describe("Text Nodes", function () {
         };
         var n = hello8(d);
 
-        expect(n.node.childNodes.length).toEqual(2);
+        expect(n.node.childNodes.length).to.equal(2);
 
         json.set(d, "firstName", "Simpson");
         hsp.refresh();
 
-        expect(n.node.childNodes.length).toEqual(3);
+        expect(n.node.childNodes.length).to.equal(3);
 
         n.$dispose();
     });

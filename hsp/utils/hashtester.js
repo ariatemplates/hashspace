@@ -1,6 +1,7 @@
 var klass = require("hsp/klass"),
     doc=require("hsp/document"),
     hsp=require("hsp/rt"),
+    fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     $=require("hsp/utils/jquery-1.10.2.min.js");
 
 var HtException=klass({
@@ -12,22 +13,6 @@ var HtException=klass({
         return this.text;
     }
 });
-
-function triggerEvent(eventName,DOMElt) {
-    var  res;
-    if (doc.createEvent) {
-        var evt=new Event(eventName);
-        //var evt=document.createEvent("HTMLEvents");
-        //evt.initEvent("name-of-custom-event", true, true);
-        res=DOMElt.dispatchEvent(evt);
-    } else {
-        // IE case
-        var evt = doc.createEventObject();
-        evt.eventType = eventName;
-        res=DOMElt.fireEvent("on" + eventName, evt);
-    }
-    return res;
-}
 
 /**
  * JQuery Selection wrapper
@@ -69,8 +54,10 @@ var SelectionWrapper=klass({
         if (this.length!==1) {
             throw new HtException(1,"[hashtester] click() method can only be called on single-element selections");
         }
-        // TODO emulate mousedown/mouseup
-        var res=triggerEvent("click",this.$selection[0]);
+        var elt=this.$selection[0];
+        fireEvent("mousedown",elt);
+        fireEvent("mouseup",elt);
+        var res=fireEvent("click",elt);
         hsp.refresh();
         return res;
     },
@@ -81,9 +68,12 @@ var SelectionWrapper=klass({
         if (this.length!==1) {
             throw new HtException(1,"[hashtester] dblclick() method can only be called on single-element selections");
         }
-        // for IE look at http://stackoverflow.com/questions/2490825/how-to-trigger-event-in-javascript
-        // TODO emulate mousedown/mouseup twice prior to triggering dblclick
-        var res=triggerEvent("dblclick",this.$selection[0]);
+        var elt=this.$selection[0];
+        fireEvent("mousedown",elt);
+        fireEvent("mouseup",elt);
+        fireEvent("mousedown",elt);
+        fireEvent("mouseup",elt);
+        var res=fireEvent("dblclick",elt);
         hsp.refresh();
         return res;
     },

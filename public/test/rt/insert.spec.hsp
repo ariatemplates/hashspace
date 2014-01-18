@@ -1,0 +1,163 @@
+
+/*
+ * Copyright 2012 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var hsp=require("hsp/rt"),
+    json=require("hsp/json");
+
+# template content(label, value)
+    {:label}: {value}
+# /template
+
+# template test1(person)
+    Before
+    {content("First Name",person.firstName)}
+    After
+# /template
+
+# template nameDetails(person)
+    {content("Last Name", person.lastName)}
+    {if (person.firstName)}
+        , 
+        {content("First Name", person.firstName)}
+    {/if}
+# /template
+
+# template test2(p)
+    {nameDetails(p)}
+# /template
+
+# template test3(person, label)
+    {label}
+    {content(person.firstName, person.lastName)}
+# /template
+
+function concat (a, b) {
+    return a + ": " + b;
+}
+
+# template test4(person)
+    {concat(person.firstName, person.lastName)}
+# /template
+
+describe("Insert statement", function () {
+    it("tests a simple insertion", function () {
+        var dm = {
+            firstName : "Omer",
+            lastName : "Simpson"
+        };
+        var n = test1(dm);
+        var tn = n.childNodes[1].childNodes[0];
+
+        expect(n.childNodes.length).to.equal(3);
+        expect(n.node.childNodes.length).to.equal(3);
+        expect(n.node.childNodes[1].nodeValue).to.equal("First Name: Omer");
+        expect(tn.node.nodeValue).to.equal("First Name: Omer");
+
+        n.$dispose();
+        expect(tn.node).to.equal(null);
+    });
+
+    it("tests nested insertion with multiple template instances and data-model updates", function () {
+        var dm = {
+            firstName : "Omer",
+            lastName : "Simpson"
+        };
+        var n = test2(dm);
+
+        expect(n.childNodes.length).to.equal(1);
+        expect(n.node.childNodes.length).to.equal(7);
+        expect(n.node.childNodes[0].nodeValue).to.equal("Last Name: Simpson");
+        expect(n.node.childNodes[4].nodeValue).to.equal("First Name: Omer");
+
+        // update the data model
+        json.set(dm, "firstName", "Marge");
+        hsp.refresh();
+        expect(n.node.childNodes[4].nodeValue).to.equal("First Name: Marge");
+
+        json.set(dm, "firstName", null);
+        hsp.refresh();
+        expect(n.node.childNodes.length).to.equal(4);
+
+        json.set(dm, "firstName", "Mickey");
+        json.set(dm, "lastName", "Mouse");
+        hsp.refresh();
+        expect(n.node.childNodes.length).to.equal(7);
+        expect(n.node.childNodes[0].nodeValue).to.equal("Last Name: Mouse");
+        expect(n.node.childNodes[4].nodeValue).to.equal("First Name: Mickey");
+
+        var n2 = n.childNodes[0].childNodes[2].childNodes[1].childNodes[0];
+        expect(n2.node.nodeValue).to.equal("First Name: Mickey");
+
+        n.$dispose();
+        expect(n2.node).to.equal(null);
+    });
+
+    it("tests that nested template scope is isolated from the parent's template scope", function () {
+        var dm = {
+            firstName : "Omer",
+            lastName : "Simpson"
+        };
+        var n = test3(dm, "Always look on the bright side of life");
+
+        expect(n.node.childNodes.length).to.equal(2);
+        expect(n.node.childNodes[0].nodeValue).to.equal("Always look on the bright side of life ");
+        expect(n.node.childNodes[1].nodeValue).to.equal("Omer: Simpson");
+
+        n.$dispose();
+    });
+
+    it("tests insert with a JS function", function () {
+        var dm = {
+            firstName : "Omer",
+            lastName : "Simpson"
+        };
+        var n = test4(dm);
+
+        expect(n.node.childNodes.length).to.equal(1);
+        expect(n.node.childNodes[0].nodeValue).to.equal("Omer: Simpson");
+        n.$dispose();
+    });
+
+    it("tests insert no code injection with a JS function", function () {
+        var dm = {
+            firstName : "<b>Omer</b>",
+            lastName : "Simpson"
+        };
+        var n = test4(dm);
+
+        // <b> is not interpreted as a tag, but as &lt;b&gt;
+        expect(n.node.childNodes.length).to.equal(1);
+        expect(n.node.childNodes[0].nodeValue).to.equal("<b>Omer</b>: Simpson");
+        n.$dispose();
+    });
+
+    it("tests template argument update", function () {
+        var dm = {
+            firstName : "Omer",
+            lastName : "Simpson"
+        };
+        var n = test3(dm, "answer is?");
+
+        expect(n.node.childNodes[0].nodeValue).to.equal("answer is? ");
+
+        n.updateArgument(1, "answer is 42");
+        hsp.refresh();
+
+        expect(n.node.childNodes[0].nodeValue).to.equal("answer is 42 ");
+
+        n.$dispose();
+    });
+});

@@ -52,55 +52,55 @@ describe("Component attributes binding", function () {
     var d={value:2,max:100,defaultvalue:42};
     var n=test(d);
 
-    expect(n.node.childNodes.length).toEqual(4);
+    expect(n.node.childNodes.length).to.equal(4);
     var cptInput=n.node.childNodes[0];
     var c=n.childNodes[0].controller;
     var valueInput=n.node.childNodes[1];
     var maxInput=n.node.childNodes[2];
     var defaultInput=n.node.childNodes[3];
     
-    expect(cptInput.value).toEqual("2");
-    expect(valueInput.value).toEqual("2");
+    expect(cptInput.value).to.equal("2");
+    expect(valueInput.value).to.equal("2");
 
     // set new value
     setFieldValue(valueInput,"5");
 
-    expect(cptInput.value).toEqual("5");
+    expect(cptInput.value).to.equal("5");
 
     // set too big value
     setFieldValue(valueInput,"1000");
 
-    expect(cptInput.value).toEqual("42"); // defaultvalue
+    expect(cptInput.value).to.equal("42"); // defaultvalue
 
     // change value in component
     setFieldValue(cptInput,"9");
 
-    expect(valueInput.value).toEqual("9"); // bi-directional binding effect
+    expect(valueInput.value).to.equal("9"); // bi-directional binding effect
 
     // change max
     setFieldValue(maxInput,"10000");
 
-    expect(c.onMaxChangeCount).toEqual(1);
-    expect(c.max).toEqual(10000);
+    expect(c.onMaxChangeCount).to.equal(1);
+    expect(c.max).to.equal(10000);
 
     // set max on controller
     json.set(c,"max",50);
     hsp.refresh();
 
-    expect(maxInput.value).toEqual("10000"); // 1-way binding so change is not propagated
+    expect(maxInput.value).to.equal("10000"); // 1-way binding so change is not propagated
 
     // change default value from template field
     setFieldValue(defaultInput,"31");
 
-    expect(c.onDefaultValueChangeCount).toEqual(0); // no binding so change cb is not called
-    expect(c.defaultvalue).toEqual(42);
+    expect(c.onDefaultValueChangeCount).to.equal(0); // no binding so change cb is not called
+    expect(c.defaultvalue).to.equal(42);
 
     // change value in the controller
     json.set(c,"defaultvalue",10);
     hsp.refresh();
 
-    expect(c.onDefaultValueChangeCount).toEqual(0); // no binding so change cb is not called
-    expect(c.defaultvalue).toEqual(10); // of course value has changed as we must be able to change it internally!
+    expect(c.onDefaultValueChangeCount).to.equal(0); // no binding so change cb is not called
+    expect(c.defaultvalue).to.equal(10); // of course value has changed as we must be able to change it internally!
 
     n.$dispose();
   });

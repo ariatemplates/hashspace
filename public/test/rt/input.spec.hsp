@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-var hsp=require("hsp/rt");
-var json=require("hsp/json");
+var hsp=require("hsp/rt"),
+    json=require("hsp/json");
 
 # template inputSample(data)
     <div class="info section">All the following inputs are synchronized:</div>
@@ -55,31 +55,31 @@ describe("Input Elements", function () {
         var input1 = n.childNodes[1].childNodes[1];
         var input2 = n.childNodes[1].childNodes[4];
 
-        expect(input1.node.value).toEqual(v1);
-        expect(input2.node.value).toEqual(v1);
+        expect(input1.node.value).to.equal(v1);
+        expect(input2.node.value).to.equal(v1);
 
         // change value from the model
         var v2 = "foo";
         json.set(d, "comment", v2);
         hsp.refresh();
-        expect(input1.node.value).toEqual(v2);
-        expect(input2.node.value).toEqual(v2);
+        expect(input1.node.value).to.equal(v2);
+        expect(input2.node.value).to.equal(v2);
 
         // change the value from input1 (value attribute)
         var v3 = "bar";
         input1.node.value = v3;
         input1.node.click(); // to simulate change
-        expect(input1.node.value).toEqual(v3);
-        expect(input2.node.value).toEqual(v3);
-        expect(d.comment).toEqual(v3);
+        expect(input1.node.value).to.equal(v3);
+        expect(input2.node.value).to.equal(v3);
+        expect(d.comment).to.equal(v3);
 
         // change the value from input2 (#model attribute)
         var v4 = "blah";
         input2.node.value = v4;
         input2.node.click(); // to simulate change
-        expect(input1.node.value).toEqual(v4);
-        expect(input2.node.value).toEqual(v4);
-        expect(d.comment).toEqual(v4);
+        expect(input1.node.value).to.equal(v4);
+        expect(input2.node.value).to.equal(v4);
+        expect(d.comment).to.equal(v4);
 
         n.$dispose();
     });
@@ -96,30 +96,30 @@ describe("Input Elements", function () {
         var cb2 = n.childNodes[2].childNodes[3];
 
         // TODO: fix following lines in IE8
-        expect(cb1.node.checked).toEqual(true);
-        expect(cb2.node.checked).toEqual(true);
+        expect(cb1.node.checked).to.equal(true);
+        expect(cb2.node.checked).to.equal(true);
 
         // change from data model
         json.set(d, "isChecked", false);
         hsp.refresh();
-        expect(cb1.node.checked).toEqual(false);
-        expect(cb2.node.checked).toEqual(false);
-        expect(d.isChecked).toEqual(false);
+        expect(cb1.node.checked).to.equal(false);
+        expect(cb2.node.checked).to.equal(false);
+        expect(d.isChecked).to.equal(false);
 
         // change from cb1 (value reference)
         cb1.node.click();
         if (cb1.node.checked) {
             // on firefox calling click doesn't trigger the onclick event!?
-            expect(cb1.node.checked).toEqual(true);
-            expect(cb2.node.checked).toEqual(true);
-            expect(d.isChecked).toEqual(true);
+            expect(cb1.node.checked).to.equal(true);
+            expect(cb2.node.checked).to.equal(true);
+            expect(d.isChecked).to.equal(true);
         }
 
         // change from cb2 (#model reference)
         cb2.node.click();
-        expect(cb1.node.checked).toEqual(false);
-        expect(cb2.node.checked).toEqual(false);
-        expect(d.isChecked).toEqual(false);
+        expect(cb1.node.checked).to.equal(false);
+        expect(cb2.node.checked).to.equal(false);
+        expect(d.isChecked).to.equal(false);
 
         n.$dispose();
     });
@@ -135,21 +135,21 @@ describe("Input Elements", function () {
         var rb1 = n.childNodes[3].childNodes[0];
         var rb2 = n.childNodes[3].childNodes[3];
 
-        expect(rb1.node.checked).toEqual(false);
+        expect(rb1.node.checked).to.equal(false);
         // TODO fix next line in IE8
-        expect(rb2.node.checked).toEqual(true);
+        expect(rb2.node.checked).to.equal(true);
 
         // change from data model
         json.set(d, "selection", "C");
         hsp.refresh();
-        expect(rb1.node.checked).toEqual(false);
-        expect(rb2.node.checked).toEqual(false);
+        expect(rb1.node.checked).to.equal(false);
+        expect(rb2.node.checked).to.equal(false);
 
         // change from rb1
         rb1.node.click();
-        expect(rb1.node.checked).toEqual(true);
-        expect(rb2.node.checked).toEqual(false);
-        expect(d.selection).toEqual("A");
+        expect(rb1.node.checked).to.equal(true);
+        expect(rb2.node.checked).to.equal(false);
+        expect(d.selection).to.equal("A");
 
         n.$dispose();
     });

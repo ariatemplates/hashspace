@@ -1,0 +1,161 @@
+
+/*
+ * Copyright 2012 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var hsp=require("hsp/rt"),
+    json=require("hsp/json");
+
+
+# template test1(person)
+    <div title="test1">
+        Hello {person.name}!
+    </div>
+# /template
+
+# template test2(person)
+    <div title="test2" class="t2 {person.gender}" tabIndex="{person.idx}">
+        {person.firstName} / {person.lastName} 
+        [ <span class="{person.ffLevel}">
+            Frequent flyer #: {person.ffNbr}
+        </span> ]
+    </div>
+# /template
+
+# template test3(person)
+    <input type="text" value="{person.name}"/>
+# /template
+
+
+var globalObject={value:"foo"};
+# template test4()
+    <input type="text" value="{globalObject.value}"/>
+# /template
+
+
+describe("Element Nodes", function () {
+    var ELEMENT_NODE=1;
+    var TEXT_NODE=3;
+
+    it("tests a simple div with text and bound data on text content", function() {
+        var dm={name:"Omer"};
+        var n=test1(dm);
+        expect(n.node.firstChild.nodeType).to.equal(ELEMENT_NODE);
+        expect(n.node.firstChild.attributes.title.value).to.equal("test1");
+        expect(n.node.firstChild.firstChild.nodeType).to.equal(TEXT_NODE);
+        expect(n.node.firstChild.firstChild.nodeValue).to.equal("Hello Omer! ");
+
+        // test property change
+        json.set(dm,"name","Marge");
+        hsp.refresh();
+
+        expect(n.node.firstChild.firstChild.nodeValue).to.equal("Hello Marge! ");
+
+        n.$dispose();
+    });
+
+    it("tests a nested containers with bound data on attributes", function() {
+        var dm={idx:1, firstName:"Omer", lastName:"Simpson", gender:"male", ffNbr:1234567890, ffLevel:"platinum"};
+        var n=test2(dm);
+
+        expect(n.node.firstChild.nodeName).to.equal("DIV");
+        expect(n.node.firstChild.attributes["class"].value).to.equal("t2 male");
+        expect(n.node.firstChild.attributes["tabIndex"].value).to.equal("1");
+        expect(n.node.firstChild.childNodes[0].nodeName).to.equal("#text");
+        expect(n.node.firstChild.childNodes[0].nodeValue).to.equal("Omer / Simpson  [ ");
+        expect(n.node.firstChild.childNodes[1].nodeName).to.equal("SPAN");
+        expect(n.node.firstChild.childNodes[1].attributes["class"].value).to.equal("platinum");
+        expect(n.node.firstChild.childNodes[1].firstChild.nodeValue).to.equal("Frequent flyer #: 1234567890 ");
+        expect(n.node.firstChild.childNodes[2].nodeValue).to.equal(" ] ");
+
+        json.set(dm,"firstName","Marge");
+        json.set(dm,"gender","female");
+        json.set(dm,"ffLevel","gold");
+        json.set(dm,"ffNbr",1112223330);
+        hsp.refresh();
+
+        expect(n.node.firstChild.attributes["class"].value).to.equal("t2 female");
+        expect(n.node.firstChild.attributes["tabIndex"].value).to.equal("1");
+        expect(n.node.firstChild.childNodes[0].nodeValue).to.equal("Marge / Simpson  [ ");
+        expect(n.node.firstChild.childNodes[1].attributes["class"].value).to.equal("gold");
+        expect(n.node.firstChild.childNodes[1].firstChild.nodeValue).to.equal("Frequent flyer #: 1112223330 ");
+        expect(n.node.firstChild.childNodes[2].nodeValue).to.equal(" ] ");
+
+        n.$dispose();
+    });
+
+    it("tests the EltNode $dispose", function() {
+        var dm={idx:1, firstName:"Omer", lastName:"Simpson", gender:"male", ffNbr:1234567890, ffLevel:"platinum"};
+        var n=test2(dm);
+
+        var n0=n.childNodes[0];
+        var n00=n.childNodes[0].childNodes[0];
+        var n01=n.childNodes[0].childNodes[1];
+        var n010=n.childNodes[0].childNodes[1].childNodes[0];
+
+        // TODO
+        n.$dispose();
+        expect(n.node).to.equal(null);
+        expect(n0.node).to.equal(null);
+        expect(n00.node).to.equal(null);
+        expect(n01.node).to.equal(null);
+        expect(n010.node).to.equal(null);
+
+        // check that generator tree still works and is not impacted by the instance disposal
+        n=test2(dm);
+        expect(n.node.firstChild.attributes["class"].value).to.equal("t2 male");
+        expect(n.node.firstChild.attributes["tabIndex"].value).to.equal("1");
+        expect(n.node.firstChild.childNodes[0].nodeValue).to.equal("Omer / Simpson  [ ");
+        expect(n.node.firstChild.childNodes[1].attributes["class"].value).to.equal("platinum");
+        expect(n.node.firstChild.childNodes[1].firstChild.nodeValue).to.equal("Frequent flyer #: 1234567890 ");
+        expect(n.node.firstChild.childNodes[2].nodeValue).to.equal(" ] ");
+
+        n.$dispose();
+    });
+
+    it("tests the EltNode with an empty data model", function() {
+        var n=test2();
+        expect(n.node.firstChild.attributes["class"].value).to.equal("t2 ");
+        expect(n.node.firstChild.childNodes[0].nodeValue).to.equal(" /   [ ");
+        expect(n.node.firstChild.childNodes[1].attributes["class"].value).to.equal("");
+        expect(n.node.firstChild.childNodes[1].firstChild.nodeValue).to.equal("Frequent flyer #:  ");
+        expect(n.node.firstChild.childNodes[2].nodeValue).to.equal(" ] ");
+        n.$dispose();
+    });
+
+    it("validates input value binding", function() {
+        var dm={idx:1, name:"Omer"};
+        var n=test3(dm);
+        expect(n.node.firstChild.value).to.equal("Omer");
+        n.node.firstChild.value="Marge";
+        expect(dm.name).to.equal("Omer"); // doesn't change has not event has been triggered
+        n.node.firstChild.click();
+        expect(dm.name).to.equal("Marge");
+        
+        n.$dispose();
+    });
+
+    it("validates input value binding for literal data reference", function() {
+        globalObject.value="Omer";
+        var n=test4();
+        expect(n.node.firstChild.value).to.equal("Omer");
+        n.node.firstChild.value="Marge";
+        expect(globalObject.value).to.equal("Omer"); // doesn't change has not event has been triggered
+        n.node.firstChild.click();
+        expect(globalObject.value).to.equal("Marge");
+        
+        n.$dispose();
+    });
+
+});

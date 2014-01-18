@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-var json = require("hsp/json");
-var PropObserver = require("hsp/propobserver");
+var json = require("hsp/json"),
+    PropObserver = require("hsp/propobserver");
 
 describe("Property Observer", function () {
     var obj;
@@ -45,44 +45,44 @@ describe("Property Observer", function () {
         var o = new PropObserver(obj);
         var p1 = new BasicListener();
 
-        expect(o.props.propA).toEqual(undefined);
+        expect(o.props.propA).to.equal(undefined);
         json.set(obj, "propA", "a1");
         o.addObserver(p1, "propA");
 
         json.set(obj, "propA", "a2");
-        expect(p1.chge.name).toEqual("propA");
-        expect(p1.chge.oldValue).toEqual("a1");
-        expect(p1.chge.object[p1.chge.name]).toEqual("a2");
-        expect(p1.count).toEqual(1);
+        expect(p1.chge.name).to.equal("propA");
+        expect(p1.chge.oldValue).to.equal("a1");
+        expect(p1.chge.object[p1.chge.name]).to.equal("a2");
+        expect(p1.count).to.equal(1);
 
         // test a 2nd change
         p1.chge = null;
         json.set(obj, "propA", "a3");
         json.set(obj, "propB", "b3");
-        expect(p1.chge.oldValue).toEqual("a2");
-        expect(p1.count).toEqual(2);
+        expect(p1.chge.oldValue).to.equal("a2");
+        expect(p1.count).to.equal(2);
 
         // observe another property
         p1.chge = null;
         o.addObserver(p1, "propB");
         json.set(obj, "propA", "a4");
         json.set(obj, "propB", "b4");
-        expect(p1.chge.oldValue).toEqual("b3");
-        expect(p1.count).toEqual(4);
+        expect(p1.chge.oldValue).to.equal("b3");
+        expect(p1.count).to.equal(4);
 
         o.rmObserver(p1, "propA");
-        expect(o.props.propA).toEqual(undefined);
+        expect(o.props.propA).to.equal(undefined);
         json.set(obj, "propA", "a5");
         json.set(obj, "propB", "b5");
-        expect(p1.chge.oldValue).toEqual("b4");
-        expect(p1.count).toEqual(5);
+        expect(p1.chge.oldValue).to.equal("b4");
+        expect(p1.count).to.equal(5);
 
         o.rmObserver(p1, "propB");
-        expect(o.props.propB).toEqual(undefined);
+        expect(o.props.propB).to.equal(undefined);
         json.set(obj, "propA", "a6");
         json.set(obj, "propB", "b6");
-        expect(p1.chge.oldValue).toEqual("b4");
-        expect(p1.count).toEqual(5);
+        expect(p1.chge.oldValue).to.equal("b4");
+        expect(p1.count).to.equal(5);
     });
 
     it("test one prop observer for all properties", function () {
@@ -91,12 +91,12 @@ describe("Property Observer", function () {
         var o = new PropObserver(obj);
         var p1 = new BasicListener();
 
-        expect(o.props.propA).toEqual(undefined);
+        expect(o.props.propA).to.equal(undefined);
         json.set(obj, "propA", "a1");
         o.addObserver(p1);
 
         json.set(obj, "propA", "a2");
-        expect(p1.chge.name).toEqual("propA");
+        expect(p1.chge.name).to.equal("propA");
     });
 
     it("test two prop observers per property", function () {
@@ -111,18 +111,18 @@ describe("Property Observer", function () {
         o.addObserver(p2, "propA");
         json.set(obj, "propA", "a2");
 
-        expect(p1.chge.oldValue).toEqual("a1");
-        expect(p1.chge.object[p1.chge.name]).toEqual("a2");
-        expect(p2.chge.oldValue).toEqual("a1");
-        expect(p2.chge.object[p2.chge.name]).toEqual("a2");
+        expect(p1.chge.oldValue).to.equal("a1");
+        expect(p1.chge.object[p1.chge.name]).to.equal("a2");
+        expect(p2.chge.oldValue).to.equal("a1");
+        expect(p2.chge.object[p2.chge.name]).to.equal("a2");
 
         // delete test
         o.rmObserver(p1, "propA");
-        expect(o.props.propA.length).toEqual(1);
+        expect(o.props.propA.length).to.equal(1);
         json.set(obj, "propA", "a3");
-        expect(p2.chge.oldValue).toEqual("a2");
+        expect(p2.chge.oldValue).to.equal("a2");
         o.rmObserver(p2, "propA");
-        expect(o.props.propA).toEqual(undefined);
+        expect(o.props.propA).to.equal(undefined);
     });
 
     it("test prop observer disposal", function () {
@@ -135,10 +135,10 @@ describe("Property Observer", function () {
         o.addObserver(p1, "propA");
         json.set(obj, "propA", "a2");
 
-        expect(obj["+json:observers"].length).toEqual(1);
+        expect(obj["+json:observers"].length).to.equal(1);
         o.$dispose();
-        expect(o.props).toEqual(undefined);
-        expect(obj["+json:observers"]).toEqual(undefined);
+        expect(o.props).to.equal(undefined);
+        expect(obj["+json:observers"]).to.equal(undefined);
     });
 
     it("test prop observer on array length", function () {
@@ -148,41 +148,41 @@ describe("Property Observer", function () {
         var p = new BasicListener();
 
         o.addObserver(p, "length");
-        expect(arr.length).toEqual(1);
-        expect(p.count).toEqual(0);
+        expect(arr.length).to.equal(1);
+        expect(p.count).to.equal(0);
 
         json.set(arr, 1, "Marge");
-        expect(arr.length).toEqual(2);
-        expect(arr[1]).toEqual("Marge");
-        expect(p.count).toEqual(1);
+        expect(arr.length).to.equal(2);
+        expect(arr[1]).to.equal("Marge");
+        expect(p.count).to.equal(1);
 
         // splice with length change
         arr.splice(1, 0, "Bart");
-        expect(arr.length).toEqual(3);
-        expect(p.count).toEqual(2);
+        expect(arr.length).to.equal(3);
+        expect(p.count).to.equal(2);
 
         // splice with no length change
         arr.splice(1, 1, "Bart2");
-        expect(arr.length).toEqual(3);
-        expect(p.count).toEqual(2);
+        expect(arr.length).to.equal(3);
+        expect(p.count).to.equal(2);
 
         // splice2 with length change
         arr.splice2(1, 1);
-        expect(arr.length).toEqual(2);
-        expect(p.count).toEqual(3);
+        expect(arr.length).to.equal(2);
+        expect(p.count).to.equal(3);
 
         // shift test
         var x = arr.shift();
-        expect(x).toEqual("Omer");
-        expect(arr.length).toEqual(1);
-        expect(p.count).toEqual(4);
+        expect(x).to.equal("Omer");
+        expect(arr.length).to.equal(1);
+        expect(p.count).to.equal(4);
 
         // pop test
         arr.splice(0, 0, "Omer");
         x = arr.pop();
-        expect(x).toEqual("Marge");
-        expect(arr.length).toEqual(1);
-        expect(p.count).toEqual(6);
+        expect(x).to.equal("Marge");
+        expect(arr.length).to.equal(1);
+        expect(p.count).to.equal(6);
 
         o.$dispose();
     });

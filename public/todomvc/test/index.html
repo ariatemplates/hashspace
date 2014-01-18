@@ -17,22 +17,21 @@
 
 <html>
 <head>
-<script type="text/javascript" src="/lib/jasmine.js"></script>
-<script type="text/javascript" src="/lib/jasmine-html.js"></script>
-<link href="/lib/jasmine.css" type="text/css" rel="stylesheet"/>
-<script type="text/javascript" src="/lib/noder.min.js">{packaging : {baseUrl : "/"}}</script>
+<link rel="stylesheet" href="/lib/mocha.css" />
+    <script src="/lib/expect.js"></script>
+    <script src="/lib/mocha.js"></script>
+    <script>mocha.setup('bdd')</script>
+    <script type="text/javascript" src="/lib/noder.min.js">{packaging : {baseUrl : "/"}}</script>
 </head>
 <body>
+    <div id="mocha"></div>
 
-<script type="noder">
-// load test scripts
-require("todomvc/test/todo.spec.js");
+    <script type="noder">
+    // load test scripts
+    require("todomvc/test/todo.spec.js");
 
-// run tests
-var reporter = new jasmine.TrivialReporter(), env = jasmine.getEnv();
-env.addReporter(reporter);
-env.execute();
-</script>
-
+    mocha.checkLeaks();
+    mocha.run();
+    </script>
 </body>
 </html>

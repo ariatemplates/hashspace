@@ -27,10 +27,10 @@ describe("JS Klass", function () {
                 this.idx += incr;
             }
         });
-        expect(typeof(ClassA)).toEqual("function");
+        expect(typeof(ClassA)).to.equal("function");
         var a = new ClassA(2);
         a.foo(7);
-        expect(a.idx).toEqual(9);
+        expect(a.idx).to.equal(9);
         expect(a.constructor === ClassA);
         expect(a.$constructor === ClassA);
     });
@@ -43,11 +43,11 @@ describe("JS Klass", function () {
                 this.idx += incr;
             }
         });
-        expect(typeof(ClassA)).toEqual("function");
+        expect(typeof(ClassA)).to.equal("function");
         var a = new ClassA(2);
-        expect(a.idx).toEqual(undefined);
+        expect(a.idx).to.equal(undefined);
         a.foo(7);
-        expect(a.idx).toEqual(7);
+        expect(a.idx).to.equal(7);
     });
 
     it("test one level inheritance", function () {
@@ -75,10 +75,10 @@ describe("JS Klass", function () {
         });
 
         var b = new ClassB("test");
-        expect(b.idx).toEqual(10);
+        expect(b.idx).to.equal(10);
         b.bar(9);
-        expect(b.idx).toEqual(15);
-        expect(b.value).toEqual("test-15-9");
+        expect(b.idx).to.equal(15);
+        expect(b.value).to.equal("test-15-9");
 
         // no constructor test
         var ClassB2 = klass({
@@ -89,11 +89,11 @@ describe("JS Klass", function () {
             }
         });
         var b21 = new ClassB2();
-        expect(b21.idx).toEqual(0);
+        expect(b21.idx).to.equal(0);
         var b22 = new ClassB2(22);
-        expect(b22.idx).toEqual(22);
+        expect(b22.idx).to.equal(22);
         var b23 = new ClassB2(23, "hi!");
-        expect(b23.extra).toEqual("hi!");
+        expect(b23.extra).to.equal("hi!");
     });
 
     it("test two levels inheritance", function () {
@@ -131,10 +131,10 @@ describe("JS Klass", function () {
             }
         });
         var c = new ClassC(10);
-        expect(c.idx).toEqual(20);
-        expect(c.extra).toEqual(20);
-        expect(c.bar("hello")).toEqual("[hello-20]");
-        expect(c.bar2()).toEqual("hello");
+        expect(c.idx).to.equal(20);
+        expect(c.extra).to.equal(20);
+        expect(c.bar("hello")).to.equal("[hello-20]");
+        expect(c.bar2()).to.equal("hello");
     });
 
     // TODO ensure $dispose is always defined

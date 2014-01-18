@@ -80,15 +80,15 @@ describe("Template as component attribute", function () {
     test1(m).render(h.container);
     var head=h(HEAD);
     var body=h(BODY);
-    expect(head.length).toEqual(0);
-    expect(body.length).toEqual(1);
-    expect(body.text()).toEqual("Hello World! ");
+    expect(head.length).to.equal(0);
+    expect(body.length).to.equal(1);
+    expect(body.text()).to.equal("Hello World! ");
 
     // dynamic property change
     $set(m,"text","Hello folks");
     hsp.refresh();
 
-    expect(body.text()).toEqual("Hello folks! ");
+    expect(body.text()).to.equal("Hello folks! ");
     
     h.$dispose();
   });
@@ -97,9 +97,9 @@ describe("Template as component attribute", function () {
     var h=ht.newTestContext();
     test2().render(h.container);
     
-    expect(h(HEAD).length).toEqual(0);
-    expect(h(BODY).length).toEqual(1);
-    expect(h(BODY).text()).toEqual("Hello World!");
+    expect(h(HEAD).length).to.equal(0);
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Hello World!");
 
     h.$dispose();
   });
@@ -109,15 +109,15 @@ describe("Template as component attribute", function () {
     var m={text:"Hello World"}
     test3(m).render(h.container);
     
-    expect(h(HEAD).length).toEqual(0);
-    expect(h(BODY).length).toEqual(1);
-    expect(h(BODY).text()).toEqual("Hello World!");
+    expect(h(HEAD).length).to.equal(0);
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Hello World!");
 
     // dynamic property change
     $set(m,"text","Hello folks");
     hsp.refresh();
 
-    expect(h(BODY).text()).toEqual("Hello folks!");
+    expect(h(BODY).text()).to.equal("Hello folks!");
     
     h.$dispose();
   });
@@ -127,14 +127,14 @@ describe("Template as component attribute", function () {
     var m={text:"Hello World"}
     test4(m).render(h.container);
     
-    expect(h(BODY).length).toEqual(1);
-    expect(h(BODY).text()).toEqual("Hello World!");
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Hello World!");
 
     // dynamic property change
     $set(m,"text","Hello folks");
     hsp.refresh();
 
-    expect(h(BODY).text()).toEqual("Hello folks!");
+    expect(h(BODY).text()).to.equal("Hello folks!");
     
     h.$dispose();
   });
