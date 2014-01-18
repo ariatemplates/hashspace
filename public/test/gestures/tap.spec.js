@@ -17,7 +17,7 @@
  * Taken from Aria Templates: https://github.com/ariatemplates/ariatemplates/blob/master/test/aria/touch/gestures/Tap.js
  */
 
- var fireDomEvent = require("../lib/fireDomEvent");
+ var fireDomEvent = require("hsp/utils/fireDomEvent");
  var touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
 
  /***
