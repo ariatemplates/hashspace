@@ -1,7 +1,8 @@
 var klass = require("hsp/klass"),
     doc=require("hsp/document"),
     hsp=require("hsp/rt"),
-    $=require("hsp/utils/jquery-1.10.2.min.js");
+    $=require("hsp/utils/jquery-1.10.2.min.js"),
+    fireDomEvent = require("hsp/utils/fireDomEvent");
 
 var HtException=klass({
     $constructor:function(code,text) {
@@ -14,19 +15,7 @@ var HtException=klass({
 });
 
 function triggerEvent(eventName,DOMElt) {
-    var  res;
-    if (doc.createEvent) {
-        var evt=new Event(eventName);
-        //var evt=document.createEvent("HTMLEvents");
-        //evt.initEvent("name-of-custom-event", true, true);
-        res=DOMElt.dispatchEvent(evt);
-    } else {
-        // IE case
-        var evt = doc.createEventObject();
-        evt.eventType = eventName;
-        res=DOMElt.fireEvent("on" + eventName, evt);
-    }
-    return res;
+    return fireDomEvent.fireEvent(eventName, DOMElt);
 }
 
 /**

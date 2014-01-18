@@ -15,6 +15,7 @@
  */
 
 var ht=require("hsp/utils/hashtester");
+var fireDomEvent = require("hsp/utils/fireDomEvent");
 
 # template test1(person,ctl)
     <div title="test1" onclick="{ctl.handleClick()}">
@@ -75,7 +76,7 @@ describe("Event Handlers", function () {
         expect(n.node.firstChild.firstChild.nodeValue).toEqual("Hello Omer! ");
         expect(count).toEqual(0);
 
-        n.node.firstChild.click();
+        fireDomEvent.fireEvent("click", n.node.firstChild);
         expect(count).toEqual(1);
         expect(lastArg).toEqual(undefined);
 
@@ -105,7 +106,7 @@ describe("Event Handlers", function () {
         expect(test2SpanValue(n, 3)).toEqual("index 3: Lisa ");
         expect(count).toEqual(0);
 
-        test2SpanNode(n, 1).click();
+        fireDomEvent.fireEvent("click", test2SpanNode(n, 1));
 
         expect(count).toEqual(1);
         expect(lastName).toEqual("Marge");
@@ -113,7 +114,7 @@ describe("Event Handlers", function () {
         expect(lastStrArg).toEqual("literal arg");
         expect(lastEvtType).toEqual("click");
 
-        test2SpanNode(n, 3).click();
+        fireDomEvent.fireEvent("click", test2SpanNode(n, 3));
 
         expect(count).toEqual(2);
         expect(lastName).toEqual("Lisa");
@@ -133,7 +134,7 @@ describe("Event Handlers", function () {
         expect(n.node.firstChild.firstChild.nodeValue).toEqual("Hello Omer! ");
         expect(doClickCount).toEqual(0);
 
-        n.node.firstChild.click();
+        fireDomEvent.fireEvent("click",  n.node.firstChild);
         expect(doClickCount).toEqual(1);
         expect(doClickStrArg).toEqual("blah");
 

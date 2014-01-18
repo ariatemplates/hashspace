@@ -73,11 +73,11 @@ module.exports = function (grunt) {
             browserName: 'firefox',
             platform: 'Linux'
           },
-          'SL_Safari_6': {
+          'SL_Safari_7': {
             base: 'SauceLabs',
             browserName: 'safari',
-            platform: 'OS X 10.8',
-            version: '6'
+            platform: 'OS X 10.9',
+            version: '7'
           },
           'SL_IE_8': {
             base: 'SauceLabs',
@@ -106,8 +106,8 @@ module.exports = function (grunt) {
           'IOS': {
             base: 'SauceLabs',
             browserName: 'iphone',
-            platform: 'OS X 10.8',
-            version: '6.1'
+            platform: 'OS X 10.9',
+            version: '7'
           },
           'ANDROID': {
             base: 'SauceLabs',
