@@ -15,6 +15,7 @@
  */
 
 var hsp=require("hsp/rt"),
+    fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     json=require("hsp/json");
 
 
@@ -140,7 +141,7 @@ describe("Element Nodes", function () {
         expect(n.node.firstChild.value).to.equal("Omer");
         n.node.firstChild.value="Marge";
         expect(dm.name).to.equal("Omer"); // doesn't change has not event has been triggered
-        n.node.firstChild.click();
+        fireEvent("click",n.node.firstChild);
         expect(dm.name).to.equal("Marge");
         
         n.$dispose();
@@ -152,7 +153,7 @@ describe("Element Nodes", function () {
         expect(n.node.firstChild.value).to.equal("Omer");
         n.node.firstChild.value="Marge";
         expect(globalObject.value).to.equal("Omer"); // doesn't change has not event has been triggered
-        n.node.firstChild.click();
+        fireEvent("click",n.node.firstChild);
         expect(globalObject.value).to.equal("Marge");
         
         n.$dispose();

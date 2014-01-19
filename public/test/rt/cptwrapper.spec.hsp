@@ -17,6 +17,7 @@
 var hsp=require("hsp/rt"),
     json=require("hsp/json"),
     klass=require("hsp/klass"),
+    fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     cpt=require("hsp/rt/cptwrapper");
 
 // transform a string to a number 
@@ -223,24 +224,24 @@ describe("Component Nodes", function () {
     expect(textInput.value).to.equal("0");
 
     textInput.value="42";
-    textInput.click();
+    fireEvent("click",textInput);
 
     expect(n.controller.value).to.equal(42);
     expect(n.controller.isValid).to.equal(true);
 
     textInput.value="foo";
-    textInput.click();
+    fireEvent("click",textInput);
 
     expect(n.controller.value).to.equal(0);
     expect(n.controller.isValid).to.equal(false);
 
     textInput.value="123.4";
-    textInput.click();
+    fireEvent("click",textInput);
 
     expect(n.controller.value).to.equal(123.4);
     expect(n.controller.isValid).to.equal(true);
 
-    button.click(); // reset
+    fireEvent("click",button); // reset
     hsp.refresh();  // controller to DOM is only propagated after refresh
 
     expect(n.controller.value).to.equal(0);
@@ -265,27 +266,27 @@ it("tests a component inside another template", function() {
     expect(cptInput.value).to.equal('42');
 
     cptInput.value="3";
-    cptInput.click();     // to trigger data binding
+    fireEvent("click",cptInput);     // to trigger data binding
     hsp.refresh();        // to trigger update of the dom
 
     expect(textInput.value).to.equal('3');
     expect(cptInput.value).to.equal('3');
 
     cptInput.value="12";  // bigger than max value
-    cptInput.click();     // to trigger data binding
+    fireEvent("click",cptInput);     // to trigger data binding
     hsp.refresh();        // to trigger update of the dom
 
     expect(textInput.value).to.equal('0');
     expect(cptInput.value).to.equal('12');
 
     textInput.value="5";  // check binding in the other way
-    textInput.click();
+    fireEvent("click",textInput);
     hsp.refresh();
 
     expect(textInput.value).to.equal('5');
     expect(cptInput.value).to.equal('5');
 
-    cptButton.click();
+    fireEvent("click",cptButton);
     hsp.refresh();
 
     expect(textInput.value).to.equal('0');
@@ -304,7 +305,7 @@ it("tests a component inside another template", function() {
 
     var cptButton=n.node.childNodes[2];
 
-    cptButton.click();
+    fireEvent("click",cptButton);
     hsp.refresh();
 
     expect(resetCount).to.equal(1); //validate that "onbeforereset" callback has been called

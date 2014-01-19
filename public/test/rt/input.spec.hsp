@@ -15,6 +15,7 @@
  */
 
 var hsp=require("hsp/rt"),
+    fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     json=require("hsp/json");
 
 # template inputSample(data)
@@ -68,7 +69,7 @@ describe("Input Elements", function () {
         // change the value from input1 (value attribute)
         var v3 = "bar";
         input1.node.value = v3;
-        input1.node.click(); // to simulate change
+        fireEvent("click",input1.node); // to simulate change
         expect(input1.node.value).to.equal(v3);
         expect(input2.node.value).to.equal(v3);
         expect(d.comment).to.equal(v3);
@@ -76,7 +77,7 @@ describe("Input Elements", function () {
         // change the value from input2 (#model attribute)
         var v4 = "blah";
         input2.node.value = v4;
-        input2.node.click(); // to simulate change
+        fireEvent("click",input2.node); // to simulate change
         expect(input1.node.value).to.equal(v4);
         expect(input2.node.value).to.equal(v4);
         expect(d.comment).to.equal(v4);
@@ -107,7 +108,7 @@ describe("Input Elements", function () {
         expect(d.isChecked).to.equal(false);
 
         // change from cb1 (value reference)
-        cb1.node.click();
+        fireEvent("click",cb1.node);
         if (cb1.node.checked) {
             // on firefox calling click doesn't trigger the onclick event!?
             expect(cb1.node.checked).to.equal(true);
@@ -116,7 +117,7 @@ describe("Input Elements", function () {
         }
 
         // change from cb2 (#model reference)
-        cb2.node.click();
+        fireEvent("click",cb2.node);
         expect(cb1.node.checked).to.equal(false);
         expect(cb2.node.checked).to.equal(false);
         expect(d.isChecked).to.equal(false);
@@ -146,7 +147,7 @@ describe("Input Elements", function () {
         expect(rb2.node.checked).to.equal(false);
 
         // change from rb1
-        rb1.node.click();
+        fireEvent("click",rb1.node);
         expect(rb1.node.checked).to.equal(true);
         expect(rb2.node.checked).to.equal(false);
         expect(d.selection).to.equal("A");

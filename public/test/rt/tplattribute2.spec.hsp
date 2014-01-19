@@ -1,0 +1,84 @@
+ 
+/*
+ * Copyright 2013 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var hsp=require("hsp/rt"),
+    $set=require("hsp/$set"),
+    klass=require("hsp/klass"),
+    ht=require("hsp/utils/hashtester");
+
+var ExpandCollapseController = klass({
+    attributes: {
+        content: {
+            type: "template",
+            defaultContent: true
+        }
+    },
+    $init: function() {
+        this.visible = true;
+    },
+    show: function() {
+        $set(this, "visible", true);
+    },
+    hide:function() {
+        $set(this, "visible", false);
+    }
+});
+
+# template expandCollapse using c:ExpandCollapseController
+    {if c.visible}
+        <a onclick="{c.hide()}">Hide</a><br/>
+        <#c.content />
+    {else}
+        <a onclick="{c.show()}">Show</a><br/>
+    {/if}
+# /template
+
+# template test(data)
+    <#expandCollapse>
+    <#content>
+        <span class="content">My content</span>
+    </#content>
+    </#expandCollapse>
+# /template
+
+
+var LINK="a";
+var CONTENT=".content";
+
+describe("Template as component attribute (2)", function () {
+  
+  it("validates dynamic creation/deletion of template attributes", function() {
+    var h=ht.newTestContext();
+    test().render(h.container);
+
+    expect(h(LINK).length).to.equal(1);
+    expect(h(LINK).text()).to.equal("Hide");
+    expect(h(CONTENT).length).to.equal(1);
+    expect(h(CONTENT).text()).to.equal("My content");
+
+    h(LINK).click();
+    expect(h(LINK).text()).to.equal("Show");
+    expect(h(CONTENT).length).to.equal(0);
+
+    // TODO: fix the following part
+    //h(LINK).click();
+    //expect(h(LINK).text()).to.equal("Hide");
+    //expect(h(CONTENT).length).to.equal(1);
+
+    h.$dispose();
+  });
+
+});

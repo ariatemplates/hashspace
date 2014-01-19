@@ -15,6 +15,7 @@
  */
 
 var hsp=require("hsp/rt"),
+    fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     json=require("hsp/json");
 
 # template content(label, value)
@@ -190,7 +191,7 @@ describe("Sub-template insertion", function () {
         expect(input.value).to.equal("some text");
 
         input.value = "foo";
-        input.click(); // triggers change propagation
+        fireEvent("keydown",input); // triggers change propagation
 
         // change must have been propagated to parent scope
         expect(dm.text).to.equal("foo");
@@ -213,7 +214,7 @@ describe("Sub-template insertion", function () {
         expect(input.value).to.equal("some text");
 
         input.value = "bar";
-        input.click(); // triggers change propagation
+        fireEvent("keydown",input);
 
         // change must have been propagated to parent scope
         expect(dm.attributes.value).to.equal("bar");
