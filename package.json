@@ -1,7 +1,7 @@
 {
   "author": "ariatemplates <contact@ariatemplates.com> (http://github.com/ariatemplates)",
-  "name": "hashspace-prototype",
-  "description": "hashspace runtime prototype",
+  "name": "hashspace",
+  "description": "hashspace compiler and runtime",
   "version": "0.0.1-SNAPSHOT",
   "homepage": "",
   "repository": {
