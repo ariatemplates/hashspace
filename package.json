@@ -36,7 +36,6 @@
     "load-grunt-tasks": "~0.2.1"
   },
   "scripts": {
-    "test": "grunt test",
-    "prepublish": "grunt package"
+    "test": "grunt test"
   }
 }

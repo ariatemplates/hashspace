@@ -3,8 +3,3 @@ node_modules
 ._.DS_STORE
 dist
 sauce_connect.log
-build/hashspace.compiler.js
-build/hashspace.compiler.min.js
-build/hashspace.js
-build/hashspace.min.js
-build/tmp
