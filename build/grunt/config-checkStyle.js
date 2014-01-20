@@ -24,7 +24,7 @@ module.exports = function (grunt) {
             options : {
                 "node" : true
             },
-            src : ['Gruntfile.js', 'build/grunt/*.*']
+            src : ['index.js', 'Gruntfile.js', 'build/grunt/*.*']
         },
         source : {
             src : ['hsp/**/*.js', '!hsp/utils/jquery*.min.js']
