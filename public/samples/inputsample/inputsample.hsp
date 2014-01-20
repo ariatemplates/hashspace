@@ -4,6 +4,7 @@
         Comment #1: <input type="text" value="{data.comment}"/><br/>
         Comment #2: <input type="text" #model="{data.comment}"/><br/>
         Comment #3: <span class="textValue">{data.comment}</span><br/>
+        Comment #4: <input type="{data.comment}" value="{data.comment}"/><br/>
     </div>
     <div class="section">
         <input id="cb1" type="checkbox" value="{data.isChecked}"/>

@@ -86,7 +86,29 @@ var EltNode = klass({
         if (this.nodeNS) {
             nd = doc.createElementNS(this.nodeNS, this.tag);
         } else {
-            nd = doc.createElement(this.tag);
+            if (this.atts && this.atts.length > 0) {
+                var nodeType = null;
+                var nodeName = null;
+                for (var i = 0; i < this.atts.length; i++) {
+                    if (this.atts[i].name === "type") {
+                        nodeType = this.atts[i].value;
+                    }
+                    if (this.atts[i].name === "name") {
+                        nodeName = this.atts[i].value;
+                    }
+                }
+                try {
+                  nd = doc.createElement('<' + this.tag + (nodeType?' type=' + nodeType : '') + ' name=' + nodeName + ' >');
+                }
+                catch (e) {
+                    nd = doc.createElement(this.tag);
+                    if (nodeType) nd.type = nodeType;
+                    nd.name = nodeName;
+                 }
+            }
+            else {
+                nd = doc.createElement(this.tag);
+            }
         }
         this.node = nd;
         this.refreshAttributes();
@@ -226,7 +248,10 @@ var EltNode = klass({
                         nd.value = att.getValue(eh, vs, "");
                     }
                 } else {
-                    nd.setAttribute(att.name, att.getValue(eh, vs, null));
+                    try {
+                        nd.setAttribute(att.name, att.getValue(eh, vs, null));
+                    }
+                    catch (e) {}
                 }
             }
         }
