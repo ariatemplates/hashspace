@@ -34,7 +34,6 @@
     "karma-firefox-launcher": "~0.1.3"
   },
   "scripts": {
-    "test": "grunt test",
-    "prepublish": "grunt package"
+    "test": "grunt test"
   }
 }

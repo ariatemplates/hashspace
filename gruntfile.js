@@ -152,7 +152,7 @@ module.exports = function (grunt) {
       fs_module: {
         files: [{
           src: 'hsp/compiler/hspblocks.pegjs',
-          dest: 'build/tmp/fs.js'
+          dest: 'dist/tmp/fs.js'
         }],
         options: {
           processContent: function (content, srcpath) {
@@ -164,7 +164,7 @@ module.exports = function (grunt) {
     browserify: {
       runtime: {
         files: {
-          'build/hashspace.js': ['hsp/rt.js']
+          'dist/hashspace.js': ['hsp/rt.js']
         },
         options: {
           aliasMappings: [
@@ -188,7 +188,7 @@ module.exports = function (grunt) {
       },
       compiler: {
         files: {
-          'build/hashspace.compiler.js': ['hsp/compiler/compiler.js']
+          'dist/hashspace.compiler.js': ['hsp/compiler/compiler.js']
         },
         options: {
           aliasMappings: [
@@ -200,7 +200,7 @@ module.exports = function (grunt) {
           ],
           shim: {
             fs: {
-              path: 'build/tmp/fs.js',
+              path: 'dist/tmp/fs.js',
               exports: null
             }
           }
@@ -210,8 +210,8 @@ module.exports = function (grunt) {
     uglify: {
       hsp: {
         files: {
-          'build/hashspace.min.js': ['build/hashspace.js'],
-          'build/hashspace.compiler.min.js': ['build/hashspace.compiler.js']
+          'dist/hashspace.min.js': ['dist/hashspace.js'],
+          'dist/hashspace.compiler.min.js': ['dist/hashspace.compiler.js']
         }
       }
     }
