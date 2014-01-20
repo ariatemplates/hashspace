@@ -217,15 +217,8 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-mocha-test');
-  grunt.loadNpmTasks('grunt-verifylowercase');
-  grunt.loadNpmTasks('grunt-leading-indent');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-karma');
+  // Automatically load all the grunt tasks
+  require('load-grunt-tasks')(grunt);
   grunt.loadTasks('build/grunt');
 
   grunt.registerTask('package', ['copy', 'browserify', 'uglify']);
