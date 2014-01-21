@@ -29,7 +29,7 @@ module.exports = function (grunt) {
     },
     karma: {
       options: {
-        frameworks: ['mocha', 'expect', 'commonjs'],
+        frameworks: ['mocha', 'expect', 'commonjs', 'sinon'],
         plugins: [
           // these plugins will be require()-d by Karma
           'karma-*',
@@ -37,7 +37,8 @@ module.exports = function (grunt) {
         ],
         files: [
           'hsp/**/*.js',
-          'public/test/**/*.spec.*'
+          'public/test/**/*.spec.*',
+          'node_modules/karma-sinon/node_modules/sinon/pkg/sinon-ie.js'
         ],
         exclude: [
           'hsp/compiler/**/*.js',

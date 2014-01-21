@@ -14,6 +14,7 @@
  */
 var klass = require("hsp/klass");
 var Tap = require("./tap").Tap;
+var LongPress = require("./longPress").LongPress;
 
 /**
  * Mapping between the event name and the handling class.
@@ -22,7 +23,10 @@ var Tap = require("./tap").Tap;
 var _gestureMap = {
     tap: {name: "Tap", klass: Tap},
     tapstart: {name: "Tap", klass: Tap},
-    tapcancel: {name: "Tap", klass: Tap}
+    tapcancel: {name: "Tap", klass: Tap},
+    longpress: {name: "LongPress", klass: LongPress},
+    longpressstart: {name: "LongPress", klass: LongPress},
+    longpresscancel: {name: "LongPress", klass: LongPress}
 };
 
 /**
