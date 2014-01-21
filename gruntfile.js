@@ -22,6 +22,7 @@ module.exports = function (grunt) {
         },
         src: [
           'public/test/compiler/*.js',
+          'public/test/transpiler/*.js',
           'public/test/compiler/jsvalidator/*.js'
         ]
       }
@@ -40,6 +41,7 @@ module.exports = function (grunt) {
         ],
         exclude: [
           'hsp/compiler/**/*.js',
+          'public/test/transpiler/**/*.spec.js',
           'public/test/compiler/**/*.spec.js'
         ],
         preprocessors: {

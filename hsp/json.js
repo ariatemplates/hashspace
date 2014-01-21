@@ -32,7 +32,7 @@ var $sort=AP.sort;
 var $unshift=AP.unshift;
 
 /**
- * Override Array splice to detect changes an trigger observer callbacks - same arguments as Array.splice: 
+ * Override Array splice to detect changes an trigger observer callbacks - same arguments as Array.splice:
  * cf. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice
  **/
 Array.prototype.splice=function(index, howMany) {
@@ -225,19 +225,17 @@ function callObservers(object, chgeset) {
     }
 }
 
+var ownProperty = Object.prototype.hasOwnProperty;
+
 module.exports = {
     MD_OBSERVERS : OBSERVER_PROPERTY,
 
     /**
      * Sets a value in a JSON object (including arrays) and automatically notifies all observers of the change
      */
-    set : function (object, property, value) {
-        if (typeof(object) !== 'object') {
-            console.log("[json.set] Invalid object used to set a value");
-            return;
-        }
+    $set : function (object, property, value) {
         if (object[OBSERVER_PROPERTY]) {
-            var exists = object.hasOwnProperty(property), oldVal = object[property], sz1 = object.length, chgset=null;
+            var exists = ownProperty.call(object, property), oldVal = object[property], sz1 = object.length, chgset=null;
             object[property] = value;
 
             if (!exists) {
@@ -258,9 +256,26 @@ module.exports = {
             if (chgset) {
                 callObservers(object, chgset);
             }
-            return value;
         } else {
             object[property] = value;
+        }
+        return value;
+    },
+
+    /**
+     * Delete a property in a JSON object and automatically notifies all observers of the change
+     */
+    $delete : function (object, property, value) {
+        if (object[OBSERVER_PROPERTY]) {
+            var existed = ownProperty.call(object, property), oldVal = object[property];
+            delete object[property];
+
+            if (existed) {
+                var chgset=[changeDesc(object, property, object[property], oldVal, "deleted")];
+                callObservers(object, chgset);
+            }
+        } else {
+            delete object[property];
         }
     },
 
@@ -279,6 +294,8 @@ module.exports = {
     }
 
 };
+
+module.exports["set"] = module.exports.$set;
 
 function observe (object, callback, metaProperty) {
     // metaProperty = OBSERVER_PROPERTY || EVTOBSERVER_PROPERTY
