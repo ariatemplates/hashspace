@@ -19,9 +19,11 @@
 <html>
 <head>
 	<meta http-equiv="x-ua-compatible" content="IE=Edge"/> 
-	<link rel="stylesheet" href="/lib/mocha.css" />
-	<script src="/lib/expect.js"></script>
-	<script src="/lib/mocha.js"></script>
+	<link rel="stylesheet" href="/node_modules/mocha/mocha.css" />
+	<script src="/node_modules/karma-expect/node_modules/expect.js/expect.js"></script>
+	<script src="/node_modules/mocha/mocha.js"></script>
+	<script src="/node_modules/karma-sinon/node_modules/sinon/pkg/sinon.js"></script>
+	<script src="/node_modules/karma-sinon/node_modules/sinon/pkg/sinon-ie.js"></script>
 	<script>mocha.setup('bdd')</script>
 	<script type="text/javascript" src="/lib/noder.min.js">
 	{
@@ -55,6 +57,7 @@
 	require("test/rt/tplattribute2.spec.hsp");
 	require("test/gestures/touchEvent.spec.js");
 	require("test/gestures/tap.spec.hsp");
+	require("test/gestures/longPress.spec.hsp");
 	require("test/utils/hashtester.spec.hsp");
 	require("todomvc/test/todo.spec.js");
 
