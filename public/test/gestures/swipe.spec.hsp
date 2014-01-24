@@ -14,19 +14,20 @@
  */
 
 /**
- * Taken from Aria Templates: https://github.com/ariatemplates/ariatemplates/blob/master/test/aria/touch/gestures/LongPress.js
+ * Taken from Aria Templates: https://github.com/ariatemplates/ariatemplates/blob/master/test/aria/touch/gestures/Swipe.js
  */
 
 var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
 
 # template test1(ctl)
-    <div title="test1" onlongpress="{ctl.handleEvent(event)}" onlongpressstart="{ctl.handleEvent(event)}" onlongpresscancel="{ctl.handleEvent(event)}">
+    <div title="test1" onswipe="{ctl.handleEvent(event)}" onswipestart="{ctl.handleEvent(event)}" onswipemove="{ctl.handleEvent(event)}" onswipecancel="{ctl.handleEvent(event)}">
         Hello!
     </div>
 # /template
 
-describe("LongPress gesture", function () {
+describe("Swipe gesture", function () {
+
     function validate(expected, result) {
         expect(expected.length).to.equal(result.length);
         for (var i = 0; i < expected.length; i ++) {
@@ -34,17 +35,8 @@ describe("LongPress gesture", function () {
         }
     }
 
-    var clock;
-    beforeEach(function () {
-         clock = sinon.useFakeTimers();
-     });
-
-    afterEach(function () {
-        clock.restore();
-    });
-
-    it("tests a cancel long press: touchstart, touchmove with 2 fingers", function () {
-        var expected =  ["longpressstart", "longpresscancel"];
+    it("tests a cancel swipe: touchstart, touchmove with 2 fingers", function () {
+        var expected =  ["swipestart", "swipecancel"];
         var result = [];
         var ctl = {
             handleEvent : function (evt) {
@@ -81,8 +73,8 @@ describe("LongPress gesture", function () {
         n.$dispose();
     });
 
-    it("tests a cancel long press: touchstart, touchmove with distance > 10", function () {
-        var expected =  ["longpressstart", "longpresscancel"];
+    it("tests a cancelled because not in straight line swipe: touchstart, touchmove * 4, touchend", function () {
+        var expected =  ["swipestart", "swipemove", "swipemove", "swipemove", "swipecancel"];
         var result = [];
         var ctl = {
             handleEvent : function (evt) {
@@ -95,41 +87,31 @@ describe("LongPress gesture", function () {
             clientY : 0
         });
         fireEvent(touchEventMap.touchmove, n.node.firstChild, {
-            clientX : 100,
-            clientY : 100
-        });
-        validate(expected, result);
-        n.$dispose();
-    });
-
-    it("tests a not completed long press: touchstart, touchmove with distance <= 10, touchend within 1000ms", function () {
-        var expected =  ["longpressstart", "longpresscancel"];
-        var result = [];
-        var ctl = {
-            handleEvent : function (evt) {
-                result.push(evt.type);
-            }
-        };
-        var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
-            clientX : 0,
-            clientY : 0
-        });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
-            clientX : 5,
+            clientX : 10,
             clientY : 5
         });
-        clock.tick(990);
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            clientX : 20,
+            clientY : 10
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            clientX : 30,
+            clientY : 15
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            clientX : 40,
+            clientY : 21
+        });
         fireEvent(touchEventMap.touchend, n.node.firstChild, {
-            clientX : 5,
-            clientY : 5
+            clientX : 40,
+            clientY : 21
         });
         validate(expected, result);
         n.$dispose();
     });
 
-    it("tests a valid long press: touchstart, touchmove with distance <= 10, wait 1010 ms", function () {
-        var expected =  ["longpressstart", "longpress"];
+    it("tests a valid swipe: touchstart, touchmove * 3, touchend", function () {
+        var expected =  ["swipestart", "swipemove", "swipemove", "swipemove", "swipe"];
         var result = [];
         var ctl = {
             handleEvent : function (evt) {
@@ -143,9 +125,20 @@ describe("LongPress gesture", function () {
         });
         fireEvent(touchEventMap.touchmove, n.node.firstChild, {
             clientX : 5,
+            clientY : 0
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            clientX : 10,
+            clientY : 0
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            clientX : 15,
+            clientY : 0
+        });
+        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+            clientX : 15,
             clientY : 5
         });
-        clock.tick(1010);
         validate(expected, result);
         n.$dispose();
     });
