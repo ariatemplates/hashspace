@@ -15,7 +15,11 @@
 var klass = require("hsp/klass");
 var Tap = require("./tap").Tap;
 var LongPress = require("./longPress").LongPress;
-
+var SingleTap = require("./singleTap").SingleTap;
+var DoubleTap = require("./doubleTap").DoubleTap;
+var Swipe = require("./swipe").Swipe;
+var Drag = require("./drag").Drag;
+var Pinch = require("./pinch").Pinch;
 /**
  * Mapping between the event name and the handling class.
  * @type Object
@@ -26,7 +30,25 @@ var _gestureMap = {
     tapcancel: {name: "Tap", klass: Tap},
     longpress: {name: "LongPress", klass: LongPress},
     longpressstart: {name: "LongPress", klass: LongPress},
-    longpresscancel: {name: "LongPress", klass: LongPress}
+    longpresscancel: {name: "LongPress", klass: LongPress},
+    singletap: {name: "SingleTap", klass: SingleTap},
+    singletapstart: {name: "SingleTap", klass: SingleTap},
+    singletapcancel: {name: "SingleTap", klass: SingleTap},
+    doubletap: {name: "DoubleTap", klass: DoubleTap},
+    doubletapstart: {name: "DoubleTap", klass: DoubleTap},
+    doubletapcancel: {name: "DoubleTap", klass: DoubleTap},
+    swipe: {name: "Swipe", klass: Swipe},
+    swipestart: {name: "Swipe", klass: Swipe},
+    swipemove: {name: "Swipe", klass: Swipe},
+    swipecancel: {name: "Swipe", klass: Swipe},
+    drag: {name: "Drag", klass: Drag},
+    dragstart: {name: "Drag", klass: Drag},
+    dragmove: {name: "Drag", klass: Drag},
+    dragcancel: {name: "Drag", klass: Drag},
+    pinch: {name: "Pinch", klass: Pinch},
+    pinchstart: {name: "Pinch", klass: Pinch},
+    pinchmove: {name: "Pinch", klass: Pinch},
+    pinchcancel: {name: "Pinch", klass: Pinch}
 };
 
 /**

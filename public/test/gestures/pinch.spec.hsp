@@ -1,0 +1,216 @@
+/*
+ * Copyright 2012 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Taken from Aria Templates: https://github.com/ariatemplates/ariatemplates/blob/master/test/aria/touch/gestures/Pinch.js
+ */
+
+var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
+    touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
+
+# template test1(ctl)
+    <div title="test1" onpinch="{ctl.handleEvent(event)}" onpinchstart="{ctl.handleEvent(event)}" onpinchmove="{ctl.handleEvent(event)}" onpinchcancel="{ctl.handleEvent(event)}">
+        Hello!
+    </div>
+# /template
+
+describe("Pinch gesture", function () {
+
+    function validate(expected, result) {
+        expect(expected.length).to.equal(result.length);
+        for (var i = 0; i < expected.length; i ++) {
+            expect(expected[i]).to.equal(result[i]);
+        }
+    }
+
+    it("tests a valid pinch: touchstart, touchmove * 2, touchend", function () {
+        var expected =  ["pinchstart", "pinchmove", "pinchmove", "pinch"];
+        var result = [];
+        var ctl = {
+            handleEvent : function (evt) {
+                result.push(evt.type);
+            }
+        };
+        var n = test1(ctl);
+        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+            touches : [{
+                        clientX : 0,
+                        clientY : 0
+                    }, {
+                        clientX : 5,
+                        clientY : 5
+                    }],
+            changedTouches : [{
+                        clientX : 0,
+                        clientY : 0
+                    }, {
+                        clientX : 5,
+                        clientY : 5
+                    }]
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            touches : [{
+                        clientX : 0,
+                        clientY : 0
+                    }, {
+                        clientX : 10,
+                        clientY : 10
+                    }],
+            changedTouches : [{
+                        clientX : 10,
+                        clientY : 10
+                    }]
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            touches : [{
+                        clientX : 0,
+                        clientY : 0
+                    }, {
+                        clientX : 15,
+                        clientY : 15
+                    }],
+            changedTouches : [{
+                        clientX : 15,
+                        clientY : 15
+                    }]
+        });
+        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+            touches : [{
+                        clientX : 0,
+                        clientY : 0
+                    }],
+            changedTouches : [{
+                        clientX : 15,
+                        clientY : 15
+                    }]
+        });
+        validate(expected, result);
+        n.$dispose();
+    });
+
+    it("tests another valid pinch: touchstart, touchmove * 3, touchend", function () {
+        var expected =  ["pinchstart", "pinchmove", "pinchmove", "pinch"];
+        var result = [];
+        var ctl = {
+            handleEvent : function (evt) {
+                result.push(evt.type);
+            }
+        };
+        var n = test1(ctl);
+        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+            touches : [{
+                        clientX : 0,
+                        clientY : 0
+                    }, {
+                        clientX : 5,
+                        clientY : 5
+                    }],
+            changedTouches : [{
+                        clientX : 0,
+                        clientY : 0
+                    }, {
+                        clientX : 5,
+                        clientY : 5
+                    }]
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            touches : [{
+                        clientX : 0,
+                        clientY : 0
+                    }, {
+                        clientX : 10,
+                        clientY : 10
+                    }],
+            changedTouches : [{
+                        clientX : 10,
+                        clientY : 10
+                    }]
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            touches : [{
+                        clientX : 0,
+                        clientY : 0
+                    }, {
+                        clientX : 15,
+                        clientY : 15
+                    }],
+            changedTouches : [{
+                        clientX : 15,
+                        clientY : 15
+                    }]
+        });
+        fireEvent(touchEventMap.touchend, n.node.firstChild,{
+            touches : [],
+            changedTouches : [{
+                        clientX : 0,
+                        clientY : 0
+                    }, {
+                        clientX : 15,
+                        clientY : 15
+                    }]
+        });
+        validate(expected, result);
+        n.$dispose();
+    });
+
+    it("tests a valid pinch on IE10: touchstart, touchmove * 3, touchend", function () {
+        var expected =  ["pinchstart", "pinchmove", "pinchmove", "pinchmove", "pinchmove", "pinch"];
+        var result = [];
+        var ctl = {
+            handleEvent : function (evt) {
+                result.push(evt.type);
+            }
+        };
+        var n = test1(ctl);
+        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+            clientX : 0,
+            clientY : 0,
+            isPrimary : true
+        });
+        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+            clientX : 20,
+            clientY : 20,
+            isPrimary : false
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            clientX : 10,
+            clientY : 5,
+            isPrimary : true
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            clientX : 20,
+            clientY : 10,
+            isPrimary : false
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            clientX : 30,
+            clientY : 15,
+            isPrimary : true
+        });
+        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+            clientX : 40,
+            clientY : 21,
+            isPrimary : false
+        });
+        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+            clientX : 40,
+            clientY : 21,
+            isPrimary : false
+        });
+        validate(expected, result);
+        n.$dispose();
+    });
+
+});
