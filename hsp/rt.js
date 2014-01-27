@@ -21,7 +21,9 @@ var $root = require("hsp/rt/$root");
 var $RootNode = $root.$RootNode;
 var $InsertNode = $root.$InsertNode;
 var $CptNode = $root.$CptNode;
+var $CptAttElement = $root.$CptAttElement;
 var cpt = require("hsp/rt/cptwrapper");
+
 
 var NodeGenerator = klass({
     /**
@@ -246,8 +248,15 @@ module.exports.logErrors = function (fileName, errors) {
  */
 var nodes = {};
 
-var nodeList = ["$text", require("hsp/rt/$text"), "$if", require("hsp/rt/$if"), "$insert", $InsertNode, "$foreach",
-        require("hsp/rt/$foreach"), "elt", require("hsp/rt/eltnode"), "cpt", $CptNode];
+var nodeList = [
+    "$text", require("hsp/rt/$text"),
+    "$if", require("hsp/rt/$if"),
+    "$insert", $InsertNode,
+    "$foreach", require("hsp/rt/$foreach"),
+    "elt", require("hsp/rt/eltnode"),
+    "cpt", $CptNode,
+    "catt", $CptAttElement
+];
 
 for (var i = 0, sz = nodeList.length; sz > i; i += 2) {
     createShortcut(nodeList[i], nodeList[i + 1]);

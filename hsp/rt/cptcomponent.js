@@ -1,7 +1,13 @@
-var json = require("hsp/json");
-var $TextNode = require("hsp/rt/$text");
-var TNode = require("hsp/rt/tnode").TNode;
-var doc = require("hsp/document");
+var json = require("hsp/json"),
+    $TextNode = require("hsp/rt/$text");
+
+var $CptAttElement; // injected through setDependency to avoid circular dependencies
+
+exports.setDependency=function(name,value) {
+  if (name==="$CptAttElement") {
+    $CptAttElement=value;
+  }
+};
 
 /**
  * $CptComponent contains methods that will be added to the prototype of all
@@ -9,7 +15,7 @@ var doc = require("hsp/document");
  *   <#mywidget foo="bar"/>
  * (i.e. a component using a template with any controller)
  */
-module.exports.$CptComponent = {
+exports.$CptComponent = {
   initCpt:function(tpl) {
     this.isCptComponent = true;
 
@@ -92,66 +98,19 @@ module.exports.$CptComponent = {
     }
 
     // if there is only one template attribute it will be automatically considered as default
-    if (!defaultTplAtt && count===1) {
-      defaultTplAtt=lastTplAtt;
+    if (!defaultTplAtt) {
+      if (count===1) {
+        defaultTplAtt=lastTplAtt;
+      } else if (count>1) {
+        // error: a default must be defined
+        console.error(this+" A default content element must be defined when multiple content elements are supported");
+        // use last as default
+        defaultTplAtt=lastTplAtt;
+      }
     }
 
-    if (this.children) {
-      // create childNodes first as they contain component template attributes
-      
-      // Analyze the child nodes
-      var n, tplAttFound=false, cn=[];
-      var cnode=this.node;
-      this.node=null;
-      for (var i = 0, sz = this.children.length; sz > i; i++) {
-          n = this.children[i].createNodeInstance(this);
-
-          if (n.tplAttribute) {
-            tplAttFound=true;
-            var nm=n.tplAttribute.name;
-            // register it in the tplAttributes collection
-            if (!this.tplAttributes) {
-              this.tplAttributes={};
-            }
-            this.tplAttributes[nm]=n;
-          } else {
-            // ignore this node (could be a $if or $foreach)
-          }
-          cn.push(n);
-      }
-      this.node=cnode;
-
-      // if there is a default template and no explicit tpl attributes found let's consider
-      // the content as associated to the default template
-      if (!tplAttFound) {
-        if (!defaultTplAtt) {
-          console.error("Component content cannot be associated to any component attribute");
-        } else {
-          // create a TNode to gather all chil nodes and register it in the tplAttributes collection
-          var t=new TNode(0);
-          t.isDOMless=true; // to minimize initialization (cf. TNode)
-
-          var ni=t.createNodeInstance(this);
-
-          // use a doc fragment to gather all node instance nodes
-          ni.node=doc.createDocumentFragment();
-          ni.isDOMless=false;
-          t.childNodes=cn;
-
-          // register all child nodes as child of the new TNode
-          for (var k in cn) {
-            if (!cn.hasOwnProperty(k)) continue;
-            cn[k].parent=ni;
-            ni.node.appendChild(cn[k].node);
-          }
-
-          // register the node in the tplAttributes collection
-          this.tplAttributes={};
-          this.tplAttributes[defaultTplAtt]=ni;
-        }
-      }
-      
-    }
+    // check if a default attribute element has to be created and create it if necessary
+    this.manageDefaultAttElt(defaultTplAtt);
 
     // Analyze node attributes to see if a template attribute is passed as text attribute
     var atts=this.atts, att, nm;
@@ -164,33 +123,28 @@ module.exports.$CptComponent = {
           // nm is a template attribute passed as text attribute
           if (this.tplAttributes && this.tplAttributes[nm]) {
             // already defined: raise an error
-            console.error("Component attribute '" + nm + "' is defined multiple times - please check");
-          } else {
-            // add it to the tplAttributes collection
             
-            // create new tpl Attribute Text Node
+            console.error(this+" Component attribute '" + nm + "' is defined multiple times - please check");
+          } else {
+            // create new tpl Attribute Text Node and add it to the tplAttributes collection
             if (!att.generator) {
-              var gen;
+              var txtNode;
               if (att.value) {
                 // static value
-                gen = new $TextNode(0,[""+att.value]);
+                txtNode = new $TextNode(0,[""+att.value]);
               } else {
                 // dynamic value using expressions
-                gen = new $TextNode(this.exps,atts[k].textcfg);
+                txtNode = new $TextNode(this.exps,atts[k].textcfg);
               }
               if (!this._attGenerators) {
                 this._attGenerators = [];
               }
-              this._attGenerators.push(gen);
-              att.generator = gen;
+              att.generator = new $CptAttElement(nm,0,0,0,[txtNode]); // name, exps, attcfg, ehcfg, children
+              this._attGenerators.push(att.generator);
             }
-            var n=att.generator.createNodeInstance(this);
-
-            // add it to the collection
-            if (!this.tplAttributes) {
-              this.tplAttributes={};
-            }
-            this.tplAttributes[nm]=n;
+            // generate a real $CptAttElement using the TextNode as child element
+            att.generator.createNodeInstance(this);
+            // attribute elements will automatically register through registerAttElement()
           }
         }
       }
@@ -198,10 +152,83 @@ module.exports.$CptComponent = {
   },
 
   /**
+   * Check if a default attribute element has to be created and create one if necessary
+   */
+  manageDefaultAttElt:function (defaultTplAtt) {
+    if (!this.children) {
+      return;
+    }
+
+    // TODO memoize result at prototype level to avoid processing this multiple times
+
+    //isValidCptAttElement
+    var cn=this.children, sz=cn.length;
+
+    // check in which case we fall:
+    // 1. valid and invalid cpt att element are found -> error
+    // 2. only valid cpt att element are found
+    // 3. only invalid cpt att element are found -> default cpt att element must be created
+    var validFound=false, invalidFound=false;
+    for (var i=0;sz>i;i++) {
+      if (cn[i].isValidCptAttElement()) {
+        validFound=true;
+      } else {
+        invalidFound=true;
+      }
+    }
+
+    if (validFound && invalidFound) {
+      // case #1: error
+      console.error(this+"Component content cannot mix attribute elements with content elements");
+    } else {
+      var loadCpts=false;
+      if (validFound && !invalidFound) {
+        // case #2: only valid cpt have been found - so we have to load them
+        loadCpts=true;
+      } else if (!validFound && invalidFound) {
+        // case #3: only invalid cpt have been found - so we have to create a default attribute element
+        // to fall back in case #2
+        var catt=new $CptAttElement(defaultTplAtt,0,0,0,this.children); // name, exps, attcfg, ehcfg, children
+
+        // add this default cpt att element as unique child
+        this.children=[catt];
+        cn=this.children;
+        sz=cn.length;
+        loadCpts=true;
+      }
+      if (loadCpts) {
+        var ni;
+        for (var i=0;sz>i;i++) {
+          ni = cn[i].createNodeInstance(this);
+          // attribute elements will automatically register through registerAttElement()
+        }
+      }
+    }
+  },
+
+  /**
+   * Method called by child attribute element so that the component
+   * knows which CptAttElement are defined in its context
+   * @param name {String} the name of the attribute element
+   * @param catt {$CptAttElement} the attribute element
+   */
+  registerAttElement:function(name,catt) {
+    // check that name is valid
+    if (!this.ctlAttributes || !this.ctlAttributes[name]) {
+      console.error(this+" Invalid attribute element: @"+name);
+    } else {
+      if (!this.tplAttributes) {
+        this.tplAttributes={};
+      }
+      this.tplAttributes[name]=catt;
+    }
+  },
+
+  /**
    * If the template instance support some template attributes this method return the
    * template attribute object that corresponds to the name passed as argument
    * This method is called by the CptNode createNodeInstance to determine if a component
-   * is of type $CptAttribute
+   * is of type $CptAttElement
    * Null is returned if there is no attribute corresponding to this name
    */
   getTplAttribute : function (name) {
@@ -249,5 +276,13 @@ module.exports.$CptComponent = {
         }
       }
     }
+  },
+
+  /**
+   * Helper function used to give contextual error information
+   * @return {String} - e.g. "[Component lib.mycomponent]"
+   */
+  toString:function() {
+    return "[Component: #"+this.tplPath.slice(1).join(".")+"]";
   }
 };

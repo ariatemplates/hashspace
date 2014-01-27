@@ -1,6 +1,3 @@
-
-var DOCFRAGMENT=11; // document fragment node type
-
 /**
  * $CptAttInsert contains methods that will be added to the prototype of all
  * $CptNode node instance that correspond to an insertion of a component attribute
@@ -21,20 +18,16 @@ module.exports.$CptAttInsert = {
       var cptAttribute=cptNodeInstance.tplAttributes[name];
 
       // TODO 
-      // register somwhere to be notified if cpt attribute changes (e.g. created / deleted throgh an {if})
+      // register somewhere to be notified if cpt attribute changes (e.g. created / deleted throgh an {if})
       // and update childNode list if need be
 
       if (cptAttribute) {
-        // cpt attribute has been defined for the parent component
-        // attach cpt attribute nodes to the current node
-        this.node.appendChild(cptAttribute.node);
-        if (cptAttribute.node.nodeType===DOCFRAGMENT) {
-        // replace node by parent node
-          cptAttribute.node=this.node;
-        }
-        cptAttribute.parent=this; // to bubble dirty state
+        var root=cptAttribute.getTemplateNode(this.vscope);
+
+        // append root
         this.childNodes=[];
-        this.childNodes[0]=cptAttribute; // to propagate refresh
+        this.childNodes[0]=root;
+        root.render(this.node);
       }
     }
   },

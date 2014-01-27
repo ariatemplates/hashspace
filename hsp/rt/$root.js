@@ -22,11 +22,11 @@ var json = require("hsp/json");
 var PropObserver = require("hsp/propobserver");
 var tn = require("hsp/rt/tnode");
 var TNode = tn.TNode;
+var cptComponent=require("hsp/rt/cptcomponent");
 
 var CPT_TYPES={
     '$CptAttInsert':require("hsp/rt/cptattinsert").$CptAttInsert,
-    '$CptAttribute':require("hsp/rt/cptattribute").$CptAttribute,
-    '$CptComponent':require("hsp/rt/cptcomponent").$CptComponent,
+    '$CptComponent':cptComponent.$CptComponent,
     '$CptTemplate':require("hsp/rt/cpttemplate").$CptTemplate
 };
 
@@ -400,6 +400,7 @@ var $CptNode = klass({
      * @param {Array} children list of child node generators - correponding to pseudo components and attribute content
      */
     $constructor : function (tplPath, exps, attcfg, ehcfg, children) {
+        this.isCptNode = true;
         this.tplPath = tplPath;
         this.isInsertNode = true; // to ensure $RootNode is creating expression listeners
         this.isDOMless = true;
@@ -410,8 +411,6 @@ var $CptNode = klass({
         this.controller = null; // different for each instance
         this.ctlAttributes = null;// reference to the controller attributes definition - if any
         this._scopeChgeCb = null; // used by component w/o any controller to observe the template scope
-        this.tplAttribute = null; // if this component is a pseudo-cpt used as template attribute this property is
-                                  // used to store tpl attribute characteristics
         if (children && children !== 0) {
             this.children = children;
         }
@@ -447,7 +446,7 @@ var $CptNode = klass({
       // - a component with controller - e.g. <#mycpt foo="bar"/>
       //   -> instance will extend $CptComponent
       // - a template attribute content - e.g. body in <#mycpt><#body>foobar</#body></#mycpt>
-      //   -> instance will extend $CptAttribute
+      //   -> instance will extend $CptAttElement
       // - or a template attribute insertion - e.g. <#c.body/>
       //   -> instance will extend $CptAttInsert
 
@@ -459,18 +458,9 @@ var $CptNode = klass({
             var att=vsr.attributes[tp[2]]; // attribute on the object reference by the root ref in the current scope
             if (att && att.type==="template") {
                 // this instance is a template attribute insertion
-                ni=this.createCptIntance("$CptAttInsert",parent);
+                ni=this.createCptInstance("$CptAttInsert",parent);
                 ni.initCpt(tp[1],tp[2]);
             }
-        }
-      } else if (tp.length===2 && parent.getTplAttribute) {
-        // path is composed of a unique name (e.g. "header" from <#header>) and parent is a component
-        // check if we are in the attribute content case
-        var tpa=parent.getTplAttribute(tp[1]);
-
-        if (tpa) {
-            ni=this.createCptIntance("$CptAttribute",parent);
-            ni.initCpt(tp[1]); // name:tp[1]
         }
       }
       if (!ni) {
@@ -481,15 +471,15 @@ var $CptNode = klass({
         if (tpl && typeof(tpl) === 'function') {
           if (tpl.controllerConstructor) {
             // template uses a controller
-            ni=this.createCptIntance("$CptComponent",parent);
+            ni=this.createCptInstance("$CptComponent",parent);
           } else {
-            ni=this.createCptIntance("$CptTemplate",parent);
+            ni=this.createCptInstance("$CptTemplate",parent);
           }
-          ni.initCpt(tpl);
+          ni.initCpt(tpl,$RootNode);
         }
       }
       if (!ni) {
-          console.error("Invalid component reference: " + tp.slice(1).join("."));
+          throw new Error(this+" Invalid component reference");
       }
       return ni;
     },
@@ -498,9 +488,9 @@ var $CptNode = klass({
      * Create and return an instance node associated to the component type passed as argument
      * The method dynamically creates a specialized $CptNode object that will be used as prototype
      * of the instance node - this allows to avoid mixing methods and keep code clear
-     * @param cptType {string} one of the following: $CptAttInsert / $CptAttribute / $CptComponent / $CptTemplate
+     * @param cptType {string} one of the following: $CptAttInsert / $CptAttElement / $CptComponent / $CptTemplate
      */
-    createCptIntance:function(cptType,parent) {
+    createCptInstance:function(cptType,parent) {
         if (!this.cptTypes) {
             this.cptTypes={};
         }
@@ -511,11 +501,11 @@ var $CptNode = klass({
             var proto2 = klass.createObject(this);
             for (var k in proto1) {
                 if (proto1.hasOwnProperty(k)) {
-                proto2[k]=proto1[k];
+                    proto2[k]=proto1[k];
+                }
             }
-        }
 
-        ct=proto2;
+            ct=proto2;
             this.cptTypes[cptType]=ct;
         }
 
@@ -563,9 +553,88 @@ var $CptNode = klass({
             this.adirty = false;
         }
         TNode.refresh.call(this);
+    },
+
+    /**
+    * Helper function used to give contextual error information
+    * @return {String} - e.g. "[Component: #foo.bar]"
+    */
+    toString:function() {
+        return "[Component: #"+this.tplPath.slice(1).join(".")+"]";
     }
 });
 
+/**
+ * Component attribute nodes contains attribute elements for the parent component
+ */
+var $CptAttElement = klass({
+    $extends : TNode,
+
+    /**
+     * $CptAttElement generator 
+     */
+    $constructor : function (name, exps, attcfg, ehcfg, children) {
+        this.name = name;
+        this.isDOMless = true;
+        this.attcfg = attcfg;
+        TNode.$constructor.call(exps);
+        this.createAttList(attcfg, ehcfg);
+        if (children && children !== 0) {
+            this.children = children;
+        }
+    },
+
+    $dispose:function() {
+        TNode.$dispose.call(this);
+    },
+
+    /**
+     * Tell this node can be found in a component content 
+     * other (if false) the component will generate the default component content element
+     */
+    isValidCptAttElement:function () {
+        return true;
+    },
+
+    createNodeInstance : function (parent) {
+        var ni=TNode.createNodeInstance.call(this,parent);
+        // identify this node as a component attribute
+
+        // get parent and register through registerAttElement
+        var p=parent, found=false;
+        while (p) {
+            if (p.registerAttElement) {
+                p.registerAttElement(ni.name,ni);
+                p=null;
+                found=true;
+            } else {
+                p=p.parent;
+            }
+        }
+
+        if (!found) {
+            console.error(this+" Attribute elements cannot be used outside components");
+        }
+        return ni;
+    },
+
+    getTemplateNode:function(vscope) {
+        return new $RootNode(this.vscope, this.children);
+    },
+
+    /**
+    * Helper function used to give contextual error information
+    * @return {String} - e.g. "[Component attribute element: @body]"
+    */
+    toString:function() {
+        return "[Component attribute element: @"+this.name+"]";
+    }
+});
+
+cptComponent.setDependency("$RootNode",$RootNode);
+cptComponent.setDependency("$CptAttElement",$CptAttElement);
 module.exports.$RootNode = $RootNode;
 module.exports.$InsertNode = $InsertNode;
 module.exports.$CptNode = $CptNode;
+module.exports.$CptAttElement = $CptAttElement;
+
