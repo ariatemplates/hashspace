@@ -231,6 +231,11 @@ exports["component"] = function (node, walker) {
     return ['n.cpt([_', p[0], ',"', p.join('","'), '"],', s, ')'].join('');
 };
 
+exports["cptattribute"] = function (node, walker) {
+    var s = elementOrComponent(node, walker);
+    return ['n.catt("', node.name, '",', s, ')'].join('');
+};
+
 /**
  * Format an expression according to its category
  * Return the expression string and the next expression index that can be used

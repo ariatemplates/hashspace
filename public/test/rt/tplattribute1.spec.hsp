@@ -48,9 +48,9 @@ PanelController = klass({
 # template test1(m)
   Sample panel:
   <#panel>
-    <#body>
+    <@body>
       {m.text}!
-    </#body>
+    </@body>
   </#panel>
 # /template
 

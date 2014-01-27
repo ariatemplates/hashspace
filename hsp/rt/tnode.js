@@ -211,6 +211,14 @@ var TNode = klass({
                 }
             }
         }
+    },
+
+    /**
+     * Tell this node can be found in a component content 
+     * other (if false) the component will generate the default component content element
+     */
+    isValidCptAttElement:function () {
+        return false; // false by default
     }
 });
 

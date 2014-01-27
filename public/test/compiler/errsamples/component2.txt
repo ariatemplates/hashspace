@@ -1,0 +1,24 @@
+##### Template:
+# template test(person)
+    <#lib.panel title="Some text">
+      <@lib.head>
+        foo
+      </@lib.head>
+    </#lib.panel>
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Invalid component attribute syntax",
+    "line": 3,
+    "column": 7,
+    "code": "<@lib.head>"
+  },
+  {
+    "description": "Invalid component attribute syntax",
+    "line": 5,
+    "column": 7,
+    "code": "</@lib.head>"
+  }
+]

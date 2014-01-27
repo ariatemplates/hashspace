@@ -72,6 +72,7 @@ TemplateContent "template content" // TODO: CSSClassExpression
                 / ForeachBlock / EndForeachBlock
                 / HTMLElement / EndHTMLElement
                 / HspComponent / EndHspComponent
+                / HspCptAttribute / EndHspCptAttribute
                 / ExpressionBlock
                 / InvalidHTMLElement
                 / InvalidBlock)* 
@@ -165,6 +166,14 @@ HspComponent
 EndHspComponent
   = "</#" ref:JSObjectRef S? ">" EOS?
   {return {type:"endcomponent", ref:ref, line:line, column:column}}
+
+HspCptAttribute
+  = "<@" ref:Identifier  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
+  {return {type:"cptattribute", name:ref, closed:(end!==""), attributes:atts, line:line, column:column}}
+
+EndHspCptAttribute
+  = "</@" ref:Identifier S? ">" EOS?
+  {return {type:"endcptattribute", name:ref, line:line, column:column}}
 
 InvalidHTMLElement
   = "<" code:[^\r\n]* EOL

@@ -200,7 +200,7 @@ var CptWrapper = klass({
                     this.createEventFunction(k.slice(2));
                     continue;
                 } else if (att.type === "template") {
-                    v=null; //{tplAttribute:true};
+                    v=null;
                 } else {
                     // determine value
                     v = '';

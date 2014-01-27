@@ -27,8 +27,8 @@ var PanelController = klass({
   </#panel>
 
   <#panel>
-    <#head>Panel C: <a onclick="{update(10)}">Update model</a></#head>
-    <#body>{m.text}! <a onclick="{update(100)}">Update model</a></#body>
+    <@head>Panel C: <a onclick="{update(10)}">Update model</a></@head>
+    <@body>{m.text}! <a onclick="{update(100)}">Update model</a></@body>
   </#panel>
 # /template
 

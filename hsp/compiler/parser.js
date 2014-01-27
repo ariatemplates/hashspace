@@ -387,6 +387,13 @@ var SyntaxTree = klass({
     },
 
     /**
+     * Component attribute block management
+     */
+    _cptattribute : function (idx, blocks, out) {
+        return this._elementOrComponent("cptattribute", idx, blocks, out);
+    },
+
+    /**
      * Processing function for elements and components
      * @arg blockType {String} "element" or "component"
      */
@@ -506,7 +513,7 @@ var SyntaxTree = klass({
                 } else {
                     // check if the end name is correct
                     var b2=blocks[idx2];
-                    if (b2.type==="endelement") {
+                    if (b2.type==="endelement" || b2.type==="endcptattribute") {
                         if (blocks[idx2].name !== ename) {
                             this._logError("Missing end " + blockType + " </" + ename + ">", b);
                             idx2 -= 1; // the current end element/component may be caught by a container element
@@ -545,7 +552,11 @@ var SyntaxTree = klass({
     _invalidelement : function (idx, blocks, out) {
         // only called in case of error
         var b = blocks[idx];
-        this._logError("Invalid HTML element syntax", b);
+        var msg="Invalid HTML element syntax";
+        if (b.code && b.code.match(/^<\/?\@/gi)) {
+            msg="Invalid component attribute syntax";
+        }
+        this._logError(msg, b);
         return idx;
     },
 
@@ -573,6 +584,16 @@ var SyntaxTree = klass({
         // only called in case of error
         var b = blocks[idx], p = this._getComponentPathAsString(b.ref) ;
         this._logError("End component </#" + p + "> does not match any <#" + p + "> component", b);
+        return idx;
+    },
+
+    /**
+     * Capture isolated end component attributes to raise an error
+     */
+    _endcptattribute: function (idx, blocks, out) {
+        // only called in case of error
+        var b = blocks[idx], p = b.name ;
+        this._logError("End component attribute </@" + p + "> does not match any <@" + p + "> component attribute", b);
         return idx;
     }
 
