@@ -13,8 +13,12 @@ var $set = module.exports = function (object, property, value) {
 $set.del = json.$delete;
 
 var cachedOperators = {};
+var acceptedOperators = /^([-+*%\/&^|]|<<|>>|>>>)?=$/;
 
 function createOperator (operator) {
+    if (!acceptedOperators.test(operator)) {
+        throw new Error("Invalid operator: " + operator);
+    }
     /*jshint -W061,-W093 */
     return cachedOperators[operator] = Function("a", "b", "a" + operator + "b;return a;");
     /*jshint +W061,+W093*/
