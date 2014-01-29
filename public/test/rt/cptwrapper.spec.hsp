@@ -18,7 +18,8 @@ var hsp=require("hsp/rt"),
     json=require("hsp/json"),
     klass=require("hsp/klass"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
-    cpt=require("hsp/rt/cptwrapper");
+    cpt=require("hsp/rt/cptwrapper"),
+    ht=require("hsp/utils/hashtester");
 
 // transform a string to a number 
 var NBR_DIGITS=/^(\-|\.|\+)?\d+(\.)?(\d+)?$/; 
@@ -50,6 +51,10 @@ lib.NbrField = klass({
 
   $dispose:function() {
     this.isValid=null;
+  },
+
+  $afterRender: function() {
+    json.set(this,"value", this.value*2);
   },
 
   /** 
@@ -313,6 +318,14 @@ it("tests a component inside another template", function() {
     expect(lastResetArg).to.equal(123);
     expect(lastEvtType2).to.equal("afterreset");
     expect(lastEvtOldValue2).to.equal('42');
+  });
+
+  it("tests a component $afterRender callback", function() {
+    var d={value:'42'};
+    var h=ht.newTestContext();
+    test(d).render(h.container);
+
+    expect(d.value).to.equal(84);
   });
 
 });
