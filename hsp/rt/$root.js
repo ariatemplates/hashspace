@@ -231,7 +231,23 @@ var $RootNode = klass({
             // recursively updates all reference to the previous doc fragment node
             this.replaceNodeBy(df, c);
         }
+        this._triggersAfterRender(this);
         return this;
+    },
+
+    /**
+     * Recursively triggers the $afterRender method in all controllers of the TNode root and its children.
+     * @param {TNode} the root
+     */
+    _triggersAfterRender:function (tnode) {
+        if (tnode.childNodes && tnode.childNodes.length > 0) {
+            for (var i = 0; i < tnode.childNodes.length; i++) {
+                this._triggersAfterRender(tnode.childNodes[i]);
+            }
+        }
+        if (tnode.controller && tnode.controller.$afterRender) {
+            tnode.controller.$afterRender();
+        }
     }
 });
 
