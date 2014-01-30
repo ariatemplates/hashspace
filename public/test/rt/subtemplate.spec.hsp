@@ -72,6 +72,15 @@ function concat(a,b) {
     <#field2 attributes="{d.attributes}"/>
 # /template
 
+# template field3(attributes)
+    Enter some text: 
+    <input type="text" value="{attributes.myvalue.value}"/>
+# /template
+
+# template test7(d)
+    <#field3 attributes="{{myvalue: d}}"/>
+# /template
+
 describe("Sub-template insertion", function () {
     it("tests a simple insertion", function () {
         var dm = {
@@ -241,6 +250,29 @@ describe("Sub-template insertion", function () {
         hsp.refresh();
 
         expect(input.value).to.equal("new text");
+        n.$dispose();
+    });
+
+    it("tests input data change with objectliteral argument", function () {
+        debugger;
+        var dm = {
+            value : "some text"
+        };
+        var n = test7(dm);
+
+        var input = n.node.childNodes[1];
+        expect(input.value).to.equal("some text");
+
+        // change the whole attributes object, which is a root
+        // element in the scope of the field2 template
+        json.set(dm, "value", "new text");
+        hsp.refresh();
+        expect(input.value).to.equal("new text");
+
+        input.value = "bar";
+        fireEvent("keydown",input);
+        expect(dm.value).to.equal("bar");
+
         n.$dispose();
     });
 });
