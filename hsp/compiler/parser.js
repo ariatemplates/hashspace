@@ -769,6 +769,22 @@ var HExpression = klass({
                     r = "[" + code.join(",") + "].join(' ')";
                 }
                 break;
+            case "ObjectLiteral":
+                var properties = node.properties, size = properties.length, code = [];
+                for (var i = 0; size > i; i++) {
+                    code[i] = this._process(properties[i]);
+                }
+                if (size < 1) {
+                    r = '';
+                } else {
+                    r = "{" + code.join(",") + "}";
+                }
+                break;
+            case "PropertyAssignment":
+                var name = node.name, child = node.value;
+                var code = this._process(child);
+                r = name + ":" + code;
+                break;
             default :
                 this._logError(node.type + '(s) are not supported yet');
                 console.warn('[HExpression] ' + node.type + '(s) are not supported yet:');

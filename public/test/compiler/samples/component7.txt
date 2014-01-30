@@ -1,0 +1,16 @@
+##### Template:
+
+# template test(d)
+  <#lib.nbrfield objliteral="{{value: d.value, min: 10, max: "10", reset: notifyReset(123)}}"/>
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code:
+test=[
+  n.cpt([_lib,"lib","nbrfield"],{e1:[6,function(a0,a1) {return {value:a0,min:10,max:"10",reset:a1};},2,3],e2:[1,2,"d","value"],e3:[4,1,notifyReset,0,123]},{"objliteral":["",1]},0)
+]
