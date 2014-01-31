@@ -98,12 +98,12 @@ var EltNode = klass({
                     }
                 }
                 try {
-                  nd = doc.createElement('<' + this.tag + (nodeType?' type=' + nodeType : '') + ' name=' + nodeName + ' >');
+                  nd = doc.createElement('<' + this.tag + (nodeType?' type=' + nodeType : '') + (nodeName?' name=' + nodeName : '') + ' >');
                 }
                 catch (e) {
                     nd = doc.createElement(this.tag);
                     if (nodeType) nd.type = nodeType;
-                    nd.name = nodeName;
+                    if (nodeName) nd.name = nodeName;
                  }
             }
             else {
