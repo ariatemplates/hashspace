@@ -363,6 +363,15 @@ svg {
   color:#FF4DBE;
 }
 
+.listcpt {
+  padding:5px 0 5px 0;
+}
+
+.list .head {
+  color:#FF4DBE;
+  padding-bottom: 3px;
+}
+
 // ---------------------------------------------------------------------
 // Pagination classes from bootstrap
 

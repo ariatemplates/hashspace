@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-var hsp = require("hsp/rt");
-var klass = require("hsp/klass");
-var ExpHandler = require("./exphandler");
+var hsp = require("hsp/rt"),
+    klass = require("hsp/klass"),
+    ExpHandler = require("./exphandler");
 
 /**
  * Template node - base class of all nodes
@@ -30,8 +30,10 @@ var TNode = klass({
     childNodes : null,// array of child node instances
     adirty : false, // true if some of the node attributes need to be refreshed
     cdirty : false, // true if the node contains dirty sub-nodes
+    edirty : false, // (only used by components) true if one the attribute element is dirty
     htmlCbs : null, // array: list of the html callbacks - if any
     nodeNS : null, // string: node namespace - if any
+    isCptContent : false, // tells if a node instance is a child of a component (used to raise edirty flags)
 
     $constructor : function (exps) {
         this.isStatic = (exps === 0);
@@ -125,8 +127,16 @@ var TNode = klass({
 
         // mark parent node as containining dirty children (cdirty)
 
+        if (this.isCptContent) {
+            // parent node is a component
+            this.parent.edirty=true;
+        }
+
         var n = this.parent;
         while (n) {
+            if (n.isCptContent && n.parent) {
+                n.parent.edirty=true;
+            }
             if (n.cdirty) {
                 // already dirty - stop loop
                 n = null;
@@ -219,6 +229,28 @@ var TNode = klass({
      */
     isValidCptAttElement:function () {
         return false; // false by default
+    },
+
+    /**
+     * Register the element in the list passed as argument
+     * This allows for the component to dynamically rebuild the list of its attribute elements
+     * Note: this method is only called when the $if node is used to dynamically create cpt attribute elements
+     */
+    registerAttElements:function (attElts) {
+        var cn=this.childNodes, itm;
+        if (cn) {
+            for (var i=0, sz=cn.length; sz>i; i++) {
+                itm=cn[i];
+                if (!itm.registerAttElements) {
+                    if (!itm.isEmptyTextNode){
+                        // invalid content
+                        console.error(this+" Statement must not produce invalid attribute elements when used as component content");
+                    }
+                } else {
+                    itm.registerAttElements(attElts);
+                }
+            }
+        }
     }
 });
 
@@ -315,6 +347,24 @@ var TCbAtt = klass({
     }
 });
 
+/**
+ * Determine if all the nodes of a collection are valid component attribute elements
+ * @parm nodes {Array} the list of node elements to validate
+ * @return {Boolean} true if all node elements are valid
+ */
+function isValidCptContent(nodes) {
+    if (!nodes) {
+        return true;
+    }
+    for (var i=0,sz=nodes.length; sz>i;i++) {
+        if (!nodes[i].isValidCptAttElement()) {
+            return false;
+        }
+    }
+    return true;
+}
+
+module.exports.isValidCptContent = isValidCptContent;
 module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;

@@ -31,10 +31,15 @@ var $TextNode = klass({
         TNode.$constructor.call(this, exps);
 
         this.textcfg = textcfg;
+        this.isEmptyTextNode = false;
         if (this.isStatic) {
             // ensure textcfg is not null
-            if (!textcfg)
+            if (!textcfg) {
                 this.textcfg = [""];
+                this.isEmptyTextNode = true;
+            } else if (this.textcfg[0].match(/^\s*/)) {
+                this.isEmptyTextNode = true;
+            }
         }
     },
 
@@ -66,6 +71,14 @@ var $TextNode = klass({
             this.node.nodeValue = this.getContent();
             this.adirty = false;
         }
+    },
+
+    /**
+     * Tell this node can be found in a component content 
+     * Here only empty text nodes are considered as valid (and then ignored)
+     */
+    isValidCptAttElement:function () {
+        return this.isEmptyTextNode; // false by default
     }
 });
 

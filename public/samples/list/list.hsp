@@ -1,0 +1,85 @@
+var klass=require("hsp/klass"), $set=require("hsp/$set");
+  
+// simple list controller
+var ListController = klass({
+  attributes: {
+    "class":{type:"string",binding:"1-way"},
+    "onclick":{type:"callback"},
+    "head":{type:"template"}
+  },
+  elements: {
+    "option": {type:"template"},
+    "separator": {type:"element"}
+  }
+});
+
+// simple list template
+# template list using lc:ListController
+  // content is the list of attribute sub-elements
+  <div class="list {lc.class}">
+    {if lc.head}
+      <div class="head"><#lc.head/></div>
+    {/if}
+    {if !lc.content} 
+        <span class="nodata">Empty list</span>
+    {else}
+        <ul class="">
+            {foreach idx,itm in lc.content}
+                {if itm.name==="option"}
+                    <li class="opt"><#itm/></li>
+                {else if itm.name==="separator" &&  !itm_isfirst && !itm_islast}
+                    <hr/>
+                {/if}
+            {/foreach}
+        </ul>
+    {/if}
+  </div>
+# /template
+
+// test template
+# template test(d)
+  <#list head="Static list" class="listcpt">
+    <@option>First {d.itemName}</@option>
+    <@option>Second {d.itemName}</@option>
+  </#list>
+
+  <#list class="listcpt">
+    <@head>
+      Dynamic list: 
+      <a onclick="{toggle()}">Toggle favourite</a> - 
+      <a onclick="{empty()}">Empty</a> - 
+      <a onclick="{update()}">Update list</a> 
+    </@head>
+    {if d.preferredOption}
+      <@option>{d.preferredOption} (!)</@option>
+      <@separator/>
+    {/if}
+    {foreach idx,itm in d.items}
+      <@option>{idx+1}. {itm}</@option>
+    {/foreach}
+  </#list>
+# /template
+
+var count=0, model={
+  itemName: "item",
+  preferredOption:"My favourite things",
+  items:["Kind of blue","Something else","Winter moon"]
+};
+
+function toggle() {
+  $set(model,"preferredOption",model.preferredOption? null : "My favourite things");
+}
+
+function empty() {
+  model.items.splice(0,model.items.length);
+}
+
+function update() {
+  count++;
+  for (var i=0;count>i;i++) {
+    $set(model.items,i,"Item #"+(i+1)+" (change "+count+")");
+  }
+}
+
+// display the test template in the #output div
+test(model).render("output");
