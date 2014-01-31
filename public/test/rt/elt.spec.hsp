@@ -16,7 +16,8 @@
 
 var hsp=require("hsp/rt"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
-    json=require("hsp/json");
+    json=require("hsp/json"),
+    ht=require("hsp/utils/hashtester");
 
 
 # template test1(person)
@@ -42,6 +43,12 @@ var hsp=require("hsp/rt"),
 var globalObject={value:"foo"};
 # template test4()
     <input type="text" value="{globalObject.value}"/>
+# /template
+
+# template test5(name)
+    <div style="color:red;">
+        Hello {name}!
+    </div>
 # /template
 
 
@@ -132,6 +139,16 @@ describe("Element Nodes", function () {
         expect(n.node.firstChild.childNodes[1].attributes["class"].value).to.equal("");
         expect(n.node.firstChild.childNodes[1].firstChild.nodeValue).to.equal("Frequent flyer #:  ");
         expect(n.node.firstChild.childNodes[2].nodeValue).to.equal(" ] ");
+        n.$dispose();
+    });
+
+    it("tests the EltNode with an inline style", function() {
+        var n=test5();
+        var h=ht.newTestContext();
+        test5("World").render(h.container);
+        var div = h('div');
+
+        expect(div.$selection[0].style.color).to.equal("red");
         n.$dispose();
     });
 
