@@ -15,7 +15,12 @@
  */
 
 // ForEachNode implementation
-var klass = require("hsp/klass"), doc = require("hsp/document"), json = require("hsp/json"), TNode = require("hsp/rt/tnode").TNode;
+var klass = require("hsp/klass"),
+    doc = require("hsp/document"),
+    json = require("hsp/json"),
+    tnode = require("hsp/rt/tnode"),
+    TNode = tnode.TNode,
+    isValidCptContent = tnode.isValidCptContent;
 
 /**
  * foreach node Implements the foreach conditional statement that can be used through 3 forms: # foreach (itm in todos) //
@@ -395,6 +400,22 @@ var $ForEachNode = klass({
         for (var i = startIdx; sz > i; i++) {
             this.childNodes[i].updateScope(i, i === 0, i === maxIdx);
         }
+    },
+
+    /**
+     * Tell this node can be found in a component content 
+     * $foreach nodes are valid cpt attribute elements if it contains valid sub-elements
+     */
+    isValidCptAttElement:function () {
+        return this.itemNode.isValidCptAttElement();
+    },
+
+    /**
+    * Helper function used to give contextual error information
+    * @return {String} - e.g. "[Component attribute element: @body]"
+    */
+    toString:function() {
+        return "[Foreach]"; // todo add collection description
     }
 
 });
@@ -531,6 +552,23 @@ var $ItemNode = klass({
         json.set(vs, this.itemKeyName, key);
         json.set(vs, itnm + "_isfirst", isfirst);
         json.set(vs, itnm + "_islast", islast);
+    },
+
+
+    /**
+     * Tell this node can be found in a component content 
+     * Item nodes are valid cpt attribute elements if they only contain valid sub-elements
+     */
+    isValidCptAttElement:function () {
+        return isValidCptContent(this.children);
+    },
+
+    /**
+    * Helper function used to give contextual error information
+    * @return {String} - e.g. "[Component attribute element: @body]"
+    */
+    toString:function() {
+        return "[Foreach item]"; // todo add index
     }
 
 });

@@ -222,8 +222,10 @@ var CptWrapper = klass({
                         v = attType.convert(v, att);
                     }
                 }
-                // init the component attribute with the right value
-                cpt[k] = v;
+                // init the component attribute with the right value if not already set
+                if (!cpt[k]) {
+                    cpt[k] = v;
+                }
             }
         }
 

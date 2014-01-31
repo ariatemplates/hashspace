@@ -72,7 +72,7 @@ PanelController = klass({
 var HEAD=".panel .head";
 var BODY=".panel .body";
 
-describe("Template as component attribute (1)", function () {
+describe("Component attribute elements (1)", function () {
   
   it("tests template attribute passed as sub-element", function() {
     var h=ht.newTestContext();

@@ -1,11 +1,15 @@
 var json = require("hsp/json"),
     $TextNode = require("hsp/rt/$text");
 
-var $CptAttElement; // injected through setDependency to avoid circular dependencies
+var $CptNode,$CptAttElement, TNode; // injected through setDependency to avoid circular dependencies
 
 exports.setDependency=function(name,value) {
   if (name==="$CptAttElement") {
     $CptAttElement=value;
+  } else if (name==="$CptNode") {
+    $CptNode=value;
+  } else if (name==="TNode") {
+    TNode = value;
   }
 };
 
@@ -30,28 +34,42 @@ exports.$CptComponent = {
     }
 
     // determine if cpt supports template arguments
-    var Ctl=tpl.controllerConstructor;
-    this.ctlAttributes=Ctl.prototype.attributes;
+    var ctlProto=tpl.controllerConstructor.prototype;
+    this.ctlAttributes=ctlProto.attributes;
+    this.ctlElements=ctlProto.elements;
 
     // load template arguments
-    this.loadCptAttributes();
+    this.loadCptAttElements();
 
-    tpl.call(this, initArgs);
-
-    if (this.ctlWrapper) {
-        this.ctlWrapper.nodeInstance = this;
-    }
-    if (this.controller) {
-      if (this.tplAttributes) {
-        var ctl=this.controller, tpa=this.tplAttributes;
-        for (var k in tpa) {
-          // set the template attribute value on the controller
-          if (tpa.hasOwnProperty(k)) {
-            json.set(ctl,k,{node:tpa[k]});
-          }
+    // load child elements before processing the template
+    // TODO
+    var cptArgs={
+      nodeInstance:this,
+      attributes:null,
+      content:null
+    };
+    if (this.tplAttributes) {
+      var tpa=this.tplAttributes, attributes={};
+      cptArgs.attributes={};
+      for (var k in tpa) {
+        // set the template attribute value on the controller
+        if (tpa.hasOwnProperty(k)) {
+          attributes[k]=tpa[k];
         }
       }
+      cptArgs.attributes=attributes;
     }
+    if (this.tplElements) {
+      var tpe=this.tplElements, content=[];
+      
+      for (var i=0,sz=tpe.length; sz>i; i++) {
+        // set the template attribute value on the controller
+        content.push(tpe[i]);
+      }
+      cptArgs.content=content;
+    }
+
+    tpl.call(this, initArgs, cptArgs);
   },
 
   /**
@@ -76,12 +94,19 @@ exports.$CptComponent = {
         }
       }
     }
+    var en=this.attEltNodes;
+    if (en) {
+      for (var i=0,sz=en.length; sz>i; i++) {
+        en[i].$dispose();
+      }
+      this.attEltNodes=null;
+    }
   },
 
   /**
    * Load the component sub-nodes that correspond to template attributes
    */
-  loadCptAttributes : function () {
+  loadCptAttElements : function () {
     // determine the possible template attribute names
     var tpAttNames={}, ca=this.ctlAttributes, defaultTplAtt=null, lastTplAtt=null, count=0;
     for (var k in ca) {
@@ -143,12 +168,19 @@ exports.$CptComponent = {
               this._attGenerators.push(att.generator);
             }
             // generate a real $CptAttElement using the TextNode as child element
-            att.generator.createNodeInstance(this);
+            var ni=att.generator.createNodeInstance(this);
+            ni.isCptContent=true;
+            if (!this.attEltNodes) {
+              this.attEltNodes=[];
+            }
+            this.attEltNodes.push(ni);
             // attribute elements will automatically register through registerAttElement()
           }
         }
       }
     }
+
+    this.retrieveAttElements();
   },
 
   /**
@@ -185,7 +217,7 @@ exports.$CptComponent = {
       if (validFound && !invalidFound) {
         // case #2: only valid cpt have been found - so we have to load them
         loadCpts=true;
-      } else if (!validFound && invalidFound) {
+      } else if (!validFound && invalidFound && defaultTplAtt) {
         // case #3: only invalid cpt have been found - so we have to create a default attribute element
         // to fall back in case #2
         var catt=new $CptAttElement(defaultTplAtt,0,0,0,this.children); // name, exps, attcfg, ehcfg, children
@@ -198,30 +230,64 @@ exports.$CptComponent = {
       }
       if (loadCpts) {
         var ni;
+        if (!this.attEltNodes) {
+          this.attEltNodes=[];
+        }
         for (var i=0;sz>i;i++) {
-          ni = cn[i].createNodeInstance(this);
-          // attribute elements will automatically register through registerAttElement()
+          if (!cn[i].isEmptyTextNode) {
+            ni=cn[i].createNodeInstance(this);
+            ni.isCptContent=true;
+            this.attEltNodes.push(ni);
+            // attribute elements will automatically register through registerAttElement()
+          }
         }
       }
     }
   },
 
   /**
-   * Method called by child attribute element so that the component
-   * knows which CptAttElement are defined in its context
-   * @param name {String} the name of the attribute element
-   * @param catt {$CptAttElement} the attribute element
+   * Retrieve all child attribute elements
+   * and update the tplAttributes and tplElements collections
    */
-  registerAttElement:function(name,catt) {
-    // check that name is valid
-    if (!this.ctlAttributes || !this.ctlAttributes[name]) {
-      console.error(this+" Invalid attribute element: @"+name);
-    } else {
-      if (!this.tplAttributes) {
-        this.tplAttributes={};
-      }
-      this.tplAttributes[name]=catt;
+  retrieveAttElements:function() {
+    var aen=this.attEltNodes;
+    if (!aen) {
+      return null;
     }
+    var attElts=[], cta=this.ctlAttributes;
+    for (var i=0,sz=aen.length; sz>i;i++) {
+      aen[i].registerAttElements(attElts);
+    }
+    // check that all elements are valid (i.e. have valid names)
+    var nm, elt, ok, elts=[], cte=this.ctlElements? this.ctlElements : [];
+    for (var i=0,sz=attElts.length; sz>i; i++) {
+      elt=attElts[i];
+      nm=elt.name;
+      ok=true;
+      if (cta && cta[nm]) {
+        // valid tpl attribute
+        if (!this.tplAttributes) {
+          this.tplAttributes={};
+        }
+        this.tplAttributes[nm]=elt;
+      } else {
+        if (!nm) {
+          console.error(this+" Invalid attribute element (unnamed)");
+          ok=false;
+        } else if (!cte[nm]) {
+          console.error(this+" Invalid attribute element: @"+nm);
+          ok=false;
+        }
+      }
+      if (ok) {
+        elts.push(elt);
+      }
+    }
+    if (elts.length===0) {
+      elts=null;
+    }
+    this.tplElements=elts;
+    return elts;
   },
 
   /**
@@ -252,6 +318,43 @@ exports.$CptComponent = {
               }
           }
       }
+  },
+
+  /**
+   * Recursively replace the DOM node by another node if it matches the preNode passed as argument
+   */
+  replaceNodeBy : function (prevNode, newNode) {
+      if (prevNode === newNode) {
+          return;
+      }
+      TNode.replaceNodeBy.call(this,prevNode, newNode);
+      var aen=this.attEltNodes;
+      if (aen) {
+          for (var i=0,sz=aen.length; sz>i;i++) {
+              aen[i].replaceNodeBy(prevNode, newNode);
+          }
+      }
+  },
+
+  /**
+   * Refresh the sub-template arguments and the child nodes, if needed
+   */
+  refresh : function () {
+      if (this.edirty) {
+          var en=this.attEltNodes;
+          if (en) {
+              for (var i=0,sz=en.length; sz>i; i++) {
+                  en[i].refresh();
+              }
+              // if content changed we have to rebuild tplElements
+              this.retrieveAttElements();
+          }
+          // Change content of the controller
+          json.set(this.controller,"content",this.tplElements);
+
+          this.edirty=false;
+      }
+      $CptNode.refresh.call(this);
   },
 
   /**

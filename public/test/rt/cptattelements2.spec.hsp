@@ -21,7 +21,7 @@ var hsp=require("hsp/rt"),
 
 var ExpandCollapseController = klass({
     attributes: {
-        content: {
+        body: {
             type: "template",
             defaultContent: true
         }
@@ -40,7 +40,7 @@ var ExpandCollapseController = klass({
 # template expandCollapse using c:ExpandCollapseController
     {if c.visible}
         <a onclick="{c.hide()}">Hide</a><br/>
-        <#c.content />
+        <#c.body />
     {else}
         <a onclick="{c.show()}">Show</a><br/>
     {/if}
@@ -56,7 +56,7 @@ var ExpandCollapseController = klass({
 var LINK="a";
 var CONTENT=".content";
 
-describe("Template as component attribute (2)", function () {
+describe("Component attribute elements (2)", function () {
   
   it("validates dynamic creation/deletion of template attributes", function() {
     var h=ht.newTestContext();

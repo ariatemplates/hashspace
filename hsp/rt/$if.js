@@ -15,7 +15,11 @@
  */
 
 // If condition node
-var klass = require("hsp/klass"), doc = require("hsp/document"), TNode = require("hsp/rt/tnode").TNode;
+var klass = require("hsp/klass"),
+    doc = require("hsp/document"),
+    tnode = require("hsp/rt/tnode"),
+    TNode = tnode.TNode,
+    isValidCptContent = tnode.isValidCptContent;
 
 /**
  * If node Implements the if conditional statement. Adds a children2 collection that corresponds to the else block
@@ -148,11 +152,32 @@ var $IfNode = klass({
         var cond = this.getConditionValue();
         if (cond !== this.lastConditionValue) {
             this.createChildNodeInstances(cond);
+            this.adirty = false;
             this.cdirty = false;
         } else {
             // default behaviour
             TNode.refresh.call(this);
         }
+    },
+
+    /**
+     * Tell this node can be found in a component content 
+     * other (if false) the component will generate the default component content element
+     * $if nodes are valid cpt attribute elements if all their conditions are also valid
+     */
+    isValidCptAttElement:function () {
+        if (!isValidCptContent(this.children) || !isValidCptContent(this.children2)) {
+            return false;
+        }
+        return true;
+    },
+
+    /**
+    * Helper function used to give contextual error information
+    * @return {String} - e.g. "[Component attribute element: @body]"
+    */
+    toString:function() {
+        return "[If]"; // todo add condition description or parent component name
     }
 });
 

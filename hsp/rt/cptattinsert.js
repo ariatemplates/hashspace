@@ -6,30 +6,15 @@
  * so these cpt nodes are simply insert nodes for an attribute of its parent component
  */
 module.exports.$CptAttInsert = {
-  initCpt:function(rootRef,name) {
-    // get controller
-    var ctl=this.vscope[rootRef];
+  initCpt:function(cptAttElement) {
+    // get the $RootNode corresponding to the templat to insert
+    var root=cptAttElement.getTemplateNode();
 
-    // get the node instance corresponding to the component that this attribute refers to
-    var cptNodeInstance=ctl.nodeInstance;
-
-    // component attribute associated to this insert
-    if (cptNodeInstance.tplAttributes) {
-      var cptAttribute=cptNodeInstance.tplAttributes[name];
-
-      // TODO 
-      // register somewhere to be notified if cpt attribute changes (e.g. created / deleted throgh an {if})
-      // and update childNode list if need be
-
-      if (cptAttribute) {
-        var root=cptAttribute.getTemplateNode(this.vscope);
-
-        // append root
-        this.childNodes=[];
-        this.childNodes[0]=root;
-        root.render(this.node);
-      }
-    }
+    // append root as childNode
+    this.childNodes=[];
+    this.childNodes[0]=root;
+    // instatiate sub-childNodes
+    root.render(this.node);
   },
 
   /**

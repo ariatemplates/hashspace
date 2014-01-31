@@ -245,7 +245,7 @@ var $RootNode = klass({
  */
 var getObject = exports.getObject = function (path, scope) {
     var root = path[0], o = null, sz = path.length;
-    if (root === undefined || root === null) {
+    if (root === undefined || root === null || typeof(root)==='string') {
         if (scope && sz > 1) {
             o = scope[path[1]];
         }
@@ -401,6 +401,7 @@ var $CptNode = klass({
      */
     $constructor : function (tplPath, exps, attcfg, ehcfg, children) {
         this.isCptNode = true;
+        this.attEltNodes = null; // array of element nodes - used to trigger a refresh when elt content changes
         this.tplPath = tplPath;
         this.isInsertNode = true; // to ensure $RootNode is creating expression listeners
         this.isDOMless = true;
@@ -445,39 +446,29 @@ var $CptNode = klass({
       //   -> instance will extend $CptTemplate
       // - a component with controller - e.g. <#mycpt foo="bar"/>
       //   -> instance will extend $CptComponent
-      // - a template attribute content - e.g. body in <#mycpt><#body>foobar</#body></#mycpt>
-      //   -> instance will extend $CptAttElement
-      // - or a template attribute insertion - e.g. <#c.body/>
+      // - or a attribute element insertion - e.g. <#c.body/>
       //   -> instance will extend $CptAttInsert
 
-      if (tp.length===3) {
-        // path is composed of 2 parts - sth like "c.body" where c is the controller reference
-        // check if we are in the attribute insertion case
-        var rootRef=tp[1], vsr=vscope[rootRef];
-        if (vsr && vsr.attributes) {
-            var att=vsr.attributes[tp[2]]; // attribute on the object reference by the root ref in the current scope
-            if (att && att.type==="template") {
-                // this instance is a template attribute insertion
-                ni=this.createCptInstance("$CptAttInsert",parent);
-                ni.initCpt(tp[1],tp[2]);
-            }
-        }
-      }
-      if (!ni) {
-        // get the template object
-        var tpl = getObject(tp, vscope);
+      // get the object referenced by the cpt path
+      var obj = getObject(tp, vscope);
 
-        // get the expression associated to the insert node
-        if (tpl && typeof(tpl) === 'function') {
-          if (tpl.controllerConstructor) {
-            // template uses a controller
-            ni=this.createCptInstance("$CptComponent",parent);
-          } else {
-            ni=this.createCptInstance("$CptTemplate",parent);
-          }
-          ni.initCpt(tpl,$RootNode);
+      // if object is a function this is a template or a component insertion
+      if (obj && typeof(obj) === 'function') {
+        if (obj.controllerConstructor) {
+          // template uses a controller
+          ni=this.createCptInstance("$CptComponent",parent);
+        } else {
+          ni=this.createCptInstance("$CptTemplate",parent);
+        }
+        ni.initCpt(obj,$RootNode);
+      } else if (obj) {
+        if (obj.isCptAttElement) {
+          // insert attribute component 
+          ni=this.createCptInstance("$CptAttInsert",parent);
+          ni.initCpt(obj);
         }
       }
+
       if (!ni) {
           throw new Error(this+" Invalid component reference");
       }
@@ -569,6 +560,7 @@ var $CptNode = klass({
  */
 var $CptAttElement = klass({
     $extends : TNode,
+    isCptAttElement : true,
 
     /**
      * $CptAttElement generator 
@@ -600,25 +592,34 @@ var $CptAttElement = klass({
         var ni=TNode.createNodeInstance.call(this,parent);
         // identify this node as a component attribute
 
-        // get parent and register through registerAttElement
+        // find parent to check attribute is not used outside any component
         var p=parent, found=false;
         while (p) {
-            if (p.registerAttElement) {
-                p.registerAttElement(ni.name,ni);
+            if (p.isCptComponent) {
                 p=null;
                 found=true;
             } else {
                 p=p.parent;
             }
         }
-
         if (!found) {
             console.error(this+" Attribute elements cannot be used outside components");
         }
         return ni;
     },
 
-    getTemplateNode:function(vscope) {
+    /**
+     * Register the element in the list passed as argument
+     * This allows for the component to dynamically rebuild the list of its attribute elements
+     */
+    registerAttElements:function (attElts) {
+        attElts.push(this);
+    },
+
+    /**
+     * Return the template node that must be inserted by $CptAttInsert
+     */
+    getTemplateNode:function() {
         return new $RootNode(this.vscope, this.children);
     },
 
@@ -631,7 +632,8 @@ var $CptAttElement = klass({
     }
 });
 
-cptComponent.setDependency("$RootNode",$RootNode);
+cptComponent.setDependency("$CptNode",$CptNode);
+cptComponent.setDependency("TNode",TNode);
 cptComponent.setDependency("$CptAttElement",$CptAttElement);
 module.exports.$RootNode = $RootNode;
 module.exports.$InsertNode = $InsertNode;
