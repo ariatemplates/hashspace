@@ -312,7 +312,7 @@ it("tests a component inside another template", function() {
     expect(lastEvtType).to.equal("beforereset");
     expect(lastResetArg).to.equal(123);
     expect(lastEvtType2).to.equal("afterreset");
-    expect(lastEvtOldValue2).to.equal(42);
+    expect(lastEvtOldValue2).to.equal('42');
   });
 
 });

@@ -1,5 +1,6 @@
 var json = require("hsp/json"),
-    $TextNode = require("hsp/rt/$text");
+    $TextNode = require("hsp/rt/$text"),
+    cptwrapper = require("hsp/rt/cptwrapper");
 
 var $CptNode,$CptAttElement, TNode; // injected through setDependency to avoid circular dependencies
 
@@ -20,7 +21,13 @@ exports.setDependency=function(name,value) {
  * (i.e. a component using a template with any controller)
  */
 exports.$CptComponent = {
-  initCpt:function(tpl) {
+  /**
+   * Initialize the component
+   * @param {Object} arg
+   *     e.g. {template:obj,ctlConstuctor:obj.controllerConstructor}
+   *     e.g. {cptattelement:obj,ctlConstuctor:obj.controllerConstructor}
+   */
+  initCpt:function(arg) {
     this.isCptComponent = true;
 
     // prepare init arguments
@@ -34,7 +41,7 @@ exports.$CptComponent = {
     }
 
     // determine if cpt supports template arguments
-    var ctlProto=tpl.controllerConstructor.prototype;
+    var ctlProto=arg.ctlConstuctor.prototype;
     this.ctlAttributes=ctlProto.attributes;
     this.ctlElements=ctlProto.elements;
 
@@ -42,40 +49,70 @@ exports.$CptComponent = {
     this.loadCptAttElements();
 
     // load child elements before processing the template
-    // TODO
     var cptArgs={
       nodeInstance:this,
-      attributes:null,
+      attributes:{},
       content:null
     };
+    var attributes=cptArgs.attributes;
+
+    if (this.atts) {
+      // some attributes have been passed to this instance - so we push them to cptArgs
+      // so that they are set on the controller when the template are rendered
+      var atts = this.atts, eh = this.eh, pvs = this.vscope, nm;
+      if (atts) {
+        for (var i = 0, sz = this.atts.length; sz > i; i++) {
+          att = atts[i];
+          nm = att.name;
+          if (this.ctlAttributes[nm].type!=="template") {
+            attributes[nm]=att.getValue(eh, pvs, null);
+          }
+        }
+      }
+    }
+
     if (this.tplAttributes) {
-      var tpa=this.tplAttributes, attributes={};
-      cptArgs.attributes={};
+      var tpa=this.tplAttributes;
       for (var k in tpa) {
         // set the template attribute value on the controller
         if (tpa.hasOwnProperty(k)) {
           attributes[k]=tpa[k];
         }
       }
-      cptArgs.attributes=attributes;
     }
-    if (this.tplElements) {
-      var tpe=this.tplElements, content=[];
-      
-      for (var i=0,sz=tpe.length; sz>i; i++) {
-        // set the template attribute value on the controller
-        content.push(tpe[i]);
-      }
-      cptArgs.content=content;
+    if (this.childElements) {
+      cptArgs.content=this.getControllerContent();
     }
 
-    tpl.call(this, initArgs, cptArgs);
+    if (arg.template) {
+      // this component is associated to a template
+      arg.template.call(this, initArgs, cptArgs);
+
+      // $init child components
+      this.initChildComponents();
+    } else if (arg.cptattelement) {
+      // this component is an attribute of another component
+      var cw=cptwrapper.createCptWrapper(arg.ctlConstuctor,cptArgs);
+      this.ctlWrapper=cw;
+      this.controller=cw.cpt;
+      if (cw.cpt.tagName) {
+          console.error(this+" 'tagName' is a reserved keyword and cannot be used in component controllers");
+      }
+      cw.cpt.tagName=this.tagName;
+      // console.log(this+" created")
+      // NB the controller $init has not been called yet - this will be done once the parent component has initialized
+    }
   },
 
   /**
    * Safely cut all dependencies before object is deleted
    */
   $dispose:function() {
+    if (this.ctlWrapper) {
+      this.ctlWrapper.$dispose();
+      this.ctlWrapper=null;
+      this.controller=null;
+    }
     this.ctlAttributes=null;
     this.cleanObjectProperties();
     var tpa=this.tplAttributes;
@@ -247,7 +284,7 @@ exports.$CptComponent = {
 
   /**
    * Retrieve all child attribute elements
-   * and update the tplAttributes and tplElements collections
+   * and update the tplAttributes and childElements collections
    */
   retrieveAttElements:function() {
     var aen=this.attEltNodes;
@@ -270,6 +307,7 @@ exports.$CptComponent = {
           this.tplAttributes={};
         }
         this.tplAttributes[nm]=elt;
+        ok = false;
       } else {
         if (!nm) {
           console.error(this+" Invalid attribute element (unnamed)");
@@ -286,8 +324,26 @@ exports.$CptComponent = {
     if (elts.length===0) {
       elts=null;
     }
-    this.tplElements=elts;
+    this.childElements=elts;
     return elts;
+  },
+
+  /**
+   * Initializes the attribute elements of type component that have not been
+   * already initialized
+   */
+  initChildComponents:function() {
+    var ce=this.childElements;
+    if (!ce || !ce.length) {
+      return;
+    }
+    var cw;
+    for (var i=0,sz=ce.length;sz>i;i++) {
+      cw=ce[i].ctlWrapper;
+      if (cw && !cw.initialized) {
+        cw.init(null,this.controller);
+      }
+    }
   },
 
   /**
@@ -337,6 +393,26 @@ exports.$CptComponent = {
   },
 
   /**
+   * Calculate the content array that will be set on component's controller
+   */
+  getControllerContent:function() {
+    var c=[], ce=this.childElements, celts=this.ctlElements, eltType;
+    if (ce && ce.length) {
+      for (var i=0, sz=ce.length;sz>i;i++) {
+        eltType=celts[ce[i].name].type;
+        if (eltType==="component") {
+          c.push(ce[i].controller);
+        } else if (eltType==="template") {
+          c.push(ce[i]);
+        } else {
+          console.error(this+" Invalid element type: "+eltType);
+        }
+      }
+    }
+    return c.length>0? c : null;
+  },
+
+  /**
    * Refresh the sub-template arguments and the child nodes, if needed
    */
   refresh : function () {
@@ -346,11 +422,12 @@ exports.$CptComponent = {
               for (var i=0,sz=en.length; sz>i; i++) {
                   en[i].refresh();
               }
-              // if content changed we have to rebuild tplElements
+              // if content changed we have to rebuild childElements
               this.retrieveAttElements();
+              this.initChildComponents();
           }
           // Change content of the controller
-          json.set(this.controller,"content",this.tplElements);
+          json.set(this.controller,"content",this.getControllerContent());
 
           this.edirty=false;
       }
@@ -361,16 +438,18 @@ exports.$CptComponent = {
    * Refresh the node attributes (even if adirty is false)
    */
   refreshAttributes : function () {
-    var atts = this.atts, att, eh = this.eh, pvs = this.parent.vscope, ctl = this.controller, v;
+    var atts = this.atts, att, ctlAtt, eh = this.eh, ctl = this.controller, v;
+    var vs = this.isCptAttElement? this.vscope : this.parent.vscope;
     this.adirty = false;
     if (atts && ctl && ctl.attributes) {
       // this template has a controller
       // let's propagate the new attribute values to the controller attributes
       for (var i = 0, sz = this.atts.length; sz > i; i++) {
         att = atts[i];
+        ctlAtt = ctl.attributes[att.name];
         // propagate changes for 1- and 2-way bound attributes
-        if (ctl.attributes[att.name]._binding !== 0) {
-          v = att.getValue(eh, pvs, null);
+        if (ctlAtt.type!=="template" && ctlAtt._binding !== 0) {
+          v = att.getValue(eh, vs, null);
           if ('' + v != '' + ctl[att.name]) {
             // values may have different types - this is why we have to check that values are different to
             // avoid creating loops
@@ -379,13 +458,5 @@ exports.$CptComponent = {
         }
       }
     }
-  },
-
-  /**
-   * Helper function used to give contextual error information
-   * @return {String} - e.g. "[Component lib.mycomponent]"
-   */
-  toString:function() {
-    return "[Component: #"+this.tplPath.slice(1).join(".")+"]";
   }
 };

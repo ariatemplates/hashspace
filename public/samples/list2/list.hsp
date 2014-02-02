@@ -1,0 +1,107 @@
+var klass=require("hsp/klass"), $set=require("hsp/$set");
+
+// simple option controller
+var OptionCtrl = klass({
+  attributes: {
+    "value":{type:"string",binding:"1-way"},
+    "label":{type:"template"}
+  },
+  $init: function(parent) {
+    // parent is the parent controller
+    this.selected=false;
+  }
+});
+
+// simple list controller
+var ListCtrl = klass({
+  attributes: {
+    "class":{type:"string",binding:"1-way"},
+    "onselect":{type:"callback"},
+    "head":{type:"template"}
+  },
+  elements: {
+    "option": {type:"component",controller:OptionCtrl},
+    "separator": {type:"template"}
+  },
+  select:function (value) {
+    // select
+    var c=this.content;
+    for (var i=0,sz=c.length;sz>i;i++) {
+      if (c[i].tagName==="@option") {
+        $set(c[i],"selected",c[i].value===value);
+      }
+    }
+    this.onselect({value:value});
+  }
+});
+
+// simple list template
+# template list using lc:ListCtrl
+  // content is the list of attribute sub-elements
+  <div class="list {lc.class}">
+    {if lc.head}
+      <div class="head"><#lc.head/></div>
+    {/if}
+    {if !lc.content} 
+      <span class="nodata">Empty list</span>
+    {else}
+      <ul class="">
+        {foreach idx,itm in lc.content}
+          {if itm.tagName==="@option"}
+            <li class="opt" onclick="{lc.select(itm.value)}">
+              <span class="{'item','highlight':itm.selected}"><#itm.label/></span>
+            </li>
+          {else if itm.tagName==="@separator" &&  !itm_isfirst && !itm_islast}
+            <hr/>
+          {/if}
+        {/foreach}
+      </ul>
+    {/if}
+  </div>
+# /template
+
+// test template
+# template test(d)
+  Click on an item to select it:
+  
+  <#list head="Static list" class="listcpt" onselect="{showSelection(event.value)}">
+    <@option value="A" label="First {d.itemName}"/>
+    <@option value="B">Second {d.itemName}</@option>
+  </#list>
+
+  <#list class="listcpt" onselect="{showSelection(event.value)}">
+    <@head>
+      Dynamic list: 
+      <a onclick="{empty()}">Empty</a> - 
+      <a onclick="{update()}">Update list</a> 
+    </@head>
+    {foreach idx,itm in d.items}
+      <@option value="K{idx}">{idx+1}. {itm}</@option>
+    {/foreach}
+  </#list>
+
+  {if d.selectedItem!==null}Last selected value: {d.selectedItem}{/if}
+# /template
+
+var count=0, model={
+  itemName: "item",
+  items:["Kind of blue","Something else","Winter moon"]
+};
+
+function empty() {
+  model.items.splice(0,model.items.length);
+}
+
+function update() {
+  count++;
+  for (var i=0;count>i;i++) {
+    $set(model.items,i,"Item #"+(i+1)+" (change "+count+")");
+  }
+}
+
+function showSelection(v) {
+  $set(model,"selectedItem",v);
+}
+
+// display the test template in the #output div
+test(model).render("output");

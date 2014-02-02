@@ -119,8 +119,16 @@ module.exports = [{
                         main : true
                     }]
         }, {
-            title : "Component with attribute sub-elements: List",
-            folder : "list",
+            title : "Component with template sub-elements: List #1",
+            folder : "list1",
+            description : "description.md",
+            files : [{
+                        src : "list.hsp",
+                        main : true
+                    }]
+        }, {
+            title : "Component with component sub-elements: List #2",
+            folder : "list2",
             description : "description.md",
             files : [{
                         src : "list.hsp",

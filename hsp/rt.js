@@ -17,7 +17,6 @@
 // Hash Space runtime
 require("hsp/es5");
 var klass = require("hsp/klass"),
-    json = require("hsp/json"),
     $root = require("hsp/rt/$root"),
     $RootNode = $root.$RootNode,
     $InsertNode = $root.$InsertNode,
@@ -174,35 +173,8 @@ module.exports.template = function (arg, contentFunction) {
             }
         }
         if (hasController) {
-            cw = new cptwrapper.CptWrapper(Ctl); // will also create a new controller instance
-            var cpt=cw.cpt;
-            if (this.isCptComponent) {
-                // set the nodeInstance reference on the component
-                cw.nodeInstance = this;
-                cw.cpt.nodeInstance = this; // TODO remove
-
-                if (arguments.length > 1) {
-                    var cptArgs = arguments[1], attributes=cptArgs.attributes, content=cptArgs.content;
-                    cw.nodeInstance = cptArgs.nodeInstance;
-                    if (attributes) {
-                        for (var k in attributes) {
-                            // set the template attribute value on the component instance
-                            if (attributes.hasOwnProperty(k)) {
-                                json.set(cpt,k,attributes[k]);
-                            }
-                        }
-                    }
-                    if (content) {
-                        if (cpt.content) {
-                          console.error(cptArgs.nodeInstance+" Component controller cannot use 'content' for another property than child attribute elements");
-                        } else {
-                          // create the content property on the component instance
-                          json.set(cpt,"content",content);
-                        }
-                    }
-                }
-            }
-            args[1] = cpt;
+            cw=cptwrapper.createCptWrapper(Ctl, arguments.length>1? arguments[1] : null);
+            args[1] = cw.cpt;
         } else {
             for (var i = 0; sz > i; i++) {
                 args[1 + 2 * i] = arguments[i];

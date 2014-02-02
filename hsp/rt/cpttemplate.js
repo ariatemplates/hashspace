@@ -7,7 +7,12 @@ var json = require("hsp/json");
  * (i.e. a component using a template without any controller)
  */
 module.exports.$CptTemplate = {
-  initCpt:function(tpl) {
+  /**
+   * Initialize the component
+   * @param {Object} arg
+   *     e.g. {template:obj,ctlConstuctor:obj.controllerConstructor}
+   */
+  initCpt:function(arg) {
     // prepare init arguments
     var initArgs = {};
     if (this.atts) {
@@ -18,7 +23,7 @@ module.exports.$CptTemplate = {
         }
     }
 
-    tpl.call(this, initArgs);
+    arg.template.call(this, initArgs);
 
     // the component is a template without any controller
     // so we have to observe the template scope to be able to propagate changes to the parent scope

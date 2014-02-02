@@ -31,7 +31,7 @@ var ListController = klass({
     {else}
         <ul class="">
             {foreach itm in lc.content}
-                {if itm.name==="option"}
+                {if itm.tagName==="@option"}
                     <li class="opt"><#itm/></li> // +introduce onclick
                 {/if}
             {/foreach}
