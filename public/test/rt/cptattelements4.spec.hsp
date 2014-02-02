@@ -1,0 +1,188 @@
+ 
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var hsp=require("hsp/rt"),
+    $set=require("hsp/$set"),
+    klass=require("hsp/klass"),
+    ht=require("hsp/utils/hashtester");
+
+
+var lastListCtrl=null, optionInitCount=0;
+
+var OptionCtrl = klass({
+    attributes:{
+        "value":{type:"string", binding:"1-way"},
+        "label":{type:"template"}
+    },
+    $init:function (parent) {
+        lastListCtrl = parent;
+        optionInitCount++;
+    }
+})
+
+var lastSelectionValue=null;
+var ListCtrl = klass({
+    elements: {
+        "option": {type:"component",controller:OptionCtrl}
+    },
+    $init: function(parent) {
+        
+    },
+    select: function(value) {
+        lastSelectionValue=value;
+    }
+});
+
+# template list using lc:ListCtrl
+    {if !lc.content} 
+        <span class="nodata">Empty list</span>
+    {else}
+        <ul class="list">
+            {foreach itm in lc.content}
+                {if itm.tagName==="@option"}
+                    <li class="opt" onclick="{lc.select(itm.value)}"><#itm.label/></li>
+                {/if}
+            {/foreach}
+        </ul>
+    {/if}
+# /template
+
+# template test1()
+    <#list>
+        <@option value="A" label="First"/>
+        <@option value="B">Second</@option>
+    </#list>
+# /template
+
+# template test2(d)
+    <#list>
+        <@option value="A{d.suffix}" label="First {d.txt}"/>
+        <@option value="B{d.suffix}">Second {d.txt}</@option>
+    </#list>
+# /template
+
+# template test3(d)
+    <#list>
+        {foreach idx,itm in d.items}
+            <@option value="{idx}">{idx+1}. {itm}</@option>
+        {/foreach}
+    </#list>
+# /template
+
+var EMPTY_MSG=".nodata";
+var OPTIONS="ul .opt";
+
+describe("Component attribute elements (4)", function () {
+  
+    it("validates static list of component sub-elements", function() {
+        var h=ht.newTestContext();
+        lastListCtrl=null;
+        optionInitCount=0;
+        test1().render(h.container);
+
+        // validate that parent controller is passed at $init
+        expect(lastListCtrl).not.to.equal(null);
+        expect(optionInitCount).to.equal(2);
+
+        expect(h(EMPTY_MSG).length).to.equal(0);
+        expect(h(OPTIONS).length).to.equal(2);
+        expect(h(OPTIONS).item(0).text()).to.equal("First");
+        expect(h(OPTIONS).item(1).text()).to.equal("Second");
+        
+        h(OPTIONS).item(0).click();
+        expect(lastSelectionValue).to.equal("A");
+
+        h(OPTIONS).item(1).click();
+        expect(lastSelectionValue).to.equal("B");
+
+        h.$dispose();
+    });
+
+    it("validates list of component sub-elements w/ expressions", function() {
+        var h=ht.newTestContext(), d={txt:"Item", suffix:"x"};
+        test2(d).render(h.container);
+
+        expect(h(EMPTY_MSG).length).to.equal(0);
+        expect(h(OPTIONS).length).to.equal(2);
+        expect(h(OPTIONS).item(0).text()).to.equal("First Item");
+        expect(h(OPTIONS).item(1).text()).to.equal("Second Item");
+        
+        h(OPTIONS).item(0).click();
+        expect(lastSelectionValue).to.equal("Ax");
+
+        h(OPTIONS).item(1).click();
+        expect(lastSelectionValue).to.equal("Bx");
+
+        // change content
+        $set(d,"txt","Thing");
+        hsp.refresh();
+        expect(h(OPTIONS).item(0).text()).to.equal("First Thing");
+        expect(h(OPTIONS).item(1).text()).to.equal("Second Thing");
+
+        // change suffix
+        $set(d,"suffix","y");
+        hsp.refresh();
+
+        h(OPTIONS).item(0).click();
+        expect(lastSelectionValue).to.equal("Ay");
+
+        h(OPTIONS).item(1).click();
+        expect(lastSelectionValue).to.equal("By");
+
+        h.$dispose();
+    });
+
+    it("validates dynamic list of component sub-elements (foreach)", function() {
+        var h=ht.newTestContext();
+        var d={items:["Banana","Apple","Orange"]};
+        optionInitCount=0;
+        test3(d).render(h.container);
+
+        expect(optionInitCount).to.equal(3);
+        expect(h(OPTIONS).length).to.equal(3);
+        expect(h(OPTIONS).item(0).text()).to.equal("1. Banana");
+        expect(h(OPTIONS).item(1).text()).to.equal("2. Apple");
+        expect(h(OPTIONS).item(2).text()).to.equal("3. Orange");
+
+        h(OPTIONS).item(1).click();
+        expect(lastSelectionValue).to.equal(1);
+
+        // update the array
+        d.items.splice(1,0,"Plum");
+        hsp.refresh();
+
+        expect(optionInitCount).to.equal(4);
+        expect(h(OPTIONS).length).to.equal(4);
+        expect(h(OPTIONS).item(0).text()).to.equal("1. Banana");
+        expect(h(OPTIONS).item(1).text()).to.equal("2. Plum");
+        expect(h(OPTIONS).item(2).text()).to.equal("3. Apple");
+        expect(h(OPTIONS).item(3).text()).to.equal("4. Orange");
+
+        h(OPTIONS).item(3).click();
+        expect(lastSelectionValue).to.equal('3'); // TODO investigate type change - seems to be linked to json.observe?
+
+        // change again
+        d.items.splice(0,5);
+        hsp.refresh();
+
+        expect(h(OPTIONS).length).to.equal(0);
+
+        h.$dispose();
+    });
+
+    // TODO validate that parent is passed to controller $init
+
+});

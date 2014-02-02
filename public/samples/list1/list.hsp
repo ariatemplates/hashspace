@@ -9,7 +9,7 @@ var ListController = klass({
   },
   elements: {
     "option": {type:"template"},
-    "separator": {type:"element"}
+    "separator": {type:"template"}
   }
 });
 
@@ -25,9 +25,9 @@ var ListController = klass({
     {else}
         <ul class="">
             {foreach idx,itm in lc.content}
-                {if itm.name==="option"}
+                {if itm.tagName==="@option"}
                     <li class="opt"><#itm/></li>
-                {else if itm.name==="separator" &&  !itm_isfirst && !itm_islast}
+                {else if itm.tagName==="@separator" &&  !itm_isfirst && !itm_islast}
                     <hr/>
                 {/if}
             {/foreach}

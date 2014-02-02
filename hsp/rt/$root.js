@@ -16,13 +16,13 @@
 
 // This module contains the $Root and $Insert nodes used to instantiate new templates
 
-var klass = require("hsp/klass");
-var doc = require("hsp/document");
-var json = require("hsp/json");
-var PropObserver = require("hsp/propobserver");
-var tn = require("hsp/rt/tnode");
-var TNode = tn.TNode;
-var cptComponent=require("hsp/rt/cptcomponent");
+var klass = require("hsp/klass"),
+    doc = require("hsp/document"),
+    json = require("hsp/json"),
+    PropObserver = require("hsp/propobserver"),
+    tn = require("hsp/rt/tnode"),
+    TNode = tn.TNode,
+    cptComponent=require("hsp/rt/cptcomponent");
 
 var CPT_TYPES={
     '$CptAttInsert':require("hsp/rt/cptattinsert").$CptAttInsert,
@@ -460,7 +460,7 @@ var $CptNode = klass({
         } else {
           ni=this.createCptInstance("$CptTemplate",parent);
         }
-        ni.initCpt(obj,$RootNode);
+        ni.initCpt({template:obj,ctlConstuctor:obj.controllerConstructor});
       } else if (obj) {
         if (obj.isCptAttElement) {
           // insert attribute component 
@@ -559,7 +559,7 @@ var $CptNode = klass({
  * Component attribute nodes contains attribute elements for the parent component
  */
 var $CptAttElement = klass({
-    $extends : TNode,
+    $extends : $CptNode,
     isCptAttElement : true,
 
     /**
@@ -567,13 +567,9 @@ var $CptAttElement = klass({
      */
     $constructor : function (name, exps, attcfg, ehcfg, children) {
         this.name = name;
-        this.isDOMless = true;
-        this.attcfg = attcfg;
-        TNode.$constructor.call(exps);
-        this.createAttList(attcfg, ehcfg);
-        if (children && children !== 0) {
-            this.children = children;
-        }
+        this.tagName = "@"+name;
+        $CptNode.$constructor.call(this,[null,name], exps, attcfg, ehcfg, children);
+        this.isCptAttElement=true;
     },
 
     $dispose:function() {
@@ -589,15 +585,46 @@ var $CptAttElement = klass({
     },
 
     createNodeInstance : function (parent) {
-        var ni=TNode.createNodeInstance.call(this,parent);
+        var ni;
         // identify this node as a component attribute
 
         // find parent to check attribute is not used outside any component
         var p=parent, found=false;
         while (p) {
             if (p.isCptComponent) {
-                p=null;
                 found=true;
+                var eltDef=null, attDef=null;
+                if (p.ctlElements) {
+                    eltDef=p.ctlElements[this.name];
+                }
+                if (p.ctlAttributes) {
+                    attDef=p.ctlAttributes[this.name];
+                }
+                
+                if (!eltDef && !attDef) {
+                    // invalid elt
+                    console.error(this+" Element not supported by its parent component");
+                } else if (eltDef) {
+                    var type=eltDef.type;
+                    if (type==="template") {
+                        ni=TNode.createNodeInstance.call(this,parent);
+                    } else if (type==="component") {
+                        if (!eltDef.controller) {
+                            console.error(this+" Controller property is mandatory for component elements");
+                        } else {
+                            // this element is a sub-component - let's create its controller
+                            ni=this.createCptInstance("$CptComponent",parent);
+                            ni.initCpt({cptattelement:ni,ctlConstuctor:eltDef.controller,parentCtrl:p.controller});
+                        }
+                    } else {
+                        console.error(this+" Invalid component element type: "+eltDef.type);
+                    }
+                } else if (attDef) {
+                    if (attDef.type==="template") {
+                        ni=TNode.createNodeInstance.call(this,parent);
+                    }
+                }
+                p=null;
             } else {
                 p=p.parent;
             }
@@ -635,8 +662,8 @@ var $CptAttElement = klass({
 cptComponent.setDependency("$CptNode",$CptNode);
 cptComponent.setDependency("TNode",TNode);
 cptComponent.setDependency("$CptAttElement",$CptAttElement);
-module.exports.$RootNode = $RootNode;
-module.exports.$InsertNode = $InsertNode;
-module.exports.$CptNode = $CptNode;
-module.exports.$CptAttElement = $CptAttElement;
+exports.$RootNode = $RootNode;
+exports.$InsertNode = $InsertNode;
+exports.$CptNode = $CptNode;
+exports.$CptAttElement = $CptAttElement;
 

@@ -13,8 +13,8 @@
  * limitations under the License.
  */
 
-var json = require("hsp/json");
-var klass = require("hsp/klass");
+var json = require("hsp/json"),
+    klass = require("hsp/klass");
 
 function identity(v) {
     return v;
@@ -154,19 +154,22 @@ var CptWrapper = klass({
             this._cptChgeCb = null;
         }
         var c=this.cpt;
-        if (c && c.$dispose) {
-            c.$dispose();
+        if (c) {
+            if (c.$dispose) {
+                c.$dispose();
+            }
+            c.nodeInstance = null;
             this.cpt = null;
         }
         this.nodeInstance = null;
     },
 
     /**
-     * Initialize the compoent by creating the attribute properties on the component instance and initializing the
+     * Initialize the component by creating the attribute properties on the component instance and initializing the
      * attribute values to their initial value If the component instance has an init() method it will be called as well
      * @param {Map} initAttributes map of initial value set by the component host
      */
-    init : function (initAttributes) {
+    init : function (initAttributes,parentCtrl) {
         if (this.initialized) {
             return;
         }
@@ -231,7 +234,7 @@ var CptWrapper = klass({
 
         if (cpt.$init) {
             // call init if defined on the component
-            cpt.$init();
+            cpt.$init(parentCtrl);
         }
 
         this._cptChgeCb = this.onCptChange.bind(this);
@@ -327,4 +330,41 @@ var CptWrapper = klass({
     }
 });
 
-module.exports.CptWrapper = CptWrapper;
+/**
+ * Create a Component wrapper and initialize it correctly according to the attributes passed as arguments
+ * @param {Object} cptArgs the component arguments
+ *      e.g. { nodeInstance:x, attributes:{att1:{}, att2:{}}, content:[] }
+ */
+function createCptWrapper(Ctl, cptArgs) {
+    var cw = new CptWrapper(Ctl); // will also create a new controller instance
+    if (cptArgs) {
+        var cpt=cw.cpt, ni=cptArgs.nodeInstance;
+        if (ni.isCptComponent || ni.isCptAttElement) {
+            // set the nodeInstance reference on the component
+            var attributes=cptArgs.attributes, content=cptArgs.content;
+            cw.nodeInstance = ni;
+            cw.cpt.nodeInstance = ni;
+
+            if (attributes) {
+                for (var k in attributes) {
+                    // set the template attribute value on the component instance
+                    if (attributes.hasOwnProperty(k)) {
+                        json.set(cpt,k,attributes[k]);
+                    }
+                }
+            }
+            if (content) {
+                if (cpt.content) {
+                  console.error(ni+" Component controller cannot use 'content' for another property than child attribute elements");
+                } else {
+                  // create the content property on the component instance
+                  json.set(cpt,"content",content);
+                }
+            }
+        }
+    }
+    return cw;
+}
+
+exports.CptWrapper = CptWrapper;
+exports.createCptWrapper=createCptWrapper;

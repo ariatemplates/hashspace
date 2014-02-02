@@ -372,6 +372,14 @@ svg {
   padding-bottom: 3px;
 }
 
+.list .item {
+  padding:0 3px 0 3px;
+}
+
+.list .highlight {
+  background-color: #FF4DBE;
+}
+
 // ---------------------------------------------------------------------
 // Pagination classes from bootstrap
 

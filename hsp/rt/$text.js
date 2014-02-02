@@ -37,7 +37,8 @@ var $TextNode = klass({
             if (!textcfg) {
                 this.textcfg = [""];
                 this.isEmptyTextNode = true;
-            } else if (this.textcfg[0].match(/^\s*/)) {
+            } else if (this.textcfg[0].match(/^\s*$/)) {
+                // text node only contains white spaces and can be considered as empty
                 this.isEmptyTextNode = true;
             }
         }
