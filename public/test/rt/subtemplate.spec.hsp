@@ -254,7 +254,6 @@ describe("Sub-template insertion", function () {
     });
 
     it("tests input data change with objectliteral argument", function () {
-        debugger;
         var dm = {
             value : "some text"
         };
