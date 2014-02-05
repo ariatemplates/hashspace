@@ -2,7 +2,7 @@ var klass = require("hsp/klass"),
     doc=require("hsp/document"),
     hsp=require("hsp/rt"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
-    $=require("hsp/utils/jquery-1.10.2.min.js");
+    $=require("node_modules/jquery/dist/jquery.min.js");
 
 var HtException=klass({
     $constructor:function(code,text) {

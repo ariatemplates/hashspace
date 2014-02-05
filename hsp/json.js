@@ -189,7 +189,14 @@ Array.prototype.reverse = function () {
  */
 Array.prototype.sort = function (sortFunction) {
     // Note change set doesn't comply with object.observe specs - same as for splice
-    var res = $sort.call(this, sortFunction);
+    var res;
+    //For IE8 which raises 'JScript object expected' errors when sortFunction is undefined
+    if (sortFunction) {
+        res = $sort.call(this, sortFunction);
+    }
+    else {
+        res = $sort.call(this);
+    }
     callObservers(this, [changeDesc(this, 0, null, null, "sort")]);
     return res;
 };
