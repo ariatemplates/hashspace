@@ -38,7 +38,8 @@ module.exports = function (grunt) {
         files: [
           'hsp/**/*.js',
           'public/test/**/*.spec.*',
-          'node_modules/karma-sinon/node_modules/sinon/pkg/sinon-ie.js'
+          'node_modules/sinon/pkg/sinon-ie.js',
+          'node_modules/jquery/dist/jquery.min.js'
         ],
         exclude: [
           'hsp/compiler/**/*.js',
@@ -49,7 +50,8 @@ module.exports = function (grunt) {
           'hsp/**/*.js': ['commonjs'],
           'public/test/lib/*.js': ['commonjs'],
           'public/test/**/*.spec.js': ['commonjs'],
-          'public/test/**/*.spec.hsp': ['hsp', 'commonjs']
+          'public/test/**/*.spec.hsp': ['hsp', 'commonjs'],
+          'node_modules/jquery/dist/jquery.min.js': ['commonjs']
         },
         commonjsPreprocessor: {
           modulesRoot: '.'

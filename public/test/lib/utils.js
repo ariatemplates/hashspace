@@ -128,7 +128,7 @@ exports.startServer = function (callback) {
             response.end([
                     "<html><head>",
                     "<script type='text/javascript' src='http://localhost:" + server.address().port
-                            + "/public/lib/noder.min.js'></script>",
+                            + "/node_modules/noder-js/dist/browser/noder.min.js'></script>",
                     "</head><body><script type='noder'>",
                     mockResponder.getCode(),
                     "</script></body></html>"].join(""), "utf8");
