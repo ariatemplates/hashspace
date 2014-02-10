@@ -42,7 +42,8 @@ module.exports = function (grunt) {
           'hsp/**/*.js',
           'public/test/**/*.spec.*',
           'node_modules/sinon/pkg/sinon-ie.js',
-          'node_modules/jquery/dist/jquery.min.js'
+          'node_modules/jquery/dist/jquery.min.js',
+          'node_modules/sinon/pkg/sinon-ie.js'
         ],
         exclude: [
           'hsp/compiler/**/*.js',

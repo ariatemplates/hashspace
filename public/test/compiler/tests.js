@@ -91,7 +91,8 @@ describe('Block Parser: ', function () {
             "comment", "foreach1", "foreach2", "foreach3", "element1", "element2", "element3", "element4", "element5",
             "evthandler1", "evthandler2", "evthandler3", "component1", "component2", "component3", "component4",
             "component5", "component6", "component7", "jsexpression1", "jsexpression2", "jsexpression3", "jsexpression4", "jsexpression5",
-            "class1", "class2", "class3", "class4", "insert1", "insert2"];
+            "class1", "class2", "class3", "class4", "insert1", "insert2", "log1", "log2"];
+    //samples=["log2"];
 
     for (var i = 0, sz = samples.length; sz > i; i++) {
         // create one test for each sample

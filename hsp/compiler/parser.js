@@ -53,6 +53,11 @@ var Node = klass({
     }
 });
 
+var reservedKeywords={
+    "event": true,
+    "scope": true
+};
+
 var SyntaxTree = klass({
     /**
      * Generate the syntax tree from the root block list
@@ -126,6 +131,12 @@ var SyntaxTree = klass({
             n.controller.ref = b.controllerRef;
         } else {
             n.args = b.args;
+            // check args
+            for (var i=0,sz=n.args.length;sz>i;i++) {
+                if (reservedKeywords[n.args[i]]) {
+                    this._logError("Reserved keywords cannot be used as template argument: "+n.args[i], b);
+                }
+            }
         }
         n.export = b.mod === "export";
         n.startLine = b.line;
@@ -160,6 +171,22 @@ var SyntaxTree = klass({
     _plaintext : function (idx, blocks, out) {
         var n = new Node("plaintext"), b = blocks[idx];
         n.value = b.value;
+        out.push(n);
+        return idx;
+    },
+
+    /**
+     * Text block management: regroups adjacent text and expression blocks
+     */
+    _log : function (idx, blocks, out) {
+        var n = new Node("log"), b = blocks[idx],exprs=[],e;
+        n.line = b.line;
+        n.column = b.column;
+        for (var i=0,sz=b.exprs.length;sz>i;i++) {
+            e=new HExpression(b.exprs[i], this);
+            exprs[i]=e.getSyntaxTree();
+        }
+        n.exprs=exprs;
         out.push(n);
         return idx;
     },

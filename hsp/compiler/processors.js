@@ -94,6 +94,20 @@ exports["textblock"] = function (node, walker) {
 };
 
 /**
+ * Generate a log expression
+ */
+exports["log"] = function (node, walker) {
+    var e, idx=1, code=[], indexes=[];
+    for (var i=0,sz=node.exprs.length;sz>i;i++) {
+        e = formatExpression(node.exprs[i], idx, walker);
+        idx = e.nextIndex;
+        indexes.push(e.exprIdx);
+        code.push(e.code);
+    }
+    return ["n.log({", code.join(",") , "},[", indexes.join(',') , "],'",walker.fileName,"','",walker.dirPath,"',",node.line,",",node.column,")"].join('');
+};
+
+/**
  * Generate an if node
  */
 exports["if"] = function (node, walker) {
@@ -253,6 +267,14 @@ function formatExpression (expression, firstIdx, walker) {
             if (root === "event") {
                 arg1 = 0;
             }
+
+            if (arg1===2) {
+                // root is a global reference
+                walker.addGlobalRef(root);
+                root="_"+root;
+                path[0]="_"+path[0];
+            }
+
             if (cat === 'functionref') {
                 arg1 = isRootInScope ? 3 : 4;
                 argExprs = [];

@@ -36,25 +36,28 @@ var HEADER_SZ = HEADER_ARR.length;
  *      lineMap: {Array} array of the new line indexes: lineMap[3] returns the new line index for line 4 in
  *          the orginal file (lineMap[0] is always 0 as all line count starts at 1 for both input and output values)
  */
-exports.compile = function (template, fileName, includeSyntaxTree, bypassJSvalidation) {
+exports.compile = function (template, path, includeSyntaxTree, bypassJSvalidation) {
     // Parsing might throw an exception
     var res = {};
+    var m=path.match(/[^\/]+$/), fileName=m? m[0] : 'unknown', dirPath='';
+    if (fileName.length<path.length) {
+        dirPath=path.slice(0,-fileName.length);
+    }
+
 
     if (!template) {
         res.errors = [{
-                    description : "[Hashspace compiler] template argument is undefined"
-                }];
+            description : "[Hashspace compiler] template argument is undefined"
+        }];
     } else {
         res = parser.parse(template);
     }
+
     res.code = '';
-    if (!fileName) {
-        fileName = "[anonymous]";
-    }
 
     if (!res.errors || !res.errors.length) {
         // I'm sure res is an array otherwise the parser would have thrown an exception
-        var w = new TemplateWalker();
+        var w = new TemplateWalker(fileName,dirPath);
         var out = w.walk(res.syntaxTree, processors);
 
         if (includeSyntaxTree === true) {
@@ -193,7 +196,9 @@ function generateLineMap (res, file) {
  */
 var TemplateWalker = klass({
     $extends : TreeWalker,
-    $constructor : function () {
+    $constructor : function (fileName,dirPath) {
+        this.fileName=fileName;
+        this.dirPath=dirPath;
         this.templates = {}; // used by processors to store intermediate values in order to ease testing
         this.globals={};     // global validation code for each template - used for unit testing
         this.errors = [];
@@ -246,6 +251,9 @@ var TemplateWalker = klass({
     },
 
     isInScope : function (varname) {
+        if (varname === "scope") {
+            return true; // scope is a reserved key word and is automatically created on the scope object
+        }
         return this._scope[varname] ? true : false;
     },
 

@@ -22,7 +22,8 @@ RequireBlock "require block" // TODO: finalize!
 
 TemplateBlock "template block"
   = start:TemplateStart content:TemplateContent? end:TemplateEnd? 
-  { start.content=content;
+  {
+    start.content=content;
     if (end) {start.closed=true;start.endLine=end.line;};
     return start;
   }
@@ -54,7 +55,7 @@ TemplateController "controller"
   {return {ctl:ctl, ctlref:ref}}
 
 ArgumentsDefinition "arguments"
-  = _ "(" _ first:Identifier? others:((_ "," _ arg:Identifier) {return arg})* _ ")" 
+  = _ "(" _ first:VarIdentifier? others:((_ "," _ arg:VarIdentifier) {return arg})* _ ")" 
   {var args = first ? [first] : []; if (others && others.length) args=args.concat(others);return args;}
 
 InvalidTplArgs
@@ -73,6 +74,7 @@ TemplateContent "template content" // TODO: CSSClassExpression
                 / HTMLElement / EndHTMLElement
                 / HspComponent / EndHspComponent
                 / HspCptAttribute / EndHspCptAttribute
+                / LogBlock
                 / ExpressionBlock
                 / InvalidHTMLElement
                 / InvalidBlock)* 
@@ -137,11 +139,11 @@ ForeachArgs
   = ForeachArgs1 / ForeachArgs2
 
 ForeachArgs1
-  = item:Identifier " " _ "in " _ col:JSObjectRef 
+  = item:VarIdentifier " " _ "in " _ col:JSObjectRef 
   {return {item:item, key:item+"_key", colref:col}}
 
 ForeachArgs2
-  = key:Identifier _ "," _ item:Identifier " " _ "in " _ col:JSObjectRef 
+  = key:VarIdentifier _ "," _ item:VarIdentifier " " _ "in " _ col:JSObjectRef 
   {return {item:item, key:key, colref:col}}
 
 EndForeachBlock
@@ -168,11 +170,11 @@ EndHspComponent
   {return {type:"endcomponent", ref:ref, line:line, column:column}}
 
 HspCptAttribute
-  = "<@" ref:Identifier  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
+  = "<@" ref:VarIdentifier  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
   {return {type:"cptattribute", name:ref, closed:(end!==""), attributes:atts, line:line, column:column}}
 
 EndHspCptAttribute
-  = "</@" ref:Identifier S? ">" EOS?
+  = "</@" ref:VarIdentifier S? ">" EOS?
   {return {type:"endcptattribute", name:ref, line:line, column:column}}
 
 InvalidHTMLElement
@@ -205,6 +207,18 @@ HTMLAttributeChar // TODO look at W3C specs
   =   "\\{" {return "\u007B"}  // { = \u007B
     / "\\\"" {return "\""}
     / [^{\"\n\r]
+
+LogBlock
+  = "{" _ "log " _ first:HExpressionContent _ next:("," _ HExpressionContent)* _"}" EOS?
+  {
+    var exprs=[first];
+    if (next) {
+      for (var i=0, sz=next.length;sz>i;i++) {
+        exprs.push(next[i][2]);
+      }
+    }
+    return {type:"log",exprs:exprs, line:line, column:column};
+  }
 
 ExpressionBlock
   = "{" ubflag:":"? e:HExpression* "}" // keep a list of expression to match expressions starting with a valid part
@@ -314,7 +328,7 @@ SingleLineComment
 // ################################################################################
 
 JSObjectRef "JS object reference"
-  = start:Identifier tail:(( "." pp:Identifier) {return pp}/ ( "[" idx:[0-9]+ "]") {return parseInt(idx.join(''),10)})*
+  = start:VarIdentifier tail:(( "." pp:Identifier) {return pp}/ ( "[" idx:[0-9]+ "]") {return parseInt(idx.join(''),10)})*
   {var r=[start]; if (tail && tail.length) r=r.concat(tail);return {category:"objectref", path:r, code:r.join('.')}}
 
 JSLiteral
@@ -346,6 +360,17 @@ IdentifierStart
   = Letter // should be UnicodeLetter to be fully ECMAScript compliant - cf. PEGS JS Grammar
   / "$"
   / "_"
+
+VarIdentifier "variable identifier" // same as Identifer but without underscore as first letter
+  = !ReservedWord name:VarIdentifierName { return name; }
+
+VarIdentifierName "identifier"
+  = start:VarIdentifierStart parts:IdentifierPart* 
+  {return start + parts.join("");}
+
+VarIdentifierStart
+  = Letter // should be UnicodeLetter to be fully ECMAScript compliant - cf. PEGS JS Grammar
+  / "$"    // underscore is not supported as first letter
 
 IdentifierPart
   = IdentifierStart / Digit

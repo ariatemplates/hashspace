@@ -16,6 +16,7 @@
 
 // ForEachNode implementation
 var klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
     doc = require("hsp/document"),
     json = require("hsp/json"),
     tnode = require("hsp/rt/tnode"),
@@ -113,7 +114,7 @@ var $ForEachNode = klass({
                     }
                 }
             } else {
-                console.log("[# foreach] for type on and of are not supported yet");
+                log.warning("[# foreach] Invalid iteration type: "+forType);
             }
         }
     },
@@ -463,7 +464,7 @@ var $ItemNode = klass({
      */
     createNodeInstance : function (parent, item, key, isfirst, islast, parentDOMNode) {
         var vs = klass.createObject(parent.vscope), itnm = this.itemName;
-        vs["#scope"] = vs;
+        vs["scope"] = vs;
         vs[itnm] = item;
         vs[this.itemKeyName] = key;
         vs[itnm + "_isfirst"] = isfirst;
