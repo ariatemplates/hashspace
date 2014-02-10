@@ -124,7 +124,7 @@ var DataRefExpr = klass({
                                                                                                             // length
         if (!isLiteral) {
             // e.g. {e1:[0,1,"item_key"]} >> this is a scope variable
-            root = "#scope";
+            root = "scope";
             path = desc.slice(2, pl + 2);
             ppl = pl;
         } else {

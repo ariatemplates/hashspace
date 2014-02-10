@@ -3,9 +3,8 @@ var renderer = require("../../hsp/compiler/renderer");
 var createHspPreprocessor = function () {
 
   return function (content, file, done) {
-
     // compile src
-    var r = renderer.renderString(content);
+    var r = renderer.renderString(content, file.path);
 
     //TODO: rename "serverErrors" into "compileErrors" or similar
     if (r.serverErrors && r.serverErrors.length) {

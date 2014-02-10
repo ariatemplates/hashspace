@@ -14,5 +14,8 @@
 ##### Template Code:
 test=[
   n.elt("input",{e1:[1,2,"d","value"]},{"type":"text","value":["",1]},0),
-  n.cpt([_lib,"lib","nbrfield"],{e1:[1,2,"d","value"],e2:[4,1,notifyReset,0,123]},{"value":["",1],"min":"-10","max":"10"},{"reset":2})
+  n.cpt([_lib,"lib","nbrfield"],{
+    e1:[1,2,"d","value"],
+    e2:[4,1,_notifyReset,0,123]
+  },{"value":["",1],"min":"-10","max":"10"},{"reset":2})
 ]

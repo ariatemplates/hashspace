@@ -2,6 +2,8 @@ var klass = require("hsp/klass"),
     doc=require("hsp/document"),
     hsp=require("hsp/rt"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
+    log=require("hsp/rt/log"),
+    $set=require("hsp/$set"),
     $=require("hsp/utils/jquery-1.10.2.min.js");
 
 var HtException=klass({
@@ -111,7 +113,13 @@ var SelectionWrapper=klass({
 module.exports.newTestContext = function() {
     var container=doc.createElement("div");
     var eltsToDispose=[];
-    var f=function(selector) {
+    var logs=[];
+    var logger=function(msg) {
+        logs.push(msg);
+    };
+    log.addLogger(logger);
+    
+    var h=function(selector) {
         var sel=$(container).find(selector);
 
         if (sel) {
@@ -120,13 +128,27 @@ module.exports.newTestContext = function() {
             return null;
         }
     };
-    f.container=container;
-    f.$dispose=function() {
+    h.container=container;
+    h.$dispose=function() {
         this.container=null;
         for (var i=0, sz=eltsToDispose.length;sz>i;i++) {
             eltsToDispose[i].$dispose();
         }
         eltsToDispose=null;
+        log.removeLogger(logger);
     };
-    return f;
+    h.$set=function(o,p,v) {
+        $set(o,p,v);
+        hsp.refresh();
+    };
+    h.logs=function(idx) {
+        if (idx===undefined) {
+            return logs;
+        }
+        return logs[idx];
+    };
+    h.logs.clear=function() {
+        logs=[];
+    };
+    return h;
 };

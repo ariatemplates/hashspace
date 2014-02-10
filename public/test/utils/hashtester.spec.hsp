@@ -1,4 +1,5 @@
 var ht=require("hsp/utils/hashtester"), 
+    log=require("hsp/rt/log"),
     $set=require("hsp/$set");
 
 # template testContent(data)
@@ -95,5 +96,31 @@ describe("HashTester", function () {
         expect(list.item(1).hasClass("foo2")).to.equal(true);
 
         h.$dispose();
+    });
+
+    it("validates log capture", function() {
+        var initialNbr=log.getNbrOfLoggers();
+
+        var h=ht.newTestContext();
+        expect(h.logs().length).to.equal(0);
+        expect(log.getNbrOfLoggers()).to.equal(initialNbr+1);
+
+        var n=testContent({count:0}).render(h.container);
+
+        log.error("Sample log");
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs(0).type).to.equal("error");
+        expect(h.logs(0).message).to.equal("Sample log");
+
+        log.warning("Second log");
+        expect(h.logs().length).to.equal(2);
+        expect(h.logs(1).type).to.equal("warning");
+        expect(h.logs(1).message).to.equal("Second log");
+
+        h.logs.clear();
+        expect(h.logs().length).to.equal(0);
+
+        h.$dispose();
+        expect(log.getNbrOfLoggers()).to.equal(initialNbr);
     });
 });

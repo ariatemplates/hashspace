@@ -17,6 +17,7 @@
 // Hash Space runtime
 require("hsp/es5");
 var klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
     $root = require("hsp/rt/$root"),
     $RootNode = $root.$RootNode,
     $InsertNode = $root.$InsertNode,
@@ -52,7 +53,7 @@ var NodeGenerator = klass({
                 argNames.push(nm);
             }
         }
-        vs["#scope"] = vs; // self reference (used for variables - cf. expression handler)
+        vs["scope"] = vs; // self reference (used for variables - cf. expression handler)
 
         var root = null;
         if (tplctxt.$constructor && (tplctxt.$constructor === $InsertNode || tplctxt.$constructor === $CptNode)) {
@@ -190,49 +191,27 @@ module.exports.template = function (arg, contentFunction) {
     return f;
 };
 
-var loggers = null;
-/**
- * Adds a logger to the logger collection. When a template error is to be logged by hashspace, it will first delegate to
- * the loggers in the logger collection. When a logger handles the error it should return false to prevent errors to be
- * handled by other loggers
- * @param {Function} logger the logger function with the following signature ({String} fileName, {Array} errors) ->
- * Boolean
- */
-module.exports.useLogger = function (logger) {
-    if (!loggers) {
-        loggers = [];
-    }
-    loggers.push(logger);
-};
 
 /**
- * Helper function used by the hashspace compiler to insert errors in the generated scripts when invalid
+ * Helper function used by the hashspace compiler to raise errors from the generated scripts when syntax is invalid
  */
 module.exports.logErrors = function (fileName, errors) {
-    var goahead = true;
-    if (loggers && loggers.length) {
-        var lsz = loggers.length, res;
-        for (var i = 0; lsz > i; i++) {
-            res = loggers[i](fileName, errors);
-            if (res === false) {
-                // stop processing
-                goahead = false;
-                break;
-            }
-        }
-    }
-    if (goahead) {
-        var sz = errors.length, err, msg, code;
-        for (var i = 0; sz > i; i++) {
-            err = errors[i];
+    if (errors && errors.length) {
+        var err, code;
+        for (var i=0,sz=errors.length;sz>i;i++) {
+            err=errors[i];
+            code=null;
             if (err.lineInfoTxt) {
-                code = "\r\n>> " + err.lineInfoTxt.replace(/\r?\n/gi, "\r\n>> ");
+                code = err.lineInfoTxt.replace(/\r?\n/gi, "\r\n>> ");
             } else if (err.code) {
-                code = "\r\n>> " + err.code;
+                code = err.code;
             }
-            msg = ['Error in [', fileName, ']\r\n>> ', err.description, '(line: ', err.line, ',column: ', err.column,
-                    ')', code].join('');
-            console.error(msg);
+            log.error(err.description,{
+                file:fileName,
+                line:err.line,
+                column:err.column,
+                code:code
+            });
         }
     }
 };
@@ -250,7 +229,8 @@ var nodeList = [
     "$foreach", require("hsp/rt/$foreach"),
     "elt", require("hsp/rt/eltnode"),
     "cpt", $CptNode,
-    "catt", $CptAttElement
+    "catt", $CptAttElement,
+    "log", require("hsp/rt/$log")
 ];
 
 for (var i = 0, sz = nodeList.length; sz > i; i += 2) {

@@ -1,0 +1,13 @@
+##### Template:
+# template test(event)
+    Hello World!
+# /template
+
+##### Errors:
+[
+  {
+    "description": "Reserved keywords cannot be used as template argument: event",
+    "line": 1,
+    "column": 1
+  }
+]

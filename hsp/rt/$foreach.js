@@ -463,7 +463,7 @@ var $ItemNode = klass({
      */
     createNodeInstance : function (parent, item, key, isfirst, islast, parentDOMNode) {
         var vs = klass.createObject(parent.vscope), itnm = this.itemName;
-        vs["#scope"] = vs;
+        vs["scope"] = vs;
         vs[itnm] = item;
         vs[this.itemKeyName] = key;
         vs[itnm + "_isfirst"] = isfirst;

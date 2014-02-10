@@ -12,5 +12,5 @@ var person = {name : "World"};
 
 ##### Template Code
 hello=[
-  n.$text({e1:[2,2,person,"name"]},["Hello ",1,"!"])
+  n.$text({e1:[2,2,_person,"name"]},["Hello ",1,"!"])
 ]
