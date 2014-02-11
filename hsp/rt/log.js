@@ -179,7 +179,9 @@ function defaultLogger(msg) {
         "debug":"log"
     };
 
-    console[methods[msg.type]](log.format(msg));
+    if (typeof(console)!==undefined) {
+        console[methods[msg.type]](log.format(msg));
+    }
 }
 
 module.exports = log;

@@ -16,6 +16,7 @@
 
 // ForEachNode implementation
 var klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
     doc = require("hsp/document"),
     json = require("hsp/json"),
     tnode = require("hsp/rt/tnode"),
@@ -113,7 +114,7 @@ var $ForEachNode = klass({
                     }
                 }
             } else {
-                console.log("[# foreach] for type on and of are not supported yet");
+                log.warning("[# foreach] Invalid iteration type: "+forType);
             }
         }
     },

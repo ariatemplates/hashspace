@@ -14,6 +14,7 @@
  */
 
 var json = require("hsp/json"),
+    log = require("hsp/rt/log"),
     klass = require("hsp/klass");
 
 function identity(v) {
@@ -94,7 +95,7 @@ var CptWrapper = klass({
      */
     $constructor : function (Cptfn) {
         if (!Cptfn || Cptfn.constructor !== Function) {
-            console.error("[CptWrapper] Invalid Component constructor!");
+            log.error("[CptWrapper] Invalid Component constructor!");
         } else {
             this.cpt = new Cptfn();
             this.nodeInstance = null; // reference to set the node instance adirty when an attribute changes
@@ -108,9 +109,9 @@ var CptWrapper = klass({
                     if (k.match(/^on/)) {
                         // this is a callback
                         if (!att.type) {
-                            console.error("Attribute type 'callback' should be set to '" + k + "'");
+                            log.error("Attribute type 'callback' should be set to '" + k + "'");
                         } else if (att.type !== "callback") {
-                            console.error("Attribute type 'callback' should be set to '" + k + "' instead of: "
+                            log.error("Attribute type 'callback' should be set to '" + k + "' instead of: "
                                     + att.type);
                             att.type = "callback";
                         }
@@ -124,7 +125,7 @@ var CptWrapper = klass({
                         if (bnd !== undefined) {
                             att._binding = bnd;
                         } else {
-                            console.error("Invalid attribute binding value: " + att.binding);
+                            log.error("Invalid attribute binding value: " + att.binding);
                             att._binding = 0;
                         }
                     } else {
@@ -134,9 +135,9 @@ var CptWrapper = klass({
                     // check type
                     if (att.type) {
                         if (att.type === "callback") {
-                            console.error("Attribute of type 'callback' must start with 'on' - please rename: " + k);
+                            log.error("Attribute of type 'callback' must start with 'on' - please rename: " + k);
                         } else if (ATTRIBUTE_TYPES[att.type] === undefined) {
-                            console.error("Invalid attribute type: " + att.type);
+                            log.error("Invalid attribute type: " + att.type);
                             att.type = 'string';
                         }
                     } else {
@@ -194,7 +195,7 @@ var CptWrapper = klass({
                 if (hasType) {
                     attType = ATTRIBUTE_TYPES[att.type];
                     if (!attType) {
-                        console.error("Invalid component attribute type: " + att.type);
+                        log.error("Invalid component attribute type: " + att.type);
                         attType = ATTRIBUTE_TYPES['string'];
                     }
                 }
@@ -269,7 +270,7 @@ var CptWrapper = klass({
             if (change.length > 0) {
                 chg = change[0];
             } else {
-                console.error('[CptNode] Invalid change - nbr of changes: '+change.length);
+                log.error('[CptNode] Invalid change - nbr of changes: '+change.length);
                 return;
             }
         }
@@ -355,7 +356,7 @@ function createCptWrapper(Ctl, cptArgs) {
             }
             if (content) {
                 if (cpt.content) {
-                  console.error(ni+" Component controller cannot use 'content' for another property than child attribute elements");
+                  log.error(ni+" Component controller cannot use 'content' for another property than child attribute elements");
                 } else {
                   // create the content property on the component instance
                   json.set(cpt,"content",content);

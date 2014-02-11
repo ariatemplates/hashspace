@@ -27,7 +27,7 @@ var LogNode = klass({
      * Log node generator ex: {log scope}
      * @param {Map<Expression>|int} exps the map of the variables used by the node. 
      *      0 is passed if no expression is used
-     * @param {Array} args array of the expression indexes to log in the console
+     * @param {Array} args array of the expression indexes to log in the log queue
      * @param {Integer} line the line number
      * @param {Integer} column the column number
      */
@@ -53,7 +53,7 @@ var LogNode = klass({
     },
 
     /**
-     * Process the information to log and output it on the console
+     * Process the information to be logged and push it to the log output (browser console by default)
      */
     processLog : function () {
         var msg=[], args=this.args, eh=this.eh, v;

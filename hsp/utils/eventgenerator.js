@@ -18,7 +18,8 @@
  * Taken from Aria Templates: https://github.com/ariatemplates/ariatemplates/blob/master/src/aria/utils/FireDomEvent.js
  */
 
- var typeUtils = require("hsp/utils/type");
+var typeUtils = require("hsp/utils/type"),
+    log = require("hsp/rt/log");
 
 var // mouse events supported
 events = {
@@ -129,7 +130,7 @@ function simulate(target, type, options) {
     } else if (htmlEvents[type]) {
         simulateHtmlEvent(target, type, options.bubbles, options.cancelable);
     } else {
-        console.log("simulate(): Event '" + type + "' can't be simulated.");
+        log.error("simulate(): Event '" + type + "' can't be simulated.");
     }
 }
 
@@ -172,7 +173,7 @@ function simulateKeyEvent (target, type, options) {
 
     // check target
     if (!target) {
-        console.log("simulateKeyEvent(): Invalid target.");
+        log.error("simulateKeyEvent(): Invalid target.");
     }
 
     // check event type
@@ -187,10 +188,10 @@ function simulateKeyEvent (target, type, options) {
             case "keypress" :
                 break;
             default :
-                console.log("simulateKeyEvent(): Event type '" + type + "' not supported.");
+                log.error("simulateKeyEvent(): Event type '" + type + "' not supported.");
         }
     } else {
-        console.log("simulateKeyEvent(): Event type must be a string.");
+        log.error("simulateKeyEvent(): Event type must be a string.");
     }
 
     // setup default values
@@ -304,7 +305,7 @@ function simulateKeyEvent (target, type, options) {
         target.fireEvent("on" + type, customEvent);
 
     } else {
-        console.log("simulateKeyEvent(): No event simulation framework present.");
+        log.error("simulateKeyEvent(): No event simulation framework present.");
     }
 }
 
@@ -366,7 +367,7 @@ function simulateEvent (target, type , options) {
 
     // check target
     if (!target) {
-        console.log("simulateEvent(): Invalid target.");
+        log.error("simulateEvent(): Invalid target.");
     }
 
     // check event type
@@ -377,10 +378,10 @@ function simulateEvent (target, type , options) {
 
         // make sure it's a supported event
         if (!events[type]) {
-            console.log("simulateEvent(): Event type '" + type + "' not supported.");
+            log.error("simulateEvent(): Event type '" + type + "' not supported.");
         }
     } else {
-        console.log("simulateEvent(): Event type must be a string.");
+        log.error("simulateEvent(): Event type must be a string.");
     }
 
     // setup default values
@@ -538,7 +539,7 @@ function simulateEvent (target, type , options) {
         target.fireEvent("on" + type, customEvent);
 
     } else {
-        console.log("simulateEvent(): No event simulation framework present.");
+        log.error("simulateEvent(): No event simulation framework present.");
     }
 }
 
@@ -557,7 +558,7 @@ function simulateHtmlEvent (target /* :HTMLElement */, type /* :String */) /* :V
 
     // check target
     if (!target) {
-        console.log("simulateHtmlEvent(): Invalid target.");
+        log.error("simulateHtmlEvent(): Invalid target.");
     }
 
     // check event type
@@ -566,10 +567,10 @@ function simulateHtmlEvent (target /* :HTMLElement */, type /* :String */) /* :V
 
         // make sure it's a supported mouse event
         if (!htmlEvents[type]) {
-            console.log("simulateHtmlEvent(): Event type '" + type + "' not supported.");
+            log.error("simulateHtmlEvent(): Event type '" + type + "' not supported.");
         }
     } else {
-        console.log("simulateHtmlEvent(): Event type must be a string.");
+        log.error("simulateHtmlEvent(): Event type must be a string.");
     }
 
     // setup default values
@@ -600,7 +601,7 @@ function simulateHtmlEvent (target /* :HTMLElement */, type /* :String */) /* :V
         target.fireEvent("on" + type, customEvent);
 
     } else {
-        console.log("simulateHtmlEvent(): No event simulation framework present.");
+        log.error("simulateHtmlEvent(): No event simulation framework present.");
     }
 }
 

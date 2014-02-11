@@ -17,6 +17,7 @@
 // This module contains the $Root and $Insert nodes used to instantiate new templates
 
 var klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
     doc = require("hsp/document"),
     json = require("hsp/json"),
     PropObserver = require("hsp/propobserver"),
@@ -211,16 +212,16 @@ var $RootNode = klass({
         if (typeof(c) === "string") {
             c = doc.getElementById(c);
             if (c === null) {
-                console.error("[hashspace] Template cannot be rendered - Invalid element id: "+domElt);
+                log.error("[hashspace] Template cannot be rendered - Invalid element id: "+domElt);
                 return this;
             }
         } else if (!c || !c.appendChild) {
-            console.error("[hashspace] Template cannot be rendered - Invalid element: "+domElt);
+            log.error("[hashspace] Template cannot be rendered - Invalid element: "+domElt);
             return this;
         }
         var df = this.node; // should be a doc fragment
         if (df.nodeType !== DOCUMENT_FRAGMENT_NODE) {
-            console.log("[hashspace] root element can only be appended once in the DOM");
+            log.error("[hashspace] root element can only be appended once in the DOM");
         } else {
             if (replace !== false) {
                 // remove previous content
@@ -336,7 +337,7 @@ var $InsertNode = klass({
             }
 
         } else {
-            console.log("[$InsertNode] Invalid template function");
+            log.error("[$InsertNode] Invalid template function");
         }
 
         return ni;
@@ -619,21 +620,21 @@ var $CptAttElement = klass({
                 
                 if (!eltDef && !attDef) {
                     // invalid elt
-                    console.error(this+" Element not supported by its parent component");
+                    log.error(this+" Element not supported by its parent component");
                 } else if (eltDef) {
                     var type=eltDef.type;
                     if (type==="template") {
                         ni=TNode.createNodeInstance.call(this,parent);
                     } else if (type==="component") {
                         if (!eltDef.controller) {
-                            console.error(this+" Controller property is mandatory for component elements");
+                            log.error(this+" Controller property is mandatory for component elements");
                         } else {
                             // this element is a sub-component - let's create its controller
                             ni=this.createCptInstance("$CptComponent",parent);
                             ni.initCpt({cptattelement:ni,ctlConstuctor:eltDef.controller,parentCtrl:p.controller});
                         }
                     } else {
-                        console.error(this+" Invalid component element type: "+eltDef.type);
+                        log.error(this+" Invalid component element type: "+eltDef.type);
                     }
                 } else if (attDef) {
                     if (attDef.type==="template") {
@@ -646,7 +647,7 @@ var $CptAttElement = klass({
             }
         }
         if (!found) {
-            console.error(this+" Attribute elements cannot be used outside components");
+            log.error(this+" Attribute elements cannot be used outside components");
         }
         return ni;
     },

@@ -13,7 +13,9 @@
  * limitations under the License.
  */
 
-var klass = require("../klass"), json = require("../json");
+var klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
+    json = require("hsp/json");
 
 var ExpHandler = klass({
     /**
@@ -54,13 +56,13 @@ var ExpHandler = klass({
                     // function expression
                     exp = new FuncExpr(v, this);
                 } else {
-                    console.warn("Unsupported expression type: " + etype);
+                    log.warning("Unsupported expression type: " + etype);
                 }
                 if (exp)
                     this.exps[key] = exp;
             } else {
                 // check other types of variables - e.g. callback
-                console.warn("Unsupported expression definition: " + v);
+                log.warning("Unsupported expression definition: " + v);
             }
         }
     },
@@ -173,7 +175,7 @@ var DataRefExpr = klass({
      */
     setValue : function (vscope, value) {
         if (this.isLiteral && this.ppLength <= 0) {
-            console.warn("[DataRefExpr.setValue] Global literal values cannot be updated from the DOM - please use object referenes");
+            log.warning("[DataRefExpr.setValue] Global literal values cannot be updated from the DOM - please use object referenes");
         } else {
             var v = this.isLiteral ? this.root : vscope[this.root], ppl = this.ppLength, goahead = true;
             if (ppl < 1) {
@@ -303,13 +305,13 @@ var FuncRefExpr = klass({
         var fn;
         if (!v) {
             // TODO add more info about callback (debugging)
-            return console.log("[hashspace event handler] Invalid callback context");
+            return log.error("[hashspace event handler] Invalid callback context");
         } else {
             fn = v.fn;
 
             if (!fn || fn.constructor !== Function) {
                 // TODO add more info about callback (debugging)
-                return console.log("[hashspace event handler] Invalid callback function");
+                return log.error("[hashspace event handler] Invalid callback function");
             }
         }
 

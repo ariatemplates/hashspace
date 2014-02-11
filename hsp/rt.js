@@ -151,7 +151,7 @@ module.exports.template = function (arg, contentFunction) {
             err = "Component controller must be a function: " + arg.ctl.slice(1).join(".");
         }
         if (err) {
-            console.error(err);
+            log.error(err);
             throw err;
         }
 

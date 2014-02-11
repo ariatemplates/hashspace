@@ -38,7 +38,7 @@ module.exports = function (grunt) {
         files: [
           'hsp/**/*.js',
           'public/test/**/*.spec.*',
-          'node_modules/karma-sinon/node_modules/sinon/pkg/sinon-ie.js'
+          'node_modules/sinon/pkg/sinon-ie.js'
         ],
         exclude: [
           'hsp/compiler/**/*.js',
