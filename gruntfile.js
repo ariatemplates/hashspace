@@ -14,6 +14,9 @@
  */
 
 module.exports = function (grunt) {
+
+  var pkg = require('./package.json');
+
   grunt.initConfig({
     mochaTest: {
       test: {
@@ -157,7 +160,7 @@ module.exports = function (grunt) {
       fs_module: {
         files: [{
           src: 'hsp/compiler/hspblocks.pegjs',
-          dest: 'dist/tmp/fs.js'
+          dest: 'dist/'+pkg.version+'/tmp/fs.js'
         }],
         options: {
           processContent: function (content, srcpath) {
@@ -168,9 +171,7 @@ module.exports = function (grunt) {
     },
     browserify: {
       runtime: {
-        files: {
-          'dist/hashspace.js': ['hsp/rt.js']
-        },
+        files: [{dest: 'dist/'+pkg.version+'/hashspace.js', src: ['hsp/rt.js']}],
         options: {
           aliasMappings: [
             {
@@ -192,9 +193,7 @@ module.exports = function (grunt) {
         }
       },
       compiler: {
-        files: {
-          'dist/hashspace.compiler.js': ['hsp/compiler/compiler.js']
-        },
+        files: [{dest: 'dist/'+pkg.version+'/hashspace.compiler.js', src: ['hsp/compiler/compiler.js']}],
         options: {
           aliasMappings: [
             {
@@ -205,7 +204,7 @@ module.exports = function (grunt) {
           ],
           shim: {
             fs: {
-              path: 'dist/tmp/fs.js',
+              path: 'dist/'+pkg.version+'/tmp/fs.js',
               exports: null
             }
           }
@@ -214,10 +213,10 @@ module.exports = function (grunt) {
     },
     uglify: {
       hsp: {
-        files: {
-          'dist/hashspace.min.js': ['dist/hashspace.js'],
-          'dist/hashspace.compiler.min.js': ['dist/hashspace.compiler.js']
-        }
+        files: [
+          {dest: 'dist/'+pkg.version+'/hashspace.min.js', src: ['dist/'+pkg.version+'/hashspace.js']},
+          {dest: 'dist/'+pkg.version+'/hashspace.compiler.min.js', src: ['dist/'+pkg.version+'/hashspace.compiler.js']}
+        ]
       }
     }
   });
@@ -228,6 +227,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('package', ['copy', 'browserify', 'uglify']);
   grunt.registerTask('test', ['checkStyle','mochaTest', 'karma:unit']);
-  grunt.registerTask('ci', ['checkStyle','mochaTest', 'karma:ci']);
+  grunt.registerTask('ci', ['checkStyle','mochaTest', 'karma:ci', 'package']);
   grunt.registerTask('default', ['hspserver','watch']);
 };
