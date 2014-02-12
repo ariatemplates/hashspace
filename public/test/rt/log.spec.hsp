@@ -51,8 +51,9 @@ describe("Log statement", function () {
 
         expect(h.logs().length).to.equal(1);
         expect(h.logs(0).message).to.equal("123");
-        expect(h.logs(0).file).to.equal("log.spec.hsp");
-        //expect(h.logs(0).dir).to.equal("test/rt");
+
+        var f=''+h.logs(0).file, fname="log.spec.hsp";
+        expect(f.slice(-fname.length)).to.equal(fname);
         expect(h.logs(0).line).to.equal(27);
         expect(h.logs(0).column).to.equal(9);
         
