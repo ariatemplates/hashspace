@@ -6,6 +6,7 @@ env:
   global:
     - SAUCE_USERNAME=ariatemplates
     - SAUCE_ACCESS_KEY=620e638e-90d2-48e1-b66c-f9505dcb888b
+    - secure: MdntYCP5jCw2PZs/pRHbcLS0Ish8VUmK7EpTFXvhi7edyIUFLd/ivqlPBbD6iJCet1LhF2umVV1pc4ol6mmhAhP46aIjSwY7dFDB9T67DfNkA1c8Yk+FMZqU65o5oF84Y5W7TMlVVt6irbxEnJDr9NZi4LzvSiW3xXiz+onepOA=
 
 before_install:
  - npm install --quiet -g grunt-cli
@@ -17,3 +18,7 @@ before_script:
 
 script:
  - grunt ci
+
+after_success:
+ - chmod -R 777 ./ci-release.sh
+ - ./ci-release.sh
