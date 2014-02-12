@@ -92,6 +92,13 @@ var LogNode = klass({
 });
 
 /**
+ * Sort function
+ */
+function lexicalSort(a,b) {
+    return a>b;
+}
+
+/**
  * Format a JS entity for the log
  * @param v {Object} the value to format
  * @param depth {Number} the formatting of objects and arrays (default: 1)
@@ -114,12 +121,19 @@ function formatValue(v,depth) {
                 }
                 return "["+properties.join(", ")+"]";
             } else {
+                var keys=[];
                 for (var k in v) {
                     if (k.match(/^\+/)) {
                         // this is a meta-data property
                         continue;
                     }
-                    properties.push(k+":"+formatValue(v[k],depth-1));
+                    keys.push(k);
+                }
+                // sort keys as IE 8 uses a different order than other browsers
+                keys.sort(lexicalSort);
+
+                for (var i=0,sz=keys.length;sz>i;i++) {
+                    properties.push(keys[i]+":"+formatValue(v[keys[i]],depth-1));
                 }
                 return "{"+properties.join(", ")+"}";
             }
