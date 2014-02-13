@@ -15,18 +15,58 @@
 
 var loggers=[];
 
+var validTypes={
+    "debug":true,
+    "error":true,
+    "warning":true,
+    "info":true
+};
+
 /**
- * Log a message
- * @param {String} type the type of message: "info", "error", "warning" or "debug" (default)
- * @param {String} msg the message to log
+ * Analyse log arguments to determine if the last argument is a meta-data argument - cf. log()
+ * @param {Array} args array of Object or String - last item may be a meta-data argument
+ * @return {Object} structure composed of 2 parts
+ *       items: {Object|String} items to be logged
+ *       metaData: {Object} - empty object if not found
+ */
+function getLogArgs(args) {
+    // iterate over args to create a real array
+    if (!args || !args.length) {
+        return {items:[],metaData:{}};
+    }
+    var items=[], md={}, itm;
+    for (var i=0, sz=args.length; sz>i; i++) {
+        itm=args[i];
+        if (i>0 && i===sz-1) {
+            // itm could be a meta-data argument
+            if (typeof(itm)==="object" && itm.type && typeof(itm.type)==="string" && validTypes[itm.type]) {
+                // this is a meta-data argument
+                md=itm;
+            } else {
+                items[i]=itm;
+            }
+        } else {
+            items[i]=itm;
+        }
+    }
+    return {items:items,metaData:md};
+}
+
+/**
+ * Log a message - support an indefinite nbr of arguments such as console.log()
+ * Last argument can be an optional object containing meta data associated to the log
+ * @param {Object|String} the first piece to log
+ * @param {Object|String} the 2nd piece to log
+ * ...
+ * @param {Object|String} the nth piece to log
  * @parma {Object} context data associated to the message and that can be used by specialized loggers
  *       to better integrate the logs in the calling application. These data should contain all the variables
  *       integrated in the msg argument (for instance to allow for localization in a different language)
  *       The following properties are recommended, and should be considered as reserved keywords 
  *       (i.e. they should not be used for another purpose)
  *           { 
- *               id: {String|Number} Unique message identifier
  *               type: {String} Message type: "info", "error", "warning" or "debug" 
+ *               id: {String|Number} Unique message identifier       
  *               message: {String} The default message - in english (will be automatically set from the msg argument)
  *               file: {String} File name associated to the message 
  *               dir: {String} Directory path corresponding to the file
@@ -34,34 +74,11 @@ var loggers=[];
  *               line: {Number} Line number associated to the message (e.g. for errors)
  *               column: {Number} Column number associated to the message (e.g. for errors)
  *           }
+ * NB: what determines if the last argument is an object or the meta-data is the presence of a valid type, and
+ *     an argument index > 0
  */
-var log=function(msg, data) {
-    var stop=false;
-    if (!data) {
-        data={};
-    }
-    if (!data.type) {
-        data.type="debug";
-    } else {
-        var tp=data.type;
-        if (tp!=="debug" && tp!="error" && tp!=="warning" && tp!=="info") {
-            // invalid message type
-            log.error("Invalid message type: "+tp,{invalidType:tp});
-            data.type="debug";
-        }
-    }
-    data.message=msg;
-
-    if (loggers && loggers.length) {
-        for (var i=0,sz=loggers.length;sz>i;i++) {
-            stop=!loggers[i](data);
-            if (stop) {
-                break;
-            }
-        }
-    } else {
-        defaultLogger(data);
-    }
+var log=function() {
+    logMsg("debug", arguments, false);
 };
 
 /**
@@ -108,26 +125,26 @@ log.getNbrOfLoggers=function() {
 
 /**
  * Log an error message
- * Shortcut to log() - if no data is provided, an object will be created with the "error" type
+ * Same interface as log() but with an error type
  */
-log.error=function(msg, data) {
-    logMsg("error", msg, data);
+log.error=function() {
+    logMsg("error", arguments, true);
 };
 
 /**
  * Log a warning message
- * Shortcut to log() - if no data is provided, an object will be created with the "warning" type
+ * Same interface as log() but with a warning type
  */
-log.warning=function(msg, data) {
-    logMsg("warning", msg, data);
+log.warning=function() {
+    logMsg("warning", arguments, true);
 };
 
 /**
  * Log an info message
- * Shortcut to log() - if no data is provided, an object will be created with the "info" type
+ * Same interface as log() but with an info type
  */
-log.info=function(msg, data) {
-    logMsg("info", msg, data);
+log.info=function() {
+    logMsg("info", arguments, true);
 };
 
 /**
@@ -163,12 +180,41 @@ log.format=function (msg) {
     return out.join("");
 };
 
-function logMsg(type,msg,data) {
-    if (!data) {
-        data={};
+function logMsg(type,args,forceType) {
+    var args=getLogArgs(args);
+    var items=args.items, md=args.metaData, sz=items.length, s;
+
+    if (forceType || !md.type) {
+        md.type=type;
     }
-    data.type=type;
-    log(msg, data);
+
+    if (sz===0) {
+        md.message='';
+    } else if (sz===1) {
+        md.message=formatValue(items[0]);
+    } else {
+        // translate items to log message and concatenate them
+        var out=[];
+        for (var i=0;sz>i;i++) {
+            s=formatValue(items[i]);
+            if (s!=='') {
+                out.push(s);
+            }
+        }
+        md.message=out.join(' ');
+    }
+
+    if (loggers && loggers.length) {
+        var stop=false;
+        for (var i=0,sz=loggers.length;sz>i;i++) {
+            stop=!loggers[i](md);
+            if (stop) {
+                break;
+            }
+        }
+    } else {
+        defaultLogger(md);
+    }
 }
 
 function defaultLogger(msg) {
@@ -181,6 +227,80 @@ function defaultLogger(msg) {
 
     if (typeof(console)!==undefined) {
         console[methods[msg.type]](log.format(msg));
+    }
+}
+
+/**
+ * Sort function
+ */
+function lexicalSort(a,b) {
+    if (a>b) return 1;
+    if (a<b) return -1;
+    return 0;
+}
+
+/**
+ * Format a JS entity for the log
+ * @param v {Object} the value to format
+ * @param depth {Number} the formatting of objects and arrays (default: 1)
+ */
+function formatValue(v,depth) {
+    if (depth===undefined || depth===null) {
+        depth=1;
+    }
+    var tp=typeof(v), val;
+    if (v===null) {
+        return "null";
+    } else if (v===undefined) {
+        return "undefined";
+    } else if (tp==='object') {
+        if (depth>0) {
+            var properties=[];
+            if (v.constructor===Array) {
+                for (var i=0,sz=v.length;sz>i;i++) {
+                    val=v[i];
+                    if (typeof(val)==='string') {
+                        properties.push(i+':"'+formatValue(val,depth-1)+'"');
+                    } else {
+                        properties.push(i+":"+formatValue(val,depth-1));
+                    }
+                }
+                return "["+properties.join(", ")+"]";
+            } else {
+                var keys=[];
+                for (var k in v) {
+                    if (k.match(/^\+/)) {
+                        // this is a meta-data property
+                        continue;
+                    }
+                    keys.push(k);
+                }
+                // sort keys as IE 8 uses a different order than other browsers
+                keys.sort(lexicalSort);
+
+                for (var i=0,sz=keys.length;sz>i;i++) {
+                    val=v[keys[i]];
+                    if (typeof(val)==='string') {
+                        properties.push(keys[i]+':"'+formatValue(val,depth-1)+'"');
+                    } else {
+                        properties.push(keys[i]+':'+formatValue(val,depth-1));
+                    }
+                }
+                return "{"+properties.join(", ")+"}";
+            }
+        } else {
+            if (v.constructor===Array) {
+                return "Array["+v.length+"]";
+            } else if (v.constructor===Function) {
+                return "Function";
+            } else {
+                return "Object";
+            }
+        }
+    } else if (tp==='function') {
+        return "Function";
+    } else {
+        return ''+v;
     }
 }
 

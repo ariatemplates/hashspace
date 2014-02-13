@@ -8,15 +8,14 @@ The **{log}** statement will automatically create a new log when one of the log 
 
 On the JavaScript side, hashspace offers a specific **log** library - cf. *require("hsp/rt/log")*. This library offers simple logging features that allows to log messages to the same place as the **{log}** statement. The log data can then be retrieved by registering a logger function through **log.addLogger()**. This function will receive structured log messages that can be handled at application level. The main methods of the **log** library are the following:
 
- - *log(msg[,data])* to log debug data
- - *log.info(msg[,data])* to log informative data
- - *log.warning(msg[,data])* to log warning information
- - *log.error(msg[,data])* to log errors
+ - *log(obj1 [, obj2, ..., objN, metaData])* : to log debug data
+ - *log.info(obj1 [, obj2, ..., objN, metaData])* : to log informative data
+ - *log.warning(obj1 [, obj2, ..., objN, metaData])* : to log warning information
+ - *log.error(obj1 [, obj2, ..., objN, metaData])* : to log errors
 
-All these methods accept a second optional argument used to pass contextual information. This argument is a JSON structure that accepts the following properties:
+All these methods accept an optional 'last' argument used to pass contextual information. This argument is a JSON structure that must have a valid **type** attribute (that is either "info", "error", "warning" or "debug"). The following other properties could be added as well:
 
  - *id*: {String|Number} Unique message identifier
- - *type*: {String} Message type: "info", "error", "warning" or "debug" 
  - *message*: {String} The default message - in english (will be automatically set from the msg argument)
  - *file*: {String} File name associated to the message 
  - *dir*: {String} Directory path corresponding to the file

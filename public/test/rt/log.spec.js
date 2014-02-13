@@ -79,12 +79,24 @@ describe("Hashspace log", function () {
         expect(log.getNbrOfLoggers()).to.equal(0);
     });
 
+    it("tests log with multiple arguments", function () {
+        log({foo:"foo"},"bar",123);
+        expect(msgs[0].type).to.equal("debug");
+        expect(msgs[0].message).to.equal('{foo:"foo"} bar 123');
+        expect(msgs[0].message.line).to.equal(undefined);
+
+        log({foo:"foo"},"bar",123,{type:"error",line:91107});
+        expect(msgs[1].type).to.equal("error");
+        expect(msgs[1].message).to.equal('{foo:"foo"} bar 123');
+        expect(msgs[1].line).to.equal(91107);
+    });
+
     it("tests error log", function () {
         log.error("First error");
         expect(msgs[0].type).to.equal("error");
         expect(msgs[0].message).to.equal("First error");
 
-        log.error("Second error",{id:100,file:"foo.hsp",line:123,column:234});
+        log.error("Second error",{type:"debug",id:100,file:"foo.hsp",line:123,column:234});
         expect(msgs[1].type).to.equal("error");
         expect(msgs[1].message).to.equal("Second error");
         expect(msgs[1].id).to.equal(100);
@@ -93,28 +105,36 @@ describe("Hashspace log", function () {
         expect(msgs[1].column).to.equal(234);
     });
 
+    it("tests error log with multiple arguments", function () {
+        log.error("test",123);
+        expect(msgs[0].type).to.equal("error");
+        expect(msgs[0].message).to.equal('test 123');
+        expect(msgs[0].message.line).to.equal(undefined);
+
+        log.error("hello",123,{type:"debug",line:91107});
+        expect(msgs[1].type).to.equal("error");
+        expect(msgs[1].message).to.equal('hello 123');
+        expect(msgs[1].line).to.equal(91107);
+    });
+
     it("tests warning log", function () {
         log.warning("Some warning");
         expect(msgs[0].type).to.equal("warning");
         expect(msgs[0].message).to.equal("Some warning");
+
+        log.warning('foo','bar',911);
+        expect(msgs[1].type).to.equal("warning");
+        expect(msgs[1].message).to.equal("foo bar 911");
     });
 
     it("tests info log", function () {
         log.info("Some info");
         expect(msgs[0].type).to.equal("info");
         expect(msgs[0].message).to.equal("Some info");
-    });
 
-    it("tests message type validity", function () {
-        log("Some Msg",{type:"foo"});
-        expect(msgs.length).to.equal(2);
-
-        expect(msgs[0].type).to.equal("error");
-        expect(msgs[0].message).to.equal("Invalid message type: foo");
-        expect(msgs[0].invalidType).to.equal("foo");
-        
-        expect(msgs[1].type).to.equal("debug");
-        expect(msgs[1].message).to.equal("Some Msg");
+        log.info('foo','bar',911);
+        expect(msgs[1].type).to.equal("info");
+        expect(msgs[1].message).to.equal("foo bar 911");
     });
 
     it("tests default formatting", function () {

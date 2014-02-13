@@ -56,19 +56,14 @@ var LogNode = klass({
      * Process the information to be logged and push it to the log output (browser console by default)
      */
     processLog : function () {
-        var msg=[], args=this.args, eh=this.eh, v;
+        var itms=[], args=this.args, eh=this.eh, v;
         if (this.args) {
             for (var i=0, sz=args.length;sz>i;i++) {
                 v=eh.getValue(args[i], this.vscope, undefined);
-                if (v!=='') {
-                    if (typeof(v)==='string') {
-                        msg.push(v);
-                    } else {
-                        msg.push(formatValue(v));
-                    }
-                }
+                itms.push(v);
             }
-            log(msg.join(' '),{file:this.file,dir:this.dir,line:this.line,column:this.column});
+            itms.push({type:'debug',file:this.file,dir:this.dir,line:this.line,column:this.column});
+            log.apply(null,itms);
         }
     },
 
@@ -91,71 +86,6 @@ var LogNode = klass({
     }
 });
 
-/**
- * Sort function
- */
-function lexicalSort(a,b) {
-    if (a>b) return 1;
-    if (a<b) return -1;
-    return 0;
-}
-
-/**
- * Format a JS entity for the log
- * @param v {Object} the value to format
- * @param depth {Number} the formatting of objects and arrays (default: 1)
- */
-function formatValue(v,depth) {
-    if (depth===undefined || depth===null) {
-        depth=1;
-    }
-    var tp=typeof(v);
-    if (v===null) {
-        return "null";
-    } else if (v===undefined) {
-        return "undefined";
-    } else if (tp==='object') {
-        if (depth>0) {
-            var properties=[];
-            if (v.constructor===Array) {
-                for (var i=0,sz=v.length;sz>i;i++) {
-                    properties.push(i+":"+formatValue(v[i],depth-1));
-                }
-                return "["+properties.join(", ")+"]";
-            } else {
-                var keys=[];
-                for (var k in v) {
-                    if (k.match(/^\+/)) {
-                        // this is a meta-data property
-                        continue;
-                    }
-                    keys.push(k);
-                }
-                // sort keys as IE 8 uses a different order than other browsers
-                keys.sort(lexicalSort);
-
-                for (var i=0,sz=keys.length;sz>i;i++) {
-                    properties.push(keys[i]+":"+formatValue(v[keys[i]],depth-1));
-                }
-                return "{"+properties.join(", ")+"}";
-            }
-        } else {
-            if (v.constructor===Array) {
-                return "Array["+v.length+"]";
-            } else if (v.constructor===Function) {
-                return "Function";
-            } else {
-                return "Object";
-            }
-        }
-    } else if (tp==='function') {
-        return "Function";
-    } else if (tp==='string') {
-        return '"'+v+'"';
-    } else {
-        return v;
-    }
-}
 
 module.exports=LogNode;
 
