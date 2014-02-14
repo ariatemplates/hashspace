@@ -115,6 +115,8 @@ if (doc.createEventObject) {
 
 },{}],"hsp/document":[function(require,module,exports){
 module.exports=require('Ouke85');
+},{}],"hsp/es5":[function(require,module,exports){
+module.exports=require('/Tewa8');
 },{}],"/Tewa8":[function(require,module,exports){
 
 /*
@@ -187,8 +189,6 @@ if (!Function.prototype.bind) {
     };
 }
 
-},{}],"hsp/es5":[function(require,module,exports){
-module.exports=require('/Tewa8');
 },{}],"52Uu/T":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
@@ -471,6 +471,8 @@ var Drag = klass({
 module.exports.Drag = Drag;
 },{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/drag":[function(require,module,exports){
 module.exports=require('betqZ6');
+},{}],"hsp/gestures/gesture":[function(require,module,exports){
+module.exports=require('tOKaW/');
 },{}],"tOKaW/":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -843,9 +845,7 @@ var Gesture = klass({
 });
 
 module.exports.Gesture = Gesture;
-},{"./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/gesture":[function(require,module,exports){
-module.exports=require('tOKaW/');
-},{}],"GJzhM2":[function(require,module,exports){
+},{"./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"GJzhM2":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1271,6 +1271,8 @@ var Pinch = klass({
 module.exports.Pinch = Pinch;
 },{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/pinch":[function(require,module,exports){
 module.exports=require('Af/VvQ');
+},{}],"hsp/gestures/singleTap":[function(require,module,exports){
+module.exports=require('gdtAu3');
 },{}],"gdtAu3":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
@@ -1430,8 +1432,8 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/singleTap":[function(require,module,exports){
-module.exports=require('gdtAu3');
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/swipe":[function(require,module,exports){
+module.exports=require('pEG+M6');
 },{}],"pEG+M6":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
@@ -1591,9 +1593,7 @@ var Swipe = klass({
 });
 
 module.exports.Swipe = Swipe;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/swipe":[function(require,module,exports){
-module.exports=require('pEG+M6');
-},{}],"Nxqxtn":[function(require,module,exports){
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"Nxqxtn":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -2068,6 +2068,8 @@ exports.getFakeEvent = function(type, target) {
     fakeEvent.target = target;
     return fakeEvent;
 };
+},{}],"hsp/json":[function(require,module,exports){
+module.exports=require('L2Z1Fb');
 },{}],"L2Z1Fb":[function(require,module,exports){
 
 /*
@@ -2406,8 +2408,8 @@ function unobserve (object, callback, metaProperty) {
     }
 }
 
-},{}],"hsp/json":[function(require,module,exports){
-module.exports=require('L2Z1Fb');
+},{}],"hsp/klass":[function(require,module,exports){
+module.exports=require('U01Wj4');
 },{}],"U01Wj4":[function(require,module,exports){
 
 /*
@@ -2504,8 +2506,6 @@ klass.createMetaDataPrefix = createMetaDataPrefix;
 
 module.exports = klass;
 
-},{}],"hsp/klass":[function(require,module,exports){
-module.exports=require('U01Wj4');
 },{}],"hsp/propobserver":[function(require,module,exports){
 module.exports=require('L8W87E');
 },{}],"L8W87E":[function(require,module,exports){
@@ -2645,6 +2645,7 @@ module.exports = PropObserver;
 // Hash Space runtime
 require("hsp/es5");
 var klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
     $root = require("hsp/rt/$root"),
     $RootNode = $root.$RootNode,
     $InsertNode = $root.$InsertNode,
@@ -2680,7 +2681,7 @@ var NodeGenerator = klass({
                 argNames.push(nm);
             }
         }
-        vs["#scope"] = vs; // self reference (used for variables - cf. expression handler)
+        vs["scope"] = vs; // self reference (used for variables - cf. expression handler)
 
         var root = null;
         if (tplctxt.$constructor && (tplctxt.$constructor === $InsertNode || tplctxt.$constructor === $CptNode)) {
@@ -2778,7 +2779,7 @@ module.exports.template = function (arg, contentFunction) {
             err = "Component controller must be a function: " + arg.ctl.slice(1).join(".");
         }
         if (err) {
-            console.error(err);
+            log.error(err);
             throw err;
         }
 
@@ -2818,49 +2819,27 @@ module.exports.template = function (arg, contentFunction) {
     return f;
 };
 
-var loggers = null;
-/**
- * Adds a logger to the logger collection. When a template error is to be logged by hashspace, it will first delegate to
- * the loggers in the logger collection. When a logger handles the error it should return false to prevent errors to be
- * handled by other loggers
- * @param {Function} logger the logger function with the following signature ({String} fileName, {Array} errors) ->
- * Boolean
- */
-module.exports.useLogger = function (logger) {
-    if (!loggers) {
-        loggers = [];
-    }
-    loggers.push(logger);
-};
 
 /**
- * Helper function used by the hashspace compiler to insert errors in the generated scripts when invalid
+ * Helper function used by the hashspace compiler to raise errors from the generated scripts when syntax is invalid
  */
 module.exports.logErrors = function (fileName, errors) {
-    var goahead = true;
-    if (loggers && loggers.length) {
-        var lsz = loggers.length, res;
-        for (var i = 0; lsz > i; i++) {
-            res = loggers[i](fileName, errors);
-            if (res === false) {
-                // stop processing
-                goahead = false;
-                break;
-            }
-        }
-    }
-    if (goahead) {
-        var sz = errors.length, err, msg, code;
-        for (var i = 0; sz > i; i++) {
-            err = errors[i];
+    if (errors && errors.length) {
+        var err, code;
+        for (var i=0,sz=errors.length;sz>i;i++) {
+            err=errors[i];
+            code=null;
             if (err.lineInfoTxt) {
-                code = "\r\n>> " + err.lineInfoTxt.replace(/\r?\n/gi, "\r\n>> ");
+                code = err.lineInfoTxt.replace(/\r?\n/gi, "\r\n>> ");
             } else if (err.code) {
-                code = "\r\n>> " + err.code;
+                code = err.code;
             }
-            msg = ['Error in [', fileName, ']\r\n>> ', err.description, '(line: ', err.line, ',column: ', err.column,
-                    ')', code].join('');
-            console.error(msg);
+            log.error(err.description,{
+                file:fileName,
+                line:err.line,
+                column:err.column,
+                code:code
+            });
         }
     }
 };
@@ -2878,7 +2857,8 @@ var nodeList = [
     "$foreach", require("hsp/rt/$foreach"),
     "elt", require("hsp/rt/eltnode"),
     "cpt", $CptNode,
-    "catt", $CptAttElement
+    "catt", $CptAttElement,
+    "log", require("hsp/rt/$log")
 ];
 
 for (var i = 0, sz = nodeList.length; sz > i; i += 2) {
@@ -2895,7 +2875,7 @@ function createShortcut (tagName, tagConstructor) {
     };
 }
 
-},{"hsp/es5":"/Tewa8","hsp/klass":"U01Wj4","hsp/rt/$foreach":"gVt1Pw","hsp/rt/$if":"fRTs7P","hsp/rt/$root":"pp1fpS","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/eltnode":"aAG62j"}],"hsp/rt":[function(require,module,exports){
+},{"hsp/es5":"/Tewa8","hsp/klass":"U01Wj4","hsp/rt/$foreach":"gVt1Pw","hsp/rt/$if":"fRTs7P","hsp/rt/$log":"jg9J2W","hsp/rt/$root":"pp1fpS","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/eltnode":"aAG62j","hsp/rt/log":"aJ8RNd"}],"hsp/rt":[function(require,module,exports){
 module.exports=require('ZsuBOR');
 },{}],"gVt1Pw":[function(require,module,exports){
 
@@ -2916,6 +2896,7 @@ module.exports=require('ZsuBOR');
 
 // ForEachNode implementation
 var klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
     doc = require("hsp/document"),
     json = require("hsp/json"),
     tnode = require("hsp/rt/tnode"),
@@ -3013,7 +2994,7 @@ var $ForEachNode = klass({
                     }
                 }
             } else {
-                console.log("[# foreach] for type on and of are not supported yet");
+                log.warning("[# foreach] Invalid iteration type: "+forType);
             }
         }
     },
@@ -3363,7 +3344,7 @@ var $ItemNode = klass({
      */
     createNodeInstance : function (parent, item, key, isfirst, islast, parentDOMNode) {
         var vs = klass.createObject(parent.vscope), itnm = this.itemName;
-        vs["#scope"] = vs;
+        vs["scope"] = vs;
         vs[itnm] = item;
         vs[this.itemKeyName] = key;
         vs[itnm + "_isfirst"] = isfirst;
@@ -3475,7 +3456,7 @@ var $ItemNode = klass({
 
 module.exports = $ForEachNode;
 
-},{"hsp/document":"Ouke85","hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$foreach":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$foreach":[function(require,module,exports){
 module.exports=require('gVt1Pw');
 },{}],"hsp/rt/$if":[function(require,module,exports){
 module.exports=require('fRTs7P');
@@ -3664,7 +3645,102 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$root":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$log":[function(require,module,exports){
+module.exports=require('jg9J2W');
+},{}],"jg9J2W":[function(require,module,exports){
+
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// This module contains the log node
+var klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
+    doc = require("hsp/document"),
+    TNode = require("hsp/rt/tnode").TNode;
+
+var LogNode = klass({
+    $extends : TNode,
+
+    /**
+     * Log node generator ex: {log scope}
+     * @param {Map<Expression>|int} exps the map of the variables used by the node. 
+     *      0 is passed if no expression is used
+     * @param {Array} args array of the expression indexes to log in the log queue
+     * @param {Integer} line the line number
+     * @param {Integer} column the column number
+     */
+    $constructor : function (exps, args, file, dir, line, column) {
+        TNode.$constructor.call(this, exps);
+        this.file='';
+        var r=file.match(/[^\/\\]+$/);
+        if (r && r.length) {
+            this.file=r[0];
+        }
+        this.dir=dir;
+        this.line=line;
+        this.column=column;
+        this.args = args;
+    },
+
+    /**
+     * Create the DOM node element and attach it to the parent
+     */
+    createNode : function () {
+        this.node = doc.createComment("{log}");
+        this.processLog();
+    },
+
+    /**
+     * Process the information to be logged and push it to the log output (browser console by default)
+     */
+    processLog : function () {
+        var itms=[], args=this.args, eh=this.eh, v;
+        if (this.args) {
+            for (var i=0, sz=args.length;sz>i;i++) {
+                v=eh.getValue(args[i], this.vscope, undefined);
+                itms.push(v);
+            }
+            itms.push({type:'debug',file:this.file,dir:this.dir,line:this.line,column:this.column});
+            log.apply(null,itms);
+        }
+    },
+
+    /**
+     * Refresh the text node if its properties have changed
+     */
+    refresh : function () {
+        if (this.adirty) {
+            this.processLog();
+            this.adirty = false;
+        }
+    },
+
+    /**
+     * Tell this node can be found in a component content 
+     * Here only empty text nodes are considered as valid (and then ignored)
+     */
+    isValidCptAttElement:function () {
+        return false; // TODO could be supported
+    }
+});
+
+
+module.exports=LogNode;
+
+
+},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$root":[function(require,module,exports){
 module.exports=require('pp1fpS');
 },{}],"pp1fpS":[function(require,module,exports){
 
@@ -3686,6 +3762,7 @@ module.exports=require('pp1fpS');
 // This module contains the $Root and $Insert nodes used to instantiate new templates
 
 var klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
     doc = require("hsp/document"),
     json = require("hsp/json"),
     PropObserver = require("hsp/propobserver"),
@@ -3863,7 +3940,7 @@ var $RootNode = klass({
      * @param {any} argvalue the argument value
      */
     updateArgument : function (argidx, argvalue) {
-        json.set(this.vscope["#scope"], this.argNames[argidx], argvalue);
+        json.set(this.vscope["scope"], this.argNames[argidx], argvalue);
     },
 
     /**
@@ -3880,16 +3957,16 @@ var $RootNode = klass({
         if (typeof(c) === "string") {
             c = doc.getElementById(c);
             if (c === null) {
-                console.error("[hashspace] Template cannot be rendered - Invalid element id: "+domElt);
+                log.error("[hashspace] Template cannot be rendered - Invalid element id: "+domElt);
                 return this;
             }
         } else if (!c || !c.appendChild) {
-            console.error("[hashspace] Template cannot be rendered - Invalid element: "+domElt);
+            log.error("[hashspace] Template cannot be rendered - Invalid element: "+domElt);
             return this;
         }
         var df = this.node; // should be a doc fragment
         if (df.nodeType !== DOCUMENT_FRAGMENT_NODE) {
-            console.log("[hashspace] root element can only be appended once in the DOM");
+            log.error("[hashspace] root element can only be appended once in the DOM");
         } else {
             if (replace !== false) {
                 // remove previous content
@@ -4005,7 +4082,7 @@ var $InsertNode = klass({
             }
 
         } else {
-            console.log("[$InsertNode] Invalid template function");
+            log.error("[$InsertNode] Invalid template function");
         }
 
         return ni;
@@ -4288,21 +4365,21 @@ var $CptAttElement = klass({
                 
                 if (!eltDef && !attDef) {
                     // invalid elt
-                    console.error(this+" Element not supported by its parent component");
+                    log.error(this+" Element not supported by its parent component");
                 } else if (eltDef) {
                     var type=eltDef.type;
                     if (type==="template") {
                         ni=TNode.createNodeInstance.call(this,parent);
                     } else if (type==="component") {
                         if (!eltDef.controller) {
-                            console.error(this+" Controller property is mandatory for component elements");
+                            log.error(this+" Controller property is mandatory for component elements");
                         } else {
                             // this element is a sub-component - let's create its controller
                             ni=this.createCptInstance("$CptComponent",parent);
                             ni.initCpt({cptattelement:ni,ctlConstuctor:eltDef.controller,parentCtrl:p.controller});
                         }
                     } else {
-                        console.error(this+" Invalid component element type: "+eltDef.type);
+                        log.error(this+" Invalid component element type: "+eltDef.type);
                     }
                 } else if (attDef) {
                     if (attDef.type==="template") {
@@ -4315,7 +4392,7 @@ var $CptAttElement = klass({
             }
         }
         if (!found) {
-            console.error(this+" Attribute elements cannot be used outside components");
+            log.error(this+" Attribute elements cannot be used outside components");
         }
         return ni;
     },
@@ -4353,7 +4430,7 @@ exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
 
 
-},{"hsp/document":"Ouke85","hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/propobserver":"L8W87E","hsp/rt/cptattinsert":"3KL9TH","hsp/rt/cptcomponent":"3NYULb","hsp/rt/cpttemplate":"TA0vRY","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$text":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/propobserver":"L8W87E","hsp/rt/cptattinsert":"3KL9TH","hsp/rt/cptcomponent":"3NYULb","hsp/rt/cpttemplate":"TA0vRY","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$text":[function(require,module,exports){
 module.exports=require('bR8R5d');
 },{}],"bR8R5d":[function(require,module,exports){
 
@@ -4442,9 +4519,7 @@ var $TextNode = klass({
 });
 
 module.exports = $TextNode;
-},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"hsp/rt/cptattinsert":[function(require,module,exports){
-module.exports=require('3KL9TH');
-},{}],"3KL9TH":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"3KL9TH":[function(require,module,exports){
 /**
  * $CptAttInsert contains methods that will be added to the prototype of all
  * $CptNode node instance that correspond to an insertion of a component attribute
@@ -4472,8 +4547,13 @@ module.exports.$CptAttInsert = {
   }
 };
 
+},{}],"hsp/rt/cptattinsert":[function(require,module,exports){
+module.exports=require('3KL9TH');
+},{}],"hsp/rt/cptcomponent":[function(require,module,exports){
+module.exports=require('3NYULb');
 },{}],"3NYULb":[function(require,module,exports){
 var json = require("hsp/json"),
+    log = require("hsp/rt/log"),
     $TextNode = require("hsp/rt/$text"),
     cptwrapper = require("hsp/rt/cptwrapper");
 
@@ -4571,10 +4651,10 @@ exports.$CptComponent = {
       this.ctlWrapper=cw;
       this.controller=cw.cpt;
       if (cw.cpt.tagName) {
-          console.error(this+" 'tagName' is a reserved keyword and cannot be used in component controllers");
+          log.error(this+" 'tagName' is a reserved keyword and cannot be used in component controllers");
       }
       cw.cpt.tagName=this.tagName;
-      // console.log(this+" created")
+      // log(this+" created")
       // NB the controller $init has not been called yet - this will be done once the parent component has initialized
     }
   },
@@ -4640,7 +4720,7 @@ exports.$CptComponent = {
         defaultTplAtt=lastTplAtt;
       } else if (count>1) {
         // error: a default must be defined
-        console.error(this+" A default content element must be defined when multiple content elements are supported");
+        log.error(this+" A default content element must be defined when multiple content elements are supported");
         // use last as default
         defaultTplAtt=lastTplAtt;
       }
@@ -4661,7 +4741,7 @@ exports.$CptComponent = {
           if (this.tplAttributes && this.tplAttributes[nm]) {
             // already defined: raise an error
             
-            console.error(this+" Component attribute '" + nm + "' is defined multiple times - please check");
+            log.error(this+" Component attribute '" + nm + "' is defined multiple times - please check");
           } else {
             // create new tpl Attribute Text Node and add it to the tplAttributes collection
             if (!att.generator) {
@@ -4723,7 +4803,7 @@ exports.$CptComponent = {
 
     if (validFound && invalidFound) {
       // case #1: error
-      console.error(this+"Component content cannot mix attribute elements with content elements");
+      log.error(this+"Component content cannot mix attribute elements with content elements");
     } else {
       var loadCpts=false;
       if (validFound && !invalidFound) {
@@ -4785,10 +4865,10 @@ exports.$CptComponent = {
         ok = false;
       } else {
         if (!nm) {
-          console.error(this+" Invalid attribute element (unnamed)");
+          log.error(this+" Invalid attribute element (unnamed)");
           ok=false;
         } else if (!cte[nm]) {
-          console.error(this+" Invalid attribute element: @"+nm);
+          log.error(this+" Invalid attribute element: @"+nm);
           ok=false;
         }
       }
@@ -4880,7 +4960,7 @@ exports.$CptComponent = {
         } else if (eltType==="template") {
           c.push(ce[i]);
         } else {
-          console.error(this+" Invalid element type: "+eltType);
+          log.error(this+" Invalid element type: "+eltType);
         }
       }
     }
@@ -4936,9 +5016,7 @@ exports.$CptComponent = {
   }
 };
 
-},{"hsp/json":"L2Z1Fb","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf"}],"hsp/rt/cptcomponent":[function(require,module,exports){
-module.exports=require('3NYULb');
-},{}],"hsp/rt/cpttemplate":[function(require,module,exports){
+},{"hsp/json":"L2Z1Fb","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/log":"aJ8RNd"}],"hsp/rt/cpttemplate":[function(require,module,exports){
 module.exports=require('TA0vRY');
 },{}],"TA0vRY":[function(require,module,exports){
 var json = require("hsp/json");
@@ -5032,6 +5110,7 @@ module.exports=require('aziNcf');
  */
 
 var json = require("hsp/json"),
+    log = require("hsp/rt/log"),
     klass = require("hsp/klass");
 
 function identity(v) {
@@ -5112,7 +5191,7 @@ var CptWrapper = klass({
      */
     $constructor : function (Cptfn) {
         if (!Cptfn || Cptfn.constructor !== Function) {
-            console.error("[CptWrapper] Invalid Component constructor!");
+            log.error("[CptWrapper] Invalid Component constructor!");
         } else {
             this.cpt = new Cptfn();
             this.nodeInstance = null; // reference to set the node instance adirty when an attribute changes
@@ -5126,9 +5205,9 @@ var CptWrapper = klass({
                     if (k.match(/^on/)) {
                         // this is a callback
                         if (!att.type) {
-                            console.error("Attribute type 'callback' should be set to '" + k + "'");
+                            log.error("Attribute type 'callback' should be set to '" + k + "'");
                         } else if (att.type !== "callback") {
-                            console.error("Attribute type 'callback' should be set to '" + k + "' instead of: "
+                            log.error("Attribute type 'callback' should be set to '" + k + "' instead of: "
                                     + att.type);
                             att.type = "callback";
                         }
@@ -5142,7 +5221,7 @@ var CptWrapper = klass({
                         if (bnd !== undefined) {
                             att._binding = bnd;
                         } else {
-                            console.error("Invalid attribute binding value: " + att.binding);
+                            log.error("Invalid attribute binding value: " + att.binding);
                             att._binding = 0;
                         }
                     } else {
@@ -5152,9 +5231,9 @@ var CptWrapper = klass({
                     // check type
                     if (att.type) {
                         if (att.type === "callback") {
-                            console.error("Attribute of type 'callback' must start with 'on' - please rename: " + k);
+                            log.error("Attribute of type 'callback' must start with 'on' - please rename: " + k);
                         } else if (ATTRIBUTE_TYPES[att.type] === undefined) {
-                            console.error("Invalid attribute type: " + att.type);
+                            log.error("Invalid attribute type: " + att.type);
                             att.type = 'string';
                         }
                     } else {
@@ -5212,7 +5291,7 @@ var CptWrapper = klass({
                 if (hasType) {
                     attType = ATTRIBUTE_TYPES[att.type];
                     if (!attType) {
-                        console.error("Invalid component attribute type: " + att.type);
+                        log.error("Invalid component attribute type: " + att.type);
                         attType = ATTRIBUTE_TYPES['string'];
                     }
                 }
@@ -5287,7 +5366,7 @@ var CptWrapper = klass({
             if (change.length > 0) {
                 chg = change[0];
             } else {
-                console.error('[CptNode] Invalid change - nbr of changes: '+change.length);
+                log.error('[CptNode] Invalid change - nbr of changes: '+change.length);
                 return;
             }
         }
@@ -5373,7 +5452,7 @@ function createCptWrapper(Ctl, cptArgs) {
             }
             if (content) {
                 if (cpt.content) {
-                  console.error(ni+" Component controller cannot use 'content' for another property than child attribute elements");
+                  log.error(ni+" Component controller cannot use 'content' for another property than child attribute elements");
                 } else {
                   // create the content property on the component instance
                   json.set(cpt,"content",content);
@@ -5387,9 +5466,7 @@ function createCptWrapper(Ctl, cptArgs) {
 exports.CptWrapper = CptWrapper;
 exports.createCptWrapper=createCptWrapper;
 
-},{"hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4"}],"hsp/rt/eltnode":[function(require,module,exports){
-module.exports=require('aAG62j');
-},{}],"aAG62j":[function(require,module,exports){
+},{"hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd"}],"aAG62j":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5692,7 +5769,9 @@ var EltNode = klass({
 
 module.exports = EltNode;
 
-},{"hsp/document":"Ouke85","hsp/gestures/gestures":"GJzhM2","hsp/klass":"U01Wj4","hsp/rt":"ZsuBOR","hsp/rt/tnode":"n+3tax"}],"S6ohTu":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/gestures/gestures":"GJzhM2","hsp/klass":"U01Wj4","hsp/rt":"ZsuBOR","hsp/rt/tnode":"n+3tax"}],"hsp/rt/eltnode":[function(require,module,exports){
+module.exports=require('aAG62j');
+},{}],"S6ohTu":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5708,7 +5787,9 @@ module.exports = EltNode;
  * limitations under the License.
  */
 
-var klass = require("../klass"), json = require("../json");
+var klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
+    json = require("hsp/json");
 
 var ExpHandler = klass({
     /**
@@ -5749,13 +5830,13 @@ var ExpHandler = klass({
                     // function expression
                     exp = new FuncExpr(v, this);
                 } else {
-                    console.warn("Unsupported expression type: " + etype);
+                    log.warning("Unsupported expression type: " + etype);
                 }
                 if (exp)
                     this.exps[key] = exp;
             } else {
                 // check other types of variables - e.g. callback
-                console.warn("Unsupported expression definition: " + v);
+                log.warning("Unsupported expression definition: " + v);
             }
         }
     },
@@ -5819,7 +5900,7 @@ var DataRefExpr = klass({
                                                                                                             // length
         if (!isLiteral) {
             // e.g. {e1:[0,1,"item_key"]} >> this is a scope variable
-            root = "#scope";
+            root = "scope";
             path = desc.slice(2, pl + 2);
             ppl = pl;
         } else {
@@ -5868,7 +5949,7 @@ var DataRefExpr = klass({
      */
     setValue : function (vscope, value) {
         if (this.isLiteral && this.ppLength <= 0) {
-            console.warn("[DataRefExpr.setValue] Global literal values cannot be updated from the DOM - please use object referenes");
+            log.warning("[DataRefExpr.setValue] Global literal values cannot be updated from the DOM - please use object referenes");
         } else {
             var v = this.isLiteral ? this.root : vscope[this.root], ppl = this.ppLength, goahead = true;
             if (ppl < 1) {
@@ -5998,13 +6079,13 @@ var FuncRefExpr = klass({
         var fn;
         if (!v) {
             // TODO add more info about callback (debugging)
-            return console.log("[hashspace event handler] Invalid callback context");
+            return log.error("[hashspace event handler] Invalid callback context");
         } else {
             fn = v.fn;
 
             if (!fn || fn.constructor !== Function) {
                 // TODO add more info about callback (debugging)
-                return console.log("[hashspace event handler] Invalid callback function");
+                return log.error("[hashspace event handler] Invalid callback function");
             }
         }
 
@@ -6108,8 +6189,319 @@ var FuncExpr = klass({
     }
 });
 
-},{"../json":"L2Z1Fb","../klass":"U01Wj4"}],"hsp/rt/exphandler":[function(require,module,exports){
+},{"hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd"}],"hsp/rt/exphandler":[function(require,module,exports){
 module.exports=require('S6ohTu');
+},{}],"hsp/rt/log":[function(require,module,exports){
+module.exports=require('aJ8RNd');
+},{}],"aJ8RNd":[function(require,module,exports){
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var loggers=[];
+
+var validTypes={
+    "debug":true,
+    "error":true,
+    "warning":true,
+    "info":true
+};
+
+/**
+ * Analyse log arguments to determine if the last argument is a meta-data argument - cf. log()
+ * @param {Array} args array of Object or String - last item may be a meta-data argument
+ * @return {Object} structure composed of 2 parts
+ *       items: {Object|String} items to be logged
+ *       metaData: {Object} - empty object if not found
+ */
+function getLogArgs(args) {
+    // iterate over args to create a real array
+    if (!args || !args.length) {
+        return {items:[],metaData:{}};
+    }
+    var items=[], md={}, itm;
+    for (var i=0, sz=args.length; sz>i; i++) {
+        itm=args[i];
+        if (i>0 && i===sz-1) {
+            // itm could be a meta-data argument
+            if (typeof(itm)==="object" && itm.type && typeof(itm.type)==="string" && validTypes[itm.type]) {
+                // this is a meta-data argument
+                md=itm;
+            } else {
+                items[i]=itm;
+            }
+        } else {
+            items[i]=itm;
+        }
+    }
+    return {items:items,metaData:md};
+}
+
+/**
+ * Log a message - support an indefinite nbr of arguments such as console.log()
+ * Last argument can be an optional object containing meta data associated to the log
+ * @param {Object|String} the first piece to log
+ * @param {Object|String} the 2nd piece to log
+ * ...
+ * @param {Object|String} the nth piece to log
+ * @parma {Object} context data associated to the message and that can be used by specialized loggers
+ *       to better integrate the logs in the calling application. These data should contain all the variables
+ *       integrated in the msg argument (for instance to allow for localization in a different language)
+ *       The following properties are recommended, and should be considered as reserved keywords 
+ *       (i.e. they should not be used for another purpose)
+ *           { 
+ *               type: {String} Message type: "info", "error", "warning" or "debug" 
+ *               id: {String|Number} Unique message identifier       
+ *               message: {String} The default message - in english (will be automatically set from the msg argument)
+ *               file: {String} File name associated to the message 
+ *               dir: {String} Directory path corresponding to the file
+ *               code: {String} Some piece of code associated to the message
+ *               line: {Number} Line number associated to the message (e.g. for errors)
+ *               column: {Number} Column number associated to the message (e.g. for errors)
+ *           }
+ * NB: what determines if the last argument is an object or the meta-data is the presence of a valid type, and
+ *     an argument index > 0
+ */
+var log=function() {
+    logMsg("debug", arguments, false);
+};
+
+/**
+ * Add a logger to the logger list
+ * The logger function will be added to the first position of the logger list, and will have the 
+ * possibilty to prevent other loggers to get the message by returning false.
+ * @param {Function} logger a logger function that will receive a message object as argument
+ *       the message object has the same structure as the 2nd argument of the log() method
+ */
+log.addLogger=function (logger) {
+    if (logger) {
+        loggers.unshift(logger);
+    }
+};
+
+/**
+ * Remove a specific logger from the logger list
+ */
+log.removeLogger=function (logger) {
+    if (loggers && loggers.length) {
+        for (var i=0,sz=loggers.length;sz>i;i++) {
+            if (loggers[i]===logger) {
+                loggers.splice(i,1);
+                sz-=1;
+                i-=1;
+            }
+        }
+    }
+};
+
+/**
+ * Empty the logger list
+ */
+log.removeAllLoggers=function () {
+    loggers=[];
+};
+
+/**
+ * Tell how many loggers are registered
+ */
+log.getNbrOfLoggers=function() {
+    return loggers.length;
+};
+
+/**
+ * Log an error message
+ * Same interface as log() but with an error type
+ */
+log.error=function() {
+    logMsg("error", arguments, true);
+};
+
+/**
+ * Log a warning message
+ * Same interface as log() but with a warning type
+ */
+log.warning=function() {
+    logMsg("warning", arguments, true);
+};
+
+/**
+ * Log an info message
+ * Same interface as log() but with an info type
+ */
+log.info=function() {
+    logMsg("info", arguments, true);
+};
+
+/**
+ * Return the default formatting associated to a message
+ * @param {Object} msg the message object - same structure as for the logger argument
+ *        cf. addLogger()
+ * @return {String} the formatted message
+ */
+log.format=function (msg) {
+    var out=[];
+    out.splice(out.length,0,"[",msg.type);
+    if (msg.file) {
+        out.splice(out.length,0,": ",msg.file);
+    }
+    out.splice(out.length,0,"] ",msg.message);
+    if (msg.line || msg.column) {
+        out.splice(out.length,0," (");
+        if (msg.line) {
+            out.splice(out.length,0,"line:",msg.line);
+        }
+        if (msg.column) {
+            if (msg.line) {
+                out.splice(out.length,0,", column:",msg.column);
+            } else {
+                out.splice(out.length,0,"column:",msg.column);
+            }
+        }
+        out.splice(out.length,0,")");
+    }
+    if (msg.code) {
+        out.splice(out.length,0,"\r\n>> ", msg.code);
+    }
+    return out.join("");
+};
+
+function logMsg(type,args,forceType) {
+    var args=getLogArgs(args);
+    var items=args.items, md=args.metaData, sz=items.length, s;
+
+    if (forceType || !md.type) {
+        md.type=type;
+    }
+
+    if (sz===0) {
+        md.message='';
+    } else if (sz===1) {
+        md.message=formatValue(items[0]);
+    } else {
+        // translate items to log message and concatenate them
+        var out=[];
+        for (var i=0;sz>i;i++) {
+            s=formatValue(items[i]);
+            if (s!=='') {
+                out.push(s);
+            }
+        }
+        md.message=out.join(' ');
+    }
+
+    if (loggers && loggers.length) {
+        var stop=false;
+        for (var i=0,sz=loggers.length;sz>i;i++) {
+            stop=!loggers[i](md);
+            if (stop) {
+                break;
+            }
+        }
+    } else {
+        defaultLogger(md);
+    }
+}
+
+function defaultLogger(msg) {
+    var methods={
+        "info":"info",
+        "error":"error",
+        "warning":"warn",
+        "debug":"log"
+    };
+
+    if (typeof(console)!==undefined) {
+        console[methods[msg.type]](log.format(msg));
+    }
+}
+
+/**
+ * Sort function
+ */
+function lexicalSort(a,b) {
+    if (a>b) return 1;
+    if (a<b) return -1;
+    return 0;
+}
+
+/**
+ * Format a JS entity for the log
+ * @param v {Object} the value to format
+ * @param depth {Number} the formatting of objects and arrays (default: 1)
+ */
+function formatValue(v,depth) {
+    if (depth===undefined || depth===null) {
+        depth=1;
+    }
+    var tp=typeof(v), val;
+    if (v===null) {
+        return "null";
+    } else if (v===undefined) {
+        return "undefined";
+    } else if (tp==='object') {
+        if (depth>0) {
+            var properties=[];
+            if (v.constructor===Array) {
+                for (var i=0,sz=v.length;sz>i;i++) {
+                    val=v[i];
+                    if (typeof(val)==='string') {
+                        properties.push(i+':"'+formatValue(val,depth-1)+'"');
+                    } else {
+                        properties.push(i+":"+formatValue(val,depth-1));
+                    }
+                }
+                return "["+properties.join(", ")+"]";
+            } else {
+                var keys=[];
+                for (var k in v) {
+                    if (k.match(/^\+/)) {
+                        // this is a meta-data property
+                        continue;
+                    }
+                    keys.push(k);
+                }
+                // sort keys as IE 8 uses a different order than other browsers
+                keys.sort(lexicalSort);
+
+                for (var i=0,sz=keys.length;sz>i;i++) {
+                    val=v[keys[i]];
+                    if (typeof(val)==='string') {
+                        properties.push(keys[i]+':"'+formatValue(val,depth-1)+'"');
+                    } else {
+                        properties.push(keys[i]+':'+formatValue(val,depth-1));
+                    }
+                }
+                return "{"+properties.join(", ")+"}";
+            }
+        } else {
+            if (v.constructor===Array) {
+                return "Array["+v.length+"]";
+            } else if (v.constructor===Function) {
+                return "Function";
+            } else {
+                return "Object";
+            }
+        }
+    } else if (tp==='function') {
+        return "Function";
+    } else {
+        return ''+v;
+    }
+}
+
+module.exports = log;
+
 },{}],"n+3tax":[function(require,module,exports){
 
 /*
@@ -6129,6 +6521,7 @@ module.exports=require('S6ohTu');
 
 var hsp = require("hsp/rt"),
     klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
     ExpHandler = require("./exphandler");
 
 /**
@@ -6218,7 +6611,7 @@ var TNode = klass({
                     atts.push(new TExpAtt(k, itm));
                 } else {
                     // unsupported attribute
-                    console.log("[TNode] unsupported attribute: " + itm);
+                    log.error("[TNode] unsupported attribute: " + itm);
                 }
             }
         }
@@ -6357,7 +6750,7 @@ var TNode = klass({
                 if (!itm.registerAttElements) {
                     if (!itm.isEmptyTextNode){
                         // invalid content
-                        console.error(this+" Statement must not produce invalid attribute elements when used as component content");
+                        log.error(this+" Statement must not produce invalid attribute elements when used as component content");
                     }
                 } else {
                     itm.registerAttElements(attElts);
@@ -6482,6 +6875,6 @@ module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;
 
-},{"./exphandler":"S6ohTu","hsp/klass":"U01Wj4","hsp/rt":"ZsuBOR"}],"hsp/rt/tnode":[function(require,module,exports){
+},{"./exphandler":"S6ohTu","hsp/klass":"U01Wj4","hsp/rt":"ZsuBOR","hsp/rt/log":"aJ8RNd"}],"hsp/rt/tnode":[function(require,module,exports){
 module.exports=require('n+3tax');
 },{}]},{},["ZsuBOR"])
