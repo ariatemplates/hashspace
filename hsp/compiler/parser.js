@@ -1,10 +1,5 @@
-var PEG = require("pegjs");
-var fs = require("fs");
-var grammar = fs.readFileSync(__dirname + "/hspblocks.pegjs", "utf-8");
 var klass = require("../klass");
-var blockParser = PEG.buildParser(grammar, {
-    trackLineAndColumn : true
-});
+var blockParser = require("./hspblocks.peg.js");
 
 //http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
 var VOID_HTML_ELEMENTS = {

@@ -53,17 +53,15 @@ For jshint validation:
 To run all the tests (compiler and runtime):
 - `grunt test`
 
-To run all the tests on SauceLabs browsers:
-- `grunt karma:sauce`
-
 You can work in the TDD mode as well:
 - `grunt tdd`
 
 For the compiler test only:
-- run `grunt mochaTest`
+- run `grunt mocha`
 
 For the browser-based runtime tests only:
-- run `grunt karma:unit` (you can also work in the TDD mode by running `grunt karma:tdd`)
+- run `grunt karma:unit` to test on local browsers (you can also work in the TDD mode by running `grunt karma:tdd`)
+- run `grunt karma:sauce` to test on SauceLabs browsers
 
 To do the health check on the project (before commit, for example) run `grunt test`. This will run
 
