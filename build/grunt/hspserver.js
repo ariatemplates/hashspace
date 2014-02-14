@@ -5,6 +5,7 @@ var path = require("path");
 
 var renderer = require("../../hsp/compiler/renderer");
 
+
 module.exports = function(grunt) {
     grunt.registerTask('hspserver', 'Start a web server to server compiled templates on the fly', function () {
         grunt.config.requires('hspserver.port');
@@ -42,8 +43,9 @@ module.exports = function(grunt) {
                 var src=req.body.src;
                 if (src) {
                     src=(''+src).replace(/\\u0026/gi,"&").replace(/\\u002B/gi,"+").replace(/\\u003F/gi,"?");
+
                     // compile src
-                    var r=renderer.renderString(src);
+                    var r=renderer.renderString(src,req.url);
                     if (r.serverErrors && r.serverErrors.length) {
                         res.send(500,r.serverErrors[0].description);
                     } else {

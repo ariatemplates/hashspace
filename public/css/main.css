@@ -79,6 +79,13 @@ a:hover {
     color:#FFFFFF;
 }
 
+.playground .logoutput {
+    font-weight:300;
+    padding: 0px 10px 0px 10px;
+    background-color: #444444;/*#F2F2F2*/
+    color:#FFFFFF;
+}
+
 .playground .editorTabs {
     height:25px;
 }
@@ -128,6 +135,10 @@ ul {
 /* ************************************ */
 /* Error list */
 
+div.errorlist {
+  padding:10px 0 10px 0;
+}
+
 .errorlist .description {
     color:#FF8800;
 }
@@ -140,6 +151,28 @@ ul {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Droid Sans Mono', 'Consolas', monospace;
     font-size: 12px;
     color:#AAAAAA;
+}
+
+.code > .codetext {
+    color:#FFFFFF;
+}
+
+div.logsection {
+    padding-top:10px;
+}
+
+ul.logs .msg {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Droid Sans Mono', 'Consolas', monospace;
+    font-size: 11px;
+}
+
+.logs .ctxt {
+  color:#AAAAAA;
+}
+
+.logs .msg {
+  margin: 0px;
+  color:#FF8800;
 }
 
 /* ************************************ */

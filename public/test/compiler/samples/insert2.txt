@@ -13,5 +13,5 @@
 
 ##### Template Code
 test=[
-    n.$insert({e1:[4,1,content1]},1)
+    n.$insert({e1:[4,1,_content1]},1)
 ]

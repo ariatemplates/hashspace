@@ -47,6 +47,14 @@ module.exports = [{
                         main : true
                     }]
         }, {
+            title : "Traces, logs and debugging",
+            folder : "logs",
+            description : "description.md",
+            files : [{
+                        src : "logs.hsp",
+                        main : true
+                    }]
+        }, {
             title : "CSS Class expressions",
             folder : "cssclass",
             description : "description.md",

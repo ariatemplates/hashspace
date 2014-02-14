@@ -1,4 +1,5 @@
 var json = require("hsp/json"),
+    log = require("hsp/rt/log"),
     $TextNode = require("hsp/rt/$text"),
     cptwrapper = require("hsp/rt/cptwrapper");
 
@@ -96,10 +97,10 @@ exports.$CptComponent = {
       this.ctlWrapper=cw;
       this.controller=cw.cpt;
       if (cw.cpt.tagName) {
-          console.error(this+" 'tagName' is a reserved keyword and cannot be used in component controllers");
+          log.error(this+" 'tagName' is a reserved keyword and cannot be used in component controllers");
       }
       cw.cpt.tagName=this.tagName;
-      // console.log(this+" created")
+      // log(this+" created")
       // NB the controller $init has not been called yet - this will be done once the parent component has initialized
     }
   },
@@ -165,7 +166,7 @@ exports.$CptComponent = {
         defaultTplAtt=lastTplAtt;
       } else if (count>1) {
         // error: a default must be defined
-        console.error(this+" A default content element must be defined when multiple content elements are supported");
+        log.error(this+" A default content element must be defined when multiple content elements are supported");
         // use last as default
         defaultTplAtt=lastTplAtt;
       }
@@ -186,7 +187,7 @@ exports.$CptComponent = {
           if (this.tplAttributes && this.tplAttributes[nm]) {
             // already defined: raise an error
             
-            console.error(this+" Component attribute '" + nm + "' is defined multiple times - please check");
+            log.error(this+" Component attribute '" + nm + "' is defined multiple times - please check");
           } else {
             // create new tpl Attribute Text Node and add it to the tplAttributes collection
             if (!att.generator) {
@@ -248,7 +249,7 @@ exports.$CptComponent = {
 
     if (validFound && invalidFound) {
       // case #1: error
-      console.error(this+"Component content cannot mix attribute elements with content elements");
+      log.error(this+"Component content cannot mix attribute elements with content elements");
     } else {
       var loadCpts=false;
       if (validFound && !invalidFound) {
@@ -310,10 +311,10 @@ exports.$CptComponent = {
         ok = false;
       } else {
         if (!nm) {
-          console.error(this+" Invalid attribute element (unnamed)");
+          log.error(this+" Invalid attribute element (unnamed)");
           ok=false;
         } else if (!cte[nm]) {
-          console.error(this+" Invalid attribute element: @"+nm);
+          log.error(this+" Invalid attribute element: @"+nm);
           ok=false;
         }
       }
@@ -405,7 +406,7 @@ exports.$CptComponent = {
         } else if (eltType==="template") {
           c.push(ce[i]);
         } else {
-          console.error(this+" Invalid element type: "+eltType);
+          log.error(this+" Invalid element type: "+eltType);
         }
       }
     }

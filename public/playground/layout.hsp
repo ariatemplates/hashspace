@@ -47,19 +47,26 @@
 # /template
 
 # export template errorList(errors) 
-    <div class="errorlist">
-        <ul>
-            {foreach err in errors}
-            <li>
-                <span class="description"> {err.description} </span>
-                {if err.line}line: {err.line}, column: {err.column}{/if}
-                {if err.code}
-                    <div class="code">
-                        >> code: <span class="code">{err.code}</span>
-                    </div>
-                {/if}
-            </li>
-            {/foreach}
-        </ul>
-    </div>
+    {if errors && errors.length}
+        <div class="errorlist">
+            <ul>
+                {foreach err in errors}
+                <li>
+                    <div class="description {err.type}"> {err.message} </div>
+                    {if err.line || err.file}
+                        <div class="ctxt">
+                            [{err.file}]
+                            {if err.line}line: {err.line}, column: {err.column}{/if}
+                        </div>
+                    {/if}
+                    {if err.code}
+                        <div class="code">
+                            >> code: <span class="codetext">{err.code}</span>
+                        </div>
+                    {/if}
+                </li>
+                {/foreach}
+            </ul>
+        </div>
+    {/if}
 # /template

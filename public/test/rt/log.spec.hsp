@@ -1,0 +1,110 @@
+ 
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var hsp=require("hsp/rt"),
+    $set=require("hsp/$set"),
+    klass=require("hsp/klass"),
+    log=require("hsp/rt/log"),
+    ht=require("hsp/utils/hashtester");
+
+# template test1(d)
+    Some text
+    <div class="foo">
+        Blah
+        {log d.value}
+    </div>
+# /template
+
+# template test2(d)
+    <div class="foo">
+        ...
+        {log d.value1, d.value2}
+    </div>
+# /template
+
+# template test3(cities)
+    {foreach idx,city in cities}
+        {log idx+":", scope}
+    {/foreach}
+# /template
+
+describe("Log statement", function () {
+  
+    it("validates static log literal values", function() {
+        var h=ht.newTestContext();
+        test1({value:123}).render(h.container);
+
+        expect(h(".foo").text()).to.equal("Blah ");
+
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs(0).message).to.equal("123");
+
+        var f=''+h.logs(0).file, fname="log.spec.hsp";
+        expect(f.slice(-fname.length)).to.equal(fname);
+        expect(h.logs(0).line).to.equal(27);
+        expect(h.logs(0).column).to.equal(9);
+        
+        h.$dispose();
+    });
+
+    it("validates dynamic log values", function() {
+        var h=ht.newTestContext();
+        var m={value1:"abc",value2:{foo:1,bar:[1,2,3]}};
+        var x;
+        test2(m).render(h.container);
+
+        expect(h(".foo").text()).to.equal("... ");
+
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs(0).message).to.equal('abc {bar:Array[3], foo:1}');
+        h.logs.clear();
+
+        h.$set(m,"value1",["a",false,null,1.23,x]);
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs(0).message).to.equal('[0:"a", 1:false, 2:null, 3:1.23, 4:undefined] {bar:Array[3], foo:1}');
+        h.logs.clear();
+
+        h.$set(m,"value2",{x:1,"#y":2});
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs(0).message).to.equal('[0:"a", 1:false, 2:null, 3:1.23, 4:undefined] {#y:2, x:1}');
+
+        h.$dispose();
+    });
+
+    it("validates scope log in a foreach loop", function() {
+        var h=ht.newTestContext();
+        var cities=[
+            {name:"Paris", code:"PAR"},
+            {name:"London", code:"LON"},
+            {name:"New York", code:"NYC"}
+        ];
+        test3(cities).render(h.container);
+
+        expect(h.logs().length).to.equal(3);
+        expect(h.logs(0).message).to.equal('0: {cities:Array[3], city:Object, city_isfirst:true, city_islast:false, idx:0, scope:Object}');
+        expect(h.logs(1).message).to.equal('1: {cities:Array[3], city:Object, city_isfirst:false, city_islast:false, idx:1, scope:Object}');
+        expect(h.logs(2).message).to.equal('2: {cities:Array[3], city:Object, city_isfirst:false, city_islast:true, idx:2, scope:Object}');
+        h.logs.clear();
+
+        h.$set(cities,1,{name:"Los Angeles", code: "LAX"});
+
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs(0).message).to.equal('1: {cities:Array[3], city:Object, city_isfirst:false, city_islast:false, idx:1, scope:Object}');
+
+        h.$dispose();
+    });
+
+});

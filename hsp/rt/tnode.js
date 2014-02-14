@@ -16,6 +16,7 @@
 
 var hsp = require("hsp/rt"),
     klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
     ExpHandler = require("./exphandler");
 
 /**
@@ -105,7 +106,7 @@ var TNode = klass({
                     atts.push(new TExpAtt(k, itm));
                 } else {
                     // unsupported attribute
-                    console.log("[TNode] unsupported attribute: " + itm);
+                    log.error("[TNode] unsupported attribute: " + itm);
                 }
             }
         }
@@ -244,7 +245,7 @@ var TNode = klass({
                 if (!itm.registerAttElements) {
                     if (!itm.isEmptyTextNode){
                         // invalid content
-                        console.error(this+" Statement must not produce invalid attribute elements when used as component content");
+                        log.error(this+" Statement must not produce invalid attribute elements when used as component content");
                     }
                 } else {
                     itm.registerAttElements(attElts);

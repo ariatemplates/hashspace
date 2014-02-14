@@ -16,7 +16,7 @@ exports.renderFile = function (path, options, fn) {
         var compiledTemplate;
         if (!err) {
             try {
-                var r = compiler.compile(content);
+                var r = compiler.compile(content,path);
                 compiledTemplate = r.code;
                 // err=r.errors;
             } catch (ex) {
@@ -29,15 +29,17 @@ exports.renderFile = function (path, options, fn) {
 
 /**
  * Render an hashspace template provided as a string
+ * @param {String} src the file content that should be rendered
+ * @param {String} fileName the name of the file (used for bettter error processing)
  * @return the compiled JS
  */
-exports.renderString = function (src) {
+exports.renderString = function (src, path) {
     var r = {
         code : '',
         errors : null
     };
     try {
-        r = compiler.compile(src, "[noname]");
+        r = compiler.compile(src, path);
     } catch (ex) {
         r.serverErrors = [{
                     description : ex.toString()

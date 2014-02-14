@@ -1,7 +1,14 @@
 
 // Playground controller
 
-var hsp = require("hsp/rt"), klass = require("hsp/klass"), layout = require("./layout.hsp"), samples = require("../samples/samples"), jx = require("./jx"), md = require("./markdown"), json = require("hsp/json");
+var hsp = require("hsp/rt"),
+    klass = require("hsp/klass"),
+    log = require("hsp/rt/log"),
+    json = require("hsp/json"),
+    layout = require("./layout.hsp"),
+    samples = require("../samples/samples"),
+    jx = require("./jx"),
+    md = require("./markdown");
 
 var count = 0; // number of playgrounds that have been created
 var playgrounds = {}; // collection of playground instances
@@ -20,14 +27,13 @@ var Playground = module.exports = klass({
 
         this.containerId = containerId;
         this.data = {
+            errors:[],
             sampleIndex : -1,
             sampleTitle : "",
             isSampleListVisible : false,
             files : [],
             samples : samples
         };
-
-        hsp.useLogger(this.logErrors.bind(this));
     },
 
     $dispose : function () {
@@ -92,7 +98,10 @@ var Playground = module.exports = klass({
                 var d = self.data, spl = samples[d.sampleIndex], moduleName = "samples/" + spl.folder + "/" + fileName;
                 try {
                     // reset errors
-                    json.set(d, "errors", null);
+                    d.errors.splice(0,d.errors.length);
+                    
+                    log.removeAllLoggers();
+                    log.addLogger(self.log.bind(self));
 
                     // empty cache if already filled
                     if (require.cache[moduleName]) {
@@ -131,7 +140,7 @@ var Playground = module.exports = klass({
                 if (!error) {
                     var d = document.getElementById("description");
                     var h = md.toHTML(data); // 'Hello *World*! [#output] [#snippet 0]'
-                    h = h.replace(/\[\#output\]/i, '<div id="output" class="output"></div>');
+                    h = h.replace(/\[\#output\]/i, '<div id="output" class="output"></div><div id="logs" class="logoutput"></div>');
                     d.innerHTML = h;
                 }
             });
@@ -148,10 +157,13 @@ var Playground = module.exports = klass({
         this.hideSampleList();
     },
 
-    logErrors : function (fileName, errors) {
+    log : function (msg) {
         var d = this.data;
-        json.set(d, "errors", errors);
-        hsp.display(layout.errorList(d.errors), "output");
+        if (!d.errors) {
+            json.set(d, "errors", []);
+        }
+        d.errors.push(msg);
+        layout.errorList(d.errors).render("logs");
         return false;
     },
 
