@@ -1086,8 +1086,6 @@ var LongPress = klass({
 module.exports.LongPress = LongPress;
 },{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/longPress":[function(require,module,exports){
 module.exports=require('b45i9B');
-},{}],"hsp/gestures/pinch":[function(require,module,exports){
-module.exports=require('Af/VvQ');
 },{}],"Af/VvQ":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
@@ -1271,7 +1269,11 @@ var Pinch = klass({
 });
 
 module.exports.Pinch = Pinch;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"gdtAu3":[function(require,module,exports){
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/pinch":[function(require,module,exports){
+module.exports=require('Af/VvQ');
+},{}],"hsp/gestures/singleTap":[function(require,module,exports){
+module.exports=require('gdtAu3');
+},{}],"gdtAu3":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1430,9 +1432,7 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/singleTap":[function(require,module,exports){
-module.exports=require('gdtAu3');
-},{}],"hsp/gestures/swipe":[function(require,module,exports){
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/swipe":[function(require,module,exports){
 module.exports=require('pEG+M6');
 },{}],"pEG+M6":[function(require,module,exports){
 var klass = require("hsp/klass");
