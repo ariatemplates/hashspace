@@ -5,7 +5,7 @@ if [ $TRAVIS_PULL_REQUEST = "false" ]; then
     git config user.email "releasebot@ariatemplates.com" &&
     git config user.name "Release Bot" &&
     git checkout -b gh-pages origin/gh-pages &&
-    cp -rf ../dist dist &&
+    cp -rfv ../dist dist &&
     git add -f dist &&
     git commit -m "release ${TRAVIS_COMMIT}" &&
     git push "https://${GH_CREDENTIALS}@github.com/${TRAVIS_REPO_SLUG}.git" gh-pages
