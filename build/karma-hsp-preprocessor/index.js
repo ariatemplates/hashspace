@@ -1,16 +1,16 @@
-var renderer = require("../../hsp/compiler/renderer");
+var compiler = require("../../index").compiler;
 
 var createHspPreprocessor = function () {
 
   return function (content, file, done) {
-    // compile src
-    var r = renderer.renderString(content, file.path);
 
-    //TODO: rename "serverErrors" into "compileErrors" or similar
-    if (r.serverErrors && r.serverErrors.length) {
-      throw new Error(r.serverErrors[0].description);
+    var compileResult = compiler.compile(content, file.path);
+
+    //TODO: this check won't be needed as soon as https://github.com/ariatemplates/hashspace/issues/61 is fixed
+    if (compileResult.errors.length === 0) {
+      done(compileResult.code);
     } else {
-      done(r.code);
+      throw new Error(compileResult.errors[0]);
     }
   };
 };
