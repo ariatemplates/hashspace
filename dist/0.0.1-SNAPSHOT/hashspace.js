@@ -1086,6 +1086,8 @@ var LongPress = klass({
 module.exports.LongPress = LongPress;
 },{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/longPress":[function(require,module,exports){
 module.exports=require('b45i9B');
+},{}],"hsp/gestures/pinch":[function(require,module,exports){
+module.exports=require('Af/VvQ');
 },{}],"Af/VvQ":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
@@ -1269,11 +1271,7 @@ var Pinch = klass({
 });
 
 module.exports.Pinch = Pinch;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/pinch":[function(require,module,exports){
-module.exports=require('Af/VvQ');
-},{}],"hsp/gestures/singleTap":[function(require,module,exports){
-module.exports=require('gdtAu3');
-},{}],"gdtAu3":[function(require,module,exports){
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"gdtAu3":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1432,7 +1430,9 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/swipe":[function(require,module,exports){
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/singleTap":[function(require,module,exports){
+module.exports=require('gdtAu3');
+},{}],"hsp/gestures/swipe":[function(require,module,exports){
 module.exports=require('pEG+M6');
 },{}],"pEG+M6":[function(require,module,exports){
 var klass = require("hsp/klass");
@@ -4549,8 +4549,6 @@ module.exports.$CptAttInsert = {
 
 },{}],"hsp/rt/cptattinsert":[function(require,module,exports){
 module.exports=require('3KL9TH');
-},{}],"hsp/rt/cptcomponent":[function(require,module,exports){
-module.exports=require('3NYULb');
 },{}],"3NYULb":[function(require,module,exports){
 var json = require("hsp/json"),
     log = require("hsp/rt/log"),
@@ -5016,7 +5014,9 @@ exports.$CptComponent = {
   }
 };
 
-},{"hsp/json":"L2Z1Fb","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/log":"aJ8RNd"}],"hsp/rt/cpttemplate":[function(require,module,exports){
+},{"hsp/json":"L2Z1Fb","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/log":"aJ8RNd"}],"hsp/rt/cptcomponent":[function(require,module,exports){
+module.exports=require('3NYULb');
+},{}],"hsp/rt/cpttemplate":[function(require,module,exports){
 module.exports=require('TA0vRY');
 },{}],"TA0vRY":[function(require,module,exports){
 var json = require("hsp/json");
