@@ -8,5 +8,5 @@ if [ $TRAVIS_PULL_REQUEST = "false" ]; then
     cp -rv ../dist . &&
     git add -f dist &&
     git commit -m "release ${TRAVIS_COMMIT}" &&
-    git push "https://${GH_CREDENTIALS}@github.com/${TRAVIS_REPO_SLUG}.git" gh-pages
+    git push --quiet "https://${GH_CREDENTIALS}@github.com/${TRAVIS_REPO_SLUG}.git" gh-pages
 fi
