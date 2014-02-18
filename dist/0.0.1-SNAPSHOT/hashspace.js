@@ -1086,8 +1086,6 @@ var LongPress = klass({
 module.exports.LongPress = LongPress;
 },{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/longPress":[function(require,module,exports){
 module.exports=require('b45i9B');
-},{}],"hsp/gestures/pinch":[function(require,module,exports){
-module.exports=require('Af/VvQ');
 },{}],"Af/VvQ":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
@@ -1271,7 +1269,11 @@ var Pinch = klass({
 });
 
 module.exports.Pinch = Pinch;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"gdtAu3":[function(require,module,exports){
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/pinch":[function(require,module,exports){
+module.exports=require('Af/VvQ');
+},{}],"hsp/gestures/singleTap":[function(require,module,exports){
+module.exports=require('gdtAu3');
+},{}],"gdtAu3":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1430,9 +1432,7 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/singleTap":[function(require,module,exports){
-module.exports=require('gdtAu3');
-},{}],"hsp/gestures/swipe":[function(require,module,exports){
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/swipe":[function(require,module,exports){
 module.exports=require('pEG+M6');
 },{}],"pEG+M6":[function(require,module,exports){
 var klass = require("hsp/klass");
@@ -2877,6 +2877,8 @@ function createShortcut (tagName, tagConstructor) {
 
 },{"hsp/es5":"/Tewa8","hsp/klass":"U01Wj4","hsp/rt/$foreach":"gVt1Pw","hsp/rt/$if":"fRTs7P","hsp/rt/$log":"jg9J2W","hsp/rt/$root":"pp1fpS","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/eltnode":"aAG62j","hsp/rt/log":"aJ8RNd"}],"hsp/rt":[function(require,module,exports){
 module.exports=require('ZsuBOR');
+},{}],"hsp/rt/$foreach":[function(require,module,exports){
+module.exports=require('gVt1Pw');
 },{}],"gVt1Pw":[function(require,module,exports){
 
 /*
@@ -3456,11 +3458,7 @@ var $ItemNode = klass({
 
 module.exports = $ForEachNode;
 
-},{"hsp/document":"Ouke85","hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$foreach":[function(require,module,exports){
-module.exports=require('gVt1Pw');
-},{}],"hsp/rt/$if":[function(require,module,exports){
-module.exports=require('fRTs7P');
-},{}],"fRTs7P":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"fRTs7P":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3645,7 +3643,9 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$log":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$if":[function(require,module,exports){
+module.exports=require('fRTs7P');
+},{}],"hsp/rt/$log":[function(require,module,exports){
 module.exports=require('jg9J2W');
 },{}],"jg9J2W":[function(require,module,exports){
 
@@ -4549,6 +4549,8 @@ module.exports.$CptAttInsert = {
 
 },{}],"hsp/rt/cptattinsert":[function(require,module,exports){
 module.exports=require('3KL9TH');
+},{}],"hsp/rt/cptcomponent":[function(require,module,exports){
+module.exports=require('3NYULb');
 },{}],"3NYULb":[function(require,module,exports){
 var json = require("hsp/json"),
     log = require("hsp/rt/log"),
@@ -5014,9 +5016,7 @@ exports.$CptComponent = {
   }
 };
 
-},{"hsp/json":"L2Z1Fb","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/log":"aJ8RNd"}],"hsp/rt/cptcomponent":[function(require,module,exports){
-module.exports=require('3NYULb');
-},{}],"hsp/rt/cpttemplate":[function(require,module,exports){
+},{"hsp/json":"L2Z1Fb","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/log":"aJ8RNd"}],"hsp/rt/cpttemplate":[function(require,module,exports){
 module.exports=require('TA0vRY');
 },{}],"TA0vRY":[function(require,module,exports){
 var json = require("hsp/json");
