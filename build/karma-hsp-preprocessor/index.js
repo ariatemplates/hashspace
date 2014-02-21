@@ -1,16 +1,22 @@
 var compiler = require("../../index").compiler;
 
-var createHspPreprocessor = function () {
+var createHspPreprocessor = function (args, config, logger, helper) {
+
+  var log = logger.create('preprocessor.hsp');
 
   return function (content, file, done) {
 
+    log.debug('Processing "%s".', file.originalPath);
     var compileResult = compiler.compile(content, file.path);
 
-    //TODO: this check won't be needed as soon as https://github.com/ariatemplates/hashspace/issues/61 is fixed
-    if (compileResult.errors.length === 0) {
+    //TODO: refactor as soon as https://github.com/ariatemplates/hashspace/issues/61 is fixed
+    if (compileResult.errors.length  === 0) {
       done(compileResult.code);
     } else {
-      throw new Error(compileResult.errors[0]);
+      compileResult.errors.forEach(function(error){
+        log.error('%s\n in %s at %d:%d', error.description, file.originalPath, error.line, error.column);
+      });
+      done(new Error(compileResult.errors));
     }
   };
 };
