@@ -2877,8 +2877,6 @@ function createShortcut (tagName, tagConstructor) {
 
 },{"hsp/es5":"/Tewa8","hsp/klass":"U01Wj4","hsp/rt/$foreach":"gVt1Pw","hsp/rt/$if":"fRTs7P","hsp/rt/$log":"jg9J2W","hsp/rt/$root":"pp1fpS","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/eltnode":"aAG62j","hsp/rt/log":"aJ8RNd"}],"hsp/rt":[function(require,module,exports){
 module.exports=require('ZsuBOR');
-},{}],"hsp/rt/$foreach":[function(require,module,exports){
-module.exports=require('gVt1Pw');
 },{}],"gVt1Pw":[function(require,module,exports){
 
 /*
@@ -3458,7 +3456,11 @@ var $ItemNode = klass({
 
 module.exports = $ForEachNode;
 
-},{"hsp/document":"Ouke85","hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"fRTs7P":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$foreach":[function(require,module,exports){
+module.exports=require('gVt1Pw');
+},{}],"hsp/rt/$if":[function(require,module,exports){
+module.exports=require('fRTs7P');
+},{}],"fRTs7P":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3643,9 +3645,7 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$if":[function(require,module,exports){
-module.exports=require('fRTs7P');
-},{}],"hsp/rt/$log":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$log":[function(require,module,exports){
 module.exports=require('jg9J2W');
 },{}],"jg9J2W":[function(require,module,exports){
 
