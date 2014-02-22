@@ -14,7 +14,7 @@ module.exports.$CptAttInsert = {
     this.childNodes=[];
     this.childNodes[0]=root;
     // instatiate sub-childNodes
-    root.render(this.node);
+    root.render(this.node,false);
   },
 
   /**

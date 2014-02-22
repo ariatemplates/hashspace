@@ -1,4 +1,5 @@
-var json = require("hsp/json");
+var json = require("hsp/json"),
+    doc = require("hsp/document");
 
 /**
  * $CptTemplate contains methods that will be added to the prototype of all
@@ -13,22 +14,50 @@ module.exports.$CptTemplate = {
    *     e.g. {template:obj,ctlConstuctor:obj.controllerConstructor}
    */
   initCpt:function(arg) {
-    // prepare init arguments
-    var initArgs = {};
-    if (this.atts) {
-        var att, pvs = this.parent.vscope;
-        for (var i = 0, sz = this.atts.length; sz > i; i++) {
-            att = this.atts[i];
-            initArgs[att.name] = att.getValue(this.eh, pvs, null);
-        }
-    }
+    // determine if template path can change dynamically
+    var isDynamicTpl=this.createPathObservers();
 
-    arg.template.call(this, initArgs);
+    if (isDynamicTpl) {
+      var nd=this.node;
+      this.node1 = doc.createComment("# template "+this.pathInfo);
+      this.node2 = doc.createComment("# /template "+this.pathInfo);
+      nd.appendChild(this.node1);
+      nd.appendChild(this.node2);
+      this.createChildNodeInstances();
+    } else {
+      arg.template.call(this, this.getTemplateArguments());
+    }
 
     // the component is a template without any controller
     // so we have to observe the template scope to be able to propagate changes to the parent scope
     this._scopeChgeCb = this.onScopeChange.bind(this);
     json.observe(this.vscope, this._scopeChgeCb);
+  },
+
+  /**
+   * Create the child nodes for a dynamic template - this method assumes
+   * that node1 and node2 exist
+   */
+  createChildNodeInstances : function () {
+      if (!this.isDOMempty) {
+          this.removeChildNodeInstances(this.node1,this.node2);
+          this.isDOMempty = true;
+      }
+
+      if (this.template) {
+        var args = this.getTemplateArguments();
+
+        // temporarily assign a new node to get the content in a doc fragment
+        var realNode = this.node;
+        var df = doc.createDocumentFragment();
+        this.node = df;
+        this.template.call(this, args);
+
+        this.node = realNode;
+        this.node.insertBefore(df, this.node2);
+        this.replaceNodeBy(df , realNode); // recursively remove doc fragment reference
+        this.isDOMempty = false;
+      }
   },
 
   /**

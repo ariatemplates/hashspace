@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-var hsp=require("hsp/rt"),
-    $set=require("hsp/$set"),
-    klass=require("hsp/klass"),
+var klass=require("hsp/klass"),
     ht=require("hsp/utils/hashtester");
 
 // sample controller
@@ -69,6 +67,24 @@ PanelController = klass({
   <#panel>{m.text}!</#panel>
 # /template
 
+# template test5(m)
+  Sample panel:
+  <#m.panel><@body>{m.text}!</@body></#m.panel>
+# /template
+
+# template test6(m)
+  Sample panel:
+  <#m.panel>{m.text}!!!</#m.panel>
+# /template
+
+# template panel2 using c:PanelController
+  <div class="panel">
+    <div class="body">
+      Body content: <#c.body/>
+    </div>
+  </div>
+# /template
+
 var HEAD=".panel .head";
 var BODY=".panel .body";
 
@@ -85,8 +101,7 @@ describe("Component attribute elements (1)", function () {
     expect(body.text()).to.equal("Hello World! ");
 
     // dynamic property change
-    $set(m,"text","Hello folks");
-    hsp.refresh();
+    h.$set(m,"text","Hello folks");
 
     expect(body.text()).to.equal("Hello folks! ");
     
@@ -114,8 +129,7 @@ describe("Component attribute elements (1)", function () {
     expect(h(BODY).text()).to.equal("Hello World!");
 
     // dynamic property change
-    $set(m,"text","Hello folks");
-    hsp.refresh();
+    h.$set(m,"text","Hello folks");
 
     expect(h(BODY).text()).to.equal("Hello folks!");
     
@@ -131,10 +145,75 @@ describe("Component attribute elements (1)", function () {
     expect(h(BODY).text()).to.equal("Hello World!");
 
     // dynamic property change
-    $set(m,"text","Hello folks");
-    hsp.refresh();
+    h.$set(m,"text","Hello folks");
 
     expect(h(BODY).text()).to.equal("Hello folks!");
+    
+    h.$dispose();
+  });
+
+  it("tests dynamic component path", function() {
+    var h=ht.newTestContext();
+    var m={panel:panel,text:"Hello World"}
+    test5(m).render(h.container);
+    
+    expect(h.logs().length).to.equal(0);
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Hello World!");
+
+    // dynamic property change
+    h.$set(m,"panel",panel2);
+
+    expect(h.logs().length).to.equal(0);
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Body content: Hello World!");
+
+    // text change
+    h.$set(m,"text","Hashspace rocks");
+
+    expect(h.logs().length).to.equal(0);
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Body content: Hashspace rocks!");
+
+    // dynamic property change - again
+    h.$set(m,"panel",panel);
+
+    expect(h.logs().length).to.equal(0);
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Hashspace rocks!");
+    
+    h.$dispose();
+  });
+
+  it("tests dynamic component path - with default template", function() {
+    var h=ht.newTestContext();
+    var m={panel:panel,text:"Hello World"}
+    test6(m).render(h.container);
+    
+    expect(h.logs().length).to.equal(0);
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Hello World!!!");
+
+    // dynamic property change
+    h.$set(m,"panel",panel2);
+
+    expect(h.logs().length).to.equal(0);
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Body content: Hello World!!!");
+
+    // text change
+    h.$set(m,"text","Hashspace World");
+
+    expect(h.logs().length).to.equal(0);
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Body content: Hashspace World!!!");
+
+    // dynamic property change - again
+    h.$set(m,"panel",panel);
+
+    expect(h.logs().length).to.equal(0);
+    expect(h(BODY).length).to.equal(1);
+    expect(h(BODY).text()).to.equal("Hashspace World!!!");
     
     h.$dispose();
   });

@@ -1,5 +1,6 @@
 var json = require("hsp/json"),
     log = require("hsp/rt/log"),
+    doc = require("hsp/document"),
     $TextNode = require("hsp/rt/$text"),
     cptwrapper = require("hsp/rt/cptwrapper");
 
@@ -30,19 +31,49 @@ exports.$CptComponent = {
    */
   initCpt:function(arg) {
     this.isCptComponent = true;
+    this.ctlConstuctor=arg.ctlConstuctor;
 
-    // prepare init arguments
-    var initArgs = {};
-    if (this.atts) {
-        var att, pvs = this.parent.vscope;
-        for (var i = 0, sz = this.atts.length; sz > i; i++) {
-            att = this.atts[i];
-            initArgs[att.name] = att.getValue(this.eh, pvs, null);
-        }
+    if (this.template) {
+      // this component is associated to a template
+      var isDynamicTpl=this.createPathObservers();
+
+      if (isDynamicTpl) {
+        var nd=this.node;
+        this.node1 = doc.createComment("# cpt "+this.pathInfo);
+        this.node2 = doc.createComment("# /cpt "+this.pathInfo);
+        nd.appendChild(this.node1);
+        nd.appendChild(this.node2);
+        this.createChildNodeInstances();
+      } else {
+        // WARNING: this changes vscope to the template vscope
+        this.template.call(this, this.getTemplateArguments(), this.getCptArguments());
+      }
+
+      // $init child components
+      this.initChildComponents();
+    } else if (arg.cptattelement) {
+      // this component is an attribute of another component
+      var cw=cptwrapper.createCptWrapper(this.ctlConstuctor, this.getCptArguments());
+      this.ctlWrapper=cw;
+      this.controller=cw.cpt;
+      if (cw.cpt.tagName) {
+          log.error(this+" 'tagName' is a reserved keyword and cannot be used in component controllers");
+      }
+      cw.cpt.tagName=this.tagName;
+      // NB the controller $init has not been called yet - this will be done once the parent component has initialized
     }
+  },
 
+  /**
+   * Process and retrieve the component arguments that are needed to init the component template
+   */
+  getCptArguments:function() {
     // determine if cpt supports template arguments
-    var ctlProto=arg.ctlConstuctor.prototype;
+    if (this.template) {
+      // as template can be changed dynamically we have to sync the constructor
+      this.ctlConstuctor=this.template.controllerConstructor;
+    }
+    var ctlProto=this.ctlConstuctor.prototype;
     this.ctlAttributes=ctlProto.attributes;
     this.ctlElements=ctlProto.elements;
 
@@ -55,7 +86,7 @@ exports.$CptComponent = {
       attributes:{},
       content:null
     };
-    var attributes=cptArgs.attributes;
+    var attributes=cptArgs.attributes, att;
 
     if (this.atts) {
       // some attributes have been passed to this instance - so we push them to cptArgs
@@ -84,25 +115,33 @@ exports.$CptComponent = {
     if (this.childElements) {
       cptArgs.content=this.getControllerContent();
     }
+    return cptArgs;
+  },
 
-    if (arg.template) {
-      // this component is associated to a template
-      arg.template.call(this, initArgs, cptArgs);
-
-      // $init child components
-      this.initChildComponents();
-    } else if (arg.cptattelement) {
-      // this component is an attribute of another component
-      var cw=cptwrapper.createCptWrapper(arg.ctlConstuctor,cptArgs);
-      this.ctlWrapper=cw;
-      this.controller=cw.cpt;
-      if (cw.cpt.tagName) {
-          log.error(this+" 'tagName' is a reserved keyword and cannot be used in component controllers");
+  /**
+   * Create the child nodes for a dynamic template - this method assumes
+   * that node1 and node2 exist
+   */
+  createChildNodeInstances : function () {
+      if (!this.isDOMempty) {
+          this.removeChildNodeInstances(this.node1,this.node2);
+          this.isDOMempty = true;
       }
-      cw.cpt.tagName=this.tagName;
-      // log(this+" created")
-      // NB the controller $init has not been called yet - this will be done once the parent component has initialized
-    }
+
+      if (this.template) {
+        // temporarily assign a new node to get the content in a doc fragment
+        this.vscope=this.parent.vscope; // to come back to original state, when the scope has not been changed by the template
+        var targs=this.getTemplateArguments(), cargs=this.getCptArguments();
+        var realNode = this.node;
+        var df = doc.createDocumentFragment();
+        this.node = df;
+        this.template.call(this, targs, cargs); // WARNING: this changes vscope to the template vscope
+
+        this.node = realNode;
+        this.node.insertBefore(df, this.node2);
+        this.replaceNodeBy(df , realNode); // recursively remove doc fragment reference
+        this.isDOMempty = false;
+      }
   },
 
   /**
@@ -116,6 +155,7 @@ exports.$CptComponent = {
     }
     this.ctlAttributes=null;
     this.cleanObjectProperties();
+    this.ctlConstuctor=null;
     var tpa=this.tplAttributes;
     if (tpa) {
       for (var k in tpa) {
@@ -145,6 +185,9 @@ exports.$CptComponent = {
    * Load the component sub-nodes that correspond to template attributes
    */
   loadCptAttElements : function () {
+    this.attEltNodes=null;
+    this._attGenerators=null;
+
     // determine the possible template attribute names
     var tpAttNames={}, ca=this.ctlAttributes, defaultTplAtt=null, lastTplAtt=null, count=0;
     for (var k in ca) {

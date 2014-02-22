@@ -1,0 +1,169 @@
+
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var ht=require("hsp/utils/hashtester");
+
+# template test1(c)
+    <div class="content">
+        Before -
+        <#c.tpl/> 
+        - After
+    </div>
+# /template
+
+# template contentA
+    This is contentA 
+# /template
+
+# template contentB
+    This is contentB 
+# /template
+
+# template contentC
+    This is contentC 
+# /template
+
+# template test2(c)
+    <div class="content">
+        Before -
+        <#c.a.b.tpl/> 
+        - After
+    </div>
+# /template
+
+# template test3(c)
+    <div class="content">
+        Before -
+        <#c.tpl msg="{c.txt}"/> 
+        - After
+    </div>
+# /template
+
+# template contentA2(msg)
+    contentA2: {msg} 
+# /template
+
+# template contentB2(msg)
+    contentB2: {msg} 
+# /template
+
+var ctxt={
+    tpl:contentA2,
+    msg:"hello"
+}
+# template test4(ctxt)
+    <div class="content">
+        Before -
+        <#ctxt.tpl msg="{ctxt.msg}"/> 
+        - After
+    </div>
+# /template
+
+describe("Dynamic template insertion", function () {
+    it("validates dynamic insertion with no template argument", function() {
+        var h=ht.newTestContext(), c={tpl:contentA};
+        test1(c).render(h.container);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentA - After ");
+
+        // change template dynamically
+        h.$set(c,"tpl",contentB);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentB - After ");
+
+        // change template dynamically, again
+        h.$set(c,"tpl",contentC);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentC - After ");
+        
+        h.$dispose();
+    });
+
+    it("validates dynamic insertion with long paths", function() {
+        var h=ht.newTestContext(), c={a:{b:{tpl:contentA}}};
+        test2(c).render(h.container);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentA - After ");
+
+        // change template dynamically
+        h.$set(c.a.b,"tpl",contentB);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentB - After ");
+
+        // change path but not the template
+        h.$set(c.a,"b",{tpl:contentB,foo:"bar"});
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentB - After ");
+
+        // change path and template
+        h.$set(c.a,"b",{tpl:contentC,foo:"bar"});
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentC - After ");
+
+        h.$dispose();
+    });
+
+    it("validates dynamic insertion with template arguments", function() {
+        var h=ht.newTestContext(), c={tpl:contentA2, txt:"foo"};
+        test3(c).render(h.container);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentA2: foo - After ");
+
+        // change template dynamically
+        h.$set(c,"tpl",contentB2);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentB2: foo - After ");
+
+        // change txt value
+        h.$set(c,"txt","bar");
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentB2: bar - After ");
+        
+        // change template again dynamically
+        h.$set(c,"tpl",contentA2);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentA2: bar - After ");
+
+        h.$dispose();
+    });
+
+    it("validates dynamic insertion with global and template scope conflict", function() {
+        var h=ht.newTestContext(), c={tpl:contentA,msg:"hello"};
+        test4(c).render(h.container);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentA - After ");
+
+        // change template dynamically
+        h.$set(c,"tpl",contentB2);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentB2: hello - After ");
+
+        h.$dispose();
+    });
+});
