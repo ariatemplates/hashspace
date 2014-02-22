@@ -77,36 +77,7 @@ var $IfNode = klass({
         this.lastConditionValue = condition;
 
         if (!this.isDOMempty) {
-            // dispose child nodes
-            var cn = this.childNodes;
-            if (cn) {
-                // recursively dispose child nodes
-                for (var i = 0, sz = cn.length; sz > i; i++) {
-                    cn[i].$dispose();
-                }
-                delete this.childNodes;
-            }
-            this.childNodes = null;
-
-            // delete child nodes from the DOM
-            var node = this.node, isInBlock = false, ch, n1 = this.node1, n2 = this.node2;
-            for (var i = node.childNodes.length - 1; i > -1; i--) {
-                ch = node.childNodes[i];
-                if (isInBlock) {
-                    // we are between node1 and node2
-                    if (ch === n1) {
-                        i = -1;
-                        break;
-                    } else {
-                        node.removeChild(ch);
-                    }
-                } else {
-                    // detect node2
-                    if (ch === n2) {
-                        isInBlock = true;
-                    }
-                }
-            }
+            this.removeChildNodeInstances(this.node1,this.node2);
             this.isDOMempty = true;
         }
 

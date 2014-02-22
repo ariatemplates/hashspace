@@ -1,0 +1,32 @@
+var $set = require("hsp/$set");
+
+# template test(ctxt)
+  <div><a onclick="{swapTemplate()}">Change template</a></div>
+  <#ctxt.view ctxt="{ctxt}"/>
+# /template
+
+# template tplA(ctxt)
+  <div class="msg">
+    A: {ctxt.msg}
+  </div>
+# /template
+
+# template tplB(ctxt)
+  <div class="msg">
+    B: {ctxt.msg2}
+  </div>
+# /template
+
+var model={
+    view: tplA,
+    msg: "Hello World",
+    msg2: "Always look on the bright side of life!"
+}
+
+function swapTemplate() {
+    var newtpl=(model.view===tplA)? tplB : tplA;
+    $set(model,"view",newtpl);
+}
+
+// display the template in the #output div
+test(model).render("output");

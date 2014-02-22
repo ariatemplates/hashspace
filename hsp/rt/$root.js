@@ -262,6 +262,7 @@ var $RootNode = klass({
  */
 var getObject = exports.getObject = function (path, scope) {
     var root = path[0], o = null, sz = path.length;
+
     if (root === undefined || root === null || typeof(root)==='string') {
         if (scope && sz > 1) {
             o = scope[path[1]];
@@ -270,7 +271,13 @@ var getObject = exports.getObject = function (path, scope) {
             return null;
         }
     } else {
-        o = root;
+        // scope has priority over the global scope
+        if (scope && sz>1) {
+            o = scope[path[1]];
+        }
+        if (!o) {
+            o = root;
+        }
     }
 
     if (sz > 2) {
@@ -417,6 +424,7 @@ var $CptNode = klass({
      * @param {Array} children list of child node generators - correponding to pseudo components and attribute content
      */
     $constructor : function (tplPath, exps, attcfg, ehcfg, children) {
+        this.pathInfo=tplPath.slice(1).join("."); // debugging info
         this.isCptNode = true;
         this.attEltNodes = null; // array of element nodes - used to trigger a refresh when elt content changes
         this.tplPath = tplPath;
@@ -429,6 +437,7 @@ var $CptNode = klass({
         this.controller = null; // different for each instance
         this.ctlAttributes = null;// reference to the controller attributes definition - if any
         this._scopeChgeCb = null; // used by component w/o any controller to observe the template scope
+        this.template = null; // reference to the template object (used by component and templates)
         if (children && children !== 0) {
             this.children = children;
         }
@@ -439,6 +448,7 @@ var $CptNode = klass({
     },
 
     cleanObjectProperties : function () {
+        this.removePathObservers();
         if (this._scopeChgeCb) {
             json.unobserve(this.vscope, this._scopeChgeCb);
             this._scopeChgeCb = null;
@@ -447,6 +457,7 @@ var $CptNode = klass({
         this.exps = null;
         this.controller = null;
         this.ctlAttributes = null;
+        this.template = null;
     },
 
     /**
@@ -471,6 +482,8 @@ var $CptNode = klass({
 
       // if object is a function this is a template or a component insertion
       if (obj && typeof(obj) === 'function') {
+        this.template=obj;
+
         if (obj.controllerConstructor) {
           // template uses a controller
           ni=this.createCptInstance("$CptComponent",parent);
@@ -555,8 +568,21 @@ var $CptNode = klass({
         if (this.adirty) {
             // one of the component attribute has been changed - we need to propagate the change
             // to the template controller
-            if (this.refreshAttributes) {
-                this.refreshAttributes();
+
+            // check first if template changed
+            var tplChanged=false;
+            if (this.template) {
+                var tpl=getObject(this.tplPath, this.parent.vscope);
+                tplChanged = (tpl!==this.template);
+            }
+
+            if (tplChanged) {
+                this.template=tpl;
+                this.createChildNodeInstances();
+            } else {
+                if (this.refreshAttributes) {
+                    this.refreshAttributes();
+                }
             }
             this.adirty = false;
         }
@@ -564,11 +590,119 @@ var $CptNode = klass({
     },
 
     /**
+     * Return the objects referenced by the path - return null if the path is not observable
+     */
+    getPathObjects : function() {
+        var tp=this.tplPath, o, ps=this.parent.vscope;
+
+        if (tp[0]===undefined || tp[0]===null || typeof(tp[0])==='string') {
+            o=ps;
+        } else if (ps[tp[1]]) {
+            // tp[1] exists in the scope - so it has priority
+            o=ps;
+        }
+        if (o) {
+            var sz=tp.length, res=[];
+            res.push(o);
+
+            for (var i=1;sz>i;i++) {
+                o=o[tp[i]];
+                if (o===undefined || o===null) {
+                    return null;
+                }
+                res.push(o);
+            }
+            return res;
+        }
+        return null;
+    },
+
+    /**
+     * Create observers to observe path changes
+     * This method is usec by $CptTemplate and $CptComponent
+     * @return {Boolean} true if the path can be observed
+     */
+    createPathObservers : function() {
+        var pos=this.getPathObjects();
+        if (!pos || !pos.length) {
+            return false;
+        }
+        var sz=pos.length;
+
+        this._pathChgeCb = this.onPathChange.bind(this);
+    
+        for (var i=0;sz>i;i++) {
+            json.observe(pos[i], this._pathChgeCb);
+        }
+        this._observedPathObjects=pos;
+        return true;
+    },
+
+    /**
+     * Remove path observers created through createPathObservers()
+     */
+    removePathObservers : function() {
+        var pos=this._observedPathObjects;
+        if (pos && pos.length) {
+            for (var i=0,sz=pos.length;sz>i;i++) {
+                json.unobserve(pos[i], this._pathChgeCb);
+            }
+            this._observedPathObjects=null;
+        }
+        this._pathChgeCb = null;
+    },
+
+    /**
+     * Callback called when one of the object of the template path changes
+     */
+    onPathChange : function() {
+        // Warning: this method may be called even if the object referenced by the path didn't change
+        // because we observe all the properties of the object on the path - so we need to detect
+        // first if one of the objects on the path really changed
+        var pos = this.getPathObjects(), opos=this._observedPathObjects;
+        var sz = pos? pos.length : -1;
+        var osz = opos? opos.length : -1;
+        var changed=false;
+        if (sz===osz && sz!==-1) {
+            // compare arrays
+            for (var i=0;sz>i;i++) {
+                if (pos[i]!==opos[i]) {
+                    changed=true;
+                    break;
+                }
+            }
+        } else if (sz!==-1) {
+            changed=true;
+        }
+        if (changed) {
+            this.removePathObservers();
+            this.createPathObservers();
+            this.onPropChange(); // set node dirty
+        }
+    },
+
+    /**
+     * Return the collection of template arguments
+     * Used by $CptTemplate and $CptComponent instances
+     */
+    getTemplateArguments: function() {
+        var args = {};
+        if (this.atts) {
+            var att, pvs = this.parent.vscope;
+            for (var i = 0, sz = this.atts.length; sz > i; i++) {
+                att = this.atts[i];
+                args[att.name] = att.getValue(this.eh, pvs, null);
+            }
+        }
+        return args;
+    },
+
+    /**
     * Helper function used to give contextual error information
     * @return {String} - e.g. "[Component: #foo.bar]"
     */
     toString:function() {
-        return "[Component: #"+this.tplPath.slice(1).join(".")+"]";
+        return "[Component: #"+this.pathInfo+"]";
     }
 });
 

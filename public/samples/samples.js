@@ -71,6 +71,14 @@ module.exports = [{
                         main : true
                     }]
         }, {
+            title : "Dynamic templates",
+            folder : "dyntemplates",
+            description : "description.md",
+            files : [{
+                        src : "dyntemplates.hsp",
+                        main : true
+                    }]
+        }, {
             title : "Input fields with bi-directional bindings",
             folder : "inputsample",
             description : "description.md",
