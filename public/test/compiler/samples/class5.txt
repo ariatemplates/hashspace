@@ -1,0 +1,36 @@
+##### Template:
+# template test(msg)
+	<div class="{ 'one',
+        'two':msg.isTrue }">
+    foo
+  </div>
+  <div class="{
+    'one',
+    'two':msg.isTrue
+  }">
+    foo
+  </div>
+# /template
+
+##### Parsed Tree
+"skip"
+
+##### Syntax Tree
+"skip"
+
+##### Template Code
+test=[
+    n.elt(
+        "div",
+        {e1:[6,function(a0) {return ["one",((a0)? ''+"two":'')].join(' ');},2],e2:[1,2,"msg","isTrue"]},
+        {"class":["",1]},
+        0,
+        [n.$text(0,["foo "])]
+    ),n.elt(
+        "div",
+        {e1:[6,function(a0) {return ["one",((a0)? ''+"two":'')].join(' ');},2],e2:[1,2,"msg","isTrue"]},
+        {"class":["",1]},
+        0,
+        [n.$text(0,["foo "])]
+    )
+]
