@@ -221,7 +221,7 @@ LogBlock
   }
 
 ExpressionBlock
-  = "{" ubflag:":"? e:HExpression* "}" // keep a list of expression to match expressions starting with a valid part
+  = "{" ubflag:":"? __ e:HExpression* "}" // keep a list of expression to match expressions starting with a valid part
   {
     var r={};
     if (e.length==1) {
@@ -272,8 +272,8 @@ ExpressionBlock
 HExpression
   =   HExpressionCssClassElt 
     / HExpressionContent 
-    / "," __ cce:HExpressionCssClassElt {return cce}
-    / "," __ exp:HExpressionContent {return exp}
+    / "," __ cce:HExpressionCssClassElt __ {return cce}
+    / "," __ exp:HExpressionContent __ {return exp}
     / InvalidExpressionValue
 
 HExpressionContent
