@@ -73,7 +73,7 @@ function getNumber(s) {
 // component template associated with the NbrField controller
 # export template nbrfield using c:NbrField
   <span class="nbrfield">
-    <input type="text" #model="{c.internalValue}" 
+    <input type="text" model="{c.internalValue}" 
     class="{'nbrfield', 'error': !c.isValid}"/>
     <button onclick="{c.resetField()}">reset</button>
   </span>

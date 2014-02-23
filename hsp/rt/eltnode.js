@@ -97,14 +97,22 @@ var EltNode = klass({
                         nodeName = this.atts[i].value;
                     }
                 }
-                try {
-                  nd = doc.createElement('<' + this.tag + (nodeType?' type=' + nodeType : '') + (nodeName?' name=' + nodeName : '') + ' >');
-                }
-                catch (e) {
+                if (nodeType || nodeName) {
+                    // we have to use a special creation mode as IE doesn't support dynamic type and name change
+                    try {
+                      nd = doc.createElement('<' + this.tag + (nodeType?' type=' + nodeType : '') + (nodeName?' name=' + nodeName : '') + ' >');
+                    } catch (ex) {
+                        nd = doc.createElement(this.tag);
+                        if (nodeType) {
+                            nd.type = nodeType;
+                        }
+                        if (nodeName) {
+                            nd.name = nodeName;
+                        }
+                    }
+                } else {
                     nd = doc.createElement(this.tag);
-                    if (nodeType) nd.type = nodeType;
-                    if (nodeName) nd.name = nodeName;
-                 }
+                }
             }
             else {
                 nd = doc.createElement(this.tag);
@@ -219,7 +227,7 @@ var EltNode = klass({
         if (atts) {
             for (var i = 0, sz = this.atts.length; sz > i; i++) {
                 att = atts[i];
-                if (this.isInput && !this.inputModelExpIdx && (att.name === "value" || att.name === "#model")) {
+                if (this.isInput && !this.inputModelExpIdx && (att.name === "value" || att.name === "model")) {
                     if (att.textcfg && att.textcfg.length === 2 && att.textcfg[0] === '') {
                         if (!modelRefs) {
                             modelRefs = [];
@@ -228,12 +236,9 @@ var EltNode = klass({
                     }
                 }
                 nm = att.name;
-                if (nm.match(/^#/)) {
+                if (nm === "model") {
                     // this is an hashspace extension attribute
-                    if (nm === "#model") {
-                        continue;
-                    }
-
+                    continue;
                 } else if (nm === "class") {
                     // issue on IE8 with the class attribute?
                     if (this.nodeNS) {
@@ -266,7 +271,7 @@ var EltNode = klass({
 
         if (modelRefs) {
             // set the inputModelExpIdx property that reference the expression index to use for the model binding
-            var ref = modelRefs["#model"];
+            var ref = modelRefs["model"];
             if (!ref) {
                 ref = modelRefs["value"];
             }

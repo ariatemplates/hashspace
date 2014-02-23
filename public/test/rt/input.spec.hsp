@@ -22,22 +22,22 @@ var hsp=require("hsp/rt"),
     <div class="info section">All the following inputs are synchronized:</div>
     <div class="section">
         Comment #1: <input type="text" value="{data.comment}"/><br/>
-        Comment #2: <input type="text" #model="{data.comment}"/><br/>
+        Comment #2: <input type="text" model="{data.comment}"/><br/>
         Comment #3: <span class="inputText">{data.comment}</span><br/>
     </div>
     <div class="section">
         <input id="cb1" type="checkbox" value="{data.isChecked}"/>
         <label for="cb1">Check me!</label> -
-        <input id="cb2" type="checkbox" #model="{data.isChecked}"/>
+        <input id="cb2" type="checkbox" model="{data.isChecked}"/>
         <label for="cb2">Check me (2)!</label> -
         Checked: <span class="textValue">{data.isChecked}</span>
     </div>
     <div class="section">
-        <input id="rb1" type="radio" #model="{data.selection}" value="A"/>
+        <input id="rb1" type="radio" model="{data.selection}" value="A"/>
         <label for="rb1">Select A</label> -
-        <input id="rb2" type="radio" #model="{data.selection}" value="B"/>
+        <input id="rb2" type="radio" model="{data.selection}" value="B"/>
         <label for="rb2">Select B</label> -
-        <input id="rb3" type="radio" #model="{data.selection}" value="C"/>
+        <input id="rb3" type="radio" model="{data.selection}" value="C"/>
         <label for="rb3">Select C</label> -
         Selection in model: <span class="textValue">{data.selection}</span>
     </div>
@@ -74,7 +74,7 @@ describe("Input Elements", function () {
         expect(input2.node.value).to.equal(v3);
         expect(d.comment).to.equal(v3);
 
-        // change the value from input2 (#model attribute)
+        // change the value from input2 (model attribute)
         var v4 = "blah";
         input2.node.value = v4;
         fireEvent("click",input2.node); // to simulate change
@@ -116,7 +116,7 @@ describe("Input Elements", function () {
             expect(d.isChecked).to.equal(true);
         }
 
-        // change from cb2 (#model reference)
+        // change from cb2 (model reference)
         fireEvent("click",cb2.node);
         expect(cb1.node.checked).to.equal(false);
         expect(cb2.node.checked).to.equal(false);
