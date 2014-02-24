@@ -1,0 +1,13 @@
+##### Template:
+# template test
+    Hello<br>World</br>
+# /template
+
+##### Errors:
+[
+  {
+    "description": "The end element </br> was rejected as <br> is a void HTML element and can't have a closing element",
+    "line": 2,
+    "column": 19
+  }
+]
