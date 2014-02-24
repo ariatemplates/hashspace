@@ -1,4 +1,5 @@
 var fs = require("fs");
+var path = require("path");
 
 /**
  * Return the template part of a template sample
@@ -25,6 +26,12 @@ exports.getSampleContent = function (sampleName) {
         codeFragments : cf
     };
     return res;
+};
+
+exports.getSampleNames = function (dir) {
+  return fs.readdirSync(dir).map(function(fileName){
+    return path.basename(fileName, '.txt');
+  });
 };
 
 /**
