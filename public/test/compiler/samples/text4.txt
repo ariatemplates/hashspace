@@ -8,46 +8,76 @@
   {
     "type": "template",
     "name": "hello",
-    "args": [ "name"],
+    "mod": "",
+    "args": [
+      "name"
+    ],
     "content": [
-      { 
-      	"type": "text", "value": "Hello "
-      },{
+      {
+        "type": "text",
+        "value": "Hello "
+      },
+      {
         "type": "expression",
-        "category": "objectref",
-        "bound": true,
-        "path": [ "name" ]
+        "name": "name",
+        "code": "name",
+        "category": "jsexpression",
+        "expType": "Variable",
+        "bound": true
+      },
+      {
+        "type": "text",
+        "value": "!",
       }
-    ]
+    ],
+    "closed": true
+  },
+  {
+    "type": "plaintext",
+    "value": "\r\n"
   }
 ]
 
-##### Syntax Tree:
 
+##### Syntax Tree:
 [
   {
     "type": "template",
     "name": "hello",
-    "args": ["name"],
+    "args": [
+      "name"
+    ],
+    "export": false,
     "content": [
       {
         "type": "textblock",
         "content": [
-          { 
-          	"type": "text", "value": "Hello " 
-          }, { 
-          	"type": "expression", 
-          	"category": "objectref",
-          	"bound": true, 
-          	"path": [ "name" ]
-          }, { 
-          	"type": "text", "value": "!" 
+          {
+            "type": "text",
+            "value": "Hello "
+          },
+          {
+            "type": "expression",
+            "category": "objectref",
+            "bound": true,
+            "path": [
+              "name"
+            ]
+          },
+          {
+            "type": "text",
+            "value": "!"
           }
         ]
       }
     ]
+  },
+  {
+    "type": "plaintext",
+    "value": "\r\n"
   }
 ]
+
 
 ##### Template Code
 hello=[

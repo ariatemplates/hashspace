@@ -20,11 +20,11 @@ describe('Template compilation errors: ', function () {
         }
     };
 
-    var samples = ["text1", "text2", "text3", "if1", "if2", "if3", "if4", "if5", "if6", "if7", "foreach1", "foreach2",
-            "foreach3", "element1", "element2", "element3", "element4", "element5", "element6", "element7", "element8",
-            "insert", "template1", "template2", "template3", "template4", "template5", "template6", "template7",
-            "jsexpression1", "jsexpression2", "component1", "component2", "voidelement"];
-    //samples=["voidelement"];
+    var samples = ut.getSampleNames(__dirname + "/errsamples").filter(function(name){
+      return name.substr(0, 5) != 'mixed';
+    });
+    //samples=["component2"];
+
     for (var i = 0, sz = samples.length; sz > i; i++) {
         // create one test for each sample
         it('tests error sample ('+samples[i]+')', testFn.bind({
@@ -52,8 +52,7 @@ describe('Template compilation errors: ', function () {
     it('tests mixed errors in template and JS script 2', function () {
         var sample = ut.getErrorSampleContent("mixed2");
         var r = compiler.compile(sample.template, "mixed2");
-
-        assert.equal(r.errors[0].line, 1, "error line 1");
+      assert.equal(r.errors[0].line, 1, "error line 1");
     });
 
     it('tests mixed errors in template and JS script 3', function () {
