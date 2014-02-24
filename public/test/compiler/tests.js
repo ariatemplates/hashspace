@@ -87,11 +87,7 @@ describe('Block Parser: ', function () {
         }
     };
 
-    var samples = ["template1", "template2", "text1", "text2", "text3", "text5", "text6", "text7", "if1", "if2", "if3", "if4",
-            "comment", "foreach1", "foreach2", "foreach3", "element1", "element2", "element3", "element4", "element5",
-            "evthandler1", "evthandler2", "evthandler3", "component1", "component2", "component3", "component4",
-            "component5", "component6", "component7", "jsexpression1", "jsexpression2", "jsexpression3", "jsexpression4", "jsexpression5",
-            "class1", "class2", "class3", "class4", "insert1", "insert2", "log1", "log2"];
+    var samples = ut.getSampleNames(__dirname + "/samples");
     //samples=["log2"];
 
     for (var i = 0, sz = samples.length; sz > i; i++) {
