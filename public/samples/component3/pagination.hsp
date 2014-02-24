@@ -61,9 +61,9 @@ var Pagination=klass({
  
 # template paginationTest(model)
   <div class="section3">
-    <label class="fieldlabel">Active page: </label><input type="number"  #model="{model.active}"/><br/>
-    <label class="fieldlabel">Collection size: </label><input type="number"  #model="{model.collectionSize}"/><br/>
-    <label class="fieldlabel">Page size: </label><input type="number"  #model="{model.pageSize}"/><br/>
+    <label class="fieldlabel">Active page: </label><input type="number"  model="{model.active}"/><br/>
+    <label class="fieldlabel">Collection size: </label><input type="number"  model="{model.collectionSize}"/><br/>
+    <label class="fieldlabel">Page size: </label><input type="number"  model="{model.pageSize}"/><br/>
     Last page selection  <i> - from event</i>: <span class="textValue">{model.lastSelectedPage}</span>
   </div>
   <#pagination activepage="{model.active}" collectionsize="{model.collectionSize}" 
