@@ -1,0 +1,75 @@
+##### Template:
+# template test
+    Hello<br>World
+    <area>
+    <base>
+    <col>
+    <command>
+    <embed>
+    <hr>
+    <img>
+    <input>
+    <keygen>
+    <meta>
+    <param>
+    <source>
+    <track>
+    <wbr>
+# /template
+
+##### Parsed Tree
+[
+  {
+    "type": "template", "name": "test", "args": [], "content": [
+      {"type": "text", "value": "Hello"},
+      {"type": "element", "name": "br", "closed": false},
+      {"type": "text", "value": "World "},
+      {"type": "element", "name": "area", "closed": false},
+      {"type": "element", "name": "base", "closed": false},
+      {"type": "element", "name": "col", "closed": false},
+      {"type": "element", "name": "command", "closed": false},
+      {"type": "element", "name": "embed", "closed": false},
+      {"type": "element", "name": "hr", "closed": false},
+      {"type": "element", "name": "img", "closed": false},
+      {"type": "element", "name": "input", "closed": false},
+      {"type": "element", "name": "keygen", "closed": false},
+      {"type": "element", "name": "meta", "closed": false},
+      {"type": "element", "name": "param", "closed": false},
+      {"type": "element", "name": "source", "closed": false},
+      {"type": "element", "name": "track", "closed": false},
+      {"type": "element", "name": "wbr", "closed": false}
+    ],
+    "closed": true,
+  }
+]
+
+##### Syntax Tree
+[
+  {
+    "type": "template",
+    "name": "test",
+    "args": [],
+    "export": false,
+    "content": [
+      {"type": "text", "value": "Hello"},
+      {"type": "element", "name": "br", "closed": true},
+      {"type": "text", "value": "World "},
+      {"type": "element", "name": "area", "closed": true},
+      {"type": "element", "name": "base", "closed": true},
+      {"type": "element", "name": "col", "closed": true},
+      {"type": "element", "name": "command", "closed": true},
+      {"type": "element", "name": "embed", "closed": true},
+      {"type": "element", "name": "hr", "closed": true},
+      {"type": "element", "name": "img", "closed": true},
+      {"type": "element", "name": "input", "closed": true},
+      {"type": "element", "name": "keygen", "closed": true},
+      {"type": "element", "name": "meta", "closed": true},
+      {"type": "element", "name": "param", "closed": true},
+      {"type": "element", "name": "source", "closed": true},
+      {"type": "element", "name": "track", "closed": true},
+      {"type": "element", "name": "wbr", "closed": true}
+    ]
+  }
+]
+
+##### Template Code

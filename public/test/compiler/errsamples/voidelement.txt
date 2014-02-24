@@ -1,0 +1,13 @@
+##### Template:
+# template test
+    Hello<br>World</br>
+# /template
+
+##### Errors:
+[
+  {
+    "description": "An orphan end element </br> is not needed, <br> is a void HTML element",
+    "line": 2,
+    "column": 19
+  }
+]

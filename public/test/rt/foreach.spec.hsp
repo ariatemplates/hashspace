@@ -73,7 +73,7 @@ var hsp=require("hsp/rt"),
 # template test6(itemsList)
     {foreach item in itemsList}
         {if item.edit}
-            <input type="text" value="{item.value}"></input>
+            <input type="text" value="{item.value}">
         {else}
             <span>{item.value}</span>
         {/if}
