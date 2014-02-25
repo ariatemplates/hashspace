@@ -15,9 +15,9 @@
  */
 
 // If condition node
-var klass = require("hsp/klass"),
-    doc = require("hsp/document"),
-    tnode = require("hsp/rt/tnode"),
+var klass = require("../klass"),
+    doc = require("../document"),
+    tnode = require("./tnode"),
     TNode = tnode.TNode,
     isValidCptContent = tnode.isValidCptContent;
 

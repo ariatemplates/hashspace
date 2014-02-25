@@ -1,4 +1,4 @@
-var json = require("hsp/json");
+var json = require("../json");
 
 /**
  * $CptTemplate contains methods that will be added to the prototype of all

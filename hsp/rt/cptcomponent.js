@@ -1,7 +1,7 @@
-var json = require("hsp/json"),
-    log = require("hsp/rt/log"),
-    $TextNode = require("hsp/rt/$text"),
-    cptwrapper = require("hsp/rt/cptwrapper");
+var json = require("../json"),
+    log = require("./log"),
+    $TextNode = require("./$text"),
+    cptwrapper = require("./cptwrapper");
 
 var $CptNode,$CptAttElement, TNode; // injected through setDependency to avoid circular dependencies
 

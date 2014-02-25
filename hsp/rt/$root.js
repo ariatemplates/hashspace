@@ -15,20 +15,19 @@
  */
 
 // This module contains the $Root and $Insert nodes used to instantiate new templates
-
-var klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    doc = require("hsp/document"),
-    json = require("hsp/json"),
-    PropObserver = require("hsp/propobserver"),
-    tn = require("hsp/rt/tnode"),
+var klass = require("../klass"),
+    log = require("./log"),
+    doc = require("../document"),
+    json = require("../json"),
+    PropObserver = require("../propobserver"),
+    tn = require("./tnode"),
     TNode = tn.TNode,
-    cptComponent=require("hsp/rt/cptcomponent");
+    cptComponent=require("./cptcomponent");
 
 var CPT_TYPES={
-    '$CptAttInsert':require("hsp/rt/cptattinsert").$CptAttInsert,
+    '$CptAttInsert':require("./cptattinsert").$CptAttInsert,
     '$CptComponent':cptComponent.$CptComponent,
-    '$CptTemplate':require("hsp/rt/cpttemplate").$CptTemplate
+    '$CptTemplate':require("./cpttemplate").$CptTemplate
 };
 
 var DOCUMENT_FRAGMENT_NODE = 11;

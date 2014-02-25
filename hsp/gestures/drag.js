@@ -1,4 +1,4 @@
-var klass = require("hsp/klass");
+var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
 

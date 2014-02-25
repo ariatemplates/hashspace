@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var klass = require("hsp/klass");
+var klass = require("../klass");
 var Tap = require("./tap").Tap;
 var LongPress = require("./longPress").LongPress;
 var SingleTap = require("./singleTap").SingleTap;
