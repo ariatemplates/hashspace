@@ -2,3 +2,7 @@ build
 dist
 public
 sauce_connect.log
+.gitattributes
+.travis.yml
+ci-release.sh
+gruntfile.js
