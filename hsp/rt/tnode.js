@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-var hsp = require("hsp/rt"),
-    klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
+var hsp = require("../rt"),
+    klass = require("../klass"),
+    log = require("./log"),
     ExpHandler = require("./exphandler");
 
 /**

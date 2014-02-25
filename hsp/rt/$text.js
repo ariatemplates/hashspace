@@ -15,7 +15,10 @@
  */
 
 // This module contains the text node
-var klass = require("hsp/klass"), doc = require("hsp/document"), TNode = require("hsp/rt/tnode").TNode, TExpAtt = require("hsp/rt/tnode").TExpAtt;
+var klass = require("../klass"),
+    doc = require("../document"),
+    TNode = require("./tnode").TNode,
+    TExpAtt = require("./tnode").TExpAtt;
 
 var $TextNode = klass({
     $extends : TNode,
