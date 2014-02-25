@@ -357,6 +357,30 @@ var blockParser = PEG.buildParser(grammar, {
     trackLineAndColumn : true
 });
 
+//http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
+var VOID_HTML_ELEMENTS = {
+  "area": true,
+  "base": true,
+  "br": true,
+  "col": true,
+  "command": true,
+  "embed": true,
+  "hr": true,
+  "img": true,
+  "input": true,
+  "keygen": true,
+  "link": true,
+  "meta": true,
+  "param": true,
+  "source": true,
+  "track": true,
+  "wbr": true
+};
+
+function isVoidElement(elName) {
+  return VOID_HTML_ELEMENTS.hasOwnProperty(elName.toLowerCase());
+}
+
 /**
  * Return the list of instruction blocks that compose a template file at this stage the template AST is not complete -
  * cf. parse() function to get the complete syntax tree Note: this function is exposed for unit test purposes and should
@@ -754,6 +778,10 @@ var SyntaxTree = klass({
      * Element block management
      */
     _element : function (idx, blocks, out) {
+        var b = blocks[idx];
+        if (isVoidElement(b.name)) {
+          b.closed=true;
+        }
         return this._elementOrComponent("element", idx, blocks, out);
     },
 
@@ -951,7 +979,11 @@ var SyntaxTree = klass({
     _endelement : function (idx, blocks, out) {
         // only called in case of error
         var b = blocks[idx], nm = b.name;
-        this._logError("End element </" + nm + "> does not match any <" + nm + "> element", b);
+        if (isVoidElement(nm)) {
+          this._logError("The end element </" + nm + "> was rejected as <" + nm + "> is a void HTML element and can't have a closing element", b);
+        } else {
+          this._logError("End element </" + nm + "> does not match any <" + nm + "> element", b);
+        }
         return idx;
     },
 

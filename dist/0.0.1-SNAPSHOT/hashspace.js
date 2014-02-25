@@ -115,6 +115,8 @@ if (doc.createEventObject) {
 
 },{}],"hsp/document":[function(require,module,exports){
 module.exports=require('Ouke85');
+},{}],"hsp/es5":[function(require,module,exports){
+module.exports=require('/Tewa8');
 },{}],"/Tewa8":[function(require,module,exports){
 
 /*
@@ -187,10 +189,6 @@ if (!Function.prototype.bind) {
     };
 }
 
-},{}],"hsp/es5":[function(require,module,exports){
-module.exports=require('/Tewa8');
-},{}],"hsp/gestures/doubleTap":[function(require,module,exports){
-module.exports=require('52Uu/T');
 },{}],"52Uu/T":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
@@ -353,8 +351,8 @@ var DoubleTap = klass({
 });
 
 module.exports.DoubleTap = DoubleTap;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/drag":[function(require,module,exports){
-module.exports=require('betqZ6');
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/doubleTap":[function(require,module,exports){
+module.exports=require('52Uu/T');
 },{}],"betqZ6":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
@@ -471,7 +469,9 @@ var Drag = klass({
 });
 
 module.exports.Drag = Drag;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/gesture":[function(require,module,exports){
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/drag":[function(require,module,exports){
+module.exports=require('betqZ6');
+},{}],"hsp/gestures/gesture":[function(require,module,exports){
 module.exports=require('tOKaW/');
 },{}],"tOKaW/":[function(require,module,exports){
 /*
@@ -1086,8 +1086,6 @@ var LongPress = klass({
 module.exports.LongPress = LongPress;
 },{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/longPress":[function(require,module,exports){
 module.exports=require('b45i9B');
-},{}],"hsp/gestures/pinch":[function(require,module,exports){
-module.exports=require('Af/VvQ');
 },{}],"Af/VvQ":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
@@ -1271,7 +1269,11 @@ var Pinch = klass({
 });
 
 module.exports.Pinch = Pinch;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"gdtAu3":[function(require,module,exports){
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/pinch":[function(require,module,exports){
+module.exports=require('Af/VvQ');
+},{}],"hsp/gestures/singleTap":[function(require,module,exports){
+module.exports=require('gdtAu3');
+},{}],"gdtAu3":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1430,8 +1432,8 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/singleTap":[function(require,module,exports){
-module.exports=require('gdtAu3');
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/swipe":[function(require,module,exports){
+module.exports=require('pEG+M6');
 },{}],"pEG+M6":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
@@ -1591,9 +1593,7 @@ var Swipe = klass({
 });
 
 module.exports.Swipe = Swipe;
-},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"hsp/gestures/swipe":[function(require,module,exports){
-module.exports=require('pEG+M6');
-},{}],"Nxqxtn":[function(require,module,exports){
+},{"./gesture":"tOKaW/","./touchEvent":"Y8CWAL","hsp/klass":"U01Wj4"}],"Nxqxtn":[function(require,module,exports){
 var klass = require("hsp/klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -3645,7 +3645,9 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"jg9J2W":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$log":[function(require,module,exports){
+module.exports=require('jg9J2W');
+},{}],"jg9J2W":[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -3738,8 +3740,8 @@ var LogNode = klass({
 module.exports=LogNode;
 
 
-},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$log":[function(require,module,exports){
-module.exports=require('jg9J2W');
+},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$root":[function(require,module,exports){
+module.exports=require('pp1fpS');
 },{}],"pp1fpS":[function(require,module,exports){
 
 /*
@@ -4428,8 +4430,8 @@ exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
 
 
-},{"hsp/document":"Ouke85","hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/propobserver":"L8W87E","hsp/rt/cptattinsert":"3KL9TH","hsp/rt/cptcomponent":"3NYULb","hsp/rt/cpttemplate":"TA0vRY","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$root":[function(require,module,exports){
-module.exports=require('pp1fpS');
+},{"hsp/document":"Ouke85","hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/propobserver":"L8W87E","hsp/rt/cptattinsert":"3KL9TH","hsp/rt/cptcomponent":"3NYULb","hsp/rt/cpttemplate":"TA0vRY","hsp/rt/log":"aJ8RNd","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$text":[function(require,module,exports){
+module.exports=require('bR8R5d');
 },{}],"bR8R5d":[function(require,module,exports){
 
 /*
@@ -4517,11 +4519,7 @@ var $TextNode = klass({
 });
 
 module.exports = $TextNode;
-},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"hsp/rt/$text":[function(require,module,exports){
-module.exports=require('bR8R5d');
-},{}],"hsp/rt/cptattinsert":[function(require,module,exports){
-module.exports=require('3KL9TH');
-},{}],"3KL9TH":[function(require,module,exports){
+},{"hsp/document":"Ouke85","hsp/klass":"U01Wj4","hsp/rt/tnode":"n+3tax"}],"3KL9TH":[function(require,module,exports){
 /**
  * $CptAttInsert contains methods that will be added to the prototype of all
  * $CptNode node instance that correspond to an insertion of a component attribute
@@ -4549,6 +4547,10 @@ module.exports.$CptAttInsert = {
   }
 };
 
+},{}],"hsp/rt/cptattinsert":[function(require,module,exports){
+module.exports=require('3KL9TH');
+},{}],"hsp/rt/cptcomponent":[function(require,module,exports){
+module.exports=require('3NYULb');
 },{}],"3NYULb":[function(require,module,exports){
 var json = require("hsp/json"),
     log = require("hsp/rt/log"),
@@ -5014,9 +5016,7 @@ exports.$CptComponent = {
   }
 };
 
-},{"hsp/json":"L2Z1Fb","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/log":"aJ8RNd"}],"hsp/rt/cptcomponent":[function(require,module,exports){
-module.exports=require('3NYULb');
-},{}],"hsp/rt/cpttemplate":[function(require,module,exports){
+},{"hsp/json":"L2Z1Fb","hsp/rt/$text":"bR8R5d","hsp/rt/cptwrapper":"aziNcf","hsp/rt/log":"aJ8RNd"}],"hsp/rt/cpttemplate":[function(require,module,exports){
 module.exports=require('TA0vRY');
 },{}],"TA0vRY":[function(require,module,exports){
 var json = require("hsp/json");
@@ -5091,7 +5091,9 @@ module.exports.$CptTemplate = {
   }
 };
 
-},{"hsp/json":"L2Z1Fb"}],"aziNcf":[function(require,module,exports){
+},{"hsp/json":"L2Z1Fb"}],"hsp/rt/cptwrapper":[function(require,module,exports){
+module.exports=require('aziNcf');
+},{}],"aziNcf":[function(require,module,exports){
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5464,9 +5466,7 @@ function createCptWrapper(Ctl, cptArgs) {
 exports.CptWrapper = CptWrapper;
 exports.createCptWrapper=createCptWrapper;
 
-},{"hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd"}],"hsp/rt/cptwrapper":[function(require,module,exports){
-module.exports=require('aziNcf');
-},{}],"aAG62j":[function(require,module,exports){
+},{"hsp/json":"L2Z1Fb","hsp/klass":"U01Wj4","hsp/rt/log":"aJ8RNd"}],"aAG62j":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
