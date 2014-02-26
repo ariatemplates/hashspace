@@ -171,4 +171,9 @@ describe('Block Parser: ', function () {
         assert.equal(r.errors.length, 0, "no compilation error");
         assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code for components");
     });
+
+    it('should not break when an optional path argument is not provided', function(){
+      var r = compiler.compile('# template foo()\n# /template');
+      assert.equal(r.errors.length, 0, "no compilation error");
+    });
 });
