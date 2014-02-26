@@ -3,3 +3,4 @@ node_modules
 ._.DS_STORE
 dist
 sauce_connect.log
+*.peg.js

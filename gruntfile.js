@@ -157,22 +157,9 @@ module.exports = function (grunt) {
       files: ['*.*'],
       tasks: []
     },
-    copy: {
-      fs_module: {
-        files: [{
-          src: 'hsp/compiler/hspblocks.pegjs',
-          dest: 'dist/'+pkg.version+'/tmp/fs.js'
-        }],
-        options: {
-          processContent: function (content, srcpath) {
-            return "exports.readFileSync=function(){return " + JSON.stringify(content) + "}";
-          }
-        }
-      }
-    },
     browserify: {
       runtime: {
-        files: [{dest: 'dist/'+pkg.version+'/hashspace.js', src: ['hsp/rt.js']}],
+        files: [{dest: 'dist/'+pkg.version+'/hashspace-browserify.js', src: ['hsp/rt.js']}],
         options: {
           aliasMappings: [
             {
@@ -194,7 +181,7 @@ module.exports = function (grunt) {
         }
       },
       compiler: {
-        files: [{dest: 'dist/'+pkg.version+'/hashspace.compiler.js', src: ['hsp/compiler/compiler.js']}],
+        files: [{dest: 'dist/'+pkg.version+'/hashspace-browserify-compiler.js', src: ['hsp/compiler/compiler.js']}],
         options: {
           aliasMappings: [
             {
@@ -202,31 +189,73 @@ module.exports = function (grunt) {
               src: ['compiler.js'],
               dest: 'hsp'
             }
-          ],
-          shim: {
-            fs: {
-              path: 'dist/'+pkg.version+'/tmp/fs.js',
-              exports: null
-            }
-          }
+          ]
         }
       }
     },
     uglify: {
       hsp: {
         files: [
-          {dest: 'dist/'+pkg.version+'/hashspace.min.js', src: ['dist/'+pkg.version+'/hashspace.js']},
-          {dest: 'dist/'+pkg.version+'/hashspace.compiler.min.js', src: ['dist/'+pkg.version+'/hashspace.compiler.js']}
+          {dest: 'dist/'+pkg.version+'/hashspace-browserify.min.js', src: ['dist/'+pkg.version+'/hashspace-browserify.js']},
+          {dest: 'dist/'+pkg.version+'/hashspace-browserify-compiler.min.js', src: ['dist/'+pkg.version+'/hashspace-browserify-compiler.js']},
+          {dest: 'dist/'+pkg.version+'/hashspace-noder.min.js', src: ['dist/'+pkg.version+'/hashspace-noder.js']},
+          {dest: 'dist/'+pkg.version+'/hashspace-noder-compiler.min.js', src: ['dist/'+pkg.version+'/hashspace-noder-compiler.js']}
         ]
       }
+    },
+    peg:{
+        grammar: {
+            src: "hsp/compiler/hspblocks.pegjs",
+            dest: "hsp/compiler/hspblocks.peg.js",
+            options:{
+                trackLineAndColumn : true
+            }
+        }
+    },
+    atpackager : {
+        runtime : {
+            options : {
+                sourceDirectories : ['.'],
+                sourceFiles : ['hsp/**/*.js'],
+                outputDirectory : 'dist/' + pkg.version,
+                defaultBuilder : {
+                    type : "NoderPackage",
+                    cfg : {
+                        outputFileWrapper : "(function(define){$CONTENT$;})(noder.define);"
+                    }
+                },
+                visitors : [{
+                            type : "ImportSourceFile",
+                            cfg : {
+                                sourceFile : require.resolve("acorn/acorn"),
+                                targetLogicalPath : "acorn/acorn.js"
+                            }
+                        }, "NoderDependencies", {
+                            type : "CheckDependencies",
+                            cfg : {
+                                noCircularDependencies : false
+                            }
+                        }],
+                packages : [{
+                            name : "hashspace-noder.js",
+                            files : ['hsp/*.js', 'hsp/rt/*.js', 'hsp/gestures/*.js']
+                        }, {
+                            name : "hashspace-noder-compiler.js",
+                            files : ['hsp/compiler/compiler.js']
+                        }]
+            }
+        }
     }
   });
 
   // Automatically load all the grunt tasks
   require('load-grunt-tasks')(grunt);
   grunt.loadTasks('build/grunt');
+  grunt.loadNpmTasks('atpackager');
+  require('atpackager').loadNpmPlugin('noder-js');
 
-  grunt.registerTask('package', ['copy', 'browserify', 'uglify']);
+  grunt.registerTask('prepublish', ['peg']);
+  grunt.registerTask('package', ['prepublish', 'browserify', 'atpackager', 'uglify']);
   grunt.registerTask('test', ['checkStyle','mochaTest', 'karma:unit']);
   grunt.registerTask('ci', ['checkStyle','mochaTest', 'karma:ci', 'package']);
   grunt.registerTask('default', ['hspserver','watch']);

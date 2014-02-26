@@ -1,7 +1,5 @@
-var compiler = require("../../index").compiler;
-
 var createHspPreprocessor = function (args, config, logger, helper) {
-
+  var compiler = require("../../index").compiler;
   var log = logger.create('preprocessor.hsp');
 
   return function (content, file, done) {
