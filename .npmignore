@@ -1,6 +1,7 @@
 build
 dist
 public
+.idea
 sauce_connect.log
 .gitattributes
 .travis.yml
