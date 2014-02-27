@@ -15,11 +15,11 @@
  */
 
 // ForEachNode implementation
-var klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    doc = require("hsp/document"),
-    json = require("hsp/json"),
-    tnode = require("hsp/rt/tnode"),
+var klass = require("../klass"),
+    log = require("./log"),
+    doc = require("../document"),
+    json = require("../json"),
+    tnode = require("./tnode"),
     TNode = tnode.TNode,
     isValidCptContent = tnode.isValidCptContent;
 

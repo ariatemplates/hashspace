@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-var klass = require("hsp/klass");
+var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 
 var Gesture = klass({

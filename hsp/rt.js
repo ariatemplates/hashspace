@@ -15,15 +15,15 @@
  */
 
 // Hash Space runtime
-require("hsp/es5");
-var klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    $root = require("hsp/rt/$root"),
+require("./es5");
+var klass = require("./klass"),
+    log = require("./rt/log"),
+    $root = require("./rt/$root"),
     $RootNode = $root.$RootNode,
     $InsertNode = $root.$InsertNode,
     $CptNode = $root.$CptNode,
     $CptAttElement = $root.$CptAttElement,
-    cptwrapper = require("hsp/rt/cptwrapper");
+    cptwrapper = require("./rt/cptwrapper");
 
 
 var NodeGenerator = klass({
@@ -223,11 +223,11 @@ module.exports.logErrors = function (fileName, errors) {
 var nodes = {};
 
 var nodeList = [
-    "$text", require("hsp/rt/$text"),
-    "$if", require("hsp/rt/$if"),
+    "$text", require("./rt/$text"),
+    "$if", require("./rt/$if"),
     "$insert", $InsertNode,
-    "$foreach", require("hsp/rt/$foreach"),
-    "elt", require("hsp/rt/eltnode"),
+    "$foreach", require("./rt/$foreach"),
+    "elt", require("./rt/eltnode"),
     "cpt", $CptNode,
     "catt", $CptAttElement,
     "log", require("hsp/rt/$log")

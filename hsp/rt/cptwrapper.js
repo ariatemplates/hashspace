@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-var json = require("hsp/json"),
-    log = require("hsp/rt/log"),
-    klass = require("hsp/klass");
+var json = require("../json"),
+    log = require("./log"),
+    klass = require("../klass");
 
 function identity(v) {
     return v;

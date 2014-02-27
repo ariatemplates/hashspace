@@ -15,11 +15,11 @@
  */
 
 // Element Node used for any standard HTML element (i.e. having attributes and child elements)
-var klass = require("hsp/klass");
-var doc = require("hsp/document");
-var TNode = require("hsp/rt/tnode").TNode;
-var hsp = require("hsp/rt");
-var gestures = require("hsp/gestures/gestures");
+var klass = require("../klass");
+var doc = require("../document");
+var TNode = require("./tnode").TNode;
+var hsp = require("../rt");
+var gestures = require("../gestures/gestures");
 
 /**
  * Generic element node Add attribute support on top of TNode - used for div, spans, ul, li, h1, etc

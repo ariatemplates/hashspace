@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-var klass = require("hsp/klass");
-var json = require("hsp/json");
+var klass = require("./klass");
+var json = require("./json");
 var ALL = "**ALL**";
 
 /**
