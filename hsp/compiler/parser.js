@@ -1,5 +1,6 @@
 var klass = require("../klass");
 var blockParser = require("./hspblocks.peg.js");
+var htmlEntitiesToUtf8 = require("./htmlEntities.js").htmlEntitiesToUtf8;
 
 //http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
 var VOID_HTML_ELEMENTS = {
@@ -220,7 +221,12 @@ var SyntaxTree = klass({
             b = blocks[idx2];
             if (b.type === "text") {
                 if (b.value !== "") {
-                    buf.push(b);
+                    try {
+                      b.value = htmlEntitiesToUtf8(b.value);
+                      buf.push(b);
+                    } catch (e) {
+                      this._logError(e.message, b);
+                    }
                 }
             } else if (b.type === "expression") {
                 if (b.category === "jsexpression") {

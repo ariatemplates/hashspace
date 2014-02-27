@@ -1,0 +1,31 @@
+##### Template:
+# template test()
+&amp;&times;
+# /template
+
+##### Parsed Tree
+[
+  {
+    "type": "template",
+    "content": [
+      {
+        "type": "text",
+        "value": "&amp;&times;"
+      }
+    ],
+  }
+]
+
+##### Syntax Tree
+[
+  {
+    "type": "template",
+    "content": [
+      {
+        "type": "text",
+        "value": "&×"
+      }
+    ]
+  }
+]
+
