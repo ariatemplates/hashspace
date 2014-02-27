@@ -1,0 +1,13 @@
+##### Template:
+# template test()
+&invalid;
+# /template
+
+##### Errors:
+[
+  {
+    "description": '"&invalid;" is not a valid HTML entity.',
+    "line": 2,
+    "column": 1
+  }
+]
