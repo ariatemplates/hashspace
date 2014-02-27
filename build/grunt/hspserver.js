@@ -1,11 +1,11 @@
 var express = require('express');
 var app = express();
-var server = require('http').createServer(app);
 var path = require("path");
 
 module.exports = function(grunt) {
     grunt.registerTask('hspserver', 'Start a web server to server compiled templates on the fly', function () {
-        var renderer = require("../../hsp/compiler/renderer");
+
+      var renderer = require("../../hsp/compiler/renderer");
 
         grunt.config.requires('hspserver.port');
         grunt.config.requires('hspserver.base');
@@ -14,10 +14,6 @@ module.exports = function(grunt) {
         var port = grunt.config('hspserver.port');
         var base = grunt.config('hspserver.base');
         var ext = grunt.config('hspserver.templateExtension');
-
-        grunt.log.writeln('Starting express web server on port ' + port + '.');
-
-        server.listen(port);
 
         // Views can be everywhere in the public folder
         app.set("views", path.join(base, "public"));
@@ -60,10 +56,12 @@ module.exports = function(grunt) {
 
         // Serve static files from the public folder, that is the root
         app.use(express.static(path.join(base, "public")));
-
         // Serve also static files from the configured folder
         app.use(express.static(grunt.config('hspserver.base')));
 
+        grunt.log.writeln('Starting express web server on port ' + port + '.');
+        app.listen(port);
+        this.async();
     });
 };
 

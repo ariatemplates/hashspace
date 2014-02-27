@@ -154,8 +154,10 @@ module.exports = function (grunt) {
       templateExtension: "hsp"
     },
     watch: {
-      files: ['*.*'],
-      tasks: []
+      mocha: {
+        files: ['hsp/compiler/**', 'public/test/**'],
+        tasks: ['mochaTest']
+      }
     },
     browserify: {
       runtime: {
@@ -259,5 +261,5 @@ module.exports = function (grunt) {
   grunt.registerTask('mocha', ['peg', 'mochaTest']);
   grunt.registerTask('test', ['checkStyle', 'mocha', 'karma:unit']);
   grunt.registerTask('ci', ['checkStyle', 'mocha', 'karma:ci', 'package']);
-  grunt.registerTask('default', ['hspserver','watch']);
+  grunt.registerTask('default', ['hspserver']);
 };
