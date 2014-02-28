@@ -1584,6 +1584,43 @@
                         }
                     }
                 }
+            },
+            /**
+     * Remove child nodes, from the chilNodes list and from the DOM
+     * This method is used by containers such as the {if} node
+     * @param {DOMNode} DomNode1 the dom comment element used to limit the content start
+     * @param {DOMNode} DomNode2 the dom comment element used to limit the content end
+     */
+            removeChildNodeInstances: function(DomNode1, DomNode2) {
+                // dispose child nodes
+                var cn = this.childNodes;
+                if (cn) {
+                    // recursively dispose child nodes
+                    for (var i = 0, sz = cn.length; sz > i; i++) {
+                        cn[i].$dispose();
+                    }
+                    delete this.childNodes;
+                }
+                this.childNodes = null;
+                // delete child nodes from the DOM
+                var node = this.node, isInBlock = false, ch, n1 = DomNode1, n2 = DomNode2;
+                for (var i = node.childNodes.length - 1; i > -1; i--) {
+                    ch = node.childNodes[i];
+                    if (isInBlock) {
+                        // we are between node1 and node2
+                        if (ch === n1) {
+                            i = -1;
+                            break;
+                        } else {
+                            node.removeChild(ch);
+                        }
+                    } else {
+                        // detect node2
+                        if (ch === n2) {
+                            isInBlock = true;
+                        }
+                    }
+                }
             }
         });
         /**
@@ -2115,9 +2152,9 @@
         exports.CptWrapper = CptWrapper;
         exports.createCptWrapper = createCptWrapper;
     });
-    define("hsp/rt/cptcomponent.js", [ "hsp/json", "hsp/rt/log", "hsp/rt/$text", "hsp/rt/cptwrapper" ], function(module, global) {
+    define("hsp/rt/cptcomponent.js", [ "hsp/json", "hsp/rt/log", "hsp/document", "hsp/rt/$text", "hsp/rt/cptwrapper" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var json = require("hsp/json"), log = require("hsp/rt/log"), $TextNode = require("hsp/rt/$text"), cptwrapper = require("hsp/rt/cptwrapper");
+        var json = require("hsp/json"), log = require("hsp/rt/log"), doc = require("hsp/document"), $TextNode = require("hsp/rt/$text"), cptwrapper = require("hsp/rt/cptwrapper");
         var $CptNode, $CptAttElement, TNode;
         // injected through setDependency to avoid circular dependencies
         exports.setDependency = function(name, value) {
@@ -2144,17 +2181,44 @@
    */
             initCpt: function(arg) {
                 this.isCptComponent = true;
-                // prepare init arguments
-                var initArgs = {};
-                if (this.atts) {
-                    var att, pvs = this.parent.vscope;
-                    for (var i = 0, sz = this.atts.length; sz > i; i++) {
-                        att = this.atts[i];
-                        initArgs[att.name] = att.getValue(this.eh, pvs, null);
+                this.ctlConstuctor = arg.ctlConstuctor;
+                if (this.template) {
+                    // this component is associated to a template
+                    var isDynamicTpl = this.createPathObservers();
+                    if (isDynamicTpl) {
+                        var nd = this.node;
+                        this.node1 = doc.createComment("# cpt " + this.pathInfo);
+                        this.node2 = doc.createComment("# /cpt " + this.pathInfo);
+                        nd.appendChild(this.node1);
+                        nd.appendChild(this.node2);
+                        this.createChildNodeInstances();
+                    } else {
+                        // WARNING: this changes vscope to the template vscope
+                        this.template.call(this, this.getTemplateArguments(), this.getCptArguments());
                     }
+                    // $init child components
+                    this.initChildComponents();
+                } else if (arg.cptattelement) {
+                    // this component is an attribute of another component
+                    var cw = cptwrapper.createCptWrapper(this.ctlConstuctor, this.getCptArguments());
+                    this.ctlWrapper = cw;
+                    this.controller = cw.cpt;
+                    if (cw.cpt.tagName) {
+                        log.error(this + " 'tagName' is a reserved keyword and cannot be used in component controllers");
+                    }
+                    cw.cpt.tagName = this.tagName;
                 }
+            },
+            /**
+   * Process and retrieve the component arguments that are needed to init the component template
+   */
+            getCptArguments: function() {
                 // determine if cpt supports template arguments
-                var ctlProto = arg.ctlConstuctor.prototype;
+                if (this.template) {
+                    // as template can be changed dynamically we have to sync the constructor
+                    this.ctlConstuctor = this.template.controllerConstructor;
+                }
+                var ctlProto = this.ctlConstuctor.prototype;
                 this.ctlAttributes = ctlProto.attributes;
                 this.ctlElements = ctlProto.elements;
                 // load template arguments
@@ -2165,7 +2229,7 @@
                     attributes: {},
                     content: null
                 };
-                var attributes = cptArgs.attributes;
+                var attributes = cptArgs.attributes, att;
                 if (this.atts) {
                     // some attributes have been passed to this instance - so we push them to cptArgs
                     // so that they are set on the controller when the template are rendered
@@ -2192,20 +2256,32 @@
                 if (this.childElements) {
                     cptArgs.content = this.getControllerContent();
                 }
-                if (arg.template) {
-                    // this component is associated to a template
-                    arg.template.call(this, initArgs, cptArgs);
-                    // $init child components
-                    this.initChildComponents();
-                } else if (arg.cptattelement) {
-                    // this component is an attribute of another component
-                    var cw = cptwrapper.createCptWrapper(arg.ctlConstuctor, cptArgs);
-                    this.ctlWrapper = cw;
-                    this.controller = cw.cpt;
-                    if (cw.cpt.tagName) {
-                        log.error(this + " 'tagName' is a reserved keyword and cannot be used in component controllers");
-                    }
-                    cw.cpt.tagName = this.tagName;
+                return cptArgs;
+            },
+            /**
+   * Create the child nodes for a dynamic template - this method assumes
+   * that node1 and node2 exist
+   */
+            createChildNodeInstances: function() {
+                if (!this.isDOMempty) {
+                    this.removeChildNodeInstances(this.node1, this.node2);
+                    this.isDOMempty = true;
+                }
+                if (this.template) {
+                    // temporarily assign a new node to get the content in a doc fragment
+                    this.vscope = this.parent.vscope;
+                    // to come back to original state, when the scope has not been changed by the template
+                    var targs = this.getTemplateArguments(), cargs = this.getCptArguments();
+                    var realNode = this.node;
+                    var df = doc.createDocumentFragment();
+                    this.node = df;
+                    this.template.call(this, targs, cargs);
+                    // WARNING: this changes vscope to the template vscope
+                    this.node = realNode;
+                    this.node.insertBefore(df, this.node2);
+                    this.replaceNodeBy(df, realNode);
+                    // recursively remove doc fragment reference
+                    this.isDOMempty = false;
                 }
             },
             /**
@@ -2219,6 +2295,7 @@
                 }
                 this.ctlAttributes = null;
                 this.cleanObjectProperties();
+                this.ctlConstuctor = null;
                 var tpa = this.tplAttributes;
                 if (tpa) {
                     for (var k in tpa) {
@@ -2247,6 +2324,8 @@
    * Load the component sub-nodes that correspond to template attributes
    */
             loadCptAttElements: function() {
+                this.attEltNodes = null;
+                this._attGenerators = null;
                 // determine the possible template attribute names
                 var tpAttNames = {}, ca = this.ctlAttributes, defaultTplAtt = null, lastTplAtt = null, count = 0;
                 for (var k in ca) {
@@ -2561,7 +2640,7 @@
                 this.childNodes = [];
                 this.childNodes[0] = root;
                 // instatiate sub-childNodes
-                root.render(this.node);
+                root.render(this.node, false);
             },
             /**
    * Safely cut all dependencies before object is deleted
@@ -2571,9 +2650,9 @@
             }
         };
     });
-    define("hsp/rt/cpttemplate.js", [ "hsp/json" ], function(module, global) {
+    define("hsp/rt/cpttemplate.js", [ "hsp/json", "hsp/document" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var json = require("hsp/json");
+        var json = require("hsp/json"), doc = require("hsp/document");
         /**
  * $CptTemplate contains methods that will be added to the prototype of all
  * $CptNode node instance that correspond to a template insertion:
@@ -2587,20 +2666,45 @@
    *     e.g. {template:obj,ctlConstuctor:obj.controllerConstructor}
    */
             initCpt: function(arg) {
-                // prepare init arguments
-                var initArgs = {};
-                if (this.atts) {
-                    var att, pvs = this.parent.vscope;
-                    for (var i = 0, sz = this.atts.length; sz > i; i++) {
-                        att = this.atts[i];
-                        initArgs[att.name] = att.getValue(this.eh, pvs, null);
-                    }
+                // determine if template path can change dynamically
+                var isDynamicTpl = this.createPathObservers();
+                if (isDynamicTpl) {
+                    var nd = this.node;
+                    this.node1 = doc.createComment("# template " + this.pathInfo);
+                    this.node2 = doc.createComment("# /template " + this.pathInfo);
+                    nd.appendChild(this.node1);
+                    nd.appendChild(this.node2);
+                    this.createChildNodeInstances();
+                } else {
+                    arg.template.call(this, this.getTemplateArguments());
                 }
-                arg.template.call(this, initArgs);
                 // the component is a template without any controller
                 // so we have to observe the template scope to be able to propagate changes to the parent scope
                 this._scopeChgeCb = this.onScopeChange.bind(this);
                 json.observe(this.vscope, this._scopeChgeCb);
+            },
+            /**
+   * Create the child nodes for a dynamic template - this method assumes
+   * that node1 and node2 exist
+   */
+            createChildNodeInstances: function() {
+                if (!this.isDOMempty) {
+                    this.removeChildNodeInstances(this.node1, this.node2);
+                    this.isDOMempty = true;
+                }
+                if (this.template) {
+                    var args = this.getTemplateArguments();
+                    // temporarily assign a new node to get the content in a doc fragment
+                    var realNode = this.node;
+                    var df = doc.createDocumentFragment();
+                    this.node = df;
+                    this.template.call(this, args);
+                    this.node = realNode;
+                    this.node.insertBefore(df, this.node2);
+                    this.replaceNodeBy(df, realNode);
+                    // recursively remove doc fragment reference
+                    this.isDOMempty = false;
+                }
             },
             /**
    * Safely cut all dependencies before object is deleted
@@ -2891,7 +2995,13 @@
                     return null;
                 }
             } else {
-                o = root;
+                // scope has priority over the global scope
+                if (scope && sz > 1) {
+                    o = scope[path[1]];
+                }
+                if (!o) {
+                    o = root;
+                }
             }
             if (sz > 2) {
                 for (var i = 2; sz > i; i++) {
@@ -3024,6 +3134,8 @@
      * @param {Array} children list of child node generators - correponding to pseudo components and attribute content
      */
             $constructor: function(tplPath, exps, attcfg, ehcfg, children) {
+                this.pathInfo = tplPath.slice(1).join(".");
+                // debugging info
                 this.isCptNode = true;
                 this.attEltNodes = null;
                 // array of element nodes - used to trigger a refresh when elt content changes
@@ -3042,6 +3154,8 @@
                 // reference to the controller attributes definition - if any
                 this._scopeChgeCb = null;
                 // used by component w/o any controller to observe the template scope
+                this.template = null;
+                // reference to the template object (used by component and templates)
                 if (children && children !== 0) {
                     this.children = children;
                 }
@@ -3050,6 +3164,7 @@
                 this.cleanObjectProperties();
             },
             cleanObjectProperties: function() {
+                this.removePathObservers();
                 if (this._scopeChgeCb) {
                     json.unobserve(this.vscope, this._scopeChgeCb);
                     this._scopeChgeCb = null;
@@ -3058,6 +3173,7 @@
                 this.exps = null;
                 this.controller = null;
                 this.ctlAttributes = null;
+                this.template = null;
             },
             /**
      * Create a node instance referencing the current node as base class As the $CptNode is DOMless it will not create a
@@ -3078,6 +3194,7 @@
                 var obj = getObject(tp, vscope);
                 // if object is a function this is a template or a component insertion
                 if (obj && typeof obj === "function") {
+                    this.template = obj;
                     if (obj.controllerConstructor) {
                         // template uses a controller
                         ni = this.createCptInstance("$CptComponent", parent);
@@ -3160,19 +3277,129 @@
                 if (this.adirty) {
                     // one of the component attribute has been changed - we need to propagate the change
                     // to the template controller
-                    if (this.refreshAttributes) {
-                        this.refreshAttributes();
+                    // check first if template changed
+                    var tplChanged = false;
+                    if (this.template) {
+                        var tpl = getObject(this.tplPath, this.parent.vscope);
+                        tplChanged = tpl !== this.template;
+                    }
+                    if (tplChanged) {
+                        this.template = tpl;
+                        this.createChildNodeInstances();
+                    } else {
+                        if (this.refreshAttributes) {
+                            this.refreshAttributes();
+                        }
                     }
                     this.adirty = false;
                 }
                 TNode.refresh.call(this);
             },
             /**
+     * Return the objects referenced by the path - return null if the path is not observable
+     */
+            getPathObjects: function() {
+                var tp = this.tplPath, o, ps = this.parent.vscope;
+                if (tp[0] === undefined || tp[0] === null || typeof tp[0] === "string") {
+                    o = ps;
+                } else if (ps[tp[1]]) {
+                    // tp[1] exists in the scope - so it has priority
+                    o = ps;
+                }
+                if (o) {
+                    var sz = tp.length, res = [];
+                    res.push(o);
+                    for (var i = 1; sz > i; i++) {
+                        o = o[tp[i]];
+                        if (o === undefined || o === null) {
+                            return null;
+                        }
+                        res.push(o);
+                    }
+                    return res;
+                }
+                return null;
+            },
+            /**
+     * Create observers to observe path changes
+     * This method is usec by $CptTemplate and $CptComponent
+     * @return {Boolean} true if the path can be observed
+     */
+            createPathObservers: function() {
+                var pos = this.getPathObjects();
+                if (!pos || !pos.length) {
+                    return false;
+                }
+                var sz = pos.length;
+                this._pathChgeCb = this.onPathChange.bind(this);
+                for (var i = 0; sz > i; i++) {
+                    json.observe(pos[i], this._pathChgeCb);
+                }
+                this._observedPathObjects = pos;
+                return true;
+            },
+            /**
+     * Remove path observers created through createPathObservers()
+     */
+            removePathObservers: function() {
+                var pos = this._observedPathObjects;
+                if (pos && pos.length) {
+                    for (var i = 0, sz = pos.length; sz > i; i++) {
+                        json.unobserve(pos[i], this._pathChgeCb);
+                    }
+                    this._observedPathObjects = null;
+                }
+                this._pathChgeCb = null;
+            },
+            /**
+     * Callback called when one of the object of the template path changes
+     */
+            onPathChange: function() {
+                // Warning: this method may be called even if the object referenced by the path didn't change
+                // because we observe all the properties of the object on the path - so we need to detect
+                // first if one of the objects on the path really changed
+                var pos = this.getPathObjects(), opos = this._observedPathObjects;
+                var sz = pos ? pos.length : -1;
+                var osz = opos ? opos.length : -1;
+                var changed = false;
+                if (sz === osz && sz !== -1) {
+                    // compare arrays
+                    for (var i = 0; sz > i; i++) {
+                        if (pos[i] !== opos[i]) {
+                            changed = true;
+                            break;
+                        }
+                    }
+                } else if (sz !== -1) {
+                    changed = true;
+                }
+                if (changed) {
+                    this.removePathObservers();
+                    this.createPathObservers();
+                    this.onPropChange();
+                }
+            },
+            /**
+     * Return the collection of template arguments
+     * Used by $CptTemplate and $CptComponent instances
+     */
+            getTemplateArguments: function() {
+                var args = {};
+                if (this.atts) {
+                    var att, pvs = this.parent.vscope;
+                    for (var i = 0, sz = this.atts.length; sz > i; i++) {
+                        att = this.atts[i];
+                        args[att.name] = att.getValue(this.eh, pvs, null);
+                    }
+                }
+                return args;
+            },
+            /**
     * Helper function used to give contextual error information
     * @return {String} - e.g. "[Component: #foo.bar]"
     */
             toString: function() {
-                return "[Component: #" + this.tplPath.slice(1).join(".") + "]";
+                return "[Component: #" + this.pathInfo + "]";
             }
         });
         /**
@@ -3353,35 +3580,7 @@
             createChildNodeInstances: function(condition) {
                 this.lastConditionValue = condition;
                 if (!this.isDOMempty) {
-                    // dispose child nodes
-                    var cn = this.childNodes;
-                    if (cn) {
-                        // recursively dispose child nodes
-                        for (var i = 0, sz = cn.length; sz > i; i++) {
-                            cn[i].$dispose();
-                        }
-                        delete this.childNodes;
-                    }
-                    this.childNodes = null;
-                    // delete child nodes from the DOM
-                    var node = this.node, isInBlock = false, ch, n1 = this.node1, n2 = this.node2;
-                    for (var i = node.childNodes.length - 1; i > -1; i--) {
-                        ch = node.childNodes[i];
-                        if (isInBlock) {
-                            // we are between node1 and node2
-                            if (ch === n1) {
-                                i = -1;
-                                break;
-                            } else {
-                                node.removeChild(ch);
-                            }
-                        } else {
-                            // detect node2
-                            if (ch === n2) {
-                                isInBlock = true;
-                            }
-                        }
-                    }
+                    this.removeChildNodeInstances(this.node1, this.node2);
                     this.isDOMempty = true;
                 }
                 // evalutate condition expression to determine which children collection to use (i.e. if or block)
