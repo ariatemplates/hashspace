@@ -556,7 +556,7 @@
         klass.createMetaDataPrefix = createMetaDataPrefix;
         module.exports = klass;
     });
-    define("hsp/propobserver.js", [ "hsp/klass", "hsp/json" ], function(module, global) {
+    define("hsp/propobserver.js", [ "./klass", "./json" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -572,8 +572,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-        var klass = require("hsp/klass");
-        var json = require("hsp/json");
+        var klass = require("./klass");
+        var json = require("./json");
         var ALL = "**ALL**";
         /**
  * Property observer - used by $Rootnode to gather all observers for one given object
@@ -1343,7 +1343,7 @@
             }
         });
     });
-    define("hsp/rt/tnode.js", [ "hsp/rt", "hsp/klass", "hsp/rt/log", "./exphandler" ], function(module, global) {
+    define("hsp/rt/tnode.js", [ "../rt", "../klass", "./log", "./exphandler" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -1359,7 +1359,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-        var hsp = require("hsp/rt"), klass = require("hsp/klass"), log = require("hsp/rt/log"), ExpHandler = require("./exphandler");
+        var hsp = require("../rt"), klass = require("../klass"), log = require("./log"), ExpHandler = require("./exphandler");
         /**
  * Template node - base class of all nodes
  */
@@ -1726,7 +1726,7 @@
         module.exports.TSimpleAtt = TSimpleAtt;
         module.exports.TExpAtt = TExpAtt;
     });
-    define("hsp/rt/$text.js", [ "hsp/klass", "hsp/document", "hsp/rt/tnode" ], function(module, global) {
+    define("hsp/rt/$text.js", [ "../klass", "../document", "./tnode" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -1743,7 +1743,7 @@
  * limitations under the License.
  */
         // This module contains the text node
-        var klass = require("hsp/klass"), doc = require("hsp/document"), TNode = require("hsp/rt/tnode").TNode, TExpAtt = require("hsp/rt/tnode").TExpAtt;
+        var klass = require("../klass"), doc = require("../document"), TNode = require("./tnode").TNode, TExpAtt = require("./tnode").TExpAtt;
         var $TextNode = klass({
             $extends: TNode,
             /**
@@ -1803,7 +1803,7 @@
         });
         module.exports = $TextNode;
     });
-    define("hsp/rt/cptwrapper.js", [ "hsp/json", "hsp/rt/log", "hsp/klass" ], function(module, global) {
+    define("hsp/rt/cptwrapper.js", [ "../json", "./log", "../klass" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2013 Amadeus s.a.s.
@@ -1819,7 +1819,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-        var json = require("hsp/json"), log = require("hsp/rt/log"), klass = require("hsp/klass");
+        var json = require("../json"), log = require("./log"), klass = require("../klass");
         function identity(v) {
             return v;
         }
@@ -2152,9 +2152,9 @@
         exports.CptWrapper = CptWrapper;
         exports.createCptWrapper = createCptWrapper;
     });
-    define("hsp/rt/cptcomponent.js", [ "hsp/json", "hsp/rt/log", "hsp/document", "hsp/rt/$text", "hsp/rt/cptwrapper" ], function(module, global) {
+    define("hsp/rt/cptcomponent.js", [ "../json", "./log", "../document", "./$text", "./cptwrapper" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var json = require("hsp/json"), log = require("hsp/rt/log"), doc = require("hsp/document"), $TextNode = require("hsp/rt/$text"), cptwrapper = require("hsp/rt/cptwrapper");
+        var json = require("../json"), log = require("./log"), doc = require("../document"), $TextNode = require("./$text"), cptwrapper = require("./cptwrapper");
         var $CptNode, $CptAttElement, TNode;
         // injected through setDependency to avoid circular dependencies
         exports.setDependency = function(name, value) {
@@ -2650,9 +2650,9 @@
             }
         };
     });
-    define("hsp/rt/cpttemplate.js", [ "hsp/json", "hsp/document" ], function(module, global) {
+    define("hsp/rt/cpttemplate.js", [ "../json", "../document" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var json = require("hsp/json"), doc = require("hsp/document");
+        var json = require("../json"), doc = require("../document");
         /**
  * $CptTemplate contains methods that will be added to the prototype of all
  * $CptNode node instance that correspond to a template insertion:
@@ -2743,7 +2743,7 @@
             }
         };
     });
-    define("hsp/rt/$root.js", [ "hsp/klass", "hsp/rt/log", "hsp/document", "hsp/json", "hsp/propobserver", "hsp/rt/tnode", "hsp/rt/cptcomponent", "hsp/rt/cptattinsert", "hsp/rt/cpttemplate" ], function(module, global) {
+    define("hsp/rt/$root.js", [ "../klass", "./log", "../document", "../json", "../propobserver", "./tnode", "./cptcomponent", "./cptattinsert", "./cpttemplate" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2760,11 +2760,11 @@
  * limitations under the License.
  */
         // This module contains the $Root and $Insert nodes used to instantiate new templates
-        var klass = require("hsp/klass"), log = require("hsp/rt/log"), doc = require("hsp/document"), json = require("hsp/json"), PropObserver = require("hsp/propobserver"), tn = require("hsp/rt/tnode"), TNode = tn.TNode, cptComponent = require("hsp/rt/cptcomponent");
+        var klass = require("../klass"), log = require("./log"), doc = require("../document"), json = require("../json"), PropObserver = require("../propobserver"), tn = require("./tnode"), TNode = tn.TNode, cptComponent = require("./cptcomponent");
         var CPT_TYPES = {
-            $CptAttInsert: require("hsp/rt/cptattinsert").$CptAttInsert,
+            $CptAttInsert: require("./cptattinsert").$CptAttInsert,
             $CptComponent: cptComponent.$CptComponent,
-            $CptTemplate: require("hsp/rt/cpttemplate").$CptTemplate
+            $CptTemplate: require("./cpttemplate").$CptTemplate
         };
         var DOCUMENT_FRAGMENT_NODE = 11;
         /**
@@ -3508,7 +3508,7 @@
         exports.$CptNode = $CptNode;
         exports.$CptAttElement = $CptAttElement;
     });
-    define("hsp/rt/$if.js", [ "hsp/klass", "hsp/document", "hsp/rt/tnode" ], function(module, global) {
+    define("hsp/rt/$if.js", [ "../klass", "../document", "./tnode" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3525,7 +3525,7 @@
  * limitations under the License.
  */
         // If condition node
-        var klass = require("hsp/klass"), doc = require("hsp/document"), tnode = require("hsp/rt/tnode"), TNode = tnode.TNode, isValidCptContent = tnode.isValidCptContent;
+        var klass = require("../klass"), doc = require("../document"), tnode = require("./tnode"), TNode = tnode.TNode, isValidCptContent = tnode.isValidCptContent;
         /**
  * If node Implements the if conditional statement. Adds a children2 collection that corresponds to the else block
  */
@@ -3650,7 +3650,7 @@
         });
         module.exports = $IfNode;
     });
-    define("hsp/rt/$foreach.js", [ "hsp/klass", "hsp/rt/log", "hsp/document", "hsp/json", "hsp/rt/tnode" ], function(module, global) {
+    define("hsp/rt/$foreach.js", [ "../klass", "./log", "../document", "../json", "./tnode" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3667,7 +3667,7 @@
  * limitations under the License.
  */
         // ForEachNode implementation
-        var klass = require("hsp/klass"), log = require("hsp/rt/log"), doc = require("hsp/document"), json = require("hsp/json"), tnode = require("hsp/rt/tnode"), TNode = tnode.TNode, isValidCptContent = tnode.isValidCptContent;
+        var klass = require("../klass"), log = require("./log"), doc = require("../document"), json = require("../json"), tnode = require("./tnode"), TNode = tnode.TNode, isValidCptContent = tnode.isValidCptContent;
         /**
  * foreach node Implements the foreach conditional statement that can be used through 3 forms: # foreach (itm in todos) //
  * iteration over an array on the integer indexes - if todos in not an array "in" will be considered as "of" # foreach
@@ -4498,7 +4498,7 @@
             return fakeEvent;
         };
     });
-    define("hsp/gestures/gesture.js", [ "hsp/klass", "./touchEvent" ], function(module, global) {
+    define("hsp/gestures/gesture.js", [ "../klass", "./touchEvent" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4514,7 +4514,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-        var klass = require("hsp/klass");
+        var klass = require("../klass");
         var touchEvent = require("./touchEvent");
         var Gesture = klass({
             /**
@@ -4845,9 +4845,9 @@
         });
         module.exports.Gesture = Gesture;
     });
-    define("hsp/gestures/tap.js", [ "hsp/klass", "./touchEvent", "./gesture" ], function(module, global) {
+    define("hsp/gestures/tap.js", [ "../klass", "./touchEvent", "./gesture" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var klass = require("hsp/klass");
+        var klass = require("../klass");
         var touchEvent = require("./touchEvent");
         var Gesture = require("./gesture").Gesture;
         var Tap = klass({
@@ -4929,9 +4929,9 @@
         });
         module.exports.Tap = Tap;
     });
-    define("hsp/gestures/longPress.js", [ "hsp/klass", "./touchEvent", "./gesture" ], function(module, global) {
+    define("hsp/gestures/longPress.js", [ "../klass", "./touchEvent", "./gesture" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var klass = require("hsp/klass");
+        var klass = require("../klass");
         var touchEvent = require("./touchEvent");
         var Gesture = require("./gesture").Gesture;
         var LongPress = klass({
@@ -5050,9 +5050,9 @@
         });
         module.exports.LongPress = LongPress;
     });
-    define("hsp/gestures/singleTap.js", [ "hsp/klass", "./touchEvent", "./gesture" ], function(module, global) {
+    define("hsp/gestures/singleTap.js", [ "../klass", "./touchEvent", "./gesture" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var klass = require("hsp/klass");
+        var klass = require("../klass");
         var touchEvent = require("./touchEvent");
         var Gesture = require("./gesture").Gesture;
         var SingleTap = klass({
@@ -5195,9 +5195,9 @@
         });
         module.exports.SingleTap = SingleTap;
     });
-    define("hsp/gestures/doubleTap.js", [ "hsp/klass", "./touchEvent", "./gesture" ], function(module, global) {
+    define("hsp/gestures/doubleTap.js", [ "../klass", "./touchEvent", "./gesture" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var klass = require("hsp/klass");
+        var klass = require("../klass");
         var touchEvent = require("./touchEvent");
         var Gesture = require("./gesture").Gesture;
         var DoubleTap = klass({
@@ -5342,9 +5342,9 @@
         });
         module.exports.DoubleTap = DoubleTap;
     });
-    define("hsp/gestures/swipe.js", [ "hsp/klass", "./touchEvent", "./gesture" ], function(module, global) {
+    define("hsp/gestures/swipe.js", [ "../klass", "./touchEvent", "./gesture" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var klass = require("hsp/klass");
+        var klass = require("../klass");
         var touchEvent = require("./touchEvent");
         var Gesture = require("./gesture").Gesture;
         var Swipe = klass({
@@ -5490,9 +5490,9 @@
         });
         module.exports.Swipe = Swipe;
     });
-    define("hsp/gestures/drag.js", [ "hsp/klass", "./touchEvent", "./gesture" ], function(module, global) {
+    define("hsp/gestures/drag.js", [ "../klass", "./touchEvent", "./gesture" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var klass = require("hsp/klass");
+        var klass = require("../klass");
         var touchEvent = require("./touchEvent");
         var Gesture = require("./gesture").Gesture;
         var Drag = klass({
@@ -5592,9 +5592,9 @@
         });
         module.exports.Drag = Drag;
     });
-    define("hsp/gestures/pinch.js", [ "hsp/klass", "./touchEvent", "./gesture" ], function(module, global) {
+    define("hsp/gestures/pinch.js", [ "../klass", "./touchEvent", "./gesture" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var klass = require("hsp/klass");
+        var klass = require("../klass");
         var touchEvent = require("./touchEvent");
         var Gesture = require("./gesture").Gesture;
         var Pinch = klass({
@@ -5755,7 +5755,7 @@
         });
         module.exports.Pinch = Pinch;
     });
-    define("hsp/gestures/gestures.js", [ "hsp/klass", "./tap", "./longPress", "./singleTap", "./doubleTap", "./swipe", "./drag", "./pinch" ], function(module, global) {
+    define("hsp/gestures/gestures.js", [ "../klass", "./tap", "./longPress", "./singleTap", "./doubleTap", "./swipe", "./drag", "./pinch" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5771,7 +5771,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-        var klass = require("hsp/klass");
+        var klass = require("../klass");
         var Tap = require("./tap").Tap;
         var LongPress = require("./longPress").LongPress;
         var SingleTap = require("./singleTap").SingleTap;
@@ -5932,7 +5932,7 @@
         });
         module.exports.Gestures = Gestures;
     });
-    define("hsp/rt/eltnode.js", [ "hsp/klass", "hsp/document", "hsp/rt/tnode", "hsp/rt", "hsp/gestures/gestures" ], function(module, global) {
+    define("hsp/rt/eltnode.js", [ "../klass", "../document", "./tnode", "../rt", "../gestures/gestures" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5949,11 +5949,11 @@
  * limitations under the License.
  */
         // Element Node used for any standard HTML element (i.e. having attributes and child elements)
-        var klass = require("hsp/klass");
-        var doc = require("hsp/document");
-        var TNode = require("hsp/rt/tnode").TNode;
-        var hsp = require("hsp/rt");
-        var gestures = require("hsp/gestures/gestures");
+        var klass = require("../klass");
+        var doc = require("../document");
+        var TNode = require("./tnode").TNode;
+        var hsp = require("../rt");
+        var gestures = require("../gestures/gestures");
         /**
  * Generic element node Add attribute support on top of TNode - used for div, spans, ul, li, h1, etc
  */
@@ -6305,7 +6305,7 @@
         });
         module.exports = LogNode;
     });
-    define("hsp/rt.js", [ "hsp/es5", "hsp/klass", "hsp/rt/log", "hsp/rt/$root", "hsp/rt/cptwrapper", "hsp/rt/$text", "hsp/rt/$if", "hsp/rt/$foreach", "hsp/rt/eltnode", "hsp/rt/$log" ], function(module, global) {
+    define("hsp/rt.js", [ "./es5", "./klass", "./rt/log", "./rt/$root", "./rt/cptwrapper", "./rt/$text", "./rt/$if", "./rt/$foreach", "./rt/eltnode", "hsp/rt/$log" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -6322,8 +6322,8 @@
  * limitations under the License.
  */
         // Hash Space runtime
-        require("hsp/es5");
-        var klass = require("hsp/klass"), log = require("hsp/rt/log"), $root = require("hsp/rt/$root"), $RootNode = $root.$RootNode, $InsertNode = $root.$InsertNode, $CptNode = $root.$CptNode, $CptAttElement = $root.$CptAttElement, cptwrapper = require("hsp/rt/cptwrapper");
+        require("./es5");
+        var klass = require("./klass"), log = require("./rt/log"), $root = require("./rt/$root"), $RootNode = $root.$RootNode, $InsertNode = $root.$InsertNode, $CptNode = $root.$CptNode, $CptAttElement = $root.$CptAttElement, cptwrapper = require("./rt/cptwrapper");
         var NodeGenerator = klass({
             /**
      * NodeGenerator constructor
@@ -6509,7 +6509,7 @@
  * constructor through a nodes property
  */
         var nodes = {};
-        var nodeList = [ "$text", require("hsp/rt/$text"), "$if", require("hsp/rt/$if"), "$insert", $InsertNode, "$foreach", require("hsp/rt/$foreach"), "elt", require("hsp/rt/eltnode"), "cpt", $CptNode, "catt", $CptAttElement, "log", require("hsp/rt/$log") ];
+        var nodeList = [ "$text", require("./rt/$text"), "$if", require("./rt/$if"), "$insert", $InsertNode, "$foreach", require("./rt/$foreach"), "elt", require("./rt/eltnode"), "cpt", $CptNode, "catt", $CptAttElement, "log", require("hsp/rt/$log") ];
         for (var i = 0, sz = nodeList.length; sz > i; i += 2) {
             createShortcut(nodeList[i], nodeList[i + 1]);
         }

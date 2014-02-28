@@ -1,6 +1,4 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"hsp/$set":[function(require,module,exports){
-module.exports=require('+0srr9');
-},{}],"+0srr9":[function(require,module,exports){
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"+0srr9":[function(require,module,exports){
 var json = require("./json");
 
 /**
@@ -56,7 +54,11 @@ $set.dec = function (object, property) {
     return previousValue;
 };
 
-},{"./json":"YcvKH8"}],"WDacIY":[function(require,module,exports){
+},{"./json":"YcvKH8"}],"hsp/$set":[function(require,module,exports){
+module.exports=require('+0srr9');
+},{}],"hsp/document":[function(require,module,exports){
+module.exports=require('WDacIY');
+},{}],"WDacIY":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -113,10 +115,6 @@ if (doc.createEventObject) {
     };
 }
 
-},{}],"hsp/document":[function(require,module,exports){
-module.exports=require('WDacIY');
-},{}],"hsp/es5":[function(require,module,exports){
-module.exports=require('hhHoZL');
 },{}],"hhHoZL":[function(require,module,exports){
 
 /*
@@ -189,8 +187,12 @@ if (!Function.prototype.bind) {
     };
 }
 
+},{}],"hsp/es5":[function(require,module,exports){
+module.exports=require('hhHoZL');
+},{}],"hsp/gestures/doubleTap":[function(require,module,exports){
+module.exports=require('6Kl1kt');
 },{}],"6Kl1kt":[function(require,module,exports){
-var klass = require("hsp/klass");
+var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
 
@@ -351,10 +353,8 @@ var DoubleTap = klass({
 });
 
 module.exports.DoubleTap = DoubleTap;
-},{"./gesture":"xsjChN","./touchEvent":"oYuPY+","hsp/klass":"GfSJC6"}],"hsp/gestures/doubleTap":[function(require,module,exports){
-module.exports=require('6Kl1kt');
-},{}],"J6s4RB":[function(require,module,exports){
-var klass = require("hsp/klass");
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"J6s4RB":[function(require,module,exports){
+var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
 
@@ -469,10 +469,8 @@ var Drag = klass({
 });
 
 module.exports.Drag = Drag;
-},{"./gesture":"xsjChN","./touchEvent":"oYuPY+","hsp/klass":"GfSJC6"}],"hsp/gestures/drag":[function(require,module,exports){
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/drag":[function(require,module,exports){
 module.exports=require('J6s4RB');
-},{}],"hsp/gestures/gesture":[function(require,module,exports){
-module.exports=require('xsjChN');
 },{}],"xsjChN":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -489,7 +487,7 @@ module.exports=require('xsjChN');
  * limitations under the License.
  */
 
-var klass = require("hsp/klass");
+var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 
 var Gesture = klass({
@@ -845,7 +843,11 @@ var Gesture = klass({
 });
 
 module.exports.Gesture = Gesture;
-},{"./touchEvent":"oYuPY+","hsp/klass":"GfSJC6"}],"aNFXt4":[function(require,module,exports){
+},{"../klass":"GfSJC6","./touchEvent":"oYuPY+"}],"hsp/gestures/gesture":[function(require,module,exports){
+module.exports=require('xsjChN');
+},{}],"hsp/gestures/gestures":[function(require,module,exports){
+module.exports=require('aNFXt4');
+},{}],"aNFXt4":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -860,7 +862,7 @@ module.exports.Gesture = Gesture;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var klass = require("hsp/klass");
+var klass = require("../klass");
 var Tap = require("./tap").Tap;
 var LongPress = require("./longPress").LongPress;
 var SingleTap = require("./singleTap").SingleTap;
@@ -952,10 +954,10 @@ var Gestures = klass({
 module.exports.Gestures = Gestures;
 
 
-},{"./doubleTap":"6Kl1kt","./drag":"J6s4RB","./longPress":"OkCBHK","./pinch":"X+07de","./singleTap":"BxcBBq","./swipe":"1S2i7l","./tap":"uETHOu","hsp/klass":"GfSJC6"}],"hsp/gestures/gestures":[function(require,module,exports){
-module.exports=require('aNFXt4');
+},{"../klass":"GfSJC6","./doubleTap":"6Kl1kt","./drag":"J6s4RB","./longPress":"OkCBHK","./pinch":"X+07de","./singleTap":"BxcBBq","./swipe":"1S2i7l","./tap":"uETHOu"}],"hsp/gestures/longPress":[function(require,module,exports){
+module.exports=require('OkCBHK');
 },{}],"OkCBHK":[function(require,module,exports){
-var klass = require("hsp/klass");
+var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
 
@@ -1084,10 +1086,8 @@ var LongPress = klass({
 });
 
 module.exports.LongPress = LongPress;
-},{"./gesture":"xsjChN","./touchEvent":"oYuPY+","hsp/klass":"GfSJC6"}],"hsp/gestures/longPress":[function(require,module,exports){
-module.exports=require('OkCBHK');
-},{}],"X+07de":[function(require,module,exports){
-var klass = require("hsp/klass");
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"X+07de":[function(require,module,exports){
+var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
 
@@ -1269,12 +1269,12 @@ var Pinch = klass({
 });
 
 module.exports.Pinch = Pinch;
-},{"./gesture":"xsjChN","./touchEvent":"oYuPY+","hsp/klass":"GfSJC6"}],"hsp/gestures/pinch":[function(require,module,exports){
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/pinch":[function(require,module,exports){
 module.exports=require('X+07de');
 },{}],"hsp/gestures/singleTap":[function(require,module,exports){
 module.exports=require('BxcBBq');
 },{}],"BxcBBq":[function(require,module,exports){
-var klass = require("hsp/klass");
+var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
 
@@ -1432,10 +1432,10 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"./gesture":"xsjChN","./touchEvent":"oYuPY+","hsp/klass":"GfSJC6"}],"hsp/gestures/swipe":[function(require,module,exports){
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/swipe":[function(require,module,exports){
 module.exports=require('1S2i7l');
 },{}],"1S2i7l":[function(require,module,exports){
-var klass = require("hsp/klass");
+var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
 
@@ -1593,8 +1593,8 @@ var Swipe = klass({
 });
 
 module.exports.Swipe = Swipe;
-},{"./gesture":"xsjChN","./touchEvent":"oYuPY+","hsp/klass":"GfSJC6"}],"uETHOu":[function(require,module,exports){
-var klass = require("hsp/klass");
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"uETHOu":[function(require,module,exports){
+var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
 
@@ -1689,7 +1689,7 @@ var Tap = klass({
 });
 
 module.exports.Tap = Tap;
-},{"./gesture":"xsjChN","./touchEvent":"oYuPY+","hsp/klass":"GfSJC6"}],"hsp/gestures/tap":[function(require,module,exports){
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/tap":[function(require,module,exports){
 module.exports=require('uETHOu');
 },{}],"hsp/gestures/touchEvent":[function(require,module,exports){
 module.exports=require('oYuPY+');
@@ -2408,8 +2408,6 @@ function unobserve (object, callback, metaProperty) {
     }
 }
 
-},{}],"hsp/klass":[function(require,module,exports){
-module.exports=require('GfSJC6');
 },{}],"GfSJC6":[function(require,module,exports){
 
 /*
@@ -2506,8 +2504,8 @@ klass.createMetaDataPrefix = createMetaDataPrefix;
 
 module.exports = klass;
 
-},{}],"hsp/propobserver":[function(require,module,exports){
-module.exports=require('D6s46z');
+},{}],"hsp/klass":[function(require,module,exports){
+module.exports=require('GfSJC6');
 },{}],"D6s46z":[function(require,module,exports){
 
 /*
@@ -2525,8 +2523,8 @@ module.exports=require('D6s46z');
  * limitations under the License.
  */
 
-var klass = require("hsp/klass");
-var json = require("hsp/json");
+var klass = require("./klass");
+var json = require("./json");
 var ALL = "**ALL**";
 
 /**
@@ -2625,7 +2623,11 @@ function PropObserver_notifyChange (po, chge, chgName) {
 
 module.exports = PropObserver;
 
-},{"hsp/json":"YcvKH8","hsp/klass":"GfSJC6"}],"7uFaOB":[function(require,module,exports){
+},{"./json":"YcvKH8","./klass":"GfSJC6"}],"hsp/propobserver":[function(require,module,exports){
+module.exports=require('D6s46z');
+},{}],"hsp/rt":[function(require,module,exports){
+module.exports=require('7uFaOB');
+},{}],"7uFaOB":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2643,15 +2645,15 @@ module.exports = PropObserver;
  */
 
 // Hash Space runtime
-require("hsp/es5");
-var klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    $root = require("hsp/rt/$root"),
+require("./es5");
+var klass = require("./klass"),
+    log = require("./rt/log"),
+    $root = require("./rt/$root"),
     $RootNode = $root.$RootNode,
     $InsertNode = $root.$InsertNode,
     $CptNode = $root.$CptNode,
     $CptAttElement = $root.$CptAttElement,
-    cptwrapper = require("hsp/rt/cptwrapper");
+    cptwrapper = require("./rt/cptwrapper");
 
 
 var NodeGenerator = klass({
@@ -2851,11 +2853,11 @@ module.exports.logErrors = function (fileName, errors) {
 var nodes = {};
 
 var nodeList = [
-    "$text", require("hsp/rt/$text"),
-    "$if", require("hsp/rt/$if"),
+    "$text", require("./rt/$text"),
+    "$if", require("./rt/$if"),
     "$insert", $InsertNode,
-    "$foreach", require("hsp/rt/$foreach"),
-    "elt", require("hsp/rt/eltnode"),
+    "$foreach", require("./rt/$foreach"),
+    "elt", require("./rt/eltnode"),
     "cpt", $CptNode,
     "catt", $CptAttElement,
     "log", require("hsp/rt/$log")
@@ -2875,9 +2877,7 @@ function createShortcut (tagName, tagConstructor) {
     };
 }
 
-},{"hsp/es5":"hhHoZL","hsp/klass":"GfSJC6","hsp/rt/$foreach":"Ll2sHF","hsp/rt/$if":"R4WgDY","hsp/rt/$log":"nUpGcG","hsp/rt/$root":"P5tgTj","hsp/rt/$text":"jVbC+E","hsp/rt/cptwrapper":"We0lgJ","hsp/rt/eltnode":"NbaJkW","hsp/rt/log":"pIlMhe"}],"hsp/rt":[function(require,module,exports){
-module.exports=require('7uFaOB');
-},{}],"Ll2sHF":[function(require,module,exports){
+},{"./es5":"hhHoZL","./klass":"GfSJC6","./rt/$foreach":"Ll2sHF","./rt/$if":"R4WgDY","./rt/$root":"P5tgTj","./rt/$text":"jVbC+E","./rt/cptwrapper":"We0lgJ","./rt/eltnode":"NbaJkW","./rt/log":"pIlMhe","hsp/rt/$log":"nUpGcG"}],"Ll2sHF":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2895,11 +2895,11 @@ module.exports=require('7uFaOB');
  */
 
 // ForEachNode implementation
-var klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    doc = require("hsp/document"),
-    json = require("hsp/json"),
-    tnode = require("hsp/rt/tnode"),
+var klass = require("../klass"),
+    log = require("./log"),
+    doc = require("../document"),
+    json = require("../json"),
+    tnode = require("./tnode"),
     TNode = tnode.TNode,
     isValidCptContent = tnode.isValidCptContent;
 
@@ -3456,10 +3456,8 @@ var $ItemNode = klass({
 
 module.exports = $ForEachNode;
 
-},{"hsp/document":"WDacIY","hsp/json":"YcvKH8","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$foreach":[function(require,module,exports){
+},{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$foreach":[function(require,module,exports){
 module.exports=require('Ll2sHF');
-},{}],"hsp/rt/$if":[function(require,module,exports){
-module.exports=require('R4WgDY');
 },{}],"R4WgDY":[function(require,module,exports){
 
 /*
@@ -3478,9 +3476,9 @@ module.exports=require('R4WgDY');
  */
 
 // If condition node
-var klass = require("hsp/klass"),
-    doc = require("hsp/document"),
-    tnode = require("hsp/rt/tnode"),
+var klass = require("../klass"),
+    doc = require("../document"),
+    tnode = require("./tnode"),
     TNode = tnode.TNode,
     isValidCptContent = tnode.isValidCptContent;
 
@@ -3616,7 +3614,9 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$log":[function(require,module,exports){
+},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$if":[function(require,module,exports){
+module.exports=require('R4WgDY');
+},{}],"hsp/rt/$log":[function(require,module,exports){
 module.exports=require('nUpGcG');
 },{}],"nUpGcG":[function(require,module,exports){
 
@@ -3711,9 +3711,7 @@ var LogNode = klass({
 module.exports=LogNode;
 
 
-},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$root":[function(require,module,exports){
-module.exports=require('P5tgTj');
-},{}],"P5tgTj":[function(require,module,exports){
+},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"P5tgTj":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3731,20 +3729,19 @@ module.exports=require('P5tgTj');
  */
 
 // This module contains the $Root and $Insert nodes used to instantiate new templates
-
-var klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    doc = require("hsp/document"),
-    json = require("hsp/json"),
-    PropObserver = require("hsp/propobserver"),
-    tn = require("hsp/rt/tnode"),
+var klass = require("../klass"),
+    log = require("./log"),
+    doc = require("../document"),
+    json = require("../json"),
+    PropObserver = require("../propobserver"),
+    tn = require("./tnode"),
     TNode = tn.TNode,
-    cptComponent=require("hsp/rt/cptcomponent");
+    cptComponent=require("./cptcomponent");
 
 var CPT_TYPES={
-    '$CptAttInsert':require("hsp/rt/cptattinsert").$CptAttInsert,
+    '$CptAttInsert':require("./cptattinsert").$CptAttInsert,
     '$CptComponent':cptComponent.$CptComponent,
-    '$CptTemplate':require("hsp/rt/cpttemplate").$CptTemplate
+    '$CptTemplate':require("./cpttemplate").$CptTemplate
 };
 
 var DOCUMENT_FRAGMENT_NODE = 11;
@@ -4535,8 +4532,8 @@ exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
 
 
-},{"hsp/document":"WDacIY","hsp/json":"YcvKH8","hsp/klass":"GfSJC6","hsp/propobserver":"D6s46z","hsp/rt/cptattinsert":"C9wO2N","hsp/rt/cptcomponent":"lU3L0p","hsp/rt/cpttemplate":"aBMumZ","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$text":[function(require,module,exports){
-module.exports=require('jVbC+E');
+},{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","../propobserver":"D6s46z","./cptattinsert":"C9wO2N","./cptcomponent":"lU3L0p","./cpttemplate":"aBMumZ","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$root":[function(require,module,exports){
+module.exports=require('P5tgTj');
 },{}],"jVbC+E":[function(require,module,exports){
 
 /*
@@ -4555,7 +4552,10 @@ module.exports=require('jVbC+E');
  */
 
 // This module contains the text node
-var klass = require("hsp/klass"), doc = require("hsp/document"), TNode = require("hsp/rt/tnode").TNode, TExpAtt = require("hsp/rt/tnode").TExpAtt;
+var klass = require("../klass"),
+    doc = require("../document"),
+    TNode = require("./tnode").TNode,
+    TExpAtt = require("./tnode").TExpAtt;
 
 var $TextNode = klass({
     $extends : TNode,
@@ -4624,7 +4624,9 @@ var $TextNode = klass({
 });
 
 module.exports = $TextNode;
-},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/tnode":"Jrooar"}],"C9wO2N":[function(require,module,exports){
+},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$text":[function(require,module,exports){
+module.exports=require('jVbC+E');
+},{}],"C9wO2N":[function(require,module,exports){
 /**
  * $CptAttInsert contains methods that will be added to the prototype of all
  * $CptNode node instance that correspond to an insertion of a component attribute
@@ -4654,14 +4656,12 @@ module.exports.$CptAttInsert = {
 
 },{}],"hsp/rt/cptattinsert":[function(require,module,exports){
 module.exports=require('C9wO2N');
-},{}],"hsp/rt/cptcomponent":[function(require,module,exports){
-module.exports=require('lU3L0p');
 },{}],"lU3L0p":[function(require,module,exports){
-var json = require("hsp/json"),
-    log = require("hsp/rt/log"),
-    doc = require("hsp/document"),
-    $TextNode = require("hsp/rt/$text"),
-    cptwrapper = require("hsp/rt/cptwrapper");
+var json = require("../json"),
+    log = require("./log"),
+    doc = require("../document"),
+    $TextNode = require("./$text"),
+    cptwrapper = require("./cptwrapper");
 
 var $CptNode,$CptAttElement, TNode; // injected through setDependency to avoid circular dependencies
 
@@ -5164,11 +5164,11 @@ exports.$CptComponent = {
   }
 };
 
-},{"hsp/document":"WDacIY","hsp/json":"YcvKH8","hsp/rt/$text":"jVbC+E","hsp/rt/cptwrapper":"We0lgJ","hsp/rt/log":"pIlMhe"}],"hsp/rt/cpttemplate":[function(require,module,exports){
-module.exports=require('aBMumZ');
+},{"../document":"WDacIY","../json":"YcvKH8","./$text":"jVbC+E","./cptwrapper":"We0lgJ","./log":"pIlMhe"}],"hsp/rt/cptcomponent":[function(require,module,exports){
+module.exports=require('lU3L0p');
 },{}],"aBMumZ":[function(require,module,exports){
-var json = require("hsp/json"),
-    doc = require("hsp/document");
+var json = require("../json"),
+    doc = require("../document");
 
 /**
  * $CptTemplate contains methods that will be added to the prototype of all
@@ -5268,7 +5268,9 @@ module.exports.$CptTemplate = {
   }
 };
 
-},{"hsp/document":"WDacIY","hsp/json":"YcvKH8"}],"hsp/rt/cptwrapper":[function(require,module,exports){
+},{"../document":"WDacIY","../json":"YcvKH8"}],"hsp/rt/cpttemplate":[function(require,module,exports){
+module.exports=require('aBMumZ');
+},{}],"hsp/rt/cptwrapper":[function(require,module,exports){
 module.exports=require('We0lgJ');
 },{}],"We0lgJ":[function(require,module,exports){
 /*
@@ -5286,9 +5288,9 @@ module.exports=require('We0lgJ');
  * limitations under the License.
  */
 
-var json = require("hsp/json"),
-    log = require("hsp/rt/log"),
-    klass = require("hsp/klass");
+var json = require("../json"),
+    log = require("./log"),
+    klass = require("../klass");
 
 function identity(v) {
     return v;
@@ -5643,7 +5645,7 @@ function createCptWrapper(Ctl, cptArgs) {
 exports.CptWrapper = CptWrapper;
 exports.createCptWrapper=createCptWrapper;
 
-},{"hsp/json":"YcvKH8","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe"}],"NbaJkW":[function(require,module,exports){
+},{"../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe"}],"NbaJkW":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5661,11 +5663,11 @@ exports.createCptWrapper=createCptWrapper;
  */
 
 // Element Node used for any standard HTML element (i.e. having attributes and child elements)
-var klass = require("hsp/klass");
-var doc = require("hsp/document");
-var TNode = require("hsp/rt/tnode").TNode;
-var hsp = require("hsp/rt");
-var gestures = require("hsp/gestures/gestures");
+var klass = require("../klass");
+var doc = require("../document");
+var TNode = require("./tnode").TNode;
+var hsp = require("../rt");
+var gestures = require("../gestures/gestures");
 
 /**
  * Generic element node Add attribute support on top of TNode - used for div, spans, ul, li, h1, etc
@@ -5951,7 +5953,7 @@ var EltNode = klass({
 
 module.exports = EltNode;
 
-},{"hsp/document":"WDacIY","hsp/gestures/gestures":"aNFXt4","hsp/klass":"GfSJC6","hsp/rt":"7uFaOB","hsp/rt/tnode":"Jrooar"}],"hsp/rt/eltnode":[function(require,module,exports){
+},{"../document":"WDacIY","../gestures/gestures":"aNFXt4","../klass":"GfSJC6","../rt":"7uFaOB","./tnode":"Jrooar"}],"hsp/rt/eltnode":[function(require,module,exports){
 module.exports=require('NbaJkW');
 },{}],"FA9d2U":[function(require,module,exports){
 /*
@@ -6701,9 +6703,9 @@ module.exports = log;
  * limitations under the License.
  */
 
-var hsp = require("hsp/rt"),
-    klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
+var hsp = require("../rt"),
+    klass = require("../klass"),
+    log = require("./log"),
     ExpHandler = require("./exphandler");
 
 /**
@@ -7096,6 +7098,6 @@ module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;
 
-},{"./exphandler":"FA9d2U","hsp/klass":"GfSJC6","hsp/rt":"7uFaOB","hsp/rt/log":"pIlMhe"}],"hsp/rt/tnode":[function(require,module,exports){
+},{"../klass":"GfSJC6","../rt":"7uFaOB","./exphandler":"FA9d2U","./log":"pIlMhe"}],"hsp/rt/tnode":[function(require,module,exports){
 module.exports=require('Jrooar');
 },{}]},{},["7uFaOB"])
