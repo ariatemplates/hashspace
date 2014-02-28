@@ -53,17 +53,15 @@ For jshint validation:
 To run all the tests (compiler and runtime):
 - `grunt test`
 
-You can work in the TDD mode as well:
-- `grunt tdd`
-
 For the compiler test only:
-- run `grunt mocha`
+- run `grunt mocha` (you can also work in the TDD mode by running `grunt watch:mocha`)
 
 For the browser-based runtime tests only:
 - run `grunt karma:unit` to test on local browsers (you can also work in the TDD mode by running `grunt karma:tdd`)
 - run `grunt karma:sauce` to test on SauceLabs browsers
 
-To do the health check on the project (before commit, for example) run `grunt test`. This will run
+To do the health check on the project (before commit, for example) run `grunt test`. This will run checkstyle verifications
+and all the tests (compiler and runtime).
 
 For the browser runtime tests:
 - run *grunt* - this will launch a local webserver and a watch task on your files
@@ -74,4 +72,3 @@ For the browser runtime tests:
 [angular]:http://angularjs.org/
 [grunt]: http://gruntjs.com/
 [mocha]: http://visionmedia.github.io/mocha/
-
