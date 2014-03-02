@@ -39,9 +39,9 @@ var PropObserver = klass({
      */
     $dispose : function () {
         json.unobserve(this.target, this.callback);
-        delete this.props;
-        delete this.callback;
-        delete this.target;
+        this.props=null;
+        this.callback=null;
+        this.target=null;
     },
     /**
      * Add a new observer for a given property
@@ -77,7 +77,7 @@ var PropObserver = klass({
                 }
             }
             if (arr.length === 0) {
-                delete this.props[property];
+                this.props[property]=null;
             }
         }
     }

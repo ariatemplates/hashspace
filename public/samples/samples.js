@@ -55,6 +55,14 @@ module.exports = [{
                         main : true
                     }]
         }, {
+            title : "Local variables with {let}",
+            folder : "let",
+            description : "description.md",
+            files : [{
+                        src : "let.hsp",
+                        main : true
+                    }]
+        }, {
             title : "CSS Class expressions",
             folder : "cssclass",
             description : "description.md",

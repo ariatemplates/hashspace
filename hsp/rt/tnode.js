@@ -35,6 +35,8 @@ var TNode = klass({
     htmlCbs : null, // array: list of the html callbacks - if any
     nodeNS : null, // string: node namespace - if any
     isCptContent : false, // tells if a node instance is a child of a component (used to raise edirty flags)
+    obsPairs : null,      // Array of observed [obj, property] pairs associated to this object
+    needSubScope : false, // true if a dedicated sub-scope should be created for this node
 
     $constructor : function (exps) {
         this.isStatic = (exps === 0);
@@ -58,15 +60,18 @@ var TNode = klass({
         }
 
         // TODO delete Expression observers !!!!
-
+        if (this.root) {
+            this.root.rmAllObjectObservers(this);
+        }
+        this.obsPairs = null;
         this.htmlCbs = null;
-        delete this.node;
-        delete this.parent;
-        delete this.root;
-        delete this.vscope;
-        delete this.children;
-        delete this.atts;
-        delete this.evtHandlers;
+        this.node = null;
+        this.parent = null;
+        this.root = null;
+        this.vscope = null;
+        this.children = null;
+        this.atts = null;
+        this.evtHandlers = null;
     },
 
     /**
@@ -159,8 +164,12 @@ var TNode = klass({
     createNodeInstance : function (parent) {
         // create node instance referencing the current node as parent in the prototype chain
         var ni = klass.createObject(this);
-        ni.vscope = parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
         ni.parent = parent;
+        if (this.needSubScope) {
+            ni.vscope = ni.createSubScope();
+        } else {
+            ni.vscope = parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
+        }
         ni.nodeNS = parent.nodeNS;
         ni.root = parent.root;
         ni.root.createExpressionObservers(ni);
@@ -190,6 +199,11 @@ var TNode = klass({
      * more specific logic
      */
     refresh : function () {
+        if (this.adirty) {
+            // update observable pairs
+            this.root.updateObjectObservers(this);
+            this.adirty=false;
+        }
         if (this.cdirty) {
             var cn = this.childNodes;
             if (cn) {
@@ -291,6 +305,28 @@ var TNode = klass({
                 }
             }
         }
+    },
+
+    /**
+     * Create a sub-scope object inheriting from the parent' scope
+     * @param {Object} ref tthe reference scope (optional - default: this.parent.vscope)
+     */
+    createSubScope: function(ref) {
+        if (!ref) {
+            ref=this.parent.vscope;
+        }
+        return ExpHandler.createSubScope(ref);
+    },
+
+    /**
+     * Scans the scope tree to determine which scope object is actually handling a given object
+     * (Shortcut to ExpHandler.getScopeOwner)
+     * @param {String} property the property to look for
+     * @param {Object} vscope the current variable scope
+     * @return {Object} the scope object or null if not found
+     */
+    getScopeOwner : function(property, vscope) {
+        return ExpHandler.getScopeOwner(property, vscope);
     }
 });
 

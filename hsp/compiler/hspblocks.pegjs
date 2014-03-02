@@ -74,6 +74,7 @@ TemplateContent "template content" // TODO: CSSClassExpression
                 / HTMLElement / EndHTMLElement
                 / HspComponent / EndHspComponent
                 / HspCptAttribute / EndHspCptAttribute
+                / LetBlock
                 / LogBlock
                 / ExpressionBlock
                 / InvalidHTMLElement
@@ -218,6 +219,24 @@ LogBlock
       }
     }
     return {type:"log",exprs:exprs, line:line, column:column};
+  }
+
+LetBlock
+  = "{" _ "let " _ first:LetAssignment _ next:("," _ LetAssignment)* "}" EOS?
+  {
+    var asn=[first];
+    if (next) {
+      for (var i=0, sz=next.length;sz>i;i++) {
+        asn.push(next[i][2]);
+      }
+    }
+    return {type:"let",assignments:asn, line:line, column:column}
+  }
+
+LetAssignment
+  =  nm:Identifier _ "=" _ val:HExpressionContent
+  {
+    return {identifier:nm, value:val}
   }
 
 ExpressionBlock
