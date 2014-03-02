@@ -53,6 +53,18 @@ var hsp=require("hsp/rt"),
     </div>
 # /template
 
+# template test4(d)
+    <div class="foo">
+        <ul>
+            {foreach city in d.cities}
+                {let nm=city.name}
+                <li class="city">{nm}</li>
+            {/foreach}
+        </ul>
+    </div>
+    <div class="bar">{nm}</div>
+# /template
+
 describe("Let statement", function () {
   
     it("validates let in template scope", function() {
@@ -105,4 +117,33 @@ describe("Let statement", function () {
         expect(h.logs().length).to.equal(0);
     });
 
+    it("validates let in {foreach} scope", function() {
+        var h=ht.newTestContext(), d={
+            cities:[
+                {code:"PAR",name:"Paris"},
+                {code:"NYC",name:"New York"}
+            ]
+        };
+        test4(d).render(h.container);
+
+        expect(h(".city").length).to.equal(2);
+        expect(h(".city").item(0).text()).to.equal("Paris");
+        expect(h(".city").item(1).text()).to.equal("New York");
+        expect(h(".bar").text()).to.equal("");
+
+        // change
+        h.$set(d.cities[0],"name","PARIS");
+
+        expect(h(".city").length).to.equal(2);
+        expect(h(".city").item(0).text()).to.equal("PARIS");
+        expect(h(".bar").text()).to.equal("");
+
+        // set back
+        h.$set(d.cities[0],"name","Paris");
+
+        expect(h(".city").length).to.equal(2);
+        expect(h(".city").item(0).text()).to.equal("Paris");
+           
+        expect(h.logs().length).to.equal(0);
+    });
 });

@@ -66,16 +66,6 @@ var LetNode = klass({
     },
 
     /**
-     * Refresh the text node if its properties have changed
-     */
-    refresh : function () {
-        if (this.adirty) {
-            //this.processLog();
-            this.adirty = false;
-        }
-    },
-
-    /**
      * Tell this node can be found in a component content
      */
     isValidCptAttElement:function () {

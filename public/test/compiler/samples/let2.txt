@@ -26,6 +26,7 @@ test=[
         e2:[2,1,_blah]
       },['aVarName',1,'anotherName',2]
       )
-    ]
+    ],
+    1
   )
 ]

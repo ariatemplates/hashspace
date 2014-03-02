@@ -149,7 +149,6 @@ var $ForEachNode = klass({
                 // collection is the same but some items have been deleted or created
                 this.updateCollection(col);
             }
-            this.adirty = false;
         }
         TNode.refresh.call(this); // refresh the child nodes if needed
     },

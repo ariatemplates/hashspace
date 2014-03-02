@@ -85,20 +85,32 @@ var ExpHandler = klass({
      * Scans the scope tree to determine which scope object is actually handling a given object
      * This method is necessary to observe the right scope instance
      * (all scope object have a hidden "+parent" property referencing their parent scope)
-     * @param {Object} obj the object to look for
+     * @param {String} property the property to look for
      * @param {Object} vscope the current variable scope
      * @return {Object} the scope object or null if not found
      */
-    getScopeOwner : function(obj, vscope) {
+    getScopeOwner : function(property, vscope) {
         var vs=vscope;
         while(vs) {
-            if (vs.hasOwnProperty(obj)) {
+            if (vs.hasOwnProperty(property)) {
                 return vs;
             } else {
                 vs=vs["+parent"];
             }
         }
         return null;
+    },
+
+    /**
+     * Create a sub-scope object inheriting from the parent' scope
+     * @param {Object} ref the reference scope
+     * @return {Object} sub-scope object extending the ref object
+     */
+    createSubScope: function(ref) {
+        var vs = klass.createObject(ref);
+        vs["scope"] = vs;
+        vs["+parent"] = ref;
+        return vs;
     }
 });
 
@@ -233,7 +245,7 @@ var DataRefExpr = klass({
             if (v===null) {
                 // we try to observe a properety that has not been created yet
                 // and it will be created on the current scope (cf. let)
-                v=vscope; 
+                v=vscope;
             }
         }
         if (v === undefined) {

@@ -118,7 +118,7 @@ var $RootNode = klass({
             delete o.target[this.MD_ID]; // remove the MD marker
             o.$dispose();
         }
-        delete this.propObs;
+        this.propObs=null;
         if (this.ctlWrapper) {
             this.ctlWrapper.$dispose();
             this.ctlWrapper = null;
@@ -143,6 +143,7 @@ var $RootNode = klass({
             if (sz === 1) {
                 this.createObjectObserver(ni, op[0][0], op[0][1]);
             } else {
+                ni.obsPairs = op;
                 for (var i = 0; sz > i; i++) {
                     this.createObjectObserver(ni, op[i][0], op[i][1]);
                 }
@@ -184,6 +185,32 @@ var $RootNode = klass({
             // observer exists
             var obs = this.propObs[oid - 1];
             obs.rmObserver(ni, prop);
+        }
+    },
+
+    /**
+     * Removes the object observers associated to a node instance
+     * @param {TNode} ni the node instance that contained the changes
+     */
+    rmAllObjectObservers : function (ni) {
+        var op=ni.obsPairs;
+        if (op) {
+            for (var i = 0, sz=op.length; sz > i; i++) {
+                // remove previous
+                this.rmObjectObserver(ni, op[i][0], op[i][1]);
+            }
+            ni.obsPairs=null;
+        }
+    },
+
+    /**
+     * Update the object observers associated to a node instance
+     * @param {TNode} ni the node instance that contained the changes
+     */
+    updateObjectObservers : function (ni) {
+        if (ni.obsPairs) {
+            this.rmAllObjectObservers(ni);
+            this.createExpressionObservers(ni);
         }
     },
 
@@ -592,13 +619,22 @@ var $CptNode = klass({
      * Return the objects referenced by the path - return null if the path is not observable
      */
     getPathObjects : function() {
-        var tp=this.tplPath, o, ps=this.parent.vscope;
+        var tp=this.tplPath, o, ps=this.parent.vscope, isType0String=(typeof(tp[0])==='string');
 
-        if (tp[0]===undefined || tp[0]===null || typeof(tp[0])==='string') {
-            o=ps;
-        } else if (ps[tp[1]]) {
+        if (ps[tp[1]]) {
             // tp[1] exists in the scope - so it has priority
-            o=ps;
+            o=this.getScopeOwner(tp[1],ps);
+        } else if (tp[0]===undefined || tp[0]===null || isType0String) {
+            if (isType0String) {
+                // we have to find the right scope object holding this property
+                o=this.getScopeOwner(tp[0],ps);
+                if (o===null) {
+                    // property doesn't exist yet
+                    o=ps;
+                }
+            } else {
+                o=ps;
+            }
         }
         if (o) {
             var sz=tp.length, res=[];

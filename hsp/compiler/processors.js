@@ -250,7 +250,8 @@ function elementOrComponent (node, walker) {
 
 exports["element"] = function (node, walker) {
     var s = elementOrComponent(node, walker);
-    return ['n.elt("', node.name, '",', s, ')'].join('');
+    var subScope=(node.needSubScope===true)? ',1' : '';
+    return ['n.elt("', node.name, '",', s, subScope, ')'].join('');
 };
 
 exports["component"] = function (node, walker) {

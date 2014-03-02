@@ -178,7 +178,7 @@ describe("Text Nodes", function () {
         expect(n.node).to.equal(null);
         expect(ch.node).to.equal(null);
         expect(dm[n.MD_ID]).to.equal(undefined);
-        expect(n.propObs).to.equal(undefined);
+        expect(n.propObs).to.equal(null);
 
         // check that generator is not impacted by the $dispose call
         n = hello3(dm);

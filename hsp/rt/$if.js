@@ -129,6 +129,7 @@ var $IfNode = klass({
         var cond = this.getConditionValue();
         if (cond !== this.lastConditionValue) {
             this.createChildNodeInstances(cond);
+            this.root.updateObjectObservers(this);
             this.adirty = false;
             this.cdirty = false;
         } else {
