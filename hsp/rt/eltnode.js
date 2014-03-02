@@ -47,6 +47,7 @@ var EltNode = klass({
             this.children = children;
         }
         this.gesturesEventHandlers = null;
+        this.needSubScope = true;
     },
 
     $dispose : function () {

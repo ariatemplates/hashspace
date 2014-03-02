@@ -1,0 +1,33 @@
+##### Template:
+# template hello(person)
+  <#x.mycpt class="foo">
+    {let p=person} // OK
+    {foreach n in p.names}
+      {let x=n.foo} // OK
+      {let y=n.bar} // OK
+      {n.blah}
+      {let z=n.arg} // KO
+    {/foreach}
+  </#x.mycpt>
+  And
+  <#x.cpt2>
+    <@body>
+      Hello
+      {let p=person} // KO
+    </@body>
+  </#x.cpt2>
+# /template
+
+##### Error:
+[
+  {
+    "description": "Let statements must be defined at the beginning of a block",
+    "line": 8,
+    "column": 7
+  },
+  {
+    "description": "Let statements must be defined at the beginning of a block",
+    "line": 15,
+    "column": 7
+  }
+]

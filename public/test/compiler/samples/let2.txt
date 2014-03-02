@@ -1,0 +1,31 @@
+##### Template:
+# template test(value)
+  <div class="foo">
+    // Some comment
+    {let aVarName = value.nbr, anotherName = blah}
+  </div>
+# /template
+
+##### Parsed Tree
+"skip"
+
+##### Syntax Tree
+"skip"
+    
+##### Template Code
+test=[
+  n.elt(
+    "div",
+    0,
+    {"class":"foo"},
+    0,
+    [
+      n.$text(0,[" "]),
+      n.let({
+        e1:[1,2,"value","nbr"],
+        e2:[2,1,_blah]
+      },['aVarName',1,'anotherName',2]
+      )
+    ]
+  )
+]

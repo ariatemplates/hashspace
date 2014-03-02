@@ -29,7 +29,7 @@ module.exports.$CptTemplate = {
     }
 
     // the component is a template without any controller
-    // so we have to observe the template scope to be able to propagate changes to the parent scope
+    // so we have to observe the template root scope to be able to propagate changes to the parent scope
     this._scopeChgeCb = this.onScopeChange.bind(this);
     json.observe(this.vscope, this._scopeChgeCb);
   },

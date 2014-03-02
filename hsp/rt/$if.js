@@ -75,11 +75,17 @@ var $IfNode = klass({
      */
     createChildNodeInstances : function (condition) {
         this.lastConditionValue = condition;
+        if (!this.refScope) {
+            this.refScope=this.vscope; // reference scope - may be different from parent for component content
+        }
 
         if (!this.isDOMempty) {
             this.removeChildNodeInstances(this.node1,this.node2);
             this.isDOMempty = true;
         }
+
+        // create new scope
+        this.vscope = this.createSubScope(this.refScope);
 
         // evalutate condition expression to determine which children collection to use (i.e. if or block)
 

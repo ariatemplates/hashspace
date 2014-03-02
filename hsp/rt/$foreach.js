@@ -463,8 +463,7 @@ var $ItemNode = klass({
      * @param {DOMElement} parentDOMNode the parent DOM node where the element should be inserted
      */
     createNodeInstance : function (parent, item, key, isfirst, islast, parentDOMNode) {
-        var vs = klass.createObject(parent.vscope), itnm = this.itemName;
-        vs["scope"] = vs;
+        var vs = this.createSubScope(parent.vscope), itnm = this.itemName;
         vs[itnm] = item;
         vs[this.itemKeyName] = key;
         vs[itnm + "_isfirst"] = isfirst;

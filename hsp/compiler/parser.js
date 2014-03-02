@@ -87,6 +87,8 @@ var SyntaxTree = klass({
         this.tree.content = [];
 
         this._advance(0, blockList, this.tree.content);
+
+        this._validateTree();
     },
 
     _logError : function (description, errdesc) {
@@ -136,6 +138,57 @@ var SyntaxTree = klass({
                 }
             }
             return blocks.length;
+        }
+    },
+
+    /**
+     * Post validation once the tree is properly parsed
+     */
+    _validateTree:function(nodelist) {
+        var nodes=this.tree.content;
+        for (var i=0,sz=nodes.length;sz>i;i++) {
+            if (nodes[i].type==="template") {
+                this._validateNodeContent(nodes[i].content);
+            }
+        }
+    },
+
+    /**
+     * Validate the content of a container node 
+     * @param {Array} nodelist the content of a container node
+     */
+    _validateNodeContent:function(nodelist) {
+        // Ensure that {let} nodes are always at the beginning of a containter element
+        var nd, contentFound=false; // true when a node different from let is found
+        for (var i=0,sz=nodelist.length;sz>i;i++) {
+            nd=nodelist[i];
+            //console.log(i+":"+nd.type)
+            if (nd.type==="comment") {
+                continue;
+            };
+            if (nd.type==="text") {
+                // tolerate static white space text
+                if (nd.value.match(/^\s*$/)) {
+                    continue;
+                }
+            }
+            if (nd.type==="let") {
+                if (contentFound) {
+                    // error: let must be defined before any piece of content
+                    this._logError("Let statements must be defined at the beginning of a block",nd);
+                }
+            } else {
+                contentFound=true;
+                if (nd.content) {
+                    this._validateNodeContent(nd.content);
+                }
+                if (nd.content1) {
+                    this._validateNodeContent(nd.content1);   
+                }
+                if (nd.content2) {
+                    this._validateNodeContent(nd.content2);   
+                }
+            }
         }
     },
 
@@ -195,10 +248,10 @@ var SyntaxTree = klass({
     },
 
     /**
-     * Text block management: regroups adjacent text and expression blocks
+     * Log statement
      */
     _log : function (idx, blocks, out) {
-        var n = new Node("log"), b = blocks[idx],exprs=[],e;
+        var n = new Node("log"), b = blocks[idx], exprs=[],e;
         n.line = b.line;
         n.column = b.column;
         for (var i=0,sz=b.exprs.length;sz>i;i++) {
@@ -206,6 +259,22 @@ var SyntaxTree = klass({
             exprs[i]=e.getSyntaxTree();
         }
         n.exprs=exprs;
+        out.push(n);
+        return idx;
+    },
+
+    /**
+     * Let statement
+     */
+    _let : function (idx, blocks, out) {
+        var n = new Node("let"), b = blocks[idx], asn=[],e;
+        n.line = b.line;
+        n.column = b.column;
+        for (var i=0,sz=b.assignments.length;sz>i;i++) {
+            e=new HExpression(b.assignments[i].value, this);
+            asn.push({identifier:b.assignments[i].identifier, value: e.getSyntaxTree()});
+        }
+        n.assignments=asn;
         out.push(n);
         return idx;
     },
@@ -257,9 +326,26 @@ var SyntaxTree = klass({
             n = new Node("text");
             n.value = buf[0].value;
         } else if (buf.length > 0) {
-            // an expression or several blocks have to be aggregated
-            n = new Node("textblock");
-            n.content = buf;
+            // if buf is composed of only text expressions we concatenate them
+            var onlyText=true;
+            for (var i=0,sz=buf.length;sz>i;i++) {
+                if (buf[i].type!=="text") {
+                    onlyText=false;
+                    break;
+                }
+            }
+            if (onlyText) {
+                var texts=[];
+                for (var i=0,sz=buf.length;sz>i;i++) {
+                    texts.push(buf[i].value);
+                }
+                n = new Node("text");
+                n.value = texts.join('');
+            } else {
+                // an expression or several blocks have to be aggregated
+                n = new Node("textblock");
+                n.content = buf;
+            }
         }
         if (n) {
             out.push(n);

@@ -35,28 +35,32 @@
 ]
 
 ##### Syntax Tree
-
 [
   {
     "type": "template",
     "name": "hello",
     "args": ["world"],
     "content": [
-      { "type": "textblock", "content": [
-          {"type": "text","value": "Hello "},
-          {"type": "text","value": " World! "}
-        ]
+      {
+        "type": "text",
+        "value": "Hello  World! "
       },
-      {"type": "if",
-        "condition": {"category": "objectref", "path": ["world"]},
+      {
+        "type": "if",
+        "condition": {
+          "type": "expression",
+          "category": "objectref",
+          "bound": true,
+          "path": [
+            "world"
+          ],
+          "line": 4,
+          "column": 6
+        },
         "content1": [
           {
-            "type": "textblock",
-            "content": [
-              {"type": "text","value": " "},
-              {"type": "text","value": " "},
-              {"type": "text","value": " ... "}
-            ]
+            "type": "text",
+            "value": "   ... "
           }
         ]
       }

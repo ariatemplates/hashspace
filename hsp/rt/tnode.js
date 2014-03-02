@@ -35,6 +35,7 @@ var TNode = klass({
     htmlCbs : null, // array: list of the html callbacks - if any
     nodeNS : null, // string: node namespace - if any
     isCptContent : false, // tells if a node instance is a child of a component (used to raise edirty flags)
+    needSubScope : false, // true if a dedicated sub-scope should be created for this node
 
     $constructor : function (exps) {
         this.isStatic = (exps === 0);
@@ -159,8 +160,12 @@ var TNode = klass({
     createNodeInstance : function (parent) {
         // create node instance referencing the current node as parent in the prototype chain
         var ni = klass.createObject(this);
-        ni.vscope = parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
         ni.parent = parent;
+        if (this.needSubScope) {
+            ni.vscope = ni.createSubScope(); 
+        } else {
+            ni.vscope = parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
+        }
         ni.nodeNS = parent.nodeNS;
         ni.root = parent.root;
         ni.root.createExpressionObservers(ni);
@@ -291,6 +296,20 @@ var TNode = klass({
                 }
             }
         }
+    },
+
+    /**
+     * Create a sub-scope object inheriting from the parent' scope
+     * @param {Object} ref tthe reference scope (optional - default: this.parent.vscope)
+     */
+    createSubScope: function(ref) {
+        if (!ref) {
+            ref=this.parent.vscope;
+        }
+        var vs = klass.createObject(ref);
+        vs["scope"] = vs;
+        vs["+parent"] = ref;
+        return vs;
     }
 });
 
