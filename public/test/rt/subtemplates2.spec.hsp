@@ -72,6 +72,16 @@ var ctxt={
     </div>
 # /template
 
+# template test5(c)
+    {let x=c.a}
+    <div class="content">
+        {let y=x.b}
+        Before -
+        <#y.tpl/> 
+        - After
+    </div>
+# /template
+
 describe("Dynamic template insertion", function () {
     it("validates dynamic insertion with no template argument", function() {
         var h=ht.newTestContext(), c={tpl:contentA};
@@ -163,6 +173,28 @@ describe("Dynamic template insertion", function () {
 
         expect(h.logs().length).to.equal(0);
         expect(h(".content").text()).to.equal("Before - contentB2: hello - After ");
+
+        h.$dispose();
+    });
+
+    it("validates dynamic insertion with intermediate {let} statements", function() {
+        var h=ht.newTestContext(), c={a:{b:{tpl:contentA}}};
+        test5(c).render(h.container);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentA - After ");
+
+        // change intermediate object in the template path
+        h.$set(c,"a",{b:{tpl:contentB,foo:"bar"}});
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentB - After ");
+
+        // change path and template
+        h.$set(c.a,"b",{tpl:contentC,foo:"bar"});
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentC - After ");
 
         h.$dispose();
     });

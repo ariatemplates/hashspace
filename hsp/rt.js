@@ -230,7 +230,8 @@ var nodeList = [
     "elt", require("./rt/eltnode"),
     "cpt", $CptNode,
     "catt", $CptAttElement,
-    "log", require("hsp/rt/$log")
+    "log", require("hsp/rt/$log"),
+    "let", require("hsp/rt/$let")
 ];
 
 for (var i = 0, sz = nodeList.length; sz > i; i += 2) {

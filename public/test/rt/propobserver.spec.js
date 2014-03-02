@@ -71,14 +71,14 @@ describe("Property Observer", function () {
         expect(p1.count).to.equal(4);
 
         o.rmObserver(p1, "propA");
-        expect(o.props.propA).to.equal(undefined);
+        expect(o.props.propA).to.equal(null);
         json.set(obj, "propA", "a5");
         json.set(obj, "propB", "b5");
         expect(p1.chge.oldValue).to.equal("b4");
         expect(p1.count).to.equal(5);
 
         o.rmObserver(p1, "propB");
-        expect(o.props.propB).to.equal(undefined);
+        expect(o.props.propB).to.equal(null);
         json.set(obj, "propA", "a6");
         json.set(obj, "propB", "b6");
         expect(p1.chge.oldValue).to.equal("b4");
@@ -122,7 +122,7 @@ describe("Property Observer", function () {
         json.set(obj, "propA", "a3");
         expect(p2.chge.oldValue).to.equal("a2");
         o.rmObserver(p2, "propA");
-        expect(o.props.propA).to.equal(undefined);
+        expect(o.props.propA).to.equal(null);
     });
 
     it("test prop observer disposal", function () {
@@ -137,7 +137,7 @@ describe("Property Observer", function () {
 
         expect(obj["+json:observers"].length).to.equal(1);
         o.$dispose();
-        expect(o.props).to.equal(undefined);
+        expect(o.props).to.equal(null);
         expect(obj["+json:observers"]).to.equal(undefined);
     });
 

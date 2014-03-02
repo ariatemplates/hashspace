@@ -108,6 +108,23 @@ exports["log"] = function (node, walker) {
 };
 
 /**
+ * Generate a let expression
+ */
+exports["let"] = function (node, walker) {
+    var e, idx=1, code=[], asn=[], varName;
+    for (var i=0,sz=node.assignments.length;sz>i;i++) {
+        e = formatExpression(node.assignments[i].value, idx, walker);
+        idx = e.nextIndex;
+        varName=node.assignments[i].identifier;
+        walker.addScopeVariable(varName);
+        asn.push("'"+varName+"'");
+        asn.push(e.exprIdx);
+        code.push(e.code);
+    }
+    return ["n.let({", code.join(",") , "},[", asn.join(',') , "])"].join('');
+};
+
+/**
  * Generate an if node
  */
 exports["if"] = function (node, walker) {
@@ -233,7 +250,8 @@ function elementOrComponent (node, walker) {
 
 exports["element"] = function (node, walker) {
     var s = elementOrComponent(node, walker);
-    return ['n.elt("', node.name, '",', s, ')'].join('');
+    var subScope=(node.needSubScope===true)? ',1' : '';
+    return ['n.elt("', node.name, '",', s, subScope, ')'].join('');
 };
 
 exports["component"] = function (node, walker) {

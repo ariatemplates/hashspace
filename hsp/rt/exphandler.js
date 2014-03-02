@@ -79,6 +79,38 @@ var ExpHandler = klass({
      */
     getExpr : function (eIdx) {
         return this.exps["e" + eIdx];
+    },
+
+    /**
+     * Scans the scope tree to determine which scope object is actually handling a given object
+     * This method is necessary to observe the right scope instance
+     * (all scope object have a hidden "+parent" property referencing their parent scope)
+     * @param {String} property the property to look for
+     * @param {Object} vscope the current variable scope
+     * @return {Object} the scope object or null if not found
+     */
+    getScopeOwner : function(property, vscope) {
+        var vs=vscope;
+        while(vs) {
+            if (vs.hasOwnProperty(property)) {
+                return vs;
+            } else {
+                vs=vs["+parent"];
+            }
+        }
+        return null;
+    },
+
+    /**
+     * Create a sub-scope object inheriting from the parent' scope
+     * @param {Object} ref the reference scope
+     * @return {Object} sub-scope object extending the ref object
+     */
+    createSubScope: function(ref) {
+        var vs = klass.createObject(ref);
+        vs["scope"] = vs;
+        vs["+parent"] = ref;
+        return vs;
     }
 });
 
@@ -203,19 +235,27 @@ var DataRefExpr = klass({
         if (!this.bound) {
             return null;
         }
-        var ppl = this.ppLength;
+        var ppl = this.ppLength, p = this.path;
         if (ppl < 1) {
             return null; // this case should not occur
         }
-        var v = this.isLiteral ? this.root : vscope[this.root];
+        var v = this.root;
+        if (!this.isLiteral) {
+            v = ExpHandler.getScopeOwner(p[0], vscope);
+            if (v===null) {
+                // we try to observe a properety that has not been created yet
+                // and it will be created on the current scope (cf. let)
+                v=vscope;
+            }
+        }
         if (v === undefined) {
             return null;
         }
         if (ppl === 1) {
             // optimize standard case
-            return [[v, this.path[0]]];
+            return [[v, p[0]]];
         } else {
-            var r = [], p = this.path, pp;
+            var r = [], pp;
             for (var i = 0; ppl > i; i++) {
                 pp = p[i];
                 r.push([v, pp]);

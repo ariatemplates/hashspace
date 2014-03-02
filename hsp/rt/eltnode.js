@@ -37,8 +37,9 @@ var EltNode = klass({
      * @param {Map} ehcfg map of the different event hanlder used on the element e.g. {"onclick":1} - where 1 is the
      * expression index associated to the event hanlder callback
      * @param {Array} children list of sub-node generators
+     * @param {Integer} needSubScope tells if a sub-scope must be created (e.g. because of {let} statents) - default: 0 or undefined
      */
-    $constructor : function (tag, exps, attcfg, ehcfg, children) {
+    $constructor : function (tag, exps, attcfg, ehcfg, children, needSubScope) {
         TNode.$constructor.call(this, exps);
         this.tag = tag;
         this.isInput = (this.tag === "input");
@@ -47,6 +48,7 @@ var EltNode = klass({
             this.children = children;
         }
         this.gesturesEventHandlers = null;
+        this.needSubScope = (needSubScope===1);
     },
 
     $dispose : function () {

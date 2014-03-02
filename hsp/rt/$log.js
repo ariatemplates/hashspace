@@ -73,8 +73,8 @@ var LogNode = klass({
     refresh : function () {
         if (this.adirty) {
             this.processLog();
-            this.adirty = false;
         }
+        TNode.refresh.call(this);
     },
 
     /**

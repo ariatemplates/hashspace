@@ -73,8 +73,8 @@ var $TextNode = klass({
     refresh : function () {
         if (this.adirty) {
             this.node.nodeValue = this.getContent();
-            this.adirty = false;
         }
+        TNode.refresh.call(this);
     },
 
     /**
