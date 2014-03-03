@@ -1,5 +1,5 @@
 var assert = require("assert");
-var htmlEntitiesToUtf8 = require("../../../hsp/compiler/htmlEntities").htmlEntitiesToUtf8;
+var htmlEntitiesToUtf8 = require("../../../hsp/compiler/treebuilder/htmlEntities").htmlEntitiesToUtf8;
 
 describe('Html Entities To Utf8 converter', function() {
 
