@@ -1,4 +1,4 @@
-var klass = require("../klass");
+var klass = require("../../klass");
 
 var TreeWalker = klass({
     /**

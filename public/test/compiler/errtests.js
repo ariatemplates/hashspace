@@ -1,6 +1,7 @@
 // Mocha tests
 var assert = require("assert");
 var compiler = require("../../../hsp/compiler/compiler");
+var jsgenerator = require("../../../hsp/compiler/jsgenerator");
 var ut = require("./utils/testutils");
 
 describe('Template compilation errors: ', function () {
@@ -37,7 +38,7 @@ describe('Template compilation errors: ', function () {
         var r = compiler.compile(sample.template, "mixed1");
 
         var s = [
-                compiler.HEADER,
+                jsgenerator.HEADER,
                 '\r\n',
                 'require("hsp/rt").logErrors("mixed1",[{',
                 '"description":"SyntaxError: Unexpected token",',
