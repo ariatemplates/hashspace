@@ -29,7 +29,7 @@ TemplateBlock "template block"
   }
 
 TemplateStart "template statement"
-  = _ "# " _ m:(("template") / (c:[a-zA-Z0-9]+ _ "template") {return c.join('')})
+  = _ "#" _ m:(("template") / (c:[a-zA-Z0-9]+ _ "template") {return c.join('')})
     S+ name:Identifier args:(TemplateController / ArgumentsDefinition / invarg:InvalidTplArgs)? _  EOL 
   {
     var mod=""; // modifier (e.g. "export")
@@ -63,7 +63,7 @@ InvalidTplArgs
   {return {invalidTplArg:chars.join('')}}
 
 TemplateEnd "template end statement"
-  = _ "# " _ "/template" _ (EOL / EOF) 
+  = _"#" _ "/template" _ (EOL / EOF)
   {return {type:"/template",line:line,column:column}} 
 
 TemplateContent "template content" // TODO: CSSClassExpression
