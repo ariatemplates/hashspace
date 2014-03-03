@@ -97,6 +97,14 @@ describe('Block Parser: ', function () {
         }));
     }
 
+    it('a space between # and template should be optional', function(){
+      var r = compiler.compile([
+        '#template nospaces()',
+        '#/template'
+      ].join('\n'), "without_spaces");
+      assert.equal(r.errors.length, 0, "no compilation error");
+    });
+
     it('validates full compiled template', function () {
         var sample = ut.getSampleContent("template1");
         var r = compiler.compile(sample.template, "template1");
