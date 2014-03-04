@@ -138,10 +138,14 @@ var Playground = module.exports = klass({
         if (spl.description) {
             jx.load("samples/" + spl.folder + "/" + spl.description, function (error, data) {
                 if (!error) {
-                    var d = document.getElementById("description");
+                    var desc = document.getElementById("description");
                     var h = md.toHTML(data); // 'Hello *World*! [#output] [#snippet 0]'
                     h = h.replace(/\[\#output\]/i, '<div id="output" class="output"></div><div id="logs" class="logoutput"></div>');
-                    d.innerHTML = h;
+                    desc.innerHTML = h;
+                    if (!d.errors) {
+                        json.set(d, "errors", []);
+                    }
+                    layout.errorList(d.errors).render("logs");
                 }
             });
         }
@@ -158,12 +162,7 @@ var Playground = module.exports = klass({
     },
 
     log : function (msg) {
-        var d = this.data;
-        if (!d.errors) {
-            json.set(d, "errors", []);
-        }
-        d.errors.push(msg);
-        layout.errorList(d.errors).render("logs");
+        this.data.errors.push(msg);
         return false;
     },
 
