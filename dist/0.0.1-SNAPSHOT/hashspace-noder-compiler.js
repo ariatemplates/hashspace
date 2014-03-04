@@ -69,6 +69,8 @@
                         HTMLAttributeText: parse_HTMLAttributeText,
                         HTMLAttributeChar: parse_HTMLAttributeChar,
                         LogBlock: parse_LogBlock,
+                        LetBlock: parse_LetBlock,
+                        LetAssignment: parse_LetAssignment,
                         ExpressionBlock: parse_ExpressionBlock,
                         HExpression: parse_HExpression,
                         HExpressionContent: parse_HExpressionContent,
@@ -1567,13 +1569,16 @@
                                                                                 if (result2 === null) {
                                                                                     result2 = parse_EndHspCptAttribute();
                                                                                     if (result2 === null) {
-                                                                                        result2 = parse_LogBlock();
+                                                                                        result2 = parse_LetBlock();
                                                                                         if (result2 === null) {
-                                                                                            result2 = parse_ExpressionBlock();
+                                                                                            result2 = parse_LogBlock();
                                                                                             if (result2 === null) {
-                                                                                                result2 = parse_InvalidHTMLElement();
+                                                                                                result2 = parse_ExpressionBlock();
                                                                                                 if (result2 === null) {
-                                                                                                    result2 = parse_InvalidBlock();
+                                                                                                    result2 = parse_InvalidHTMLElement();
+                                                                                                    if (result2 === null) {
+                                                                                                        result2 = parse_InvalidBlock();
+                                                                                                    }
                                                                                                 }
                                                                                             }
                                                                                         }
@@ -1624,13 +1629,16 @@
                                                                                     if (result2 === null) {
                                                                                         result2 = parse_EndHspCptAttribute();
                                                                                         if (result2 === null) {
-                                                                                            result2 = parse_LogBlock();
+                                                                                            result2 = parse_LetBlock();
                                                                                             if (result2 === null) {
-                                                                                                result2 = parse_ExpressionBlock();
+                                                                                                result2 = parse_LogBlock();
                                                                                                 if (result2 === null) {
-                                                                                                    result2 = parse_InvalidHTMLElement();
+                                                                                                    result2 = parse_ExpressionBlock();
                                                                                                     if (result2 === null) {
-                                                                                                        result2 = parse_InvalidBlock();
+                                                                                                        result2 = parse_InvalidHTMLElement();
+                                                                                                        if (result2 === null) {
+                                                                                                            result2 = parse_InvalidBlock();
+                                                                                                        }
                                                                                                     }
                                                                                                 }
                                                                                             }
@@ -4392,6 +4400,228 @@
                                     column: column
                                 };
                             }(pos0.offset, pos0.line, pos0.column, result0[4], result0[6]);
+                        }
+                        if (result0 === null) {
+                            pos = clone(pos0);
+                        }
+                        return result0;
+                    }
+                    function parse_LetBlock() {
+                        var result0, result1, result2, result3, result4, result5, result6, result7, result8, result9;
+                        var pos0, pos1, pos2;
+                        pos0 = clone(pos);
+                        pos1 = clone(pos);
+                        if (input.charCodeAt(pos.offset) === 123) {
+                            result0 = "{";
+                            advance(pos, 1);
+                        } else {
+                            result0 = null;
+                            if (reportFailures === 0) {
+                                matchFailed('"{"');
+                            }
+                        }
+                        if (result0 !== null) {
+                            result1 = parse__();
+                            if (result1 !== null) {
+                                if (input.substr(pos.offset, 4) === "let ") {
+                                    result2 = "let ";
+                                    advance(pos, 4);
+                                } else {
+                                    result2 = null;
+                                    if (reportFailures === 0) {
+                                        matchFailed('"let "');
+                                    }
+                                }
+                                if (result2 !== null) {
+                                    result3 = parse__();
+                                    if (result3 !== null) {
+                                        result4 = parse_LetAssignment();
+                                        if (result4 !== null) {
+                                            result5 = parse__();
+                                            if (result5 !== null) {
+                                                result6 = [];
+                                                pos2 = clone(pos);
+                                                if (input.charCodeAt(pos.offset) === 44) {
+                                                    result7 = ",";
+                                                    advance(pos, 1);
+                                                } else {
+                                                    result7 = null;
+                                                    if (reportFailures === 0) {
+                                                        matchFailed('","');
+                                                    }
+                                                }
+                                                if (result7 !== null) {
+                                                    result8 = parse__();
+                                                    if (result8 !== null) {
+                                                        result9 = parse_LetAssignment();
+                                                        if (result9 !== null) {
+                                                            result7 = [ result7, result8, result9 ];
+                                                        } else {
+                                                            result7 = null;
+                                                            pos = clone(pos2);
+                                                        }
+                                                    } else {
+                                                        result7 = null;
+                                                        pos = clone(pos2);
+                                                    }
+                                                } else {
+                                                    result7 = null;
+                                                    pos = clone(pos2);
+                                                }
+                                                while (result7 !== null) {
+                                                    result6.push(result7);
+                                                    pos2 = clone(pos);
+                                                    if (input.charCodeAt(pos.offset) === 44) {
+                                                        result7 = ",";
+                                                        advance(pos, 1);
+                                                    } else {
+                                                        result7 = null;
+                                                        if (reportFailures === 0) {
+                                                            matchFailed('","');
+                                                        }
+                                                    }
+                                                    if (result7 !== null) {
+                                                        result8 = parse__();
+                                                        if (result8 !== null) {
+                                                            result9 = parse_LetAssignment();
+                                                            if (result9 !== null) {
+                                                                result7 = [ result7, result8, result9 ];
+                                                            } else {
+                                                                result7 = null;
+                                                                pos = clone(pos2);
+                                                            }
+                                                        } else {
+                                                            result7 = null;
+                                                            pos = clone(pos2);
+                                                        }
+                                                    } else {
+                                                        result7 = null;
+                                                        pos = clone(pos2);
+                                                    }
+                                                }
+                                                if (result6 !== null) {
+                                                    if (input.charCodeAt(pos.offset) === 125) {
+                                                        result7 = "}";
+                                                        advance(pos, 1);
+                                                    } else {
+                                                        result7 = null;
+                                                        if (reportFailures === 0) {
+                                                            matchFailed('"}"');
+                                                        }
+                                                    }
+                                                    if (result7 !== null) {
+                                                        result8 = parse_EOS();
+                                                        result8 = result8 !== null ? result8 : "";
+                                                        if (result8 !== null) {
+                                                            result0 = [ result0, result1, result2, result3, result4, result5, result6, result7, result8 ];
+                                                        } else {
+                                                            result0 = null;
+                                                            pos = clone(pos1);
+                                                        }
+                                                    } else {
+                                                        result0 = null;
+                                                        pos = clone(pos1);
+                                                    }
+                                                } else {
+                                                    result0 = null;
+                                                    pos = clone(pos1);
+                                                }
+                                            } else {
+                                                result0 = null;
+                                                pos = clone(pos1);
+                                            }
+                                        } else {
+                                            result0 = null;
+                                            pos = clone(pos1);
+                                        }
+                                    } else {
+                                        result0 = null;
+                                        pos = clone(pos1);
+                                    }
+                                } else {
+                                    result0 = null;
+                                    pos = clone(pos1);
+                                }
+                            } else {
+                                result0 = null;
+                                pos = clone(pos1);
+                            }
+                        } else {
+                            result0 = null;
+                            pos = clone(pos1);
+                        }
+                        if (result0 !== null) {
+                            result0 = function(offset, line, column, first, next) {
+                                var asn = [ first ];
+                                if (next) {
+                                    for (var i = 0, sz = next.length; sz > i; i++) {
+                                        asn.push(next[i][2]);
+                                    }
+                                }
+                                return {
+                                    type: "let",
+                                    assignments: asn,
+                                    line: line,
+                                    column: column
+                                };
+                            }(pos0.offset, pos0.line, pos0.column, result0[4], result0[6]);
+                        }
+                        if (result0 === null) {
+                            pos = clone(pos0);
+                        }
+                        return result0;
+                    }
+                    function parse_LetAssignment() {
+                        var result0, result1, result2, result3, result4;
+                        var pos0, pos1;
+                        pos0 = clone(pos);
+                        pos1 = clone(pos);
+                        result0 = parse_Identifier();
+                        if (result0 !== null) {
+                            result1 = parse__();
+                            if (result1 !== null) {
+                                if (input.charCodeAt(pos.offset) === 61) {
+                                    result2 = "=";
+                                    advance(pos, 1);
+                                } else {
+                                    result2 = null;
+                                    if (reportFailures === 0) {
+                                        matchFailed('"="');
+                                    }
+                                }
+                                if (result2 !== null) {
+                                    result3 = parse__();
+                                    if (result3 !== null) {
+                                        result4 = parse_HExpressionContent();
+                                        if (result4 !== null) {
+                                            result0 = [ result0, result1, result2, result3, result4 ];
+                                        } else {
+                                            result0 = null;
+                                            pos = clone(pos1);
+                                        }
+                                    } else {
+                                        result0 = null;
+                                        pos = clone(pos1);
+                                    }
+                                } else {
+                                    result0 = null;
+                                    pos = clone(pos1);
+                                }
+                            } else {
+                                result0 = null;
+                                pos = clone(pos1);
+                            }
+                        } else {
+                            result0 = null;
+                            pos = clone(pos1);
+                        }
+                        if (result0 !== null) {
+                            result0 = function(offset, line, column, nm, val) {
+                                return {
+                                    identifier: nm,
+                                    value: val
+                                };
+                            }(pos0.offset, pos0.line, pos0.column, result0[0], result0[4]);
                         }
                         if (result0 === null) {
                             pos = clone(pos0);
@@ -12044,6 +12274,7 @@
                 this.tree = new Node("file", null);
                 this.tree.content = [];
                 this._advance(0, blockList, this.tree.content);
+                this._postProcessTree();
             },
             _logError: function(description, errdesc) {
                 var desc = {
@@ -12089,6 +12320,59 @@
                         }
                     }
                     return blocks.length;
+                }
+            },
+            /**
+     * Post validation once the tree is properly parsed
+     */
+            _postProcessTree: function(nodelist) {
+                var nodes = this.tree.content;
+                for (var i = 0, sz = nodes.length; sz > i; i++) {
+                    if (nodes[i].type === "template") {
+                        this._processNodeContent(nodes[i].content, nodes[i]);
+                    }
+                }
+            },
+            /**
+     * Validate the content of a container node 
+     * @param {Array} nodelist the content of a container node
+     * @param {Node} parent the parent node
+     */
+            _processNodeContent: function(nodelist, parent) {
+                // Ensure that {let} nodes are always at the beginning of a containter element
+                var nd, contentFound = false;
+                // true when a node different from let is found
+                for (var i = 0, sz = nodelist.length; sz > i; i++) {
+                    nd = nodelist[i];
+                    //console.log(i+":"+nd.type)
+                    if (nd.type === "comment") {
+                        continue;
+                    }
+                    if (nd.type === "text") {
+                        // tolerate static white space text
+                        if (nd.value.match(/^\s*$/)) {
+                            continue;
+                        }
+                    }
+                    if (nd.type === "let") {
+                        if (contentFound) {
+                            // error: let must be defined before any piece of content
+                            this._logError("Let statements must be defined at the beginning of a block", nd);
+                        } else {
+                            parent.needSubScope = true;
+                        }
+                    } else {
+                        contentFound = true;
+                        if (nd.content) {
+                            this._processNodeContent(nd.content, nd);
+                        }
+                        if (nd.content1) {
+                            this._processNodeContent(nd.content1, nd);
+                        }
+                        if (nd.content2) {
+                            this._processNodeContent(nd.content2, nd);
+                        }
+                    }
                 }
             },
             /**
@@ -12141,7 +12425,7 @@
                 return idx;
             },
             /**
-     * Text block management: regroups adjacent text and expression blocks
+     * Log statement
      */
             _log: function(idx, blocks, out) {
                 var n = new Node("log"), b = blocks[idx], exprs = [], e;
@@ -12152,6 +12436,24 @@
                     exprs[i] = e.getSyntaxTree();
                 }
                 n.exprs = exprs;
+                out.push(n);
+                return idx;
+            },
+            /**
+     * Let statement
+     */
+            _let: function(idx, blocks, out) {
+                var n = new Node("let"), b = blocks[idx], asn = [], e;
+                n.line = b.line;
+                n.column = b.column;
+                for (var i = 0, sz = b.assignments.length; sz > i; i++) {
+                    e = new HExpression(b.assignments[i].value, this);
+                    asn.push({
+                        identifier: b.assignments[i].identifier,
+                        value: e.getSyntaxTree()
+                    });
+                }
+                n.assignments = asn;
                 out.push(n);
                 return idx;
             },
@@ -12197,9 +12499,26 @@
                     n = new Node("text");
                     n.value = buf[0].value;
                 } else if (buf.length > 0) {
-                    // an expression or several blocks have to be aggregated
-                    n = new Node("textblock");
-                    n.content = buf;
+                    // if buf is composed of only text expressions we concatenate them
+                    var onlyText = true;
+                    for (var i = 0, sz = buf.length; sz > i; i++) {
+                        if (buf[i].type !== "text") {
+                            onlyText = false;
+                            break;
+                        }
+                    }
+                    if (onlyText) {
+                        var texts = [];
+                        for (var i = 0, sz = buf.length; sz > i; i++) {
+                            texts.push(buf[i].value);
+                        }
+                        n = new Node("text");
+                        n.value = texts.join("");
+                    } else {
+                        // an expression or several blocks have to be aggregated
+                        n = new Node("textblock");
+                        n.content = buf;
+                    }
                 }
                 if (n) {
                     out.push(n);
@@ -12942,6 +13261,22 @@
             return [ "n.log({", code.join(","), "},[", indexes.join(","), "],'", walker.fileName, "','", walker.dirPath, "',", node.line, ",", node.column, ")" ].join("");
         };
         /**
+ * Generate a let expression
+ */
+        exports["let"] = function(node, walker) {
+            var e, idx = 1, code = [], asn = [], varName;
+            for (var i = 0, sz = node.assignments.length; sz > i; i++) {
+                e = formatExpression(node.assignments[i].value, idx, walker);
+                idx = e.nextIndex;
+                varName = node.assignments[i].identifier;
+                walker.addScopeVariable(varName);
+                asn.push("'" + varName + "'");
+                asn.push(e.exprIdx);
+                code.push(e.code);
+            }
+            return [ "n.let({", code.join(","), "},[", asn.join(","), "])" ].join("");
+        };
+        /**
  * Generate an if node
  */
         exports["if"] = function(node, walker) {
@@ -13049,7 +13384,8 @@
         }
         exports["element"] = function(node, walker) {
             var s = elementOrComponent(node, walker);
-            return [ 'n.elt("', node.name, '",', s, ")" ].join("");
+            var subScope = node.needSubScope === true ? ",1" : "";
+            return [ 'n.elt("', node.name, '",', s, subScope, ")" ].join("");
         };
         exports["component"] = function(node, walker) {
             var s = elementOrComponent(node, walker);

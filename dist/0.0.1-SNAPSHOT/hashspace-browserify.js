@@ -845,6 +845,8 @@ var Gesture = klass({
 module.exports.Gesture = Gesture;
 },{"../klass":"GfSJC6","./touchEvent":"oYuPY+"}],"hsp/gestures/gesture":[function(require,module,exports){
 module.exports=require('xsjChN');
+},{}],"hsp/gestures/gestures":[function(require,module,exports){
+module.exports=require('aNFXt4');
 },{}],"aNFXt4":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -952,9 +954,7 @@ var Gestures = klass({
 module.exports.Gestures = Gestures;
 
 
-},{"../klass":"GfSJC6","./doubleTap":"6Kl1kt","./drag":"J6s4RB","./longPress":"OkCBHK","./pinch":"X+07de","./singleTap":"BxcBBq","./swipe":"1S2i7l","./tap":"uETHOu"}],"hsp/gestures/gestures":[function(require,module,exports){
-module.exports=require('aNFXt4');
-},{}],"OkCBHK":[function(require,module,exports){
+},{"../klass":"GfSJC6","./doubleTap":"6Kl1kt","./drag":"J6s4RB","./longPress":"OkCBHK","./pinch":"X+07de","./singleTap":"BxcBBq","./swipe":"1S2i7l","./tap":"uETHOu"}],"OkCBHK":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1691,8 +1691,6 @@ var Tap = klass({
 module.exports.Tap = Tap;
 },{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/tap":[function(require,module,exports){
 module.exports=require('uETHOu');
-},{}],"hsp/gestures/touchEvent":[function(require,module,exports){
-module.exports=require('oYuPY+');
 },{}],"oYuPY+":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2068,6 +2066,8 @@ exports.getFakeEvent = function(type, target) {
     fakeEvent.target = target;
     return fakeEvent;
 };
+},{}],"hsp/gestures/touchEvent":[function(require,module,exports){
+module.exports=require('oYuPY+');
 },{}],"hsp/json":[function(require,module,exports){
 module.exports=require('YcvKH8');
 },{}],"YcvKH8":[function(require,module,exports){
@@ -2408,8 +2408,6 @@ function unobserve (object, callback, metaProperty) {
     }
 }
 
-},{}],"hsp/klass":[function(require,module,exports){
-module.exports=require('GfSJC6');
 },{}],"GfSJC6":[function(require,module,exports){
 
 /*
@@ -2506,6 +2504,8 @@ klass.createMetaDataPrefix = createMetaDataPrefix;
 
 module.exports = klass;
 
+},{}],"hsp/klass":[function(require,module,exports){
+module.exports=require('GfSJC6');
 },{}],"D6s46z":[function(require,module,exports){
 
 /*
@@ -2548,9 +2548,9 @@ var PropObserver = klass({
      */
     $dispose : function () {
         json.unobserve(this.target, this.callback);
-        delete this.props;
-        delete this.callback;
-        delete this.target;
+        this.props=null;
+        this.callback=null;
+        this.target=null;
     },
     /**
      * Add a new observer for a given property
@@ -2586,7 +2586,7 @@ var PropObserver = klass({
                 }
             }
             if (arr.length === 0) {
-                delete this.props[property];
+                this.props[property]=null;
             }
         }
     }
@@ -2625,6 +2625,8 @@ module.exports = PropObserver;
 
 },{"./json":"YcvKH8","./klass":"GfSJC6"}],"hsp/propobserver":[function(require,module,exports){
 module.exports=require('D6s46z');
+},{}],"hsp/rt":[function(require,module,exports){
+module.exports=require('7uFaOB');
 },{}],"7uFaOB":[function(require,module,exports){
 
 /*
@@ -2858,7 +2860,8 @@ var nodeList = [
     "elt", require("./rt/eltnode"),
     "cpt", $CptNode,
     "catt", $CptAttElement,
-    "log", require("hsp/rt/$log")
+    "log", require("hsp/rt/$log"),
+    "let", require("hsp/rt/$let")
 ];
 
 for (var i = 0, sz = nodeList.length; sz > i; i += 2) {
@@ -2875,9 +2878,7 @@ function createShortcut (tagName, tagConstructor) {
     };
 }
 
-},{"./es5":"hhHoZL","./klass":"GfSJC6","./rt/$foreach":"Ll2sHF","./rt/$if":"R4WgDY","./rt/$root":"P5tgTj","./rt/$text":"jVbC+E","./rt/cptwrapper":"We0lgJ","./rt/eltnode":"NbaJkW","./rt/log":"pIlMhe","hsp/rt/$log":"nUpGcG"}],"hsp/rt":[function(require,module,exports){
-module.exports=require('7uFaOB');
-},{}],"Ll2sHF":[function(require,module,exports){
+},{"./es5":"hhHoZL","./klass":"GfSJC6","./rt/$foreach":"Ll2sHF","./rt/$if":"R4WgDY","./rt/$root":"P5tgTj","./rt/$text":"jVbC+E","./rt/cptwrapper":"We0lgJ","./rt/eltnode":"NbaJkW","./rt/log":"pIlMhe","hsp/rt/$let":"3xKX24","hsp/rt/$log":"nUpGcG"}],"Ll2sHF":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3029,7 +3030,6 @@ var $ForEachNode = klass({
                 // collection is the same but some items have been deleted or created
                 this.updateCollection(col);
             }
-            this.adirty = false;
         }
         TNode.refresh.call(this); // refresh the child nodes if needed
     },
@@ -3343,8 +3343,7 @@ var $ItemNode = klass({
      * @param {DOMElement} parentDOMNode the parent DOM node where the element should be inserted
      */
     createNodeInstance : function (parent, item, key, isfirst, islast, parentDOMNode) {
-        var vs = klass.createObject(parent.vscope), itnm = this.itemName;
-        vs["scope"] = vs;
+        var vs = this.createSubScope(parent.vscope), itnm = this.itemName;
         vs[itnm] = item;
         vs[this.itemKeyName] = key;
         vs[itnm + "_isfirst"] = isfirst;
@@ -3458,6 +3457,8 @@ module.exports = $ForEachNode;
 
 },{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$foreach":[function(require,module,exports){
 module.exports=require('Ll2sHF');
+},{}],"hsp/rt/$if":[function(require,module,exports){
+module.exports=require('R4WgDY');
 },{}],"R4WgDY":[function(require,module,exports){
 
 /*
@@ -3536,11 +3537,17 @@ var $IfNode = klass({
      */
     createChildNodeInstances : function (condition) {
         this.lastConditionValue = condition;
+        if (!this.refScope) {
+            this.refScope=this.vscope; // reference scope - may be different from parent for component content
+        }
 
         if (!this.isDOMempty) {
             this.removeChildNodeInstances(this.node1,this.node2);
             this.isDOMempty = true;
         }
+
+        // create new scope
+        this.vscope = this.createSubScope(this.refScope);
 
         // evalutate condition expression to determine which children collection to use (i.e. if or block)
 
@@ -3584,6 +3591,7 @@ var $IfNode = klass({
         var cond = this.getConditionValue();
         if (cond !== this.lastConditionValue) {
             this.createChildNodeInstances(cond);
+            this.root.updateObjectObservers(this);
             this.adirty = false;
             this.cdirty = false;
         } else {
@@ -3614,8 +3622,90 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$if":[function(require,module,exports){
-module.exports=require('R4WgDY');
+},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"3xKX24":[function(require,module,exports){
+
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// This module contains the log node
+var klass = require("hsp/klass"),
+    $set = require("hsp/$set"),
+    doc = require("hsp/document"),
+    TNode = require("hsp/rt/tnode").TNode;
+
+var LetNode = klass({
+    $extends : TNode,
+
+    /**
+     * Log node generator ex: {log scope}
+     * @param {Map<Expression>|int} exps the map of the variables used by the node. 
+     *      0 is passed if no expression is used
+     * @param {Array} args array of the variable name, expression index associated to this statement
+     *      e.g. ['aVarName',1,'anotherName',2]
+     */
+    $constructor : function (exps, args) {
+        TNode.$constructor.call(this, exps);
+        this.args = args;
+    },
+
+    /**
+     * Create the DOM node element and attach it to the parent
+     */
+    createNode : function () {
+        this.node = doc.createComment("{let}");
+        this.updateScope();
+    },
+
+    /**
+     * Observer callback called when one of the bound variables used by the node expressions changes
+     */
+    onPropChange : function (chge) {
+        // update scope variables
+        this.updateScope();
+        TNode.onPropChange.call(this, chge);
+    },
+
+    /**
+     * Process the information to be logged and push it to the log output (browser console by default)
+     */
+    updateScope : function () {
+        var args=this.args, eh=this.eh, v;
+        if (args) {
+            for (var i=0, sz=args.length;sz>i;i+=2) {
+                v=eh.getValue(args[i+1], this.vscope, undefined);
+                $set(this.vscope,args[i],v);
+            }
+        }
+    },
+
+    /**
+     * Tell this node can be found in a component content
+     */
+    isValidCptAttElement:function () {
+        return true;
+    }
+});
+
+
+module.exports=LetNode;
+
+
+},{"hsp/$set":"+0srr9","hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$let":[function(require,module,exports){
+module.exports=require('3xKX24');
+},{}],"hsp/rt/$log":[function(require,module,exports){
+module.exports=require('nUpGcG');
 },{}],"nUpGcG":[function(require,module,exports){
 
 /*
@@ -3692,8 +3782,8 @@ var LogNode = klass({
     refresh : function () {
         if (this.adirty) {
             this.processLog();
-            this.adirty = false;
         }
+        TNode.refresh.call(this);
     },
 
     /**
@@ -3709,9 +3799,7 @@ var LogNode = klass({
 module.exports=LogNode;
 
 
-},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$log":[function(require,module,exports){
-module.exports=require('nUpGcG');
-},{}],"hsp/rt/$root":[function(require,module,exports){
+},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$root":[function(require,module,exports){
 module.exports=require('P5tgTj');
 },{}],"P5tgTj":[function(require,module,exports){
 
@@ -3834,7 +3922,7 @@ var $RootNode = klass({
             delete o.target[this.MD_ID]; // remove the MD marker
             o.$dispose();
         }
-        delete this.propObs;
+        this.propObs=null;
         if (this.ctlWrapper) {
             this.ctlWrapper.$dispose();
             this.ctlWrapper = null;
@@ -3859,6 +3947,7 @@ var $RootNode = klass({
             if (sz === 1) {
                 this.createObjectObserver(ni, op[0][0], op[0][1]);
             } else {
+                ni.obsPairs = op;
                 for (var i = 0; sz > i; i++) {
                     this.createObjectObserver(ni, op[i][0], op[i][1]);
                 }
@@ -3900,6 +3989,32 @@ var $RootNode = klass({
             // observer exists
             var obs = this.propObs[oid - 1];
             obs.rmObserver(ni, prop);
+        }
+    },
+
+    /**
+     * Removes the object observers associated to a node instance
+     * @param {TNode} ni the node instance that contained the changes
+     */
+    rmAllObjectObservers : function (ni) {
+        var op=ni.obsPairs;
+        if (op) {
+            for (var i = 0, sz=op.length; sz > i; i++) {
+                // remove previous
+                this.rmObjectObserver(ni, op[i][0], op[i][1]);
+            }
+            ni.obsPairs=null;
+        }
+    },
+
+    /**
+     * Update the object observers associated to a node instance
+     * @param {TNode} ni the node instance that contained the changes
+     */
+    updateObjectObservers : function (ni) {
+        if (ni.obsPairs) {
+            this.rmAllObjectObservers(ni);
+            this.createExpressionObservers(ni);
         }
     },
 
@@ -4308,13 +4423,22 @@ var $CptNode = klass({
      * Return the objects referenced by the path - return null if the path is not observable
      */
     getPathObjects : function() {
-        var tp=this.tplPath, o, ps=this.parent.vscope;
+        var tp=this.tplPath, o, ps=this.parent.vscope, isType0String=(typeof(tp[0])==='string');
 
-        if (tp[0]===undefined || tp[0]===null || typeof(tp[0])==='string') {
-            o=ps;
-        } else if (ps[tp[1]]) {
+        if (ps[tp[1]]) {
             // tp[1] exists in the scope - so it has priority
-            o=ps;
+            o=this.getScopeOwner(tp[1],ps);
+        } else if (tp[0]===undefined || tp[0]===null || isType0String) {
+            if (isType0String) {
+                // we have to find the right scope object holding this property
+                o=this.getScopeOwner(tp[0],ps);
+                if (o===null) {
+                    // property doesn't exist yet
+                    o=ps;
+                }
+            } else {
+                o=ps;
+            }
         }
         if (o) {
             var sz=tp.length, res=[];
@@ -4534,9 +4658,7 @@ exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
 
 
-},{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","../propobserver":"D6s46z","./cptattinsert":"C9wO2N","./cptcomponent":"lU3L0p","./cpttemplate":"aBMumZ","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$text":[function(require,module,exports){
-module.exports=require('jVbC+E');
-},{}],"jVbC+E":[function(require,module,exports){
+},{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","../propobserver":"D6s46z","./cptattinsert":"C9wO2N","./cptcomponent":"lU3L0p","./cpttemplate":"aBMumZ","./log":"pIlMhe","./tnode":"Jrooar"}],"jVbC+E":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4612,8 +4734,8 @@ var $TextNode = klass({
     refresh : function () {
         if (this.adirty) {
             this.node.nodeValue = this.getContent();
-            this.adirty = false;
         }
+        TNode.refresh.call(this);
     },
 
     /**
@@ -4626,8 +4748,8 @@ var $TextNode = klass({
 });
 
 module.exports = $TextNode;
-},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/cptattinsert":[function(require,module,exports){
-module.exports=require('C9wO2N');
+},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$text":[function(require,module,exports){
+module.exports=require('jVbC+E');
 },{}],"C9wO2N":[function(require,module,exports){
 /**
  * $CptAttInsert contains methods that will be added to the prototype of all
@@ -4656,6 +4778,8 @@ module.exports.$CptAttInsert = {
   }
 };
 
+},{}],"hsp/rt/cptattinsert":[function(require,module,exports){
+module.exports=require('C9wO2N');
 },{}],"hsp/rt/cptcomponent":[function(require,module,exports){
 module.exports=require('lU3L0p');
 },{}],"lU3L0p":[function(require,module,exports){
@@ -5166,7 +5290,9 @@ exports.$CptComponent = {
   }
 };
 
-},{"../document":"WDacIY","../json":"YcvKH8","./$text":"jVbC+E","./cptwrapper":"We0lgJ","./log":"pIlMhe"}],"aBMumZ":[function(require,module,exports){
+},{"../document":"WDacIY","../json":"YcvKH8","./$text":"jVbC+E","./cptwrapper":"We0lgJ","./log":"pIlMhe"}],"hsp/rt/cpttemplate":[function(require,module,exports){
+module.exports=require('aBMumZ');
+},{}],"aBMumZ":[function(require,module,exports){
 var json = require("../json"),
     doc = require("../document");
 
@@ -5198,7 +5324,7 @@ module.exports.$CptTemplate = {
     }
 
     // the component is a template without any controller
-    // so we have to observe the template scope to be able to propagate changes to the parent scope
+    // so we have to observe the template root scope to be able to propagate changes to the parent scope
     this._scopeChgeCb = this.onScopeChange.bind(this);
     json.observe(this.vscope, this._scopeChgeCb);
   },
@@ -5268,9 +5394,7 @@ module.exports.$CptTemplate = {
   }
 };
 
-},{"../document":"WDacIY","../json":"YcvKH8"}],"hsp/rt/cpttemplate":[function(require,module,exports){
-module.exports=require('aBMumZ');
-},{}],"We0lgJ":[function(require,module,exports){
+},{"../document":"WDacIY","../json":"YcvKH8"}],"We0lgJ":[function(require,module,exports){
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5687,8 +5811,9 @@ var EltNode = klass({
      * @param {Map} ehcfg map of the different event hanlder used on the element e.g. {"onclick":1} - where 1 is the
      * expression index associated to the event hanlder callback
      * @param {Array} children list of sub-node generators
+     * @param {Integer} needSubScope tells if a sub-scope must be created (e.g. because of {let} statents) - default: 0 or undefined
      */
-    $constructor : function (tag, exps, attcfg, ehcfg, children) {
+    $constructor : function (tag, exps, attcfg, ehcfg, children, needSubScope) {
         TNode.$constructor.call(this, exps);
         this.tag = tag;
         this.isInput = (this.tag === "input");
@@ -5697,6 +5822,7 @@ var EltNode = klass({
             this.children = children;
         }
         this.gesturesEventHandlers = null;
+        this.needSubScope = (needSubScope===1);
     },
 
     $dispose : function () {
@@ -6037,6 +6163,38 @@ var ExpHandler = klass({
      */
     getExpr : function (eIdx) {
         return this.exps["e" + eIdx];
+    },
+
+    /**
+     * Scans the scope tree to determine which scope object is actually handling a given object
+     * This method is necessary to observe the right scope instance
+     * (all scope object have a hidden "+parent" property referencing their parent scope)
+     * @param {String} property the property to look for
+     * @param {Object} vscope the current variable scope
+     * @return {Object} the scope object or null if not found
+     */
+    getScopeOwner : function(property, vscope) {
+        var vs=vscope;
+        while(vs) {
+            if (vs.hasOwnProperty(property)) {
+                return vs;
+            } else {
+                vs=vs["+parent"];
+            }
+        }
+        return null;
+    },
+
+    /**
+     * Create a sub-scope object inheriting from the parent' scope
+     * @param {Object} ref the reference scope
+     * @return {Object} sub-scope object extending the ref object
+     */
+    createSubScope: function(ref) {
+        var vs = klass.createObject(ref);
+        vs["scope"] = vs;
+        vs["+parent"] = ref;
+        return vs;
     }
 });
 
@@ -6161,19 +6319,27 @@ var DataRefExpr = klass({
         if (!this.bound) {
             return null;
         }
-        var ppl = this.ppLength;
+        var ppl = this.ppLength, p = this.path;
         if (ppl < 1) {
             return null; // this case should not occur
         }
-        var v = this.isLiteral ? this.root : vscope[this.root];
+        var v = this.root;
+        if (!this.isLiteral) {
+            v = ExpHandler.getScopeOwner(p[0], vscope);
+            if (v===null) {
+                // we try to observe a properety that has not been created yet
+                // and it will be created on the current scope (cf. let)
+                v=vscope;
+            }
+        }
         if (v === undefined) {
             return null;
         }
         if (ppl === 1) {
             // optimize standard case
-            return [[v, this.path[0]]];
+            return [[v, p[0]]];
         } else {
-            var r = [], p = this.path, pp;
+            var r = [], pp;
             for (var i = 0; ppl > i; i++) {
                 pp = p[i];
                 r.push([v, pp]);
@@ -6375,6 +6541,8 @@ var FuncExpr = klass({
 
 },{"hsp/json":"YcvKH8","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe"}],"hsp/rt/exphandler":[function(require,module,exports){
 module.exports=require('FA9d2U');
+},{}],"hsp/rt/log":[function(require,module,exports){
+module.exports=require('pIlMhe');
 },{}],"pIlMhe":[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -6684,8 +6852,8 @@ function formatValue(v,depth) {
 
 module.exports = log;
 
-},{}],"hsp/rt/log":[function(require,module,exports){
-module.exports=require('pIlMhe');
+},{}],"hsp/rt/tnode":[function(require,module,exports){
+module.exports=require('Jrooar');
 },{}],"Jrooar":[function(require,module,exports){
 
 /*
@@ -6724,6 +6892,8 @@ var TNode = klass({
     htmlCbs : null, // array: list of the html callbacks - if any
     nodeNS : null, // string: node namespace - if any
     isCptContent : false, // tells if a node instance is a child of a component (used to raise edirty flags)
+    obsPairs : null,      // Array of observed [obj, property] pairs associated to this object
+    needSubScope : false, // true if a dedicated sub-scope should be created for this node
 
     $constructor : function (exps) {
         this.isStatic = (exps === 0);
@@ -6747,15 +6917,18 @@ var TNode = klass({
         }
 
         // TODO delete Expression observers !!!!
-
+        if (this.root) {
+            this.root.rmAllObjectObservers(this);
+        }
+        this.obsPairs = null;
         this.htmlCbs = null;
-        delete this.node;
-        delete this.parent;
-        delete this.root;
-        delete this.vscope;
-        delete this.children;
-        delete this.atts;
-        delete this.evtHandlers;
+        this.node = null;
+        this.parent = null;
+        this.root = null;
+        this.vscope = null;
+        this.children = null;
+        this.atts = null;
+        this.evtHandlers = null;
     },
 
     /**
@@ -6848,8 +7021,12 @@ var TNode = klass({
     createNodeInstance : function (parent) {
         // create node instance referencing the current node as parent in the prototype chain
         var ni = klass.createObject(this);
-        ni.vscope = parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
         ni.parent = parent;
+        if (this.needSubScope) {
+            ni.vscope = ni.createSubScope();
+        } else {
+            ni.vscope = parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
+        }
         ni.nodeNS = parent.nodeNS;
         ni.root = parent.root;
         ni.root.createExpressionObservers(ni);
@@ -6879,6 +7056,11 @@ var TNode = klass({
      * more specific logic
      */
     refresh : function () {
+        if (this.adirty) {
+            // update observable pairs
+            this.root.updateObjectObservers(this);
+            this.adirty=false;
+        }
         if (this.cdirty) {
             var cn = this.childNodes;
             if (cn) {
@@ -6980,6 +7162,28 @@ var TNode = klass({
                 }
             }
         }
+    },
+
+    /**
+     * Create a sub-scope object inheriting from the parent' scope
+     * @param {Object} ref tthe reference scope (optional - default: this.parent.vscope)
+     */
+    createSubScope: function(ref) {
+        if (!ref) {
+            ref=this.parent.vscope;
+        }
+        return ExpHandler.createSubScope(ref);
+    },
+
+    /**
+     * Scans the scope tree to determine which scope object is actually handling a given object
+     * (Shortcut to ExpHandler.getScopeOwner)
+     * @param {String} property the property to look for
+     * @param {Object} vscope the current variable scope
+     * @return {Object} the scope object or null if not found
+     */
+    getScopeOwner : function(property, vscope) {
+        return ExpHandler.getScopeOwner(property, vscope);
     }
 });
 
@@ -7098,6 +7302,4 @@ module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;
 
-},{"../klass":"GfSJC6","../rt":"7uFaOB","./exphandler":"FA9d2U","./log":"pIlMhe"}],"hsp/rt/tnode":[function(require,module,exports){
-module.exports=require('Jrooar');
-},{}]},{},["7uFaOB"])
+},{"../klass":"GfSJC6","../rt":"7uFaOB","./exphandler":"FA9d2U","./log":"pIlMhe"}]},{},["7uFaOB"])

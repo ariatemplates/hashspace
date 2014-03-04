@@ -597,9 +597,9 @@
      */
             $dispose: function() {
                 json.unobserve(this.target, this.callback);
-                delete this.props;
-                delete this.callback;
-                delete this.target;
+                this.props = null;
+                this.callback = null;
+                this.target = null;
             },
             /**
      * Add a new observer for a given property
@@ -633,7 +633,7 @@
                         }
                     }
                     if (arr.length === 0) {
-                        delete this.props[property];
+                        this.props[property] = null;
                     }
                 }
             }
@@ -1035,6 +1035,36 @@
      */
             getExpr: function(eIdx) {
                 return this.exps["e" + eIdx];
+            },
+            /**
+     * Scans the scope tree to determine which scope object is actually handling a given object
+     * This method is necessary to observe the right scope instance
+     * (all scope object have a hidden "+parent" property referencing their parent scope)
+     * @param {String} property the property to look for
+     * @param {Object} vscope the current variable scope
+     * @return {Object} the scope object or null if not found
+     */
+            getScopeOwner: function(property, vscope) {
+                var vs = vscope;
+                while (vs) {
+                    if (vs.hasOwnProperty(property)) {
+                        return vs;
+                    } else {
+                        vs = vs["+parent"];
+                    }
+                }
+                return null;
+            },
+            /**
+     * Create a sub-scope object inheriting from the parent' scope
+     * @param {Object} ref the reference scope
+     * @return {Object} sub-scope object extending the ref object
+     */
+            createSubScope: function(ref) {
+                var vs = klass.createObject(ref);
+                vs["scope"] = vs;
+                vs["+parent"] = ref;
+                return vs;
             }
         });
         module.exports = ExpHandler;
@@ -1149,19 +1179,27 @@
                 if (!this.bound) {
                     return null;
                 }
-                var ppl = this.ppLength;
+                var ppl = this.ppLength, p = this.path;
                 if (ppl < 1) {
                     return null;
                 }
-                var v = this.isLiteral ? this.root : vscope[this.root];
+                var v = this.root;
+                if (!this.isLiteral) {
+                    v = ExpHandler.getScopeOwner(p[0], vscope);
+                    if (v === null) {
+                        // we try to observe a properety that has not been created yet
+                        // and it will be created on the current scope (cf. let)
+                        v = vscope;
+                    }
+                }
                 if (v === undefined) {
                     return null;
                 }
                 if (ppl === 1) {
                     // optimize standard case
-                    return [ [ v, this.path[0] ] ];
+                    return [ [ v, p[0] ] ];
                 } else {
-                    var r = [], p = this.path, pp;
+                    var r = [], pp;
                     for (var i = 0; ppl > i; i++) {
                         pp = p[i];
                         r.push([ v, pp ]);
@@ -1388,6 +1426,10 @@
             // string: node namespace - if any
             isCptContent: false,
             // tells if a node instance is a child of a component (used to raise edirty flags)
+            obsPairs: null,
+            // Array of observed [obj, property] pairs associated to this object
+            needSubScope: false,
+            // true if a dedicated sub-scope should be created for this node
             $constructor: function(exps) {
                 this.isStatic = exps === 0;
                 if (!this.isStatic) {
@@ -1408,14 +1450,18 @@
                     delete this.childNodes;
                 }
                 // TODO delete Expression observers !!!!
+                if (this.root) {
+                    this.root.rmAllObjectObservers(this);
+                }
+                this.obsPairs = null;
                 this.htmlCbs = null;
-                delete this.node;
-                delete this.parent;
-                delete this.root;
-                delete this.vscope;
-                delete this.children;
-                delete this.atts;
-                delete this.evtHandlers;
+                this.node = null;
+                this.parent = null;
+                this.root = null;
+                this.vscope = null;
+                this.children = null;
+                this.atts = null;
+                this.evtHandlers = null;
             },
             /**
      * create and set the atts property, which is an array of attribute objects created from the attcfg passed as
@@ -1500,9 +1546,12 @@
             createNodeInstance: function(parent) {
                 // create node instance referencing the current node as parent in the prototype chain
                 var ni = klass.createObject(this);
-                ni.vscope = parent.vscope;
-                // we don't create new named variable in vscope, so we use the same vscope
                 ni.parent = parent;
+                if (this.needSubScope) {
+                    ni.vscope = ni.createSubScope();
+                } else {
+                    ni.vscope = parent.vscope;
+                }
                 ni.nodeNS = parent.nodeNS;
                 ni.root = parent.root;
                 ni.root.createExpressionObservers(ni);
@@ -1528,6 +1577,11 @@
      * more specific logic
      */
             refresh: function() {
+                if (this.adirty) {
+                    // update observable pairs
+                    this.root.updateObjectObservers(this);
+                    this.adirty = false;
+                }
                 if (this.cdirty) {
                     var cn = this.childNodes;
                     if (cn) {
@@ -1621,6 +1675,26 @@
                         }
                     }
                 }
+            },
+            /**
+     * Create a sub-scope object inheriting from the parent' scope
+     * @param {Object} ref tthe reference scope (optional - default: this.parent.vscope)
+     */
+            createSubScope: function(ref) {
+                if (!ref) {
+                    ref = this.parent.vscope;
+                }
+                return ExpHandler.createSubScope(ref);
+            },
+            /**
+     * Scans the scope tree to determine which scope object is actually handling a given object
+     * (Shortcut to ExpHandler.getScopeOwner)
+     * @param {String} property the property to look for
+     * @param {Object} vscope the current variable scope
+     * @return {Object} the scope object or null if not found
+     */
+            getScopeOwner: function(property, vscope) {
+                return ExpHandler.getScopeOwner(property, vscope);
             }
         });
         /**
@@ -1790,8 +1864,8 @@
             refresh: function() {
                 if (this.adirty) {
                     this.node.nodeValue = this.getContent();
-                    this.adirty = false;
                 }
+                TNode.refresh.call(this);
             },
             /**
      * Tell this node can be found in a component content 
@@ -2679,7 +2753,7 @@
                     arg.template.call(this, this.getTemplateArguments());
                 }
                 // the component is a template without any controller
-                // so we have to observe the template scope to be able to propagate changes to the parent scope
+                // so we have to observe the template root scope to be able to propagate changes to the parent scope
                 this._scopeChgeCb = this.onScopeChange.bind(this);
                 json.observe(this.vscope, this._scopeChgeCb);
             },
@@ -2848,7 +2922,7 @@
                     // remove the MD marker
                     o.$dispose();
                 }
-                delete this.propObs;
+                this.propObs = null;
                 if (this.ctlWrapper) {
                     this.ctlWrapper.$dispose();
                     this.ctlWrapper = null;
@@ -2871,6 +2945,7 @@
                     if (sz === 1) {
                         this.createObjectObserver(ni, op[0][0], op[0][1]);
                     } else {
+                        ni.obsPairs = op;
                         for (var i = 0; sz > i; i++) {
                             this.createObjectObserver(ni, op[i][0], op[i][1]);
                         }
@@ -2913,6 +2988,30 @@
                     // observer exists
                     var obs = this.propObs[oid - 1];
                     obs.rmObserver(ni, prop);
+                }
+            },
+            /**
+     * Removes the object observers associated to a node instance
+     * @param {TNode} ni the node instance that contained the changes
+     */
+            rmAllObjectObservers: function(ni) {
+                var op = ni.obsPairs;
+                if (op) {
+                    for (var i = 0, sz = op.length; sz > i; i++) {
+                        // remove previous
+                        this.rmObjectObserver(ni, op[i][0], op[i][1]);
+                    }
+                    ni.obsPairs = null;
+                }
+            },
+            /**
+     * Update the object observers associated to a node instance
+     * @param {TNode} ni the node instance that contained the changes
+     */
+            updateObjectObservers: function(ni) {
+                if (ni.obsPairs) {
+                    this.rmAllObjectObservers(ni);
+                    this.createExpressionObservers(ni);
                 }
             },
             /**
@@ -3299,12 +3398,21 @@
      * Return the objects referenced by the path - return null if the path is not observable
      */
             getPathObjects: function() {
-                var tp = this.tplPath, o, ps = this.parent.vscope;
-                if (tp[0] === undefined || tp[0] === null || typeof tp[0] === "string") {
-                    o = ps;
-                } else if (ps[tp[1]]) {
+                var tp = this.tplPath, o, ps = this.parent.vscope, isType0String = typeof tp[0] === "string";
+                if (ps[tp[1]]) {
                     // tp[1] exists in the scope - so it has priority
-                    o = ps;
+                    o = this.getScopeOwner(tp[1], ps);
+                } else if (tp[0] === undefined || tp[0] === null || isType0String) {
+                    if (isType0String) {
+                        // we have to find the right scope object holding this property
+                        o = this.getScopeOwner(tp[0], ps);
+                        if (o === null) {
+                            // property doesn't exist yet
+                            o = ps;
+                        }
+                    } else {
+                        o = ps;
+                    }
                 }
                 if (o) {
                     var sz = tp.length, res = [];
@@ -3579,10 +3687,15 @@
      */
             createChildNodeInstances: function(condition) {
                 this.lastConditionValue = condition;
+                if (!this.refScope) {
+                    this.refScope = this.vscope;
+                }
                 if (!this.isDOMempty) {
                     this.removeChildNodeInstances(this.node1, this.node2);
                     this.isDOMempty = true;
                 }
+                // create new scope
+                this.vscope = this.createSubScope(this.refScope);
                 // evalutate condition expression to determine which children collection to use (i.e. if or block)
                 var ch = condition ? this.children : this.children2;
                 // create child nodes
@@ -3622,6 +3735,7 @@
                 var cond = this.getConditionValue();
                 if (cond !== this.lastConditionValue) {
                     this.createChildNodeInstances(cond);
+                    this.root.updateObjectObservers(this);
                     this.adirty = false;
                     this.cdirty = false;
                 } else {
@@ -3780,7 +3894,6 @@
                         // collection is the same but some items have been deleted or created
                         this.updateCollection(col);
                     }
-                    this.adirty = false;
                 }
                 TNode.refresh.call(this);
             },
@@ -4065,8 +4178,7 @@
      * @param {DOMElement} parentDOMNode the parent DOM node where the element should be inserted
      */
             createNodeInstance: function(parent, item, key, isfirst, islast, parentDOMNode) {
-                var vs = klass.createObject(parent.vscope), itnm = this.itemName;
-                vs["scope"] = vs;
+                var vs = this.createSubScope(parent.vscope), itnm = this.itemName;
                 vs[itnm] = item;
                 vs[this.itemKeyName] = key;
                 vs[itnm + "_isfirst"] = isfirst;
@@ -5969,8 +6081,9 @@
      * @param {Map} ehcfg map of the different event hanlder used on the element e.g. {"onclick":1} - where 1 is the
      * expression index associated to the event hanlder callback
      * @param {Array} children list of sub-node generators
+     * @param {Integer} needSubScope tells if a sub-scope must be created (e.g. because of {let} statents) - default: 0 or undefined
      */
-            $constructor: function(tag, exps, attcfg, ehcfg, children) {
+            $constructor: function(tag, exps, attcfg, ehcfg, children, needSubScope) {
                 TNode.$constructor.call(this, exps);
                 this.tag = tag;
                 this.isInput = this.tag === "input";
@@ -5979,6 +6092,7 @@
                     this.children = children;
                 }
                 this.gesturesEventHandlers = null;
+                this.needSubScope = needSubScope === 1;
             },
             $dispose: function() {
                 var evh = this.evtHandlers, nd = this.node;
@@ -6292,8 +6406,8 @@
             refresh: function() {
                 if (this.adirty) {
                     this.processLog();
-                    this.adirty = false;
                 }
+                TNode.refresh.call(this);
             },
             /**
      * Tell this node can be found in a component content 
@@ -6305,7 +6419,74 @@
         });
         module.exports = LogNode;
     });
-    define("hsp/rt.js", [ "./es5", "./klass", "./rt/log", "./rt/$root", "./rt/cptwrapper", "./rt/$text", "./rt/$if", "./rt/$foreach", "./rt/eltnode", "hsp/rt/$log" ], function(module, global) {
+    define("hsp/rt/$let.js", [ "hsp/klass", "hsp/$set", "hsp/document", "hsp/rt/tnode" ], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+        // This module contains the log node
+        var klass = require("hsp/klass"), $set = require("hsp/$set"), doc = require("hsp/document"), TNode = require("hsp/rt/tnode").TNode;
+        var LetNode = klass({
+            $extends: TNode,
+            /**
+     * Log node generator ex: {log scope}
+     * @param {Map<Expression>|int} exps the map of the variables used by the node. 
+     *      0 is passed if no expression is used
+     * @param {Array} args array of the variable name, expression index associated to this statement
+     *      e.g. ['aVarName',1,'anotherName',2]
+     */
+            $constructor: function(exps, args) {
+                TNode.$constructor.call(this, exps);
+                this.args = args;
+            },
+            /**
+     * Create the DOM node element and attach it to the parent
+     */
+            createNode: function() {
+                this.node = doc.createComment("{let}");
+                this.updateScope();
+            },
+            /**
+     * Observer callback called when one of the bound variables used by the node expressions changes
+     */
+            onPropChange: function(chge) {
+                // update scope variables
+                this.updateScope();
+                TNode.onPropChange.call(this, chge);
+            },
+            /**
+     * Process the information to be logged and push it to the log output (browser console by default)
+     */
+            updateScope: function() {
+                var args = this.args, eh = this.eh, v;
+                if (args) {
+                    for (var i = 0, sz = args.length; sz > i; i += 2) {
+                        v = eh.getValue(args[i + 1], this.vscope, undefined);
+                        $set(this.vscope, args[i], v);
+                    }
+                }
+            },
+            /**
+     * Tell this node can be found in a component content
+     */
+            isValidCptAttElement: function() {
+                return true;
+            }
+        });
+        module.exports = LetNode;
+    });
+    define("hsp/rt.js", [ "./es5", "./klass", "./rt/log", "./rt/$root", "./rt/cptwrapper", "./rt/$text", "./rt/$if", "./rt/$foreach", "./rt/eltnode", "hsp/rt/$log", "hsp/rt/$let" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -6509,7 +6690,7 @@
  * constructor through a nodes property
  */
         var nodes = {};
-        var nodeList = [ "$text", require("./rt/$text"), "$if", require("./rt/$if"), "$insert", $InsertNode, "$foreach", require("./rt/$foreach"), "elt", require("./rt/eltnode"), "cpt", $CptNode, "catt", $CptAttElement, "log", require("hsp/rt/$log") ];
+        var nodeList = [ "$text", require("./rt/$text"), "$if", require("./rt/$if"), "$insert", $InsertNode, "$foreach", require("./rt/$foreach"), "elt", require("./rt/eltnode"), "cpt", $CptNode, "catt", $CptAttElement, "log", require("hsp/rt/$log"), "let", require("hsp/rt/$let") ];
         for (var i = 0, sz = nodeList.length; sz > i; i += 2) {
             createShortcut(nodeList[i], nodeList[i + 1]);
         }
