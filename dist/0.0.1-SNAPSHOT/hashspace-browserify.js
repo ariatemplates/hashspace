@@ -845,8 +845,6 @@ var Gesture = klass({
 module.exports.Gesture = Gesture;
 },{"../klass":"GfSJC6","./touchEvent":"oYuPY+"}],"hsp/gestures/gesture":[function(require,module,exports){
 module.exports=require('xsjChN');
-},{}],"hsp/gestures/gestures":[function(require,module,exports){
-module.exports=require('aNFXt4');
 },{}],"aNFXt4":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -954,7 +952,9 @@ var Gestures = klass({
 module.exports.Gestures = Gestures;
 
 
-},{"../klass":"GfSJC6","./doubleTap":"6Kl1kt","./drag":"J6s4RB","./longPress":"OkCBHK","./pinch":"X+07de","./singleTap":"BxcBBq","./swipe":"1S2i7l","./tap":"uETHOu"}],"OkCBHK":[function(require,module,exports){
+},{"../klass":"GfSJC6","./doubleTap":"6Kl1kt","./drag":"J6s4RB","./longPress":"OkCBHK","./pinch":"X+07de","./singleTap":"BxcBBq","./swipe":"1S2i7l","./tap":"uETHOu"}],"hsp/gestures/gestures":[function(require,module,exports){
+module.exports=require('aNFXt4');
+},{}],"OkCBHK":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -3457,8 +3457,6 @@ module.exports = $ForEachNode;
 
 },{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$foreach":[function(require,module,exports){
 module.exports=require('Ll2sHF');
-},{}],"hsp/rt/$if":[function(require,module,exports){
-module.exports=require('R4WgDY');
 },{}],"R4WgDY":[function(require,module,exports){
 
 /*
@@ -3622,7 +3620,11 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"3xKX24":[function(require,module,exports){
+},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$if":[function(require,module,exports){
+module.exports=require('R4WgDY');
+},{}],"hsp/rt/$let":[function(require,module,exports){
+module.exports=require('3xKX24');
+},{}],"3xKX24":[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -3702,9 +3704,7 @@ var LetNode = klass({
 module.exports=LetNode;
 
 
-},{"hsp/$set":"+0srr9","hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$let":[function(require,module,exports){
-module.exports=require('3xKX24');
-},{}],"hsp/rt/$log":[function(require,module,exports){
+},{"hsp/$set":"+0srr9","hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$log":[function(require,module,exports){
 module.exports=require('nUpGcG');
 },{}],"nUpGcG":[function(require,module,exports){
 

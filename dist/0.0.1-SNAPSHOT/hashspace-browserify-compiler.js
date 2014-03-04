@@ -1185,13 +1185,13 @@ module.exports = (function(){
         pos1 = clone(pos);
         result0 = parse__();
         if (result0 !== null) {
-          if (input.substr(pos.offset, 2) === "# ") {
-            result1 = "# ";
-            advance(pos, 2);
+          if (input.charCodeAt(pos.offset) === 35) {
+            result1 = "#";
+            advance(pos, 1);
           } else {
             result1 = null;
             if (reportFailures === 0) {
-              matchFailed("\"# \"");
+              matchFailed("\"#\"");
             }
           }
           if (result1 !== null) {
@@ -1707,13 +1707,13 @@ module.exports = (function(){
         pos1 = clone(pos);
         result0 = parse__();
         if (result0 !== null) {
-          if (input.substr(pos.offset, 2) === "# ") {
-            result1 = "# ";
-            advance(pos, 2);
+          if (input.charCodeAt(pos.offset) === 35) {
+            result1 = "#";
+            advance(pos, 1);
           } else {
             result1 = null;
             if (reportFailures === 0) {
-              matchFailed("\"# \"");
+              matchFailed("\"#\"");
             }
           }
           if (result1 !== null) {
