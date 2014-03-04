@@ -24,9 +24,8 @@ module.exports = function (grunt) {
           reporter: 'spec'
         },
         src: [
-          'public/test/compiler/*.js',
-          'public/test/transpiler/*.js',
-          'public/test/compiler/jsvalidator/*.js'
+          'public/test/compiler/**/*.js',
+          'public/test/transpiler/*.js'
         ]
       }
     },
@@ -207,8 +206,8 @@ module.exports = function (grunt) {
     },
     peg:{
         grammar: {
-            src: "hsp/compiler/hspblocks.pegjs",
-            dest: "hsp/compiler/hspblocks.peg.js",
+            src: "hsp/compiler/parser/hspblocks.pegjs",
+            dest: "hsp/compiler/parser/hspblocks.peg.js",
             options:{
                 trackLineAndColumn : true
             }

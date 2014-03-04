@@ -2,6 +2,7 @@
 var assert = require("assert");
 var parser = require("../../../hsp/compiler/parser");
 var compiler = require("../../../hsp/compiler/compiler");
+var jsgenerator = require("../../../hsp/compiler/jsgenerator");
 var ut = require("./utils/testutils");
 
 describe('Block Parser: ', function () {
@@ -40,7 +41,7 @@ describe('Block Parser: ', function () {
 
     var testFn = function () {
         var sample = ut.getSampleContent(this.name);
-        var bl = parser.getBlockList(sample.template);
+        var bl = parser.parse(sample.template);
         var skip = (sample.parsedTree && sample.parsedTree === "skip");
         if (!skip) {
             if (sample.parsedTree) {
@@ -109,7 +110,7 @@ describe('Block Parser: ', function () {
         var sample = ut.getSampleContent("template1");
         var r = compiler.compile(sample.template, "template1");
 
-        var s = [compiler.HEADER,
+        var s = [jsgenerator.HEADER,
             'var x="text1";',
             'function func() {var x="text2"};',
             '',
@@ -138,7 +139,7 @@ describe('Block Parser: ', function () {
         var sample = ut.getSampleContent("template2");
         var r = compiler.compile(sample.template, "template2");
 
-        var s = [compiler.HEADER, '', 'var hello4 = exports.hello4 = require("hsp/rt").template([], function(n){',
+        var s = [jsgenerator.HEADER, '', 'var hello4 = exports.hello4 = require("hsp/rt").template([], function(n){',
                 '  return [n.$text(0,["Hello World!"])];', '});'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
@@ -153,7 +154,7 @@ describe('Block Parser: ', function () {
         var r = compiler.compile(sample.template, "component2");
 
         var s = [
-                compiler.HEADER,
+                jsgenerator.HEADER,
                 '',
                 'var mycomponent = require("hsp/rt").template({ctl:[foo,"foo","ComponentController"],ref:"c"}, function(n){',
                 '  return [n.$text(0,["some text..."])];', '});'].join("\n");
@@ -167,7 +168,7 @@ describe('Block Parser: ', function () {
         var r = compiler.compile(sample.template, "component5");
 
         var s = [
-                compiler.HEADER,
+                jsgenerator.HEADER,
                 '',
                 'var test = require("hsp/rt").template([], function(n){',
                 '  var _body,_panel;try {_body=body} catch(e) {};try {_panel=panel} catch(e) {};',
