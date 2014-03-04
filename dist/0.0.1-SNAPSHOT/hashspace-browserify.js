@@ -115,6 +115,8 @@ if (doc.createEventObject) {
 
 },{}],"hsp/document":[function(require,module,exports){
 module.exports=require('WDacIY');
+},{}],"hsp/es5":[function(require,module,exports){
+module.exports=require('hhHoZL');
 },{}],"hhHoZL":[function(require,module,exports){
 
 /*
@@ -187,8 +189,8 @@ if (!Function.prototype.bind) {
     };
 }
 
-},{}],"hsp/es5":[function(require,module,exports){
-module.exports=require('hhHoZL');
+},{}],"hsp/gestures/doubleTap":[function(require,module,exports){
+module.exports=require('6Kl1kt');
 },{}],"6Kl1kt":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
@@ -351,9 +353,7 @@ var DoubleTap = klass({
 });
 
 module.exports.DoubleTap = DoubleTap;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/doubleTap":[function(require,module,exports){
-module.exports=require('6Kl1kt');
-},{}],"J6s4RB":[function(require,module,exports){
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"J6s4RB":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -471,6 +471,8 @@ var Drag = klass({
 module.exports.Drag = Drag;
 },{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/drag":[function(require,module,exports){
 module.exports=require('J6s4RB');
+},{}],"hsp/gestures/gesture":[function(require,module,exports){
+module.exports=require('xsjChN');
 },{}],"xsjChN":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -843,9 +845,7 @@ var Gesture = klass({
 });
 
 module.exports.Gesture = Gesture;
-},{"../klass":"GfSJC6","./touchEvent":"oYuPY+"}],"hsp/gestures/gesture":[function(require,module,exports){
-module.exports=require('xsjChN');
-},{}],"aNFXt4":[function(require,module,exports){
+},{"../klass":"GfSJC6","./touchEvent":"oYuPY+"}],"aNFXt4":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1271,6 +1271,8 @@ var Pinch = klass({
 module.exports.Pinch = Pinch;
 },{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/pinch":[function(require,module,exports){
 module.exports=require('X+07de');
+},{}],"hsp/gestures/singleTap":[function(require,module,exports){
+module.exports=require('BxcBBq');
 },{}],"BxcBBq":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
@@ -1430,8 +1432,8 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/singleTap":[function(require,module,exports){
-module.exports=require('BxcBBq');
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/swipe":[function(require,module,exports){
+module.exports=require('1S2i7l');
 },{}],"1S2i7l":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
@@ -1591,9 +1593,7 @@ var Swipe = klass({
 });
 
 module.exports.Swipe = Swipe;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/swipe":[function(require,module,exports){
-module.exports=require('1S2i7l');
-},{}],"uETHOu":[function(require,module,exports){
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"uETHOu":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
