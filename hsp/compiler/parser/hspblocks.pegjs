@@ -13,7 +13,7 @@ TemplateFile
   {return blocks;}
 
 TextBlock
-  = lines:(!("#" _ "template") !("#" _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+ 
+  = lines:(!(_ "#" _ "template") !(_ "#" _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+
   {return {type:"plaintext", value:lines.join('')}}
 
 RequireBlock "require block" // TODO: finalize!
