@@ -1,4 +1,5 @@
 var klass=require("hsp/klass"),
+    hsp=require("hsp/rt"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     json=require("hsp/json");
 
