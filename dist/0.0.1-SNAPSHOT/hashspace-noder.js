@@ -4844,7 +4844,6 @@
      * @protected
      */
             _addListener: function(eventName, cb) {
-                //aria.utils.Event.addListener(this.target, eventName, cb);
                 this.callbackMap[eventName] = cb;
                 var addEL = this.target.addEventListener !== undefined;
                 if (!addEL) {
@@ -4877,7 +4876,6 @@
      * @protected
      */
             _removeListener: function(eventName, cb) {
-                //aria.utils.Event.removeListener(this.target, eventName, cb);
                 this.callbackMap[eventName] = null;
                 var rmEL = this.target.removeEventListener !== undefined;
                 if (rmEL) {
@@ -4923,9 +4921,7 @@
                 extraData.currentX = position[0].x;
                 extraData.currentY = position[0].y;
                 fakeEvent.detail = extraData;
-                //aria.utils.Delegate.delegate(fakeEvent);
                 this.evthandler.handleEvent(fakeEvent);
-                //aria.utils.Delegate.delegate(fakeEvent);
                 event.cancelBubble = fakeEvent.hasStopPropagation;
                 event.returnValue = !fakeEvent.hasPreventDefault;
                 return event.returnValue;
