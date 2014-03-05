@@ -106,6 +106,21 @@ describe('Block Parser: ', function () {
       assert.equal(r.errors.length, 0, "no compilation error");
     });
 
+    it('should allow whitespaces before #template', function(){
+      var r = compiler.compile(
+        '\n   #template spacesBefore()\n' +
+        ' #/template', "spacesBefore");
+      assert.equal(r.errors.length, 0, "no compilation error");
+    });
+
+    it('should allow whitespaces before #template when a modifier is present', function(){
+        var r = compiler.compile(
+            '\n   # export  template spacesBefore()\n' +
+                ' #/template', "spacesBefore");
+        console.log(r.errors);
+        assert.equal(r.errors.length, 0, "no compilation error");
+    });
+
     it('validates full compiled template', function () {
         var sample = ut.getSampleContent("template1");
         var r = compiler.compile(sample.template, "template1");
