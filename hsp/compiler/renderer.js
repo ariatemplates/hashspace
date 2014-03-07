@@ -16,8 +16,8 @@ exports.renderFile = function (path, options, fn) {
         var compiledTemplate;
         if (!err) {
             try {
-                var r = compiler.compile(content,path);
-                compiledTemplate = r.code;
+                var result = compiler.compile(content, path);
+                compiledTemplate = result.code;
                 // err=r.errors;
             } catch (ex) {
                 err = ex;
@@ -34,16 +34,16 @@ exports.renderFile = function (path, options, fn) {
  * @return the compiled JS
  */
 exports.renderString = function (src, path) {
-    var r = {
+    var result = {
         code : '',
         errors : null
     };
     try {
-        r = compiler.compile(src, path);
+        result = compiler.compile(src, path);
     } catch (ex) {
-        r.serverErrors = [{
-                    description : ex.toString()
-                }];
+        result.serverErrors = [{
+                description : ex.toString()
+            }];
     }
-    return r;
+    return result;
 };
