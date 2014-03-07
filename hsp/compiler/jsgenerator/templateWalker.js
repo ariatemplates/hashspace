@@ -6,9 +6,15 @@ var TreeWalker = require("./treeWalker").TreeWalker;
  */
 var TemplateWalker = klass({
     $extends : TreeWalker,
-    $constructor : function (fileName,dirPath) {
-        this.fileName=fileName;
-        this.dirPath=dirPath;
+
+    /**
+     * Constructor.
+     * @param {String} fileName the name of the file being compiled.
+     * @param {String} dirPath the directory path.
+     */
+    $constructor : function (fileName, dirPath) {
+        this.fileName = fileName;
+        this.dirPath = dirPath;
         this.templates = {}; // used by processors to store intermediate values in order to ease testing
         this.globals={};     // global validation code for each template - used for unit testing
         this.errors = [];
@@ -16,6 +22,11 @@ var TemplateWalker = klass({
         this.resetScope();
     },
 
+    /**
+     * Adds an error to the current error list.
+     * @param {String} description the error description
+     * @param {Object} errdesc additional object (block, node, ...) which can contain additional info about the error (line/column number, code).
+     */
     logError : function (description, errdesc) {
         var desc = {
             description : description
@@ -32,13 +43,18 @@ var TemplateWalker = klass({
         this.errors.push(desc);
     },
 
-    // reset the list of global variables that have been found since the last reset
+    /**
+     * Resets the list of global variables that have been found since the last reset
+     */
     resetGlobalRefs : function () {
         this._globals=[];
         this._globalKeys={};
     },
 
-    // add a global reference (e.g. "foo") to the current _globals list
+    /**
+     * Adds a global reference (e.g. "foo") to the current _globals list.
+     * @param {String} ref the reference key.
+     */
     addGlobalRef : function (ref) {
         if (!this._globalKeys[ref]) {
             this._globals.push(ref);
@@ -46,37 +62,59 @@ var TemplateWalker = klass({
         }
     },
 
-    // reset the scope variables that are used to determine if a variable name is in the current scope
+    /**
+     * Resets the scope variables that are used to determine if a variable name is in the current scope.
+     */
     resetScope : function () {
         this._scopes = [{}];
         this._scope = this._scopes[0];
     },
 
-    addScopeVariable : function (varname) {
-        this._scope[varname] = true;
+    /**
+     * Adds a scope variable.
+     * @param {String} varName the variable name.
+     */
+    addScopeVariable : function (varName) {
+        this._scope[varName] = true;
     },
 
-    rmScopeVariable : function (varname) {
-        this._scope[varname] = null;
+    /**
+     * Removes a scope variable.
+     * @param {String} varName the variable name.
+     */
+    rmScopeVariable : function (varName) {
+        this._scope[varName] = null;
     },
 
-    isInScope : function (varname) {
-        if (varname === "scope") {
+    /**
+     * Checks if a scope variable exists.
+     * @param {String} varName the variable name.
+     * @return {Boolean} true if it exists.
+     */
+    isInScope : function (varName) {
+        if (varName === "scope") {
             return true; // scope is a reserved key word and is automatically created on the scope object
         }
-        return this._scope[varname] ? true : false;
+        return this._scope[varName] ? true : false;
     },
 
-    pushSubScope : function (vararray) {
+    /**
+     * Pushes a sub scope.
+     * @param {Array} varArray an array of variable.
+     */
+    pushSubScope : function (varArray) {
         var newScope = Object.create(this._scope);
-        for (var i = 0, sz = vararray.length; sz > i; i++) {
-            newScope[vararray[i]] = true;
+        for (var i = 0; i < varArray.length; i++) {
+            newScope[varArray[i]] = true;
         }
         this._scopes.push(newScope);
         this._scope = this._scopes[this._scopes.length - 1];
     },
 
-    popSubScope : function (varnames) {
+    /**
+     * Pops a sub scope.
+     */
+    popSubScope : function () {
         this._scopes.pop();
         this._scope = this._scopes[this._scopes.length - 1];
     }
