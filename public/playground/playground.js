@@ -79,9 +79,10 @@ var Playground = module.exports = klass({
      */
     notifyScriptError : function (playgroundIdx, errorDescription, fileName) {
         var err = {
-            description : '' + errorDescription
+            message : '' + errorDescription,
+            type: 'error'
         };
-        playgrounds['p' + playgroundIdx].logErrors(fileName, [err]);
+        playgrounds['p' + playgroundIdx].log(err);
     },
 
     /**
@@ -108,11 +109,10 @@ var Playground = module.exports = klass({
                         require.cache[moduleName] = null;
                     }
 
-                    // add try catch to display js errors
-                    var code2 = (['try {', code, '} catch(ex) {', 'var Playground=require("playground/playground");',
-                            'Playground.notifyScriptError(' + self.idx + ',ex,__filename);', '}']).join('\n');
-
-                    noder.execute(code2, moduleName); // .then(function (module) {});
+                    noder.execute(code, moduleName).then(function () {
+                    }, function (ex) {
+                        self.notifyScriptError(self.idx, ex, fileName);
+                    }).end();
                 } catch (ex) {
                     console.warn("[compileAndUpdate] " + ex.message + " (line:" + ex.line + ", column:" + ex.column
                             + ")");
