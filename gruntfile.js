@@ -147,6 +147,12 @@ module.exports = function (grunt) {
         reporters: ['dots', 'saucelabs']
       }
     },
+    jscs: {
+        src: ['hsp/**/*.js', 'public/**/*.js', '!public/**/markdown.js'],
+        options: {
+            config: '.jscs.json'
+        }
+    },
     hspserver: {
       port: 8000,
       base: __dirname,
@@ -258,7 +264,7 @@ module.exports = function (grunt) {
   grunt.registerTask('prepublish', ['peg']);
   grunt.registerTask('package', ['prepublish', 'browserify', 'atpackager', 'uglify']);
   grunt.registerTask('mocha', ['peg', 'mochaTest']);
-  grunt.registerTask('test', ['checkStyle', 'mocha', 'karma:unit']);
-  grunt.registerTask('ci', ['checkStyle', 'mocha', 'karma:ci', 'package']);
+  grunt.registerTask('test', ['checkStyle', 'jscs', 'mocha', 'karma:unit']);
+  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci', 'package']);
   grunt.registerTask('default', ['hspserver']);
 };
