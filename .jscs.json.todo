@@ -1,0 +1,41 @@
+{
+    "maximumLineLength": 140,
+    "requireCamelCaseOrUpperCaseIdentifiers": true,
+    "requireDotNotation": true,
+    "requireLeftStickedOperators": [","],
+    "requireSpaceAfterBinaryOperators": [
+            "+",
+            "-",
+            "/",
+            "*",
+            "=",
+            "==",
+            "===",
+            "!=",
+            "!=="
+        ],
+    "requireCapitalizedConstructors": true,
+    "safeContextKeyword": "self",
+    "requireCurlyBraces": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "try",
+        "catch",
+        "case",
+        "default"
+    ],
+    "requireSpaceAfterKeywords": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "switch",
+        "return",
+        "try",
+        "catch"
+    ]
+}
