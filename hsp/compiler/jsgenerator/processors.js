@@ -1,9 +1,17 @@
+/**
+ * Escapes new lines characters in a string.
+ * @param {String} text the input string.
+ * @return {String} the excaped strin.
+ */
 function escapeNewLines (text) {
     return text.replace(/\r\n?|[\n\u2028\u2029]/g, "\n").replace(/\n/g, "\\n");
 }
 
 /**
- * Text outside a template, just return what we've got
+ * Text outside a template, just return what we've got.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
 exports["plaintext"] = function (node, walker) {
     return node.value;
@@ -13,57 +21,64 @@ exports["plaintext"] = function (node, walker) {
  * Template definition, this is the root of the tree, return a self calling function that recursively applies
  * - walker.walk on its content array
  * - walker.each on its arguments definition, used for simple serialization
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
 exports["template"] = function (node, walker) {
-    var tplName = node.name;
+    var templateName = node.name;
     var CRLF = '\r\n';
 
-    // add template arguments to the scope
+    //Adds template arguments to the scope
     if (node.args) {
-        for (var i = 0, sz = node.args.length; sz > i; i++) {
+        for (var i = 0; i < node.args.length; i++) {
             walker.addScopeVariable(node.args[i]);
         }
     } else if (node.controller) {
         walker.addScopeVariable(node.controller.ref); // the controller reference - e.g. "c"
     }
 
-    var tplCode = ["[", walker.walk(node.content, module.exports).join(","), "]"].join("");
+    //Generates the code of the template's content
+    var templateCode = ["[", walker.walk(node.content, module.exports).join(","), "]"].join("");
     var globals = walker._globals;
 
-    // generate globals validation statement - e.g. var _c;try {_c=c} catch(e) {};
-    var gs = [], gsz = globals.length;
-    if (gsz) {
-        gs = ["  var _"+globals.join(',_')+";"];
-        for (var i=0;gsz>i;i++) {
-            gs.push( "try {_" + globals[i] + "=" + globals[i] + "} catch(e) {};");
+    //Generates globals validation statement - e.g. var _c;try {_c=c} catch(e) {};
+    var globalsStatement = [], globalsLength = globals.length;
+    if (globalsLength) {
+        globalsStatement = ["  var _" + globals.join(',_') + ";"];
+        for (var i=0; i < globalsLength; i++) {
+            globalsStatement.push( "try {_" + globals[i] + "=" + globals[i] + "} catch(e) {};");
         }
-        gs.push(CRLF);
+        globalsStatement.push(CRLF);
     }
-    var gss=gs.join("");
+    var globalsStatementString = globalsStatement.join("");
 
-    // reset template scope and global list
+    //Resets template scope and global list
     walker.resetScope();
     walker.resetGlobalRefs();
 
-    walker.templates[tplName] = tplCode;
+    walker.templates[templateName] = templateCode;
 
-    var exp = '';
+    var exportString = '';
     if (node.export === true) {
-        exp = ' =exports.' + tplName;
+        exportString = ' =exports.' + templateName;
     }
 
     if (node.controller) {
-        var p = node.controller.path;
-        return ['var ', tplName, exp, ' = require("hsp/rt").template({ctl:[', p[0], ',', walker.each(p, argAsString),
-                '],ref:"', node.controller.ref, '"}, function(n){', CRLF, gss, '  return ', tplCode, ';', CRLF, '});', CRLF].join("");
+        var path = node.controller.path;
+        return ['var ', templateName, exportString, ' = require("hsp/rt").template({ctl:[', path[0], ',', walker.each(path, argAsString),
+                '],ref:"', node.controller.ref, '"}, function(n){', CRLF, globalsStatementString, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
     } else {
-        return ['var ', tplName, exp, ' = require("hsp/rt").template([', walker.each(node.args, argAsString),
-                '], function(n){', CRLF, gss, '  return ', tplCode, ';', CRLF, '});', CRLF].join("");
+        return ['var ', templateName, exportString, ' = require("hsp/rt").template([', walker.each(node.args, argAsString),
+                '], function(n){', CRLF, globalsStatementString, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
     }
 };
 
 /**
- * Generate a text node
+ * Generates a text node.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
 exports["text"] = function (node, walker) {
     if (node.value === undefined) {
@@ -75,8 +90,10 @@ exports["text"] = function (node, walker) {
 };
 
 /**
- * For a given value double it's definition returning "value",value. This method should only be called on object
- * literals (strings)
+ * For a given value double it's definition returning "value",value.
+ * This method should only be called on object literals (strings).
+ * @param {String} value the initial value.
+ * @return {String} the doubled value.
  */
 function argAsString (value) {
     // No need to toString because it's already a string
@@ -84,366 +101,416 @@ function argAsString (value) {
 }
 
 /**
- * Generate a text node
+ * Generate a textblock node.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
 exports["textblock"] = function (node, walker) {
     // we should generate sth like
     // n.$text({e1:[1,"person","firstName"],e2:[1,"person","lastName"]},["Hello ",1," ",2,"!"])
-    var tb = formatTextBlock(node, 1, walker);
-    return ["n.$text(", tb.expArg, ",", tb.blockArgs, ")"].join('');
+    var textBlock = formatTextBlock(node, 1, walker);
+    return ["n.$text(", textBlock.exprArg, ",", textBlock.blockArgs, ")"].join('');
 };
 
 /**
- * Generate a log expression
+ * Generates a log expression.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
 exports["log"] = function (node, walker) {
-    var e, idx=1, code=[], indexes=[];
-    for (var i=0,sz=node.exprs.length;sz>i;i++) {
-        e = formatExpression(node.exprs[i], idx, walker);
-        idx = e.nextIndex;
-        indexes.push(e.exprIdx);
-        code.push(e.code);
+    var expr, index = 1, code = [], indexes = [];
+    for (var i = 0; i < node.exprs.length; i++) {
+        expr = formatExpression(node.exprs[i], index, walker);
+        index = expr.nextIndex;
+        indexes.push(expr.exprIdx);
+        code.push(expr.code);
     }
-    return ["n.log({", code.join(",") , "},[", indexes.join(',') , "],'",walker.fileName,"','",walker.dirPath,"',",node.line,",",node.column,")"].join('');
+    return ["n.log({", code.join(","), "},[", indexes.join(','), "],'", walker.fileName, "','", walker.dirPath, "',",node.line, ",", node.column, ")"].join('');
 };
 
 /**
- * Generate a let expression
+ * Generates a let expression.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
 exports["let"] = function (node, walker) {
-    var e, idx=1, code=[], asn=[], varName;
-    for (var i=0,sz=node.assignments.length;sz>i;i++) {
-        e = formatExpression(node.assignments[i].value, idx, walker);
-        idx = e.nextIndex;
-        varName=node.assignments[i].identifier;
+    var expr, index = 1, code = [], assignment = [], varName;
+    for (var i = 0; i < node.assignments.length; i++) {
+        expr = formatExpression(node.assignments[i].value, index, walker);
+        index = expr.nextIndex;
+        varName = node.assignments[i].identifier;
         walker.addScopeVariable(varName);
-        asn.push("'"+varName+"'");
-        asn.push(e.exprIdx);
-        code.push(e.code);
+        assignment.push("'" + varName + "'");
+        assignment.push(expr.exprIdx);
+        code.push(expr.code);
     }
-    return ["n.let({", code.join(",") , "},[", asn.join(',') , "])"].join('');
+    return ["n.let({", code.join(",") , "},[", assignment.join(',') , "])"].join('');
 };
 
 /**
- * Generate an if node
+ * Generates an if node.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
 exports["if"] = function (node, walker) {
     // we should generate sth like
     // n.$if({e1:[1,"person","firstName"]}, 1, [n.$text({e1:[1,"person","firstName"]},["Hello ",1])], [..])
 
-    var e = formatExpression(node.condition, 1, walker);
+    var expr = formatExpression(node.condition, 1, walker);
 
-    var c1 = ',[]', c2 = '';
+    var content1 = ',[]', content2 = '';
     if (node.content1) {
-        c1 = ',[' + walker.walk(node.content1, module.exports).join(",") + ']';
+        content1 = ',[' + walker.walk(node.content1, module.exports).join(",") + ']';
     }
     if (node.content2) {
-        c2 = ',[' + walker.walk(node.content2, module.exports).join(",") + ']';
+        content2 = ',[' + walker.walk(node.content2, module.exports).join(",") + ']';
     }
 
-    if (e.code !== '') {
-        e.code = "{" + e.code + "}";
+    if (expr.code !== '') {
+        expr.code = "{" + expr.code + "}";
     }
 
-    return ['n.$if(', e.code, ',', e.exprIdx, c1, c2, ')'].join('');
+    return ['n.$if(', expr.code, ',', expr.exprIdx, content1, content2, ')'].join('');
 };
 
 /**
- * Generate a foreach node
+ * Generates a foreach node.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
 exports["foreach"] = function (node, walker) {
     // we should generate sth like
     // n.$foreach( {e1: [1, 0, "things"]}, "thing", "thing_key", 1, [...])
 
-    var e = formatExpression(node.collection, 1, walker);
+    var expr = formatExpression(node.collection, 1, walker);
 
-    var c = '[]';
+    var content = '[]';
     if (node.content) {
         // add all contextual variables
         walker.pushSubScope([node.item, node.key, node.item + "_isfirst", node.item + "_islast"]);
-
-        c = '[' + walker.walk(node.content, module.exports).join(",") + ']';
-
+        content = '[' + walker.walk(node.content, module.exports).join(",") + ']';
         walker.popSubScope();
     }
 
-    if (e.code !== '') {
-        e.code = "{" + e.code + "}";
+    if (expr.code !== '') {
+        expr.code = "{" + expr.code + "}";
     }
     var forType = 0; // to support types than 'in'
 
-    return ['n.$foreach(', e.code, ',"', node.key, '","', node.item, '",', forType, ',', e.exprIdx, ',', c, ')'].join('');
+    return ['n.$foreach(', expr.code, ',"', node.key, '","', node.item, '",', forType, ',', expr.exprIdx, ',', content, ')'].join('');
 };
 
 /*
- * Manage insertion expressions
+ * Manages insertion expressions.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
 exports["insert"] = function (node, walker) {
     node.category = "functionref";
-    var e = formatExpression(node, 1, walker);
-    var exprcode = e.code.length === 0 ? "0" : "{" + e.code + "}";
+    var expr = formatExpression(node, 1, walker);
+    var exprcode = expr.code.length === 0 ? "0" : "{" + expr.code + "}";
 
-    return ['n.$insert(', exprcode, ',', e.exprIdx, ')'].join('');
+    return ['n.$insert(', exprcode, ',', expr.exprIdx, ')'].join('');
 };
 
 /*
- * Manage element and component nodes
+ * Manages element and component nodes.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
 function elementOrComponent (node, walker) {
     // we should generate sth like
     // n.elt("div", {e1:[0,0,"arg"]}, {"title":["",1]}, 0, [...])
-    var attcontent = "0", evtcontent = "0", exprcode = "0", atts = node.attributes, sz = atts.length;
-    if (sz > 0) {
-        var list, aname, attlist = [], evtlist = [], exprlist = [], att, type, exprIdx = 1;
+    var attributeContent = "0", eventContent = "0", exprCode = "0", attributes = node.attributes, length = attributes.length;
+    if (length > 0) {
+        var list, attributeName, attributesList = [], eventList = [], exprList = [], attribute, type, exprIndex = 1;
 
-        for (var i = 0; sz > i; i++) {
-            att = atts[i];
-            list = attlist;
-            aname = att.name;
-            if (att.name.match(/^on/i)) {
+        for (var i = 0; length > i; i++) {
+            attribute = attributes[i];
+            list = attributesList;
+            attributeName = attribute.name;
+            if (attribute.name.match(/^on/i)) {
                 // this is an event handler
-                list = evtlist;
-                aname = att.name.slice(2);
+                list = eventList;
+                attributeName = attribute.name.slice(2);
             }
 
-            type = att.type;
+            type = attribute.type;
             if (type === "text") {
-                list.push('"' + aname + '":"' + att.value + '"');
+                list.push('"' + attributeName + '":"' + attribute.value + '"');
             } else if (type === "expression") {
-                var e = formatExpression(att, exprIdx, walker);
-                exprIdx = e.nextIndex;
-                exprlist.push(e.code);
-                if (list === evtlist) {
-                    list.push('"' + aname + '":' + e.exprIdx);
+                var expr = formatExpression(attribute, exprIndex, walker);
+                exprIndex = expr.nextIndex;
+                exprList.push(expr.code);
+                if (list === eventList) {
+                    list.push('"' + attributeName + '":' + expr.exprIdx);
                 } else {
-                    list.push('"' + aname + '":["",' + e.exprIdx + ']');
+                    list.push('"' + attributeName + '":["",' + expr.exprIdx + ']');
                 }
             } else if (type === "textblock") {
-                var tb = formatTextBlock(att, exprIdx, walker);
-                exprIdx = tb.nextIndex;
-                if (tb.expArg !== '0') {
-                    exprlist.push(tb.expArg.slice(1, -1));
+                var textBlock = formatTextBlock(attribute, exprIndex, walker);
+                exprIndex = textBlock.nextIndex;
+                if (textBlock.exprArg !== '0') {
+                    exprList.push(textBlock.exprArg.slice(1, -1));
                 }
-                list.push('"' + aname + '":' + tb.blockArgs);
+                list.push('"' + attributeName + '":' + textBlock.blockArgs);
             } else if (type === "name") {
-                list.push('"' + aname + '":null');
+                list.push('"' + attributeName + '":null');
             } else {
                 walker.logError("Invalid attribute type: " + type);
             }
         }
-        if (attlist.length) {
-            attcontent = "{" + attlist.join(',') + "}";
+        if (attributesList.length) {
+            attributeContent = "{" + attributesList.join(',') + "}";
         }
-        if (evtlist.length) {
-            evtcontent = "{" + evtlist.join(',') + "}";
+        if (eventList.length) {
+            eventContent = "{" + eventList.join(',') + "}";
         }
-        exprcode = exprlist.length === 0 ? "0" : "{" + exprlist.join(',') + "}";
+        exprCode = exprList.length === 0 ? "0" : "{" + exprList.join(',') + "}";
     }
 
-    var c = '';
+    var content = '';
     if (node.content && node.content.length) {
-        c = ',[' + walker.walk(node.content, module.exports).join(",") + ']';
+        content = ',[' + walker.walk(node.content, module.exports).join(",") + ']';
     }
 
-    return [exprcode, ',', attcontent, ',', evtcontent, c].join('');
+    return [exprCode, ',', attributeContent, ',', eventContent, content].join('');
 }
 
+/**
+ * Generates an element node.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
+ */
 exports["element"] = function (node, walker) {
-    var s = elementOrComponent(node, walker);
-    var subScope=(node.needSubScope===true)? ',1' : '';
-    return ['n.elt("', node.name, '",', s, subScope, ')'].join('');
-};
-
-exports["component"] = function (node, walker) {
-    var s = elementOrComponent(node, walker);
-    var p = node.ref.path;
-
-    walker.addGlobalRef(p[0]);
-
-    return ['n.cpt([_', p[0], ',"', p.join('","'), '"],', s, ')'].join('');
-};
-
-exports["cptattribute"] = function (node, walker) {
-    var s = elementOrComponent(node, walker);
-    return ['n.catt("', node.name, '",', s, ')'].join('');
+    var generatedNode = elementOrComponent(node, walker);
+    var subScope = (node.needSubScope === true)? ',1' : '';
+    return ['n.elt("', node.name, '",', generatedNode, subScope, ')'].join('');
 };
 
 /**
- * Format an expression according to its category
- * Return the expression string and the next expression index that can be used
+ * Generates a component node.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
-function formatExpression (expression, firstIdx, walker) {
-    var cat = expression.category, code = '', nextIndex = firstIdx, bound = (expression.bound === false) ? 0 : 1;
-    var exprIdx = firstIdx;
-    if (cat === 'objectref' || cat === 'functionref') {
-        var path = expression.path, argExprs = null, argExprIdx = null, args = expression.args;
+exports["component"] = function (node, walker) {
+    var generatedNode = elementOrComponent(node, walker);
+    var path = node.ref.path;
+
+    walker.addGlobalRef(path[0]);
+
+    return ['n.cpt([_', path[0], ',"', path.join('","'), '"],', generatedNode, ')'].join('');
+};
+
+/**
+ * Generates a cptattribute node.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
+ */
+exports["cptattribute"] = function (node, walker) {
+    var generatedNode = elementOrComponent(node, walker);
+    return ['n.catt("', node.name, '",', generatedNode, ')'].join('');
+};
+
+/**
+ * Formats an expression according to its category.
+ * @param {Object} expression the expression to format.
+ * @param {Integer} firstIndex index of the expression.
+ * @param {TemplateWalker} walker the template walker instance.
+ * @return {Object} the expression string and the next expression index that can be used
+ */
+function formatExpression (expression, firstIndex, walker) {
+    var category = expression.category, code = '', nextIndex = firstIndex, bound = (expression.bound === false) ? 0 : 1;
+    var exprIndex = firstIndex;
+    if (category === 'objectref' || category === 'functionref') {
+        var path = expression.path, argExprs = null, argExprIndex = null, args = expression.args;
         if (path.length === 0) {
             walker.logError("Expression path cannot be empty");
         } else {
             var root = path[0], isRootInScope = walker.isInScope(root);
-            var arg1 = isRootInScope ? bound : 2;
+            /* Possible expression types are:
+             * 0: unbound data ref - e.g. {e1:[0,1,"item_key"]}
+             * 1: bound data ref - e.g. {e1:[1,2,"person","name"]}
+             * 2: literal data ref - e.g. {e1:[2,2,person,"name"]}
+             * 3: function call - e.g. {e1:[3,2,"ctl","deleteItem",1,2,1,0]}
+             * 4: function call literal- e.g. {e1:[4,1,myfunc,1,2,1,0]}
+             * 5: literal value - e.g. {e1:[5,"some value"]}
+             * 6: function expression - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}*/
+            var exprType = isRootInScope ? bound : 2;
             if (root === "event") {
-                arg1 = 0;
+                exprType = 0;
             }
 
-            if (arg1===2) {
+            if (exprType === 2) {
                 // root is a global reference
                 walker.addGlobalRef(root);
-                root="_"+root;
-                path[0]="_"+path[0];
+                root = "_" + root;
+                path[0] = "_" + path[0];
             }
 
-            if (cat === 'functionref') {
-                arg1 = isRootInScope ? 3 : 4;
+            if (category === 'functionref') {
+                exprType = isRootInScope ? 3 : 4;
                 argExprs = [];
-                argExprIdx = [];
-                var arg, acat, e, idx = exprIdx + 1;
-                for (var i = 0, sz = args.length; sz > i; i++) {
+                argExprIndex = [];
+                var arg, argCategory, expr, index = exprIndex + 1;
+                for (var i = 0; i < args.length; i++) {
                     arg = args[i];
-                    acat = arg.category;
-                    if (acat === "string" || acat === "boolean" || acat === "number") {
+                    argCategory = arg.category;
+                    if (argCategory === "string" || argCategory === "boolean" || argCategory === "number") {
                         continue;
                     }
-                    e = formatExpression(arg, idx, walker);
-                    argExprs.push(e.code);
-                    argExprIdx[i] = e.exprIdx;
-                    idx = e.nextIndex;
+                    expr = formatExpression(arg, index, walker);
+                    argExprs.push(expr.code);
+                    argExprIndex[i] = expr.exprIdx;
+                    index = expr.nextIndex;
                 }
-                nextIndex = idx;
+                nextIndex = index;
             } else {
                 nextIndex++;
             }
 
-            var res, rootRef = path[0];
+            var result, rootRef = path[0];
             if (isRootInScope || root === "event") {
                 rootRef = '"' + rootRef + '"';
             }
-            var psz = path.length;
-            if (psz === 1) {
-                res = ['e', exprIdx, ':[', arg1, ',1,', rootRef];
-            } else {
-                var p = [], pitm;
-                p.push(rootRef);
-                for (var i = 1; psz > i; i++) {
-                    pitm = path[i];
-                    if ((typeof pitm) === "string") {
-                        p.push('"' + pitm + '"');
-                    } else {
-                        p.push(pitm);
-                    }
+            var pathLength = path.length;
+
+            var generatedPath = [], pathItem;
+            generatedPath.push(rootRef);
+            for (var i = 1; i < pathLength; i++) {
+                pathItem = path[i];
+                if ((typeof pathItem) === "string") {
+                    generatedPath.push('"' + pathItem + '"');
+                } else {
+                    generatedPath.push(pathItem);
                 }
-                res = ['e', exprIdx, ':[', arg1, ',', psz, ',', p.join(',')];
             }
+            result = ['e', exprIndex, ':[', exprType, ',', pathLength, ',', generatedPath.join(',')];
+            
 
             if (args && args.length > 0) {
-                var acat, arg;
-                for (var i = 0, sz = args.length; sz > i; i++) {
+                var argCategory, arg;
+                for (var i = 0; i < args.length; i++) {
                     arg = args[i];
-                    acat = arg.category;
-                    if (acat === "string") {
-                        res.push(',0,"' + escapeNewLines(arg.value.replace(/"/g, "\\\"")) + '"');
-                    } else if (acat === "boolean" || acat === "number") {
-                        res.push(',0,' + arg.value);
+                    argCategory = arg.category;
+                    if (argCategory === "string") {
+                        result.push(',0,"' + escapeNewLines(arg.value.replace(/"/g, "\\\"")) + '"');
+                    } else if (argCategory === "boolean" || argCategory === "number") {
+                        result.push(',0,' + arg.value);
                     } else {
                         // this is not a literal
-                        res.push(',1,' + argExprIdx[i]);
+                        result.push(',1,' + argExprIndex[i]);
                     }
                 }
                 if (argExprs && argExprs.length > 0) {
-                    res.push("],");
-                    res.push(argExprs.join(","));
+                    result.push("],");
+                    result.push(argExprs.join(","));
                 } else {
-                    res.push("]");
+                    result.push("]");
                 }
 
             } else {
-                res.push("]");
+                result.push("]");
             }
-            code = res.join("");
+            code = result.join("");
         }
 
-    } else if (cat === 'boolean' || cat === 'number') {
-        code = ['e', exprIdx, ':[5,', expression.value, ']'].join('');
+    } else if (category === 'boolean' || category === 'number') {
+        code = ['e', exprIndex, ':[5,', expression.value, ']'].join('');
         nextIndex++;
-    } else if (cat === 'string') {
-        code = ['e', exprIdx, ':[5,"', ('' + expression.value).replace(/"/g, "\\\""), '"]'].join('');
+    } else if (category === 'string') {
+        code = ['e', exprIndex, ':[5,"', ('' + expression.value).replace(/"/g, "\\\""), '"]'].join('');
         nextIndex++;
-    } else if (cat === 'jsexpression') {
-        var refs = expression.objectrefs, ref, e, idx = exprIdx + 1, exprs = [], exprIdxs = [];
+    } else if (category === 'jsexpression') {
+        var refs = expression.objectrefs, ref, expr, index = exprIndex + 1, exprs = [], exprIdxs = [];
 
         if (refs === undefined) {
             console.warn("[formatExpression] The following expression has not been pre-processed - parser should be updated: ");
             console.dir(expression);
         }
 
-        var args = [], sz = refs.length, argSeparator = (sz > 0) ? ',' : '';
-        for (var i = 0; sz > i; i++) {
+        var args = [], length = refs.length, argSeparator = (length > 0) ? ',' : '';
+        for (var i = 0; length > i; i++) {
             ref = refs[i];
             args[i] = "a" + i;
-            e = formatExpression(ref, idx, walker);
-            exprs.push(e.code);
-            exprIdxs[i] = e.exprIdx;
-            idx = e.nextIndex;
+            expr = formatExpression(ref, index, walker);
+            exprs.push(expr.code);
+            exprIdxs[i] = expr.exprIdx;
+            index = expr.nextIndex;
         }
         var func = ['function(', args.join(','), ') {return ', expression.code, ';}'].join('');
-        var code0 = ['e', exprIdx, ':[6,', func, argSeparator, exprIdxs.join(','), ']'].join('');
+        var code0 = ['e', exprIndex, ':[6,', func, argSeparator, exprIdxs.join(','), ']'].join('');
         exprs.splice(0, 0, code0);
         code = exprs.join(',');
         nextIndex = exprIdxs[exprIdxs.length - 1] + 1;
     } else {
-        walker.logError("Unsupported expression: " + cat, expression);
+        walker.logError("Unsupported expression: " + category, expression);
     }
 
     return {
         code : code,
-        exprIdx : exprIdx,
+        exprIdx : exprIndex,
         nextIndex : nextIndex
     };
 }
 
 /**
- * Format the textblock content for textblock and attribute nodes
+ * Format the textblock content for textblock and attribute nodes.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {Integer} nextExprIndex the index of the next expression.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
  */
-function formatTextBlock (node, nextExprIdx, walker) {
-    var c = node.content, sz = c.length, itm, expArr = [], args = [], idx = 0; // idx is the index in the $text array
+function formatTextBlock (node, nextExprIndex, walker) {
+    var content = node.content, item, exprArray = [], args = [], index = 0; // idx is the index in the $text array
                                                                                 // (=args)
-    for (var i = 0; sz > i; i++) {
-        itm = c[i];
-        if (itm.type === "text") {
-            if (idx % 2 === 0) {
+    for (var i = 0; i < content.length; i++) {
+        item = content[i];
+        if (item.type === "text") {
+            if (index % 2 === 0) {
                 // even index: arg must be a string
-                args[idx] = '"' + escapeNewLines(itm.value.replace(/"/g, "\\\"")) + '"';
-                idx++;
+                args[index] = '"' + escapeNewLines(item.value.replace(/"/g, "\\\"")) + '"';
+                index++;
             } else {
                 // odd index: arg must be an expression - so add the text to the previous item
-                if (idx > 0) {
-                    args[idx - 1] = args[idx - 1].slice(0, -1) + escapeNewLines(itm.value.replace(/"/g, "\\\"")) + '"';
+                if (index > 0) {
+                    args[index - 1] = args[index - 1].slice(0, -1) + escapeNewLines(item.value.replace(/"/g, "\\\"")) + '"';
                 } else {
-                    // we should never get there as idx is odd !
+                    // we should never get there as index is odd !
                     walker.logError("Invalid textblock structure", node);
                 }
             }
-        } else if (itm.type === "expression") {
-            if (idx % 2 === 0) {
+        } else if (item.type === "expression") {
+            if (index % 2 === 0) {
                 // even index: arg must be a string
-                args[idx] = '""';
-                idx++;
+                args[index] = '""';
+                index++;
             }
-            var e = formatExpression(itm, nextExprIdx, walker);
-            nextExprIdx = e.nextIndex;
-            if (e.code) {
-                expArr.push(e.code);
-                args[idx] = e.exprIdx; // expression idx
+            var expr = formatExpression(item, nextExprIndex, walker);
+            nextExprIndex = expr.nextIndex;
+            if (expr.code) {
+                exprArray.push(expr.code);
+                args[index] = expr.exprIdx; // expression index
             } else {
-                args[idx] = 0; // invalid expression
+                args[index] = 0; // invalid expression
             }
-            idx++;
+            index++;
         }
     }
 
-    var expArg = "0";
-    if (expArr.length) {
-        expArg = '{' + expArr.join(",") + '}';
+    var exprArg = "0";
+    if (exprArray.length) {
+        exprArg = '{' + exprArray.join(",") + '}';
     }
     var blockArgs = "[]";
     if (args.length) {
@@ -451,8 +518,8 @@ function formatTextBlock (node, nextExprIdx, walker) {
     }
 
     return {
-        expArg : expArg,
-        nextIndex : nextExprIdx,
+        exprArg : exprArg,
+        nextIndex : nextExprIndex,
         blockArgs : blockArgs
     };
 }

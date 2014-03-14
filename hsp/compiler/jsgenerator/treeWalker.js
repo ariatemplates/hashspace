@@ -3,7 +3,9 @@ var klass = require("../../klass");
 var TreeWalker = klass({
     /**
      * Start traversing a parse tree. This method takes the intermediate representation created by the parser and
-     * executes, for each of the nodes, a function defined on the processor object
+     * executes, for each of the nodes, a function defined on the processor object.
+     * @param {SyntaxTree} tree the syntax tree.
+     * @param {Object} processor a set of function to process the tree elements.
      * @return {[type]} [description]
      */
     walk : function (tree, processor) {
@@ -22,6 +24,9 @@ var TreeWalker = klass({
     /**
      * Execute a callback on each element of an array. The callback receives the value of the array. This method returns
      * an array with the return value of the callbacks if not null.
+     * @param {Array} array the input array.
+     * @param {Function} callback the callback.
+     * @return {Array} an array made with the result of each callback.
      */
     each : function (array, callback) {
         var result = [];
