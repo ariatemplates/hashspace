@@ -1,3 +1,4 @@
+var path = require("path");
 var parser = require("./parser/index");
 var treebuilder = require("./treebuilder/index");
 var jsgenerator = require("./jsgenerator/index");
@@ -20,15 +21,11 @@ var jsgenerator = require("./jsgenerator/index");
  *      lineMap: {Array} array of the new line indexes: lineMap[3] returns the new line index for line 4 in
  *          the orginal file (lineMap[0] is always 0 as all line count starts at 1 for both input and output values)
  */
-exports.compile = function (template, path, includeSyntaxTree, bypassJSvalidation) {
+exports.compile = function (template, fullPath, includeSyntaxTree, bypassJSvalidation) {
     // Parsing might throw an exception
     var res = {};
-    var m = path.match(/[^\/]+$/),
-        fileName = m ? m[0] : 'unknown',
-        dirPath = '';
-    if (fileName.length < path.length) {
-        dirPath = path.slice(0, -fileName.length);
-    }
+    var fileName = path.basename(fullPath),
+        dirPath = path.dirname(fullPath);
 
     if (!template) {
         res.errors = [{
