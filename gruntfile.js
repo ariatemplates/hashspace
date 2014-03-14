@@ -21,12 +21,27 @@ module.exports = function (grunt) {
     mochaTest: {
       test: {
         options: {
-          reporter: 'spec'
+          reporter: 'spec',
+          require: 'build/blanket'
         },
         src: [
           'public/test/compiler/**/*.js',
           'public/test/transpiler/*.js'
         ]
+      },
+      coverage: {
+        options: {
+          reporter: 'mocha-lcov-reporter',
+          quiet: true,
+          captureFile: 'test-results/lcov_mocha.info'
+        }
+      },
+      coverageHtml: {
+        options: {
+          reporter: 'html-cov',
+          quiet: true,
+          captureFile: 'test-results/lcov_mocha.html'
+        }
       }
     },
     karma: {
@@ -125,11 +140,31 @@ module.exports = function (grunt) {
         //logLevel: 'LOG_INFO'
       },
       unit: {
-        singleRun: true
+        singleRun: true,
+        preprocessors: {
+          'hsp/**/*.js': ['commonjs', 'coverage']
+        },
+        reporters: ['progress', 'coverage'],
+        coverageReporter: {
+          type : 'lcov',
+          dir : 'test-results/karma/'
+        }
       },
       tdd: {
         singleRun: false,
         autoWatch: true
+      },
+      coverage: {
+        singleRun: true,
+        preprocessors: {
+          'hsp/**/*.js': ['commonjs', 'coverage']
+        },
+        reporters: ['progress', 'coverage'],
+        browsers: ['PhantomJS'],
+        coverageReporter: {
+          type : 'lcovonly',
+          dir : 'test-results/karma/'
+        }
       },
       ci: {
         sauceLabs: {
@@ -263,8 +298,8 @@ module.exports = function (grunt) {
 
   grunt.registerTask('prepublish', ['peg']);
   grunt.registerTask('package', ['prepublish', 'browserify', 'atpackager', 'uglify']);
-  grunt.registerTask('mocha', ['peg', 'mochaTest']);
+  grunt.registerTask('mocha', ['peg', 'inittests', 'mochaTest', 'finalizetests']);
   grunt.registerTask('test', ['checkStyle', 'jscs', 'mocha', 'karma:unit']);
-  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci', 'package']);
+  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci', 'karma:coverage', 'package']);
   grunt.registerTask('default', ['hspserver']);
 };

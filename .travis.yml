@@ -10,6 +10,7 @@ env:
 
 before_install:
  - npm install --quiet -g grunt-cli
+ - npm install -g coveralls@2.8.0 &> install-coveralls.log
 
 before_script:
  - curl https://gist.githubusercontent.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash
@@ -20,5 +21,6 @@ script:
  - grunt ci
 
 after_success:
+ - cat test-results/*.info test-results/*/*/*.info | coveralls && echo "Successfully sent coverage to https://coveralls.io"
  - chmod -R 777 ./ci-release.sh
  - ./ci-release.sh

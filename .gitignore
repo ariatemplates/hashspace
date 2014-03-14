@@ -4,3 +4,4 @@ node_modules
 dist
 sauce_connect.log
 *.peg.js
+test-results
