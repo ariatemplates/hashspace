@@ -56,8 +56,6 @@ $set.dec = function (object, property) {
 
 },{"./json":"YcvKH8"}],"hsp/$set":[function(require,module,exports){
 module.exports=require('+0srr9');
-},{}],"hsp/document":[function(require,module,exports){
-module.exports=require('WDacIY');
 },{}],"WDacIY":[function(require,module,exports){
 
 /*
@@ -115,6 +113,8 @@ if (doc.createEventObject) {
     };
 }
 
+},{}],"hsp/document":[function(require,module,exports){
+module.exports=require('WDacIY');
 },{}],"hhHoZL":[function(require,module,exports){
 
 /*
@@ -353,9 +353,7 @@ var DoubleTap = klass({
 });
 
 module.exports.DoubleTap = DoubleTap;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/drag":[function(require,module,exports){
-module.exports=require('J6s4RB');
-},{}],"J6s4RB":[function(require,module,exports){
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"J6s4RB":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -471,7 +469,9 @@ var Drag = klass({
 });
 
 module.exports.Drag = Drag;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/gesture":[function(require,module,exports){
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/drag":[function(require,module,exports){
+module.exports=require('J6s4RB');
+},{}],"hsp/gestures/gesture":[function(require,module,exports){
 module.exports=require('xsjChN');
 },{}],"xsjChN":[function(require,module,exports){
 /*
@@ -841,7 +841,9 @@ var Gesture = klass({
 });
 
 module.exports.Gesture = Gesture;
-},{"../klass":"GfSJC6","./touchEvent":"oYuPY+"}],"aNFXt4":[function(require,module,exports){
+},{"../klass":"GfSJC6","./touchEvent":"oYuPY+"}],"hsp/gestures/gestures":[function(require,module,exports){
+module.exports=require('aNFXt4');
+},{}],"aNFXt4":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -948,8 +950,8 @@ var Gestures = klass({
 module.exports.Gestures = Gestures;
 
 
-},{"../klass":"GfSJC6","./doubleTap":"6Kl1kt","./drag":"J6s4RB","./longPress":"OkCBHK","./pinch":"X+07de","./singleTap":"BxcBBq","./swipe":"1S2i7l","./tap":"uETHOu"}],"hsp/gestures/gestures":[function(require,module,exports){
-module.exports=require('aNFXt4');
+},{"../klass":"GfSJC6","./doubleTap":"6Kl1kt","./drag":"J6s4RB","./longPress":"OkCBHK","./pinch":"X+07de","./singleTap":"BxcBBq","./swipe":"1S2i7l","./tap":"uETHOu"}],"hsp/gestures/longPress":[function(require,module,exports){
+module.exports=require('OkCBHK');
 },{}],"OkCBHK":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
@@ -1080,11 +1082,7 @@ var LongPress = klass({
 });
 
 module.exports.LongPress = LongPress;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/longPress":[function(require,module,exports){
-module.exports=require('OkCBHK');
-},{}],"hsp/gestures/pinch":[function(require,module,exports){
-module.exports=require('X+07de');
-},{}],"X+07de":[function(require,module,exports){
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"X+07de":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1267,8 +1265,8 @@ var Pinch = klass({
 });
 
 module.exports.Pinch = Pinch;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/singleTap":[function(require,module,exports){
-module.exports=require('BxcBBq');
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/pinch":[function(require,module,exports){
+module.exports=require('X+07de');
 },{}],"BxcBBq":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
@@ -1428,7 +1426,9 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"1S2i7l":[function(require,module,exports){
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/singleTap":[function(require,module,exports){
+module.exports=require('BxcBBq');
+},{}],"1S2i7l":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1589,6 +1589,8 @@ var Swipe = klass({
 module.exports.Swipe = Swipe;
 },{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/swipe":[function(require,module,exports){
 module.exports=require('1S2i7l');
+},{}],"hsp/gestures/tap":[function(require,module,exports){
+module.exports=require('uETHOu');
 },{}],"uETHOu":[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
@@ -1685,8 +1687,8 @@ var Tap = klass({
 });
 
 module.exports.Tap = Tap;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/tap":[function(require,module,exports){
-module.exports=require('uETHOu');
+},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/touchEvent":[function(require,module,exports){
+module.exports=require('oYuPY+');
 },{}],"oYuPY+":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2062,8 +2064,6 @@ exports.getFakeEvent = function(type, target) {
     fakeEvent.target = target;
     return fakeEvent;
 };
-},{}],"hsp/gestures/touchEvent":[function(require,module,exports){
-module.exports=require('oYuPY+');
 },{}],"hsp/json":[function(require,module,exports){
 module.exports=require('YcvKH8');
 },{}],"YcvKH8":[function(require,module,exports){
@@ -2621,6 +2621,8 @@ module.exports = PropObserver;
 
 },{"./json":"YcvKH8","./klass":"GfSJC6"}],"hsp/propobserver":[function(require,module,exports){
 module.exports=require('D6s46z');
+},{}],"hsp/rt":[function(require,module,exports){
+module.exports=require('7uFaOB');
 },{}],"7uFaOB":[function(require,module,exports){
 
 /*
@@ -2872,9 +2874,7 @@ function createShortcut (tagName, tagConstructor) {
     };
 }
 
-},{"./es5":"hhHoZL","./klass":"GfSJC6","./rt/$foreach":"Ll2sHF","./rt/$if":"R4WgDY","./rt/$root":"P5tgTj","./rt/$text":"jVbC+E","./rt/cptwrapper":"We0lgJ","./rt/eltnode":"NbaJkW","./rt/log":"pIlMhe","hsp/rt/$let":"3xKX24","hsp/rt/$log":"nUpGcG"}],"hsp/rt":[function(require,module,exports){
-module.exports=require('7uFaOB');
-},{}],"Ll2sHF":[function(require,module,exports){
+},{"./es5":"hhHoZL","./klass":"GfSJC6","./rt/$foreach":"Ll2sHF","./rt/$if":"R4WgDY","./rt/$root":"P5tgTj","./rt/$text":"jVbC+E","./rt/cptwrapper":"We0lgJ","./rt/eltnode":"NbaJkW","./rt/log":"pIlMhe","hsp/rt/$let":"3xKX24","hsp/rt/$log":"nUpGcG"}],"Ll2sHF":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3453,6 +3453,8 @@ module.exports = $ForEachNode;
 
 },{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$foreach":[function(require,module,exports){
 module.exports=require('Ll2sHF');
+},{}],"hsp/rt/$if":[function(require,module,exports){
+module.exports=require('R4WgDY');
 },{}],"R4WgDY":[function(require,module,exports){
 
 /*
@@ -3616,8 +3618,8 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$if":[function(require,module,exports){
-module.exports=require('R4WgDY');
+},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$let":[function(require,module,exports){
+module.exports=require('3xKX24');
 },{}],"3xKX24":[function(require,module,exports){
 
 /*
@@ -3698,8 +3700,8 @@ var LetNode = klass({
 module.exports=LetNode;
 
 
-},{"hsp/$set":"+0srr9","hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$let":[function(require,module,exports){
-module.exports=require('3xKX24');
+},{"hsp/$set":"+0srr9","hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$log":[function(require,module,exports){
+module.exports=require('nUpGcG');
 },{}],"nUpGcG":[function(require,module,exports){
 
 /*
@@ -3793,9 +3795,7 @@ var LogNode = klass({
 module.exports=LogNode;
 
 
-},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$log":[function(require,module,exports){
-module.exports=require('nUpGcG');
-},{}],"P5tgTj":[function(require,module,exports){
+},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"P5tgTj":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4654,6 +4654,8 @@ exports.$CptAttElement = $CptAttElement;
 
 },{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","../propobserver":"D6s46z","./cptattinsert":"C9wO2N","./cptcomponent":"lU3L0p","./cpttemplate":"aBMumZ","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$root":[function(require,module,exports){
 module.exports=require('P5tgTj');
+},{}],"hsp/rt/$text":[function(require,module,exports){
+module.exports=require('jVbC+E');
 },{}],"jVbC+E":[function(require,module,exports){
 
 /*
@@ -4744,9 +4746,7 @@ var $TextNode = klass({
 });
 
 module.exports = $TextNode;
-},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$text":[function(require,module,exports){
-module.exports=require('jVbC+E');
-},{}],"C9wO2N":[function(require,module,exports){
+},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"C9wO2N":[function(require,module,exports){
 /**
  * $CptAttInsert contains methods that will be added to the prototype of all
  * $CptNode node instance that correspond to an insertion of a component attribute
@@ -5765,7 +5765,9 @@ function createCptWrapper(Ctl, cptArgs) {
 exports.CptWrapper = CptWrapper;
 exports.createCptWrapper=createCptWrapper;
 
-},{"../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe"}],"NbaJkW":[function(require,module,exports){
+},{"../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe"}],"hsp/rt/eltnode":[function(require,module,exports){
+module.exports=require('NbaJkW');
+},{}],"NbaJkW":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -6075,9 +6077,7 @@ var EltNode = klass({
 
 module.exports = EltNode;
 
-},{"../document":"WDacIY","../gestures/gestures":"aNFXt4","../klass":"GfSJC6","../rt":"7uFaOB","./tnode":"Jrooar"}],"hsp/rt/eltnode":[function(require,module,exports){
-module.exports=require('NbaJkW');
-},{}],"FA9d2U":[function(require,module,exports){
+},{"../document":"WDacIY","../gestures/gestures":"aNFXt4","../klass":"GfSJC6","../rt":"7uFaOB","./tnode":"Jrooar"}],"FA9d2U":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -6848,6 +6848,8 @@ module.exports = log;
 
 },{}],"hsp/rt/log":[function(require,module,exports){
 module.exports=require('pIlMhe');
+},{}],"hsp/rt/tnode":[function(require,module,exports){
+module.exports=require('Jrooar');
 },{}],"Jrooar":[function(require,module,exports){
 
 /*
@@ -7296,6 +7298,4 @@ module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;
 
-},{"../klass":"GfSJC6","../rt":"7uFaOB","./exphandler":"FA9d2U","./log":"pIlMhe"}],"hsp/rt/tnode":[function(require,module,exports){
-module.exports=require('Jrooar');
-},{}]},{},["7uFaOB"])
+},{"../klass":"GfSJC6","../rt":"7uFaOB","./exphandler":"FA9d2U","./log":"pIlMhe"}]},{},["7uFaOB"])
