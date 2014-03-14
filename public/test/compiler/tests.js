@@ -124,6 +124,17 @@ describe('Block Parser: ', function () {
         assert.equal(r.errors.length, 0, "no compilation error");
     });
 
+    it('should fail with a clear err message if a mandatory argument is not provided', function(){
+
+        assert.throws(function() {
+            compiler.compile('');
+        }, /The template content to compile is mandatory./);
+
+        assert.throws(function() {
+            compiler.compile('# template foo()\n# /template');
+        }, /The template "path" argument is mandatory./);
+    });
+
     it('validates full compiled template', function () {
         var sample = ut.getSampleContent("template1");
         var r = compiler.compile(sample.template, "template1");
