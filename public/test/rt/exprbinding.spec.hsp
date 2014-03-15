@@ -1,0 +1,75 @@
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var $set=require("hsp/$set"),
+    ht=require("hsp/utils/hashtester");
+
+function changeValueAndObject (data,val) {
+    $set(data,"object",{value:val})
+}
+
+function changeValue (data,val) {
+    $set(data.object,"value",val);
+}
+
+# template test1(data) 
+    <input class="in1" type="text" value="{data.object.value}" />
+    <input class="in2" type="text" value="{data.object.value}" />
+# /template
+
+describe("Expression Bindings", function () {
+    var INPUT1=".in1", INPUT2=".in2";
+
+    it("validates bindings with value change", function() {
+        var h=ht.newTestContext(), dm={object:{value:"initial value"}};
+        test1(dm).render(h.container);
+
+        expect(h(INPUT1).value()).to.equal("initial value");
+        expect(h(INPUT2).value()).to.equal("initial value");
+
+        changeValue(dm,"v1");
+        h.refresh();
+
+        expect(h(INPUT1).value()).to.equal("v1");
+        expect(h(INPUT2).value()).to.equal("v1");
+
+        h.$dispose();
+    });
+
+    it("validates bindings with path change", function() {
+        var h=ht.newTestContext(), dm={object:{value:"initial value"}};
+        test1(dm).render(h.container);
+
+        changeValueAndObject(dm,"v1");
+        h.refresh();
+
+        expect(h(INPUT1).value()).to.equal("v1");
+        expect(h(INPUT2).value()).to.equal("v1");
+
+        changeValue(dm,"v2");
+        h.refresh();
+
+        expect(h(INPUT1).value()).to.equal("v2");
+        expect(h(INPUT2).value()).to.equal("v2");
+
+        changeValueAndObject(dm,"v3");
+        h.refresh();
+
+        expect(h(INPUT1).value()).to.equal("v3");
+        expect(h(INPUT2).value()).to.equal("v3");
+
+        h.$dispose();
+    });
+});

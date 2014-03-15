@@ -130,12 +130,9 @@ var $IfNode = klass({
         if (cond !== this.lastConditionValue) {
             this.createChildNodeInstances(cond);
             this.root.updateObjectObservers(this);
-            this.adirty = false;
             this.cdirty = false;
-        } else {
-            // default behaviour
-            TNode.refresh.call(this);
         }
+        TNode.refresh.call(this);
     },
 
     /**

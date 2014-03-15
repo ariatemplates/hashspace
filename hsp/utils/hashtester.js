@@ -150,5 +150,8 @@ module.exports.newTestContext = function() {
     h.logs.clear=function() {
         logs=[];
     };
+    h.refresh=function() {
+        hsp.refresh();
+    };
     return h;
 };

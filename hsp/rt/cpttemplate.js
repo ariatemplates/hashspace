@@ -86,7 +86,6 @@ module.exports.$CptTemplate = {
    */
   refreshAttributes : function () {
       var atts = this.atts, att, eh = this.eh, pvs = this.parent.vscope;
-      this.adirty = false;
       if (atts) {
           // this template has no controller
           // let's propagate the new attribute values to the current scope

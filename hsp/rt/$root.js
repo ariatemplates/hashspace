@@ -426,7 +426,6 @@ var $InsertNode = klass({
                 // is JS function
                 this.node.nodeValue = this.getContent();
             }
-            this.adirty = false;
         }
         TNode.refresh.call(this);
     }
