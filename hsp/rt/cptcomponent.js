@@ -484,7 +484,6 @@ exports.$CptComponent = {
   refreshAttributes : function () {
     var atts = this.atts, att, ctlAtt, eh = this.eh, ctl = this.controller, v;
     var vs = this.isCptAttElement? this.vscope : this.parent.vscope;
-    this.adirty = false;
     if (atts && ctl && ctl.attributes) {
       // this template has a controller
       // let's propagate the new attribute values to the controller attributes
