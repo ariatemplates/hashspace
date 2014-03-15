@@ -1687,6 +1687,8 @@ var Tap = klass({
 module.exports.Tap = Tap;
 },{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/tap":[function(require,module,exports){
 module.exports=require('uETHOu');
+},{}],"hsp/gestures/touchEvent":[function(require,module,exports){
+module.exports=require('oYuPY+');
 },{}],"oYuPY+":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2062,10 +2064,6 @@ exports.getFakeEvent = function(type, target) {
     fakeEvent.target = target;
     return fakeEvent;
 };
-},{}],"hsp/gestures/touchEvent":[function(require,module,exports){
-module.exports=require('oYuPY+');
-},{}],"hsp/json":[function(require,module,exports){
-module.exports=require('YcvKH8');
 },{}],"YcvKH8":[function(require,module,exports){
 
 /*
@@ -2404,6 +2402,10 @@ function unobserve (object, callback, metaProperty) {
     }
 }
 
+},{}],"hsp/json":[function(require,module,exports){
+module.exports=require('YcvKH8');
+},{}],"hsp/klass":[function(require,module,exports){
+module.exports=require('GfSJC6');
 },{}],"GfSJC6":[function(require,module,exports){
 
 /*
@@ -2500,8 +2502,6 @@ klass.createMetaDataPrefix = createMetaDataPrefix;
 
 module.exports = klass;
 
-},{}],"hsp/klass":[function(require,module,exports){
-module.exports=require('GfSJC6');
 },{}],"D6s46z":[function(require,module,exports){
 
 /*
@@ -2621,8 +2621,6 @@ module.exports = PropObserver;
 
 },{"./json":"YcvKH8","./klass":"GfSJC6"}],"hsp/propobserver":[function(require,module,exports){
 module.exports=require('D6s46z');
-},{}],"hsp/rt":[function(require,module,exports){
-module.exports=require('7uFaOB');
 },{}],"7uFaOB":[function(require,module,exports){
 
 /*
@@ -2874,7 +2872,11 @@ function createShortcut (tagName, tagConstructor) {
     };
 }
 
-},{"./es5":"hhHoZL","./klass":"GfSJC6","./rt/$foreach":"Ll2sHF","./rt/$if":"R4WgDY","./rt/$root":"P5tgTj","./rt/$text":"jVbC+E","./rt/cptwrapper":"We0lgJ","./rt/eltnode":"NbaJkW","./rt/log":"pIlMhe","hsp/rt/$let":"3xKX24","hsp/rt/$log":"nUpGcG"}],"Ll2sHF":[function(require,module,exports){
+},{"./es5":"hhHoZL","./klass":"GfSJC6","./rt/$foreach":"Ll2sHF","./rt/$if":"R4WgDY","./rt/$root":"P5tgTj","./rt/$text":"jVbC+E","./rt/cptwrapper":"We0lgJ","./rt/eltnode":"NbaJkW","./rt/log":"pIlMhe","hsp/rt/$let":"3xKX24","hsp/rt/$log":"nUpGcG"}],"hsp/rt":[function(require,module,exports){
+module.exports=require('7uFaOB');
+},{}],"hsp/rt/$foreach":[function(require,module,exports){
+module.exports=require('Ll2sHF');
+},{}],"Ll2sHF":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3451,8 +3453,8 @@ var $ItemNode = klass({
 
 module.exports = $ForEachNode;
 
-},{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$foreach":[function(require,module,exports){
-module.exports=require('Ll2sHF');
+},{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$if":[function(require,module,exports){
+module.exports=require('R4WgDY');
 },{}],"R4WgDY":[function(require,module,exports){
 
 /*
@@ -3616,11 +3618,7 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$if":[function(require,module,exports){
-module.exports=require('R4WgDY');
-},{}],"hsp/rt/$let":[function(require,module,exports){
-module.exports=require('3xKX24');
-},{}],"3xKX24":[function(require,module,exports){
+},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"3xKX24":[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -3700,7 +3698,9 @@ var LetNode = klass({
 module.exports=LetNode;
 
 
-},{"hsp/$set":"+0srr9","hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$log":[function(require,module,exports){
+},{"hsp/$set":"+0srr9","hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$let":[function(require,module,exports){
+module.exports=require('3xKX24');
+},{}],"hsp/rt/$log":[function(require,module,exports){
 module.exports=require('nUpGcG');
 },{}],"nUpGcG":[function(require,module,exports){
 
@@ -3795,9 +3795,7 @@ var LogNode = klass({
 module.exports=LogNode;
 
 
-},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$root":[function(require,module,exports){
-module.exports=require('P5tgTj');
-},{}],"P5tgTj":[function(require,module,exports){
+},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"P5tgTj":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4654,7 +4652,9 @@ exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
 
 
-},{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","../propobserver":"D6s46z","./cptattinsert":"C9wO2N","./cptcomponent":"lU3L0p","./cpttemplate":"aBMumZ","./log":"pIlMhe","./tnode":"Jrooar"}],"jVbC+E":[function(require,module,exports){
+},{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","../propobserver":"D6s46z","./cptattinsert":"C9wO2N","./cptcomponent":"lU3L0p","./cpttemplate":"aBMumZ","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$root":[function(require,module,exports){
+module.exports=require('P5tgTj');
+},{}],"jVbC+E":[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4746,6 +4746,8 @@ var $TextNode = klass({
 module.exports = $TextNode;
 },{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$text":[function(require,module,exports){
 module.exports=require('jVbC+E');
+},{}],"hsp/rt/cptattinsert":[function(require,module,exports){
+module.exports=require('C9wO2N');
 },{}],"C9wO2N":[function(require,module,exports){
 /**
  * $CptAttInsert contains methods that will be added to the prototype of all
@@ -4774,10 +4776,6 @@ module.exports.$CptAttInsert = {
   }
 };
 
-},{}],"hsp/rt/cptattinsert":[function(require,module,exports){
-module.exports=require('C9wO2N');
-},{}],"hsp/rt/cptcomponent":[function(require,module,exports){
-module.exports=require('lU3L0p');
 },{}],"lU3L0p":[function(require,module,exports){
 var json = require("../json"),
     log = require("./log"),
@@ -5286,8 +5284,8 @@ exports.$CptComponent = {
   }
 };
 
-},{"../document":"WDacIY","../json":"YcvKH8","./$text":"jVbC+E","./cptwrapper":"We0lgJ","./log":"pIlMhe"}],"hsp/rt/cpttemplate":[function(require,module,exports){
-module.exports=require('aBMumZ');
+},{"../document":"WDacIY","../json":"YcvKH8","./$text":"jVbC+E","./cptwrapper":"We0lgJ","./log":"pIlMhe"}],"hsp/rt/cptcomponent":[function(require,module,exports){
+module.exports=require('lU3L0p');
 },{}],"aBMumZ":[function(require,module,exports){
 var json = require("../json"),
     doc = require("../document");
@@ -5390,7 +5388,9 @@ module.exports.$CptTemplate = {
   }
 };
 
-},{"../document":"WDacIY","../json":"YcvKH8"}],"We0lgJ":[function(require,module,exports){
+},{"../document":"WDacIY","../json":"YcvKH8"}],"hsp/rt/cpttemplate":[function(require,module,exports){
+module.exports=require('aBMumZ');
+},{}],"We0lgJ":[function(require,module,exports){
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5765,8 +5765,6 @@ exports.createCptWrapper=createCptWrapper;
 
 },{"../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe"}],"hsp/rt/cptwrapper":[function(require,module,exports){
 module.exports=require('We0lgJ');
-},{}],"hsp/rt/eltnode":[function(require,module,exports){
-module.exports=require('NbaJkW');
 },{}],"NbaJkW":[function(require,module,exports){
 
 /*
@@ -6077,7 +6075,9 @@ var EltNode = klass({
 
 module.exports = EltNode;
 
-},{"../document":"WDacIY","../gestures/gestures":"aNFXt4","../klass":"GfSJC6","../rt":"7uFaOB","./tnode":"Jrooar"}],"FA9d2U":[function(require,module,exports){
+},{"../document":"WDacIY","../gestures/gestures":"aNFXt4","../klass":"GfSJC6","../rt":"7uFaOB","./tnode":"Jrooar"}],"hsp/rt/eltnode":[function(require,module,exports){
+module.exports=require('NbaJkW');
+},{}],"FA9d2U":[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -6537,8 +6537,6 @@ var FuncExpr = klass({
 
 },{"hsp/json":"YcvKH8","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe"}],"hsp/rt/exphandler":[function(require,module,exports){
 module.exports=require('FA9d2U');
-},{}],"hsp/rt/log":[function(require,module,exports){
-module.exports=require('pIlMhe');
 },{}],"pIlMhe":[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -6848,6 +6846,8 @@ function formatValue(v,depth) {
 
 module.exports = log;
 
+},{}],"hsp/rt/log":[function(require,module,exports){
+module.exports=require('pIlMhe');
 },{}],"hsp/rt/tnode":[function(require,module,exports){
 module.exports=require('Jrooar');
 },{}],"Jrooar":[function(require,module,exports){
