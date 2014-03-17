@@ -1,6 +1,7 @@
 [![Build Status](https://secure.travis-ci.org/ariatemplates/hashspace.png)](http://travis-ci.org/ariatemplates/hashspace)
 [![devDependency Status](https://david-dm.org/ariatemplates/hashspace/status.png?branch=master)](https://david-dm.org/ariatemplates/hashspace#info=dependencies)
 [![devDependency Status](https://david-dm.org/ariatemplates/hashspace/dev-status.png?branch=master)](https://david-dm.org/ariatemplates/hashspace#info=devDependencies)
+[![Coverage Status](https://coveralls.io/repos/ariatemplates/hashspace/badge.png?branch=master)](https://coveralls.io/r/ariatemplates/hashspace?branch=master)
 
 hashspace
 =========
@@ -57,7 +58,9 @@ For the compiler test only:
 - run `grunt mocha` (you can also work in the TDD mode by running `grunt watch:mocha`)
 
 For the browser-based runtime tests only:
-- run `grunt karma:unit` to test on local browsers (you can also work in the TDD mode by running `grunt karma:tdd`)
+- run `grunt karma:unit` to test on local browsers and generate a coverage report
+- run `grunt karma:tdd` to work in the TDD mode
+- run `grunt karma:coverage` to test on PhantomJS browser and generate a coverage report
 - run `grunt karma:sauce` to test on SauceLabs browsers
 
 To do the health check on the project (before commit, for example) run `grunt test`. This will run checkstyle verifications
