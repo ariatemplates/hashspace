@@ -1,0 +1,60 @@
+var fireEvent = require("hsp/utils/eventgenerator").fireEvent,
+    fireKeydownEventAdaptedForKeyNav = require("hsp/utils/eventgenerator").fireKeydownEventAdaptedForKeyNav;
+
+# template testEventGenerator(ctl)
+    <div onclick="{ctl.handleOtherClick()}"  onkeydown="{ctl.handleOtherKeyDown()}" style="display:none;">
+        <div id="testZone" ionclick="{ctl.handleClick()}"  onkeydown="{ctl.handleKeyDown()}" >
+        </div>
+        <input id="testInput" type="text" onfocus="{ctl.handleFocus()}"/>
+    </div>
+# /template
+
+describe("Event generator utils", function () {
+    it("tests event generation", function () {
+        var _fireEventState = "beforeClick";
+        var ctl = {
+            handleClick : function (evt) {
+                expect(_fireEventState).to.equal("beforeClick");
+                _fireEventState = "afterOnClickDomElt";
+            },
+            handleKeyDown : function (evt) {
+                expect(_fireEventState).to.equal("beforeOnKeyDown");
+                _fireEventState = "afterOnKeyDownElt";
+            },
+            handleOtherClick : function (evt) {
+                expect(_fireEventState).to.equal("afterOnClickDomElt");
+                _fireEventState = "afterOnClickOtherElt";
+            },
+            handleOtherKeyDown : function (evt) {
+                expect(_fireEventState).to.equal("afterOnKeyDownElt");
+                _fireEventState = "afterOnKeyDownOtherElt";
+            },
+            handleFocus: function (evt){
+                expect(_fireEventState).to.equal("beforeFocus");
+                _fireEventState = "afterFocus";
+            }
+        };
+
+        var n = testEventGenerator(ctl);
+        //Needed because of Chromium issue 120494, see https://code.google.com/p/chromium/issues/detail?id=120494
+        //Event bubbling doesn't work in Chromium (but does in Firefox and IE8) if the doc fragment is not attached to the document
+        var doc = window.document;
+        doc.body.appendChild(n.node);
+
+        var node = doc.getElementById("testZone");
+        fireEvent("click", node);
+        expect(_fireEventState).to.equal("afterOnClickOtherElt");
+        _fireEventState = "beforeOnKeyDown";
+        fireKeydownEventAdaptedForKeyNav(node, {
+            keyCode : 32 //space
+        });
+        expect(_fireEventState).to.equal("afterOnKeyDownOtherElt");
+
+        _fireEventState = "beforeFocus";
+        fireEvent("focus", doc.getElementById("testInput"));
+        expect(_fireEventState).to.equal("afterFocus");
+
+        doc.body.removeChild(doc.body.lastChild);
+        n.$dispose();
+    });
+});

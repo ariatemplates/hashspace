@@ -15,10 +15,10 @@
  */
 
 // This module contains the log node
-var klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    doc = require("hsp/document"),
-    TNode = require("hsp/rt/tnode").TNode;
+var klass = require("../klass"),
+    log = require("./log"),
+    doc = require("../document"),
+    TNode = require("./tnode").TNode;
 
 var LogNode = klass({
     $extends : TNode,
