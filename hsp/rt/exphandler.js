@@ -13,9 +13,9 @@
  * limitations under the License.
  */
 
-var klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    json = require("hsp/json");
+var klass = require("../klass"),
+    log = require("./log"),
+    json = require("../json");
 
 var ExpHandler = klass({
     /**
