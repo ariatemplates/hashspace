@@ -959,7 +959,7 @@
         }
         module.exports = log;
     });
-    define("hsp/rt/exphandler.js", [ "hsp/klass", "hsp/rt/log", "hsp/json" ], function(module, global) {
+    define("hsp/rt/exphandler.js", [ "../klass", "./log", "../json" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -975,7 +975,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-        var klass = require("hsp/klass"), log = require("hsp/rt/log"), json = require("hsp/json");
+        var klass = require("../klass"), log = require("./log"), json = require("../json");
         var ExpHandler = klass({
             /**
      * Expression handler Used by all node to access the expressions linked to their properties Note: the same
@@ -2676,7 +2676,6 @@
             refreshAttributes: function() {
                 var atts = this.atts, att, ctlAtt, eh = this.eh, ctl = this.controller, v;
                 var vs = this.isCptAttElement ? this.vscope : this.parent.vscope;
-                this.adirty = false;
                 if (atts && ctl && ctl.attributes) {
                     // this template has a controller
                     // let's propagate the new attribute values to the controller attributes
@@ -2804,7 +2803,6 @@
    */
             refreshAttributes: function() {
                 var atts = this.atts, att, eh = this.eh, pvs = this.parent.vscope;
-                this.adirty = false;
                 if (atts) {
                     // this template has no controller
                     // let's propagate the new attribute values to the current scope
@@ -3211,7 +3209,6 @@
                         // is JS function
                         this.node.nodeValue = this.getContent();
                     }
-                    this.adirty = false;
                 }
                 TNode.refresh.call(this);
             }
@@ -3736,12 +3733,9 @@
                 if (cond !== this.lastConditionValue) {
                     this.createChildNodeInstances(cond);
                     this.root.updateObjectObservers(this);
-                    this.adirty = false;
                     this.cdirty = false;
-                } else {
-                    // default behaviour
-                    TNode.refresh.call(this);
                 }
+                TNode.refresh.call(this);
             },
             /**
      * Tell this node can be found in a component content 
@@ -6255,7 +6249,6 @@
      */
             refreshAttributes: function() {
                 var nd = this.node, atts = this.atts, att, eh = this.eh, vs = this.vscope, nm, modelRefs = null;
-                this.adirty = false;
                 if (atts) {
                     for (var i = 0, sz = this.atts.length; sz > i; i++) {
                         att = atts[i];
@@ -6329,7 +6322,7 @@
         });
         module.exports = EltNode;
     });
-    define("hsp/rt/$log.js", [ "hsp/klass", "hsp/rt/log", "hsp/document", "hsp/rt/tnode" ], function(module, global) {
+    define("hsp/rt/$log.js", [ "../klass", "./log", "../document", "./tnode" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2014 Amadeus s.a.s.
@@ -6346,7 +6339,7 @@
  * limitations under the License.
  */
         // This module contains the log node
-        var klass = require("hsp/klass"), log = require("hsp/rt/log"), doc = require("hsp/document"), TNode = require("hsp/rt/tnode").TNode;
+        var klass = require("../klass"), log = require("./log"), doc = require("../document"), TNode = require("./tnode").TNode;
         var LogNode = klass({
             $extends: TNode,
             /**
@@ -6415,7 +6408,7 @@
         });
         module.exports = LogNode;
     });
-    define("hsp/rt/$let.js", [ "hsp/klass", "hsp/$set", "hsp/document", "hsp/rt/tnode" ], function(module, global) {
+    define("hsp/rt/$let.js", [ "../klass", "../$set", "../document", "./tnode" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2014 Amadeus s.a.s.
@@ -6432,7 +6425,7 @@
  * limitations under the License.
  */
         // This module contains the log node
-        var klass = require("hsp/klass"), $set = require("hsp/$set"), doc = require("hsp/document"), TNode = require("hsp/rt/tnode").TNode;
+        var klass = require("../klass"), $set = require("../$set"), doc = require("../document"), TNode = require("./tnode").TNode;
         var LetNode = klass({
             $extends: TNode,
             /**
@@ -6482,7 +6475,7 @@
         });
         module.exports = LetNode;
     });
-    define("hsp/rt.js", [ "./es5", "./klass", "./rt/log", "./rt/$root", "./rt/cptwrapper", "./rt/$text", "./rt/$if", "./rt/$foreach", "./rt/eltnode", "hsp/rt/$log", "hsp/rt/$let" ], function(module, global) {
+    define("hsp/rt.js", [ "./es5", "./klass", "./rt/log", "./rt/$root", "./rt/cptwrapper", "./rt/$text", "./rt/$if", "./rt/$foreach", "./rt/eltnode", "./rt/$log", "./rt/$let" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -6686,7 +6679,7 @@
  * constructor through a nodes property
  */
         var nodes = {};
-        var nodeList = [ "$text", require("./rt/$text"), "$if", require("./rt/$if"), "$insert", $InsertNode, "$foreach", require("./rt/$foreach"), "elt", require("./rt/eltnode"), "cpt", $CptNode, "catt", $CptAttElement, "log", require("hsp/rt/$log"), "let", require("hsp/rt/$let") ];
+        var nodeList = [ "$text", require("./rt/$text"), "$if", require("./rt/$if"), "$insert", $InsertNode, "$foreach", require("./rt/$foreach"), "elt", require("./rt/eltnode"), "cpt", $CptNode, "catt", $CptAttElement, "log", require("./rt/$log"), "let", require("./rt/$let") ];
         for (var i = 0, sz = nodeList.length; sz > i; i += 2) {
             createShortcut(nodeList[i], nodeList[i + 1]);
         }

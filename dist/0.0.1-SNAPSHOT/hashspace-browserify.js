@@ -1,6 +1,4 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"hsp/$set":[function(require,module,exports){
-module.exports=require('+0srr9');
-},{}],"+0srr9":[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var json = require("./json");
 
 /**
@@ -56,7 +54,7 @@ $set.dec = function (object, property) {
     return previousValue;
 };
 
-},{"./json":"YcvKH8"}],"WDacIY":[function(require,module,exports){
+},{"./json":14}],2:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -113,9 +111,7 @@ if (doc.createEventObject) {
     };
 }
 
-},{}],"hsp/document":[function(require,module,exports){
-module.exports=require('WDacIY');
-},{}],"hhHoZL":[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -187,9 +183,7 @@ if (!Function.prototype.bind) {
     };
 }
 
-},{}],"hsp/es5":[function(require,module,exports){
-module.exports=require('hhHoZL');
-},{}],"6Kl1kt":[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -351,9 +345,7 @@ var DoubleTap = klass({
 });
 
 module.exports.DoubleTap = DoubleTap;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/doubleTap":[function(require,module,exports){
-module.exports=require('6Kl1kt');
-},{}],"J6s4RB":[function(require,module,exports){
+},{"../klass":15,"./gesture":6,"./touchEvent":13}],5:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -469,9 +461,7 @@ var Drag = klass({
 });
 
 module.exports.Drag = Drag;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/drag":[function(require,module,exports){
-module.exports=require('J6s4RB');
-},{}],"xsjChN":[function(require,module,exports){
+},{"../klass":15,"./gesture":6,"./touchEvent":13}],6:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -839,9 +829,7 @@ var Gesture = klass({
 });
 
 module.exports.Gesture = Gesture;
-},{"../klass":"GfSJC6","./touchEvent":"oYuPY+"}],"hsp/gestures/gesture":[function(require,module,exports){
-module.exports=require('xsjChN');
-},{}],"aNFXt4":[function(require,module,exports){
+},{"../klass":15,"./touchEvent":13}],7:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -948,9 +936,7 @@ var Gestures = klass({
 module.exports.Gestures = Gestures;
 
 
-},{"../klass":"GfSJC6","./doubleTap":"6Kl1kt","./drag":"J6s4RB","./longPress":"OkCBHK","./pinch":"X+07de","./singleTap":"BxcBBq","./swipe":"1S2i7l","./tap":"uETHOu"}],"hsp/gestures/gestures":[function(require,module,exports){
-module.exports=require('aNFXt4');
-},{}],"OkCBHK":[function(require,module,exports){
+},{"../klass":15,"./doubleTap":4,"./drag":5,"./longPress":8,"./pinch":9,"./singleTap":10,"./swipe":11,"./tap":12}],8:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1080,9 +1066,7 @@ var LongPress = klass({
 });
 
 module.exports.LongPress = LongPress;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/longPress":[function(require,module,exports){
-module.exports=require('OkCBHK');
-},{}],"X+07de":[function(require,module,exports){
+},{"../klass":15,"./gesture":6,"./touchEvent":13}],9:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1265,9 +1249,7 @@ var Pinch = klass({
 });
 
 module.exports.Pinch = Pinch;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/pinch":[function(require,module,exports){
-module.exports=require('X+07de');
-},{}],"BxcBBq":[function(require,module,exports){
+},{"../klass":15,"./gesture":6,"./touchEvent":13}],10:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1426,9 +1408,7 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/singleTap":[function(require,module,exports){
-module.exports=require('BxcBBq');
-},{}],"1S2i7l":[function(require,module,exports){
+},{"../klass":15,"./gesture":6,"./touchEvent":13}],11:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1587,9 +1567,7 @@ var Swipe = klass({
 });
 
 module.exports.Swipe = Swipe;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/swipe":[function(require,module,exports){
-module.exports=require('1S2i7l');
-},{}],"uETHOu":[function(require,module,exports){
+},{"../klass":15,"./gesture":6,"./touchEvent":13}],12:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1685,9 +1663,7 @@ var Tap = klass({
 });
 
 module.exports.Tap = Tap;
-},{"../klass":"GfSJC6","./gesture":"xsjChN","./touchEvent":"oYuPY+"}],"hsp/gestures/tap":[function(require,module,exports){
-module.exports=require('uETHOu');
-},{}],"oYuPY+":[function(require,module,exports){
+},{"../klass":15,"./gesture":6,"./touchEvent":13}],13:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -2062,11 +2038,7 @@ exports.getFakeEvent = function(type, target) {
     fakeEvent.target = target;
     return fakeEvent;
 };
-},{}],"hsp/gestures/touchEvent":[function(require,module,exports){
-module.exports=require('oYuPY+');
-},{}],"hsp/json":[function(require,module,exports){
-module.exports=require('YcvKH8');
-},{}],"YcvKH8":[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2404,7 +2376,7 @@ function unobserve (object, callback, metaProperty) {
     }
 }
 
-},{}],"GfSJC6":[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2500,9 +2472,7 @@ klass.createMetaDataPrefix = createMetaDataPrefix;
 
 module.exports = klass;
 
-},{}],"hsp/klass":[function(require,module,exports){
-module.exports=require('GfSJC6');
-},{}],"D6s46z":[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2619,11 +2589,7 @@ function PropObserver_notifyChange (po, chge, chgName) {
 
 module.exports = PropObserver;
 
-},{"./json":"YcvKH8","./klass":"GfSJC6"}],"hsp/propobserver":[function(require,module,exports){
-module.exports=require('D6s46z');
-},{}],"hsp/rt":[function(require,module,exports){
-module.exports=require('7uFaOB');
-},{}],"7uFaOB":[function(require,module,exports){
+},{"./json":14,"./klass":15}],17:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2856,8 +2822,8 @@ var nodeList = [
     "elt", require("./rt/eltnode"),
     "cpt", $CptNode,
     "catt", $CptAttElement,
-    "log", require("hsp/rt/$log"),
-    "let", require("hsp/rt/$let")
+    "log", require("./rt/$log"),
+    "let", require("./rt/$let")
 ];
 
 for (var i = 0, sz = nodeList.length; sz > i; i += 2) {
@@ -2874,7 +2840,7 @@ function createShortcut (tagName, tagConstructor) {
     };
 }
 
-},{"./es5":"hhHoZL","./klass":"GfSJC6","./rt/$foreach":"Ll2sHF","./rt/$if":"R4WgDY","./rt/$root":"P5tgTj","./rt/$text":"jVbC+E","./rt/cptwrapper":"We0lgJ","./rt/eltnode":"NbaJkW","./rt/log":"pIlMhe","hsp/rt/$let":"3xKX24","hsp/rt/$log":"nUpGcG"}],"Ll2sHF":[function(require,module,exports){
+},{"./es5":3,"./klass":15,"./rt/$foreach":18,"./rt/$if":19,"./rt/$let":20,"./rt/$log":21,"./rt/$root":22,"./rt/$text":23,"./rt/cptwrapper":27,"./rt/eltnode":28,"./rt/log":30}],18:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3451,9 +3417,7 @@ var $ItemNode = klass({
 
 module.exports = $ForEachNode;
 
-},{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe","./tnode":"Jrooar"}],"hsp/rt/$foreach":[function(require,module,exports){
-module.exports=require('Ll2sHF');
-},{}],"R4WgDY":[function(require,module,exports){
+},{"../document":2,"../json":14,"../klass":15,"./log":30,"./tnode":31}],19:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3586,12 +3550,9 @@ var $IfNode = klass({
         if (cond !== this.lastConditionValue) {
             this.createChildNodeInstances(cond);
             this.root.updateObjectObservers(this);
-            this.adirty = false;
             this.cdirty = false;
-        } else {
-            // default behaviour
-            TNode.refresh.call(this);
         }
+        TNode.refresh.call(this);
     },
 
     /**
@@ -3616,11 +3577,7 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$if":[function(require,module,exports){
-module.exports=require('R4WgDY');
-},{}],"hsp/rt/$let":[function(require,module,exports){
-module.exports=require('3xKX24');
-},{}],"3xKX24":[function(require,module,exports){
+},{"../document":2,"../klass":15,"./tnode":31}],20:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -3638,10 +3595,10 @@ module.exports=require('3xKX24');
  */
 
 // This module contains the log node
-var klass = require("hsp/klass"),
-    $set = require("hsp/$set"),
-    doc = require("hsp/document"),
-    TNode = require("hsp/rt/tnode").TNode;
+var klass = require("../klass"),
+    $set = require("../$set"),
+    doc = require("../document"),
+    TNode = require("./tnode").TNode;
 
 var LetNode = klass({
     $extends : TNode,
@@ -3700,9 +3657,7 @@ var LetNode = klass({
 module.exports=LetNode;
 
 
-},{"hsp/$set":"+0srr9","hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$log":[function(require,module,exports){
-module.exports=require('nUpGcG');
-},{}],"nUpGcG":[function(require,module,exports){
+},{"../$set":1,"../document":2,"../klass":15,"./tnode":31}],21:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -3720,10 +3675,10 @@ module.exports=require('nUpGcG');
  */
 
 // This module contains the log node
-var klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    doc = require("hsp/document"),
-    TNode = require("hsp/rt/tnode").TNode;
+var klass = require("../klass"),
+    log = require("./log"),
+    doc = require("../document"),
+    TNode = require("./tnode").TNode;
 
 var LogNode = klass({
     $extends : TNode,
@@ -3795,9 +3750,7 @@ var LogNode = klass({
 module.exports=LogNode;
 
 
-},{"hsp/document":"WDacIY","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe","hsp/rt/tnode":"Jrooar"}],"hsp/rt/$root":[function(require,module,exports){
-module.exports=require('P5tgTj');
-},{}],"P5tgTj":[function(require,module,exports){
+},{"../document":2,"../klass":15,"./log":30,"./tnode":31}],22:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4226,7 +4179,6 @@ var $InsertNode = klass({
                 // is JS function
                 this.node.nodeValue = this.getContent();
             }
-            this.adirty = false;
         }
         TNode.refresh.call(this);
     }
@@ -4654,7 +4606,7 @@ exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
 
 
-},{"../document":"WDacIY","../json":"YcvKH8","../klass":"GfSJC6","../propobserver":"D6s46z","./cptattinsert":"C9wO2N","./cptcomponent":"lU3L0p","./cpttemplate":"aBMumZ","./log":"pIlMhe","./tnode":"Jrooar"}],"jVbC+E":[function(require,module,exports){
+},{"../document":2,"../json":14,"../klass":15,"../propobserver":16,"./cptattinsert":24,"./cptcomponent":25,"./cpttemplate":26,"./log":30,"./tnode":31}],23:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4744,9 +4696,7 @@ var $TextNode = klass({
 });
 
 module.exports = $TextNode;
-},{"../document":"WDacIY","../klass":"GfSJC6","./tnode":"Jrooar"}],"hsp/rt/$text":[function(require,module,exports){
-module.exports=require('jVbC+E');
-},{}],"C9wO2N":[function(require,module,exports){
+},{"../document":2,"../klass":15,"./tnode":31}],24:[function(require,module,exports){
 /**
  * $CptAttInsert contains methods that will be added to the prototype of all
  * $CptNode node instance that correspond to an insertion of a component attribute
@@ -4774,11 +4724,7 @@ module.exports.$CptAttInsert = {
   }
 };
 
-},{}],"hsp/rt/cptattinsert":[function(require,module,exports){
-module.exports=require('C9wO2N');
-},{}],"hsp/rt/cptcomponent":[function(require,module,exports){
-module.exports=require('lU3L0p');
-},{}],"lU3L0p":[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var json = require("../json"),
     log = require("./log"),
     doc = require("../document"),
@@ -5265,7 +5211,6 @@ exports.$CptComponent = {
   refreshAttributes : function () {
     var atts = this.atts, att, ctlAtt, eh = this.eh, ctl = this.controller, v;
     var vs = this.isCptAttElement? this.vscope : this.parent.vscope;
-    this.adirty = false;
     if (atts && ctl && ctl.attributes) {
       // this template has a controller
       // let's propagate the new attribute values to the controller attributes
@@ -5286,9 +5231,7 @@ exports.$CptComponent = {
   }
 };
 
-},{"../document":"WDacIY","../json":"YcvKH8","./$text":"jVbC+E","./cptwrapper":"We0lgJ","./log":"pIlMhe"}],"hsp/rt/cpttemplate":[function(require,module,exports){
-module.exports=require('aBMumZ');
-},{}],"aBMumZ":[function(require,module,exports){
+},{"../document":2,"../json":14,"./$text":23,"./cptwrapper":27,"./log":30}],26:[function(require,module,exports){
 var json = require("../json"),
     doc = require("../document");
 
@@ -5377,7 +5320,6 @@ module.exports.$CptTemplate = {
    */
   refreshAttributes : function () {
       var atts = this.atts, att, eh = this.eh, pvs = this.parent.vscope;
-      this.adirty = false;
       if (atts) {
           // this template has no controller
           // let's propagate the new attribute values to the current scope
@@ -5390,7 +5332,7 @@ module.exports.$CptTemplate = {
   }
 };
 
-},{"../document":"WDacIY","../json":"YcvKH8"}],"We0lgJ":[function(require,module,exports){
+},{"../document":2,"../json":14}],27:[function(require,module,exports){
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5763,11 +5705,7 @@ function createCptWrapper(Ctl, cptArgs) {
 exports.CptWrapper = CptWrapper;
 exports.createCptWrapper=createCptWrapper;
 
-},{"../json":"YcvKH8","../klass":"GfSJC6","./log":"pIlMhe"}],"hsp/rt/cptwrapper":[function(require,module,exports){
-module.exports=require('We0lgJ');
-},{}],"hsp/rt/eltnode":[function(require,module,exports){
-module.exports=require('NbaJkW');
-},{}],"NbaJkW":[function(require,module,exports){
+},{"../json":14,"../klass":15,"./log":30}],28:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5994,8 +5932,6 @@ var EltNode = klass({
      */
     refreshAttributes : function () {
         var nd = this.node, atts = this.atts, att, eh = this.eh, vs = this.vscope, nm, modelRefs = null;
-        this.adirty = false;
-
         if (atts) {
             for (var i = 0, sz = this.atts.length; sz > i; i++) {
                 att = atts[i];
@@ -6077,7 +6013,7 @@ var EltNode = klass({
 
 module.exports = EltNode;
 
-},{"../document":"WDacIY","../gestures/gestures":"aNFXt4","../klass":"GfSJC6","../rt":"7uFaOB","./tnode":"Jrooar"}],"FA9d2U":[function(require,module,exports){
+},{"../document":2,"../gestures/gestures":7,"../klass":15,"../rt":17,"./tnode":31}],29:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -6093,9 +6029,9 @@ module.exports = EltNode;
  * limitations under the License.
  */
 
-var klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    json = require("hsp/json");
+var klass = require("../klass"),
+    log = require("./log"),
+    json = require("../json");
 
 var ExpHandler = klass({
     /**
@@ -6535,11 +6471,7 @@ var FuncExpr = klass({
     }
 });
 
-},{"hsp/json":"YcvKH8","hsp/klass":"GfSJC6","hsp/rt/log":"pIlMhe"}],"hsp/rt/exphandler":[function(require,module,exports){
-module.exports=require('FA9d2U');
-},{}],"hsp/rt/log":[function(require,module,exports){
-module.exports=require('pIlMhe');
-},{}],"pIlMhe":[function(require,module,exports){
+},{"../json":14,"../klass":15,"./log":30}],30:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -6848,9 +6780,7 @@ function formatValue(v,depth) {
 
 module.exports = log;
 
-},{}],"hsp/rt/tnode":[function(require,module,exports){
-module.exports=require('Jrooar');
-},{}],"Jrooar":[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -7055,7 +6985,7 @@ var TNode = klass({
         if (this.adirty) {
             // update observable pairs
             this.root.updateObjectObservers(this);
-            this.adirty=false;
+            this.adirty = false; // adirty should not be set to false anywhere else unless updateObjectObservers is not required
         }
         if (this.cdirty) {
             var cn = this.childNodes;
@@ -7298,4 +7228,4 @@ module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;
 
-},{"../klass":"GfSJC6","../rt":"7uFaOB","./exphandler":"FA9d2U","./log":"pIlMhe"}]},{},["7uFaOB"])
+},{"../klass":15,"../rt":17,"./exphandler":29,"./log":30}]},{},[17]);
