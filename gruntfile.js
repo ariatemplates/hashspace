@@ -100,6 +100,12 @@ module.exports = function (grunt) {
             platform: 'OS X 10.8',
             version: '6'
           },
+          'SL_Safari_7': {
+            base: 'SauceLabs',
+            browserName: 'safari',
+            platform: 'OS X 10.9',
+            version: '7'
+          },
           'SL_IE_8': {
             base: 'SauceLabs',
             browserName: 'internet explorer',
@@ -174,13 +180,13 @@ module.exports = function (grunt) {
         transports: ['xhr-polling'],
         singleRun: true,
         browserNoActivityTimeout: 20000,
-        browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Firefox', 'SL_Chrome', 'ANDROID'],
+        browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'ANDROID'],
         reporters: ['dots', 'saucelabs']
       },
       sauce: {
         singleRun: true,
         browserNoActivityTimeout: 20000,
-        browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Firefox', 'SL_Chrome', 'ANDROID'],
+        browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'ANDROID'],
         reporters: ['dots', 'saucelabs']
       }
     },
