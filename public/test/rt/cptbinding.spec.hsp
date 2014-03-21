@@ -41,11 +41,42 @@ var Cpt1 = klass({
   <input type="text" value="{d.defaultvalue}"/>
 # /template
 
+var checks=[], lastInitValue=null, dataValue=null;
+var Cpt2 = klass({ 
+  attributes:{ 
+    value:{type:"string", binding:"2-way",onchange:"check"},
+    initvalue:{type:"int",defaultValue:0,binding:"none"},
+    data:{type:"object",defaultValue:{foo:"bar"},binding:"1-way"}
+  },
+  $init:function() {
+    lastInitValue=this.initvalue;
+    dataValue=this.data;
+  },
+  onDataChange:function() {
+    dataValue=this.data;
+  },
+  check:function(newValue,oldValue) {
+    checks.push({n:newValue,o:oldValue});
+  }
+});
+
+# template cpt2 using c:Cpt2
+  <input type="text" value="{c.value}"/>
+# /template
+
+# template test2(d)
+  <#cpt2 value="{d.value}" initvalue="10"/>
+# /template
+
+# template test3(d)
+  <#cpt2 value="{d.value}" data="{d.data}"/>
+# /template
+
 var setFieldValue=function(field,value) {
   // helper function
   field.value=""+value;
   fireEvent("click",field); // to trigger change
-  hsp.refresh();      // to force refresh
+  hsp.refresh();            // to force refresh
 }
 
 describe("Component attributes binding", function () {
@@ -104,6 +135,53 @@ describe("Component attributes binding", function () {
     expect(c.onDefaultValueChangeCount).to.equal(0); // no binding so change cb is not called
     expect(c.defaultvalue).to.equal(10); // of course value has changed as we must be able to change it internally!
 
+    n.$dispose();
+  });
+
+  it("tests component attribute onchange property", function() {
+    var d={value:"a"};
+    var n=test2(d);
+    checks=[];
+
+    expect(n.node.childNodes.length).to.equal(1);
+    var cptInput=n.node.childNodes[0];
+
+    setFieldValue(cptInput,"b");
+    expect(checks.length).to.equal(1);
+    expect(checks[0].n).to.equal("b");
+
+    json.set(d,"value","c");
+    hsp.refresh();
+
+    expect(checks.length).to.equal(2);
+    expect(checks[1].n).to.equal("c");
+    
+    n.$dispose();
+  });
+
+  it("tests unbound attribute type conversion", function() {
+    var d={value:"a"};
+    lastInitValue=0;
+
+    var n=test2(d);
+    expect(lastInitValue).to.equal(10);
+    expect(dataValue.foo).to.equal("bar"); // default object validation
+    
+    n.$dispose();
+  });
+
+  it("tests object attribute change", function() {
+    var d={value:"a"};
+    d.data={blah:123};
+    var n=test3(d);
+
+    expect(dataValue).to.equal(d.data);
+    // change data
+    var x={a:"b"};
+    json.set(d,"data",x);
+    hsp.refresh();
+
+    expect(dataValue).to.equal(x);
     n.$dispose();
   });
 

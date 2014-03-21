@@ -13,7 +13,7 @@ module.exports.$CptAttInsert = {
     // append root as childNode
     this.childNodes=[];
     this.childNodes[0]=root;
-    // instatiate sub-childNodes
+    // instantiate sub-childNodes
     root.render(this.node,false);
   },
 

@@ -82,13 +82,15 @@ var $RootNode = klass({
      * {value:'123',mandatory:true}
      */
     init : function (vscope, nodedefs, argnames, ctlWrapper, ctlInitAtts) {
+        var cw;
         this.vscope = vscope;
         if (ctlWrapper) {
             // attach the controller objects to the node
-            this.ctlWrapper = ctlWrapper;
+            this.ctlWrapper = cw = ctlWrapper;
             this.controller = ctlWrapper.cpt;
 
             // init controller attributes
+            this.ctlWrapper.root=this;
             this.ctlWrapper.init(ctlInitAtts);
         } else if (this.$constructor === $CptNode) {
             // this is a template insertion - we need to init the vscope
@@ -105,6 +107,9 @@ var $RootNode = klass({
             }
         } else {
             ch[0] = nodedefs.createNodeInstance(this);
+        }
+        if (cw && !cw.nodeInstance) {
+            cw.refresh(); // first refresh
         }
         this.childNodes = ch;
         this.argNames = argnames;
@@ -130,9 +135,10 @@ var $RootNode = klass({
     /**
      * Create listeners for the variables associated to a specific node instance
      * @param {TNode} ni the node instance that should be notified of the changes
+     * @param {Object} scope the scope to be used (optional - default: ni.vscope, but is not ok for components)
      */
-    createExpressionObservers : function (ni) {
-        var vs = ni.vscope, eh = ni.eh, op, sz;
+    createExpressionObservers : function (ni,scope) {
+        var vs = scope? scope : ni.vscope, eh = ni.eh, op, sz;
         if (!eh)
             return; // no expression is associated to this node
         for (var k in eh.exps) {
@@ -567,7 +573,7 @@ var $CptNode = klass({
     },
     
     /**
-     * Callback called when a controller attribute or a template attriute has changed
+     * Callback called when a controller attribute or a template attribute has changed
      */
     onAttributeChange : function (change) {
         var expIdx = -1;
