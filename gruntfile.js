@@ -180,12 +180,14 @@ module.exports = function (grunt) {
         transports: ['xhr-polling'],
         singleRun: true,
         browserNoActivityTimeout: 20000,
+        captureTimeout: 120000,
         browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'ANDROID'],
         reporters: ['dots', 'saucelabs']
       },
       sauce: {
         singleRun: true,
         browserNoActivityTimeout: 20000,
+        captureTimeout: 120000,
         browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'ANDROID'],
         reporters: ['dots', 'saucelabs']
       }
