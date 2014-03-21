@@ -94,12 +94,12 @@ exports.fireKeydownEventAdaptedForKeyNav = function (target, options) {
     var isSafari = ua.indexOf('chrome') == -1 && ua.indexOf('phantomjs') == -1 && ua.indexOf('webkit') > -1;
 
     if (isOldIE || isSafari) {
-        this.fireKeydownEventAdaptedForKeyNav = function (target, options) {
+        var fireKeydownEventAdaptedForKeyNav = function (target, options) {
             // For IE and Safari:
             simulate(target, "keydown", options);
         };
     } else {
-        this.fireKeydownEventAdaptedForKeyNav = function (target, options) {
+        var fireKeydownEventAdaptedForKeyNav = function (target, options) {
             // For other browsers than IE and Safari:
             // Shitty implementation for keynav:
             // Other browser that safari and IE need to listen to keydown
@@ -108,7 +108,7 @@ exports.fireKeydownEventAdaptedForKeyNav = function (target, options) {
             simulate(target, "keypress", options);
         };
     }
-    this.fireKeydownEventAdaptedForKeyNav(target, options);
+    fireKeydownEventAdaptedForKeyNav(target, options);
 };
 
 /**
