@@ -159,7 +159,7 @@ module.exports = function (grunt) {
         preprocessors: {
           'hsp/**/*.js': ['commonjs', 'coverage']
         },
-        reporters: ['progress', 'coverage'],
+        reporters: ['dots', 'coverage'],
         browsers: ['PhantomJS'],
         coverageReporter: {
           type : 'lcovonly',
@@ -173,11 +173,13 @@ module.exports = function (grunt) {
         },
         transports: ['xhr-polling'],
         singleRun: true,
+        browserNoActivityTimeout: 20000,
         browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Firefox', 'SL_Chrome', 'ANDROID'],
         reporters: ['dots', 'saucelabs']
       },
       sauce: {
         singleRun: true,
+        browserNoActivityTimeout: 20000,
         browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Firefox', 'SL_Chrome', 'ANDROID'],
         reporters: ['dots', 'saucelabs']
       }
