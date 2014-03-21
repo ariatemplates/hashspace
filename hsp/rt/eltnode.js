@@ -224,8 +224,6 @@ var EltNode = klass({
      */
     refreshAttributes : function () {
         var nd = this.node, atts = this.atts, att, eh = this.eh, vs = this.vscope, nm, modelRefs = null;
-        this.adirty = false;
-
         if (atts) {
             for (var i = 0, sz = this.atts.length; sz > i; i++) {
                 att = atts[i];

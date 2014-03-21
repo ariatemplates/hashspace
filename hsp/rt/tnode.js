@@ -202,7 +202,7 @@ var TNode = klass({
         if (this.adirty) {
             // update observable pairs
             this.root.updateObjectObservers(this);
-            this.adirty=false;
+            this.adirty = false; // adirty should not be set to false anywhere else unless updateObjectObservers is not required
         }
         if (this.cdirty) {
             var cn = this.childNodes;
