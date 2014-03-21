@@ -158,7 +158,7 @@ describe("Component attribute elements (4)", function () {
         expect(h(OPTIONS).item(2).text()).to.equal("3. Orange");
 
         h(OPTIONS).item(1).click();
-        expect(lastSelectionValue).to.equal(1);
+        expect(lastSelectionValue).to.equal('1');
 
         // update the array
         d.items.splice(1,0,"Plum");
@@ -172,7 +172,7 @@ describe("Component attribute elements (4)", function () {
         expect(h(OPTIONS).item(3).text()).to.equal("4. Orange");
 
         h(OPTIONS).item(3).click();
-        expect(lastSelectionValue).to.equal('3'); // TODO investigate type change - seems to be linked to json.observe?
+        expect(lastSelectionValue).to.equal('3');
 
         // change again
         d.items.splice(0,5);
