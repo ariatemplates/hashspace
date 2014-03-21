@@ -159,6 +159,14 @@ module.exports = [{
                         main : true
                     }]
         }, {
+            title : "Integrating 3rd party components: Chart.JS",
+            folder : "thirdpartycpts",
+            description : "description.md",
+            files : [{
+                        src : "chart.hsp",
+                        main : true
+                    }]
+        }, {
             title : "Gestures",
             folder : "gestures",
             description : "description.md",

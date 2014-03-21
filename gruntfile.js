@@ -193,7 +193,7 @@ module.exports = function (grunt) {
       }
     },
     jscs: {
-        src: ['hsp/**/*.js', 'public/**/*.js', '!public/**/markdown.js'],
+        src: ['hsp/**/*.js', 'public/**/*.js', '!public/**/markdown.js','!public/lib/*.js'],
         options: {
             config: '.jscs.json'
         }
