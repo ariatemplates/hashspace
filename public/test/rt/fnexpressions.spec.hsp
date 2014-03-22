@@ -1,0 +1,130 @@
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var ht=require("hsp/utils/hashtester");
+
+function concat(a,b) {
+    return "["+a+" "+b+"]";
+}
+
+# template test1(d)
+    <div class="content" title="{d.fn(d.msg1,d.msg2)}">foo</div>
+# /template
+
+# template test2(d)
+    <div class="content" title="{concat(d.msg1,d.msg2)}!">foo</div>
+# /template
+
+# template test3(d)
+    <div class="content" title="{d.sub.fn(d.msg1,d.msg2)}">foo</div>
+# /template
+
+describe("Function expressions", function () {
+    var C=".content";
+
+    it("validates attribute updates on arg changes (in-scope fn)", function() {
+        var h=ht.newTestContext(), d={
+            msg1:"hello",
+            msg2:"world",
+            fn:function(a,b) {
+                return "["+a+" "+b+"]";
+            }
+        };
+        test1(d).render(h.container);
+
+        expect(h(C).attribute("title")).to.equal("[hello world]");
+
+        // change arg
+        h.$set(d,"msg2","earth");
+
+        expect(h(C).attribute("title")).to.equal("[hello earth]");
+        h.$dispose();
+    });
+
+    it("validates attribute updates on arg changes (global fn)", function() {
+        var h=ht.newTestContext(), d={
+            msg1:"hello",
+            msg2:"world",
+            fn:function(a,b) {
+                return "["+a+" "+b+"]";
+            }
+        };
+        test2(d).render(h.container);
+
+        expect(h(C).attribute("title")).to.equal("[hello world]!");
+
+        // change arg
+        h.$set(d,"msg2","earth");
+
+        expect(h(C).attribute("title")).to.equal("[hello earth]!");
+        h.$dispose();
+    });
+
+    it("validates attribute updates on path changes (in-scope fn)", function() {
+        var h=ht.newTestContext(), d={
+            msg1:"hello",
+            msg2:"world",
+            sub:{
+                fn:function(a,b) {
+                    return "["+a+" "+b+"]";
+                }
+            }
+        };
+        test3(d).render(h.container);
+
+        expect(h(C).attribute("title")).to.equal("[hello world]");
+
+        // change path
+        h.$set(d,"sub",{
+            fn:function(a,b) {
+                return a+"-"+b;
+            }
+        });
+
+        expect(h(C).attribute("title")).to.equal("hello-world");
+
+        // change again
+        h.$set(d.sub,"fn",function(a,b) {
+            return a+"+"+b;
+        });
+
+        expect(h(C).attribute("title")).to.equal("hello+world");
+
+        h.$dispose();
+    });
+
+    it("validates attribute updates on changes in function 'this' (in-scope fn)", function() {
+        var h=ht.newTestContext(), d={
+            msg1:"hello",
+            msg2:"world",
+            sub:{
+                separator:"-",
+                fn:function(a,b) {
+                    return "["+a+this.separator+b+"]";
+                }
+            }
+        };
+        test3(d).render(h.container);
+
+        expect(h(C).attribute("title")).to.equal("[hello-world]");
+
+        // change context
+        h.$set(d.sub,"separator","+");
+
+        expect(h(C).attribute("title")).to.equal("[hello+world]");        
+
+        h.$dispose();
+    });
+});
