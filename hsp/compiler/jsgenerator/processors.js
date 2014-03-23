@@ -206,20 +206,6 @@ exports["foreach"] = function (node, walker) {
 };
 
 /*
- * Manages insertion expressions.
- * @param {Node} node the current Node object as built by the treebuilder.
- * @param {TreeWalker} walker the template walker instance.
- * @return {String} a snippet of Javascript code built from the node.
- */
-exports["insert"] = function (node, walker) {
-    node.category = "functionref";
-    var expr = formatExpression(node, 1, walker);
-    var exprcode = expr.code.length === 0 ? "0" : "{" + expr.code + "}";
-
-    return ['n.$insert(', exprcode, ',', expr.exprIdx, ')'].join('');
-};
-
-/*
  * Manages element and component nodes.
  * @param {Node} node the current Node object as built by the treebuilder.
  * @param {TreeWalker} walker the template walker instance.

@@ -19,6 +19,10 @@ function concat(a,b) {
     return "["+a+" "+b+"]";
 }
 
+function endText(a) {
+    return "*"+a+"*";
+}
+
 # template test1(d)
     <div class="content" title="{d.fn(d.msg1,d.msg2)}">foo</div>
 # /template
@@ -29,6 +33,23 @@ function concat(a,b) {
 
 # template test3(d)
     <div class="content" title="{d.sub.fn(d.msg1,d.msg2)}">foo</div>
+# /template
+
+# template test4(d)
+    <div class="content">
+        {d.fn(d.msg1,d.msg2)}!
+        {if d.showEndText}
+            {endText(123)}
+        {/if}
+    </div>
+# /template
+
+# template test5(d)
+    <div class="content">A {concat(d.msg1,d.msg2)} B</div>
+# /template
+
+# template test6(d)
+    <div class="content">{d.sub.fn(d.msg1,d.msg2)}</div>
 # /template
 
 describe("Function expressions", function () {
@@ -127,4 +148,103 @@ describe("Function expressions", function () {
 
         h.$dispose();
     });
+
+    it("validates text node updates on arg changes (in-scope fn)", function() {
+        var h=ht.newTestContext(), d={
+            msg1:"hello",
+            msg2:"world",
+            fn:function(a,b) {
+                return "["+a+" "+b+"]";
+            }
+        };
+        test4(d).render(h.container);
+
+        expect(h(C).text()).to.equal("[hello world]! ");
+
+        // change arg
+        h.$set(d,"msg2","earth");
+        expect(h(C).text()).to.equal("[hello earth]! ");
+
+        // trigger if
+        h.$set(d,"showEndText",true);
+        expect(h(C).text()).to.equal("[hello earth]! *123* ");
+
+        h.$dispose();
+    });
+
+    it("validates text node updates on arg changes (global fn)", function() {
+        var h=ht.newTestContext(), d={
+            msg1:"hello",
+            msg2:"world",
+            fn:function(a,b) {
+                return "["+a+" "+b+"]";
+            }
+        };
+        test5(d).render(h.container);
+
+        expect(h(C).text()).to.equal("A [hello world] B");
+
+        // change arg
+        h.$set(d,"msg2","earth");
+
+        expect(h(C).text()).to.equal("A [hello earth] B");
+        h.$dispose();
+    });
+
+    it("validates text node updates on path changes (in-scope fn)", function() {
+        var h=ht.newTestContext(), d={
+            msg1:"hello",
+            msg2:"world",
+            sub:{
+                fn:function(a,b) {
+                    return "["+a+" "+b+"]";
+                }
+            }
+        };
+        test6(d).render(h.container);
+
+        expect(h(C).text()).to.equal("[hello world]");
+
+        // change path
+        h.$set(d,"sub",{
+            fn:function(a,b) {
+                return a+"-"+b;
+            }
+        });
+
+        expect(h(C).text()).to.equal("hello-world");
+
+        // change again
+        h.$set(d.sub,"fn",function(a,b) {
+            return a+"+"+b;
+        });
+
+        expect(h(C).text()).to.equal("hello+world");
+
+        h.$dispose();
+    });
+
+
+    it("validates text node updates on changes in function 'this' (in-scope fn)", function() {
+        var h=ht.newTestContext(), d={
+            msg1:"hello",
+            msg2:"world",
+            sub:{
+                separator:"-",
+                fn:function(a,b) {
+                    return "["+a+this.separator+b+"]";
+                }
+            }
+        };
+        test6(d).render(h.container);
+        expect(h(C).text()).to.equal("[hello-world]");
+
+        // change context
+        h.$set(d.sub,"separator","+");
+
+        expect(h(C).text()).to.equal("[hello+world]");        
+
+        h.$dispose();
+    });
+
 });
