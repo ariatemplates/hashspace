@@ -89,7 +89,7 @@ describe('Block Parser: ', function () {
     };
 
     var samples = ut.getSampleNames(__dirname + "/samples");
-    //samples=["log2"];
+    //samples=["insert2"];
 
     for (var i = 0, sz = samples.length; sz > i; i++) {
         // create one test for each sample
