@@ -20,7 +20,6 @@ var klass = require("./klass"),
     log = require("./rt/log"),
     $root = require("./rt/$root"),
     $RootNode = $root.$RootNode,
-    $InsertNode = $root.$InsertNode,
     $CptNode = $root.$CptNode,
     $CptAttElement = $root.$CptAttElement,
     cptwrapper = require("./rt/cptwrapper");
@@ -56,8 +55,8 @@ var NodeGenerator = klass({
         vs["scope"] = vs; // self reference (used for variables - cf. expression handler)
 
         var root = null;
-        if (tplctxt.$constructor && (tplctxt.$constructor === $InsertNode || tplctxt.$constructor === $CptNode)) {
-            // we use the insert node as root node
+        if (tplctxt.$constructor && tplctxt.$constructor === $CptNode) {
+            // we use the component node as root node
             root = tplctxt;
             root.init(vs, this.nodedefs, argNames, ctlWrapper, ctlInitArgs);
         } else {
@@ -225,7 +224,6 @@ var nodes = {};
 var nodeList = [
     "$text", require("./rt/$text"),
     "$if", require("./rt/$if"),
-    "$insert", $InsertNode,
     "$foreach", require("./rt/$foreach"),
     "elt", require("./rt/eltnode"),
     "cpt", $CptNode,
