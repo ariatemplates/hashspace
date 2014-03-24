@@ -9,7 +9,7 @@
         </div>
         <div class="playground" onmouseover="{ctl.hideSampleList()}">
             <div class="descriptionContainer">
-                {sampleList(data,ctl)}
+                <#sampleList data="{data}" ctl="{ctl}"/>
 
                 // TODO remove this fixed id
                 <div id="description">

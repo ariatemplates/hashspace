@@ -43,23 +43,43 @@
     "name": "test",
     "args": ["person"],
     "content": [
-      {type: "text", "value": "Before "},
-      {type: "insert", path:["_content1"], args:[]},
-      {type: "text", "value": " "},
-      {type: "insert", path:["_content2"], args:[
-          {type:"expression", category:"string", value:"First Name"},
-          {type:"expression", category:"objectref", path:["person","firstName"]}
-      ]},
-      {type: "text", "value": " After"}
+      {
+        "type": "textblock",
+        "content": [
+          {type: "text", "value": "Before "},
+          {
+            "type": "expression",
+            "category": "functionref",
+            "bound": true,
+            "path": ["_content1"],
+            "args": [],
+            "line": 3,
+            "column": 2
+          },
+          {type: "text", "value": " "},
+          {
+            "type": "expression",
+            "category": "functionref",
+            "bound": true,
+            "path": ["_content2"],
+            "args": [
+              {"type": "expression","category": "string","value": "First Name","code": "First Name"},
+              {"type": "expression","category": "objectref", "path": ["person","firstName"]}
+            ]
+          },
+          {"type": "text","value": " After"}
+        ]
+      }
     ]
   }
 ]
 
+
 ##### Template Code
 test=[
-    n.$text(0,["Before "]),
-    n.$insert({e1:[4,1,_content1]},1),
-    n.$text(0,[" "]),
-    n.$insert({e1:[4,1,_content2,0,"First Name",1,2],e2:[1,2,"person","firstName"]},1),
-    n.$text(0,[" After"])
+  n.$text({
+    e1:[4,1,_content1],
+    e2:[4,1,_content2,0,"First Name",1,3],
+    e3:[1,2,"person","firstName"]
+  },["Before ",1," ",2," After"])
 ]
