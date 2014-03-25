@@ -93,6 +93,17 @@ var SelectionWrapper=klass({
         return this.$selection[0].value;
     },
     /**
+     * Return the value of an attribute of the node selected (only works on single-element selections)
+     * @param {String} attName the name of the attribute - e.g. "title"
+     */
+    attribute:function(attName) {
+        if (this.length!==1) {
+            throw new HtException(1,"[hashtester] attribute() method can only be called on single-element selections");
+        }
+        // TODO support textarea
+        return this.$selection[0][attName];
+    },
+    /**
      * Tells if the first element in the selection is assigned a given CSS class
      * @param {String} cssClassName the class name to check
      **/

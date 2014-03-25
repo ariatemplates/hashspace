@@ -125,7 +125,12 @@ var TNode = klass({
         // set attribute dirty to true
         var root = this.root;
         if (!this.adirty) {
+            if (this.isCptComponent && this.ctlWrapper) {
+                // change component attribute synchronously to have only one refresh phase
+                this.refreshAttributes();
+            }
             this.adirty = true;
+
             if (this === root) {
                 hsp.refresh.addTemplate(this);
             }
@@ -327,6 +332,41 @@ var TNode = klass({
      */
     getScopeOwner : function(property, vscope) {
         return ExpHandler.getScopeOwner(property, vscope);
+    },
+
+    /**
+     * Helper function to get the nth DOM child node of type ELEMENT_NODE
+     * @param {Integer} index the position of the element (e.g. 0 for the first element)
+     * @retrun {DOMElementNode}
+     */
+    getElementNode:function(index) {
+        if (this.node) {
+            var cn=this.node.childNodes, nd, idx=-1;
+            var n1=this.node1, n2=this.node2; // for TNode using comments to delimit their content
+            if (!n2) {
+                n2=null;
+            }
+            var process=(n1)? false : true;
+            for (var i=0;cn.length>i;i++) {
+                nd=cn[i];
+                if (process) {
+                    if (nd===n2) {
+                        break;
+                    }
+                    if (nd.nodeType===1) {
+                        // 1 = ELEMENT_NODE
+                        idx++;
+                        if (idx===index) {
+                            return nd;
+                        }
+                    }
+                } else if (nd===n1) {
+                    process=true;
+                }
+                
+            }
+        }
+        return null;
     }
 });
 

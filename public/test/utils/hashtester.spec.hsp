@@ -4,7 +4,7 @@ var ht=require("hsp/utils/hashtester"),
 
 # template testContent(data)
     <div class="foo1 foo2">
-        <span class="sometext">Here is some text</span>
+        <span class="sometext" title="Hello World!">Here is some text</span>
         <span class="count" onclick="{increaseCount(data,1)}" ondblclick="{increaseCount(data,5)}">{data.count}</span>
     </div>
     <ul class="bar">
@@ -94,6 +94,15 @@ describe("HashTester", function () {
         var list=h(ITEMS);
         expect(list.item(0).hasClass("foo2")).to.equal(false);
         expect(list.item(1).hasClass("foo2")).to.equal(true);
+
+        h.$dispose();
+    });
+
+    it("validates attribute() retrieval", function() {
+        var h=ht.newTestContext();
+        var n=testContent({count:0}).render(h.container);
+
+        expect(h('.foo1 > .sometext').attribute('title')).to.equal('Hello World!');
 
         h.$dispose();
     });

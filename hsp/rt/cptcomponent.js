@@ -35,9 +35,9 @@ exports.$CptComponent = {
 
     if (this.template) {
       // this component is associated to a template
-      var isDynamicTpl=this.createPathObservers();
+      var needCommentNodes=(this.createPathObservers() || this.ctlConstuctor.$refresh);
 
-      if (isDynamicTpl) {
+      if (needCommentNodes) {
         var nd=this.node;
         this.node1 = doc.createComment("# cpt "+this.pathInfo);
         this.node2 = doc.createComment("# /cpt "+this.pathInfo);
@@ -45,12 +45,13 @@ exports.$CptComponent = {
         nd.appendChild(this.node2);
         this.createChildNodeInstances();
       } else {
-        // WARNING: this changes vscope to the template vscope
+        // WARNING: this changes the original vscope to the template vscope
         this.template.call(this, this.getTemplateArguments(), this.getCptArguments());
       }
 
       // $init child components
       this.initChildComponents();
+      this.ctlWrapper.refresh(); // first refresh
     } else if (arg.cptattelement) {
       // this component is an attribute of another component
       var cw=cptwrapper.createCptWrapper(this.ctlConstuctor, this.getCptArguments());
@@ -476,6 +477,8 @@ exports.$CptComponent = {
           this.edirty=false;
       }
       $CptNode.refresh.call(this);
+      // refresh cpt through $refresh if need be
+      this.ctlWrapper.refresh();
   },
 
   /**
@@ -493,7 +496,9 @@ exports.$CptComponent = {
         // propagate changes for 1- and 2-way bound attributes
         if (ctlAtt.type!=="template" && ctlAtt._binding !== 0) {
           v = att.getValue(eh, vs, null);
-          if ('' + v != '' + ctl[att.name]) {
+          if (ctlAtt.type==="object" || ctlAtt.type==="array") {
+            json.set(ctl, att.name, v);
+          } else if ('' + v != '' + ctl[att.name]) {
             // values may have different types - this is why we have to check that values are different to
             // avoid creating loops
             json.set(ctl, att.name, v);
