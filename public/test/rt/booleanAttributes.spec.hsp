@@ -1,0 +1,23 @@
+var json=require("hsp/json");
+hsp=require("hsp/rt");
+
+#template tpl(model)
+<input type = "text" required = "{model.flag}">
+# /template
+
+describe('boolean attributes', function () {
+
+    it('should add / remove boolean attributes with truthy / falsy values', function () {
+        var model = {flag: true};
+        var n = tpl(model);
+
+        expect(n.node.firstChild.required).to.equal(true);
+
+        // test property change
+        json.set(model, "flag", false);
+        hsp.refresh();
+        expect(n.node.firstChild.required).to.equal(false);
+
+        n.$dispose();
+    });
+});

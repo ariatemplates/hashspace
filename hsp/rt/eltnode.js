@@ -21,6 +21,28 @@ var TNode = require("./tnode").TNode;
 var hsp = require("../rt");
 var gestures = require("../gestures/gestures");
 
+var booleanAttributes = {
+    async: true,
+    autofocus: true,
+    autoplay: true,
+    controls: true,
+    defer: true,
+    disabled: true,
+    hidden: true,
+    ismap: true,
+    loop: true,
+    multiple: true,
+    open: true,
+    readonly: true,
+    required: true,
+    scoped: true,
+    selected: true
+};
+
+function isBooleanAttribute(attrName) {
+    return booleanAttributes.hasOwnProperty(attrName);
+}
+
 /**
  * Generic element node Add attribute support on top of TNode - used for div, spans, ul, li, h1, etc
  */
@@ -239,6 +261,11 @@ var EltNode = klass({
                 if (nm === "model") {
                     // this is an hashspace extension attribute
                     continue;
+                } else if (isBooleanAttribute(nm)) {
+                    //this is equivalent to calling sth like: node.required = truthy / falsy;
+                    //a browser will remove this attribute if a provided value is falsy
+                    //http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#boolean-attributes
+                    nd[nm] = att.getValue(eh, vs, "");
                 } else if (nm === "class") {
                     // issue on IE8 with the class attribute?
                     if (this.nodeNS) {
