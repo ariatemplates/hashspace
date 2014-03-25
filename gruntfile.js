@@ -57,6 +57,7 @@ module.exports = function (grunt) {
         ],
         exclude: [
           'hsp/compiler/**/*.js',
+          'hsp/transpiler/**/*.js',
           'test/transpiler/**/*.spec.js',
           'test/compiler/**/*.spec.js'
         ],
