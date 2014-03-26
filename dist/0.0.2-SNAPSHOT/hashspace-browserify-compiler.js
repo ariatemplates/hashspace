@@ -514,20 +514,6 @@ exports["foreach"] = function (node, walker) {
 };
 
 /*
- * Manages insertion expressions.
- * @param {Node} node the current Node object as built by the treebuilder.
- * @param {TreeWalker} walker the template walker instance.
- * @return {String} a snippet of Javascript code built from the node.
- */
-exports["insert"] = function (node, walker) {
-    node.category = "functionref";
-    var expr = formatExpression(node, 1, walker);
-    var exprcode = expr.code.length === 0 ? "0" : "{" + expr.code + "}";
-
-    return ['n.$insert(', exprcode, ',', expr.exprIdx, ')'].join('');
-};
-
-/*
  * Manages element and component nodes.
  * @param {Node} node the current Node object as built by the treebuilder.
  * @param {TreeWalker} walker the template walker instance.
@@ -14010,7 +13996,7 @@ var SyntaxTree = klass({
      * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
      */
     __text : function (index, blocks, out) {
-        var length = blocks.length, buffer = [], insertIndex = -1;
+        var length = blocks.length, buffer = [];
 
         //Regroups adjacent text and expression blocks by looking at the next ones
         var nextIndex = index, goAhead = (length > nextIndex), block;
@@ -14035,13 +14021,8 @@ var SyntaxTree = klass({
 
                 if (block.category === "invalidexpression") {
                     this._logError("Invalid expression", block);
-                } else if (block.category !== "functionref") {
-                    buffer.push(block);
                 } else {
-                    // this is an insert statement
-                    insertIndex = nextIndex;
-                    nextIndex++; // will be handled below
-                    goAhead = false;
+                    buffer.push(block);
                 }
             } else if (block.type === "comment") {
                 // ignore comments
@@ -14087,11 +14068,6 @@ var SyntaxTree = klass({
             out.push(node);
         }
 
-        if (insertIndex > -1) {
-            // an insert block has to be added after the text block
-            this.__insert(insertIndex, blocks, out);
-        }
-
         // return the last index that was handled
         return nextIndex > index ? nextIndex - 1 : index;
     },
@@ -14122,26 +14098,6 @@ var SyntaxTree = klass({
      */
     __invalidexpression : function (index, blocks, out) {
         this._logError("Invalid expression", blocks[index]);
-        return index;
-    },
-
-    /**
-     * Manages an insert block.
-     * @param {Array} blocks the full list of blocks.
-     * @param {Integer} index the index of the block to manage.
-     * @param {Array} out the output as an array of Node.
-     * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
-     */
-    __insert : function (index, blocks, out) {
-        var node = new Node("insert"), block = blocks[index];
-        node.path = block.path;
-        node.args = block.args;
-
-        if (node.path.length > 1) {
-            this._logError("Long paths for insert statements are not supported yet: " + node.path.join("."), block);
-        } else {
-            out.push(node);
-        }
         return index;
     },
 
