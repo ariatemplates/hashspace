@@ -282,8 +282,10 @@ var FuncRefExpr = klass({
      * @param {Array} desc the expression descriptor - e.g. [1,2,"person","getDetails",0,"arg1"]
      */
     $constructor : function (desc) {
+        var etype = desc[0];
         // call parent constructor
         DataRefExpr.$constructor.call(this, desc);
+        this.bound = (etype === 3); // literal data ref are considered unbound
         var argIdx = desc[1] + 2;
         if (desc.length > argIdx) {
             this.args = desc.slice(argIdx);
@@ -391,8 +393,11 @@ var FuncRefExpr = klass({
         // call the parent method for the method root
         var r = DataRefExpr.getObservablePairs.call(this, eh, vscope);
 
-        // get the observable pairs for each of the function arguments
-
+        // add a new pair to observe the object corresponding to the 'this' context of the function
+        if (this.bound && r && r.length>1) {
+            var sz=r.length;
+            r.push([r[sz-1][0],null]);
+        }
         return r;
     }
 });
