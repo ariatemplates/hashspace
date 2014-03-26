@@ -3835,13 +3835,15 @@ var $RootNode = klass({
      * {value:'123',mandatory:true}
      */
     init : function (vscope, nodedefs, argnames, ctlWrapper, ctlInitAtts) {
+        var cw;
         this.vscope = vscope;
         if (ctlWrapper) {
             // attach the controller objects to the node
-            this.ctlWrapper = ctlWrapper;
+            this.ctlWrapper = cw = ctlWrapper;
             this.controller = ctlWrapper.cpt;
 
             // init controller attributes
+            this.ctlWrapper.root=this;
             this.ctlWrapper.init(ctlInitAtts);
         } else if (this.$constructor === $CptNode) {
             // this is a template insertion - we need to init the vscope
@@ -3858,6 +3860,9 @@ var $RootNode = klass({
             }
         } else {
             ch[0] = nodedefs.createNodeInstance(this);
+        }
+        if (cw && !cw.nodeInstance) {
+            cw.refresh(); // first refresh
         }
         this.childNodes = ch;
         this.argNames = argnames;
@@ -3883,9 +3888,10 @@ var $RootNode = klass({
     /**
      * Create listeners for the variables associated to a specific node instance
      * @param {TNode} ni the node instance that should be notified of the changes
+     * @param {Object} scope the scope to be used (optional - default: ni.vscope, but is not ok for components)
      */
-    createExpressionObservers : function (ni) {
-        var vs = ni.vscope, eh = ni.eh, op, sz;
+    createExpressionObservers : function (ni,scope) {
+        var vs = scope? scope : ni.vscope, eh = ni.eh, op, sz;
         if (!eh)
             return; // no expression is associated to this node
         for (var k in eh.exps) {
@@ -4320,7 +4326,7 @@ var $CptNode = klass({
     },
     
     /**
-     * Callback called when a controller attribute or a template attriute has changed
+     * Callback called when a controller attribute or a template attribute has changed
      */
     onAttributeChange : function (change) {
         var expIdx = -1;
@@ -4712,7 +4718,7 @@ module.exports.$CptAttInsert = {
     // append root as childNode
     this.childNodes=[];
     this.childNodes[0]=root;
-    // instatiate sub-childNodes
+    // instantiate sub-childNodes
     root.render(this.node,false);
   },
 
@@ -4762,9 +4768,9 @@ exports.$CptComponent = {
 
     if (this.template) {
       // this component is associated to a template
-      var isDynamicTpl=this.createPathObservers();
+      var needCommentNodes=(this.createPathObservers() || this.ctlConstuctor.$refresh);
 
-      if (isDynamicTpl) {
+      if (needCommentNodes) {
         var nd=this.node;
         this.node1 = doc.createComment("# cpt "+this.pathInfo);
         this.node2 = doc.createComment("# /cpt "+this.pathInfo);
@@ -4772,12 +4778,13 @@ exports.$CptComponent = {
         nd.appendChild(this.node2);
         this.createChildNodeInstances();
       } else {
-        // WARNING: this changes vscope to the template vscope
+        // WARNING: this changes the original vscope to the template vscope
         this.template.call(this, this.getTemplateArguments(), this.getCptArguments());
       }
 
       // $init child components
       this.initChildComponents();
+      this.ctlWrapper.refresh(); // first refresh
     } else if (arg.cptattelement) {
       // this component is an attribute of another component
       var cw=cptwrapper.createCptWrapper(this.ctlConstuctor, this.getCptArguments());
@@ -5203,6 +5210,8 @@ exports.$CptComponent = {
           this.edirty=false;
       }
       $CptNode.refresh.call(this);
+      // refresh cpt through $refresh if need be
+      this.ctlWrapper.refresh();
   },
 
   /**
@@ -5220,7 +5229,9 @@ exports.$CptComponent = {
         // propagate changes for 1- and 2-way bound attributes
         if (ctlAtt.type!=="template" && ctlAtt._binding !== 0) {
           v = att.getValue(eh, vs, null);
-          if ('' + v != '' + ctl[att.name]) {
+          if (ctlAtt.type==="object" || ctlAtt.type==="array") {
+            json.set(ctl, att.name, v);
+          } else if ('' + v != '' + ctl[att.name]) {
             // values may have different types - this is why we have to check that values are different to
             // avoid creating loops
             json.set(ctl, att.name, v);
@@ -5434,7 +5445,9 @@ var CptWrapper = klass({
         } else {
             this.cpt = new Cptfn();
             this.nodeInstance = null; // reference to set the node instance adirty when an attribute changes
+            this.root=null; // reference to the root template node
             this.initialized = false;
+            this.needsRefresh = true;
 
             // update attribute values for simpler processing
             var atts = this.cpt.attributes, att, bnd;
@@ -5498,11 +5511,12 @@ var CptWrapper = klass({
             this.cpt = null;
         }
         this.nodeInstance = null;
+        this.root = null;
     },
 
     /**
      * Initialize the component by creating the attribute properties on the component instance and initializing the
-     * attribute values to their initial value If the component instance has an init() method it will be called as well
+     * attribute values to their initial value If the component instance has an $init() method it will be called as well
      * @param {Map} initAttributes map of initial value set by the component host
      */
     init : function (initAttributes,parentCtrl) {
@@ -5515,6 +5529,9 @@ var CptWrapper = klass({
             return; // just in case
         }
 
+        // add $getElement methods
+        cpt.$getElement=this.$getElement.bind(this);
+
         if (atts) {
             if (!initAttributes) {
                 initAttributes = {};
@@ -5523,8 +5540,12 @@ var CptWrapper = klass({
             // initialize attributes
             var iAtt, att, isAttdefObject, hasType, v, attType;
             for (var k in atts) {
+                if (cpt[k]) {
+                    continue;
+                }
                 att = atts[k];
                 iAtt = initAttributes[k];
+                // determine if attribute definition is an object or a plain value
                 isAttdefObject = (typeof(atts[k]) === 'object');
                 hasType = (isAttdefObject && atts[k].type);
                 if (hasType) {
@@ -5561,10 +5582,8 @@ var CptWrapper = klass({
                         v = attType.convert(v, att);
                     }
                 }
-                // init the component attribute with the right value if not already set
-                if (!cpt[k]) {
-                    cpt[k] = v;
-                }
+                // in the component attribute
+                cpt[k] = v;
             }
         }
 
@@ -5596,7 +5615,7 @@ var CptWrapper = klass({
         };
     },
 
-    /*******************************************************************************************************************
+    /**
      * Check if not already in event handler stack and call the change event handler
      */
     onCptChange : function (change) {
@@ -5609,6 +5628,7 @@ var CptWrapper = klass({
                 return;
             }
         }
+        this.needsRefresh=true;
         var nm = chg.name; // property name
         if (nm === "") {
             return; // doesn't make sens (!)
@@ -5616,9 +5636,10 @@ var CptWrapper = klass({
 
         var callControllerCb = true; // true if the onXXXChange() callback must be called on the controller
 
+        var att, isAttributeChange = false;
         if (cpt.attributes) {
-            var att = cpt.attributes[nm];
-            var isAttributeChange = (att !== undefined);
+            att = cpt.attributes[nm];
+            isAttributeChange = (att !== undefined);
             if (isAttributeChange) {
                 // adapt type if applicable
                 var t = att.type;
@@ -5653,7 +5674,13 @@ var CptWrapper = klass({
             this.processingChange = true;
             try {
                 // calculate the callback name (e.g. onValueChange for the 'value' property)
-                var cbnm = ["on", nm.charAt(0).toUpperCase(), nm.slice(1), "Change"].join('');
+                var cbnm='';
+                if (isAttributeChange) {
+                    cbnm=att.onchange;
+                }
+                if (!cbnm) {
+                    cbnm = ["on", nm.charAt(0).toUpperCase(), nm.slice(1), "Change"].join('');
+                }
 
                 if (cpt[cbnm]) {
                     cpt[cbnm].call(cpt, chg.newValue, chg.oldValue);
@@ -5661,6 +5688,38 @@ var CptWrapper = klass({
 
             } finally {
                 this.processingChange = false;
+            }
+        }
+    },
+
+    /**
+     * Method that will be associated to the component controller to allow for finding an element
+     * in the DOM generated by its template
+     * Note: this method only returns element nodes - i.e. node of type 1 (ELEMENT_NODE)
+     * As a consequence $getElement(0) will return the first element, even if a text node is inserted before
+     * @param {Integer} index the position of the element (e.g. 0 for the first element)
+     * @retrun {DOMElementNode}
+     */
+    $getElement:function(index) {
+        var nd=this.nodeInstance;
+        if (!nd) {
+            nd=this.root;
+        }
+        if (nd) {
+            return nd.getElementNode(index);
+        }
+        return null;
+    },
+
+    /**
+     * Call the $refresh() function on the component
+     */
+    refresh:function() {
+        var cpt=this.cpt;
+        if (this.needsRefresh) {
+            if (cpt && cpt.$refresh) {
+                cpt.$refresh();
+                this.needsRefresh=false;
             }
         }
     }
@@ -5672,7 +5731,7 @@ var CptWrapper = klass({
  *      e.g. { nodeInstance:x, attributes:{att1:{}, att2:{}}, content:[] }
  */
 function createCptWrapper(Ctl, cptArgs) {
-    var cw = new CptWrapper(Ctl); // will also create a new controller instance
+    var cw = new CptWrapper(Ctl), att, t, v; // will also create a new controller instance
     if (cptArgs) {
         var cpt=cw.cpt, ni=cptArgs.nodeInstance;
         if (ni.isCptComponent || ni.isCptAttElement) {
@@ -5683,12 +5742,23 @@ function createCptWrapper(Ctl, cptArgs) {
 
             if (attributes) {
                 for (var k in attributes) {
+                    
                     // set the template attribute value on the component instance
                     if (attributes.hasOwnProperty(k)) {
-                        json.set(cpt,k,attributes[k]);
+                        att=cw.cpt.attributes[k];
+                        t=att.type;
+                        v=attributes[k];
+
+                        if (t && ATTRIBUTE_TYPES[t]) {
+                            // in case of invalid type an error should already have been logged
+                            // a type is defined - so let's convert the value
+                            v=ATTRIBUTE_TYPES[t].convert(v, att);
+                        }
+                        json.set(cpt,k,v);
                     }
                 }
             }
+
             if (content) {
                 if (cpt.content) {
                   log.error(ni+" Component controller cannot use 'content' for another property than child attribute elements");
@@ -6935,7 +7005,12 @@ var TNode = klass({
         // set attribute dirty to true
         var root = this.root;
         if (!this.adirty) {
+            if (this.isCptComponent && this.ctlWrapper) {
+                // change component attribute synchronously to have only one refresh phase
+                this.refreshAttributes();
+            }
             this.adirty = true;
+
             if (this === root) {
                 hsp.refresh.addTemplate(this);
             }
@@ -7137,6 +7212,41 @@ var TNode = klass({
      */
     getScopeOwner : function(property, vscope) {
         return ExpHandler.getScopeOwner(property, vscope);
+    },
+
+    /**
+     * Helper function to get the nth DOM child node of type ELEMENT_NODE
+     * @param {Integer} index the position of the element (e.g. 0 for the first element)
+     * @retrun {DOMElementNode}
+     */
+    getElementNode:function(index) {
+        if (this.node) {
+            var cn=this.node.childNodes, nd, idx=-1;
+            var n1=this.node1, n2=this.node2; // for TNode using comments to delimit their content
+            if (!n2) {
+                n2=null;
+            }
+            var process=(n1)? false : true;
+            for (var i=0;cn.length>i;i++) {
+                nd=cn[i];
+                if (process) {
+                    if (nd===n2) {
+                        break;
+                    }
+                    if (nd.nodeType===1) {
+                        // 1 = ELEMENT_NODE
+                        idx++;
+                        if (idx===index) {
+                            return nd;
+                        }
+                    }
+                } else if (nd===n1) {
+                    process=true;
+                }
+                
+            }
+        }
+        return null;
     }
 });
 
