@@ -2,11 +2,7 @@ This example shows how 3rd party widgets can be wrapped into hashspace component
 
 [#output]
 
-<<<<<<< HEAD
-This example uses [chartJS] that allows to draw several types of charts on a canvas component. For this example the chart.js script has been included in the main page of this application and is available as a global variable.
-=======
 This example uses [Chart.js] that allows to draw several types of charts on a canvas component. For this example the chart.js script has been included in the main page of this application and is available as a global variable.
->>>>>>> 3rd party component support
 
 Wrapping a 3rd party widget into a component involves at least 2 methods:
 
@@ -18,8 +14,4 @@ As a reminder there are 2 other methods that are likely to be used on component'
  - **$init(parent)** which is an optional initialization method that is called when the component's attributes have be initialized with the values assigned in the component's instance (in this example, the *width* attribute value would be 380 in $init() and not 100 which is the default value)
  - **$dispose()** which is an optional method called just before the component is destroyed. This method allows to clean object references that could cause memory leaks (e.g. DOM reference kept in the component's controller).
 
-<<<<<<< HEAD
-[chartJS]: chartjs.org
-=======
 [Chart.js]: http://chartjs.org
->>>>>>> 3rd party component support
