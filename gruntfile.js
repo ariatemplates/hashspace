@@ -72,8 +72,8 @@ module.exports = function (grunt) {
         browsers: ['Firefox'],
         // global config for SauceLabs
         sauceLabs: {
-          username: 'ariatemplates',
-          accessKey: '620e638e-90d2-48e1-b66c-f9505dcb888b',
+          username: 'hashspace',
+          accessKey: '9e47b05c-b1de-43ce-b9f0-dc64a3bc5f35',
           testName: '#space runtime tests'
         },
         // define SL browsers
@@ -82,7 +82,7 @@ module.exports = function (grunt) {
             base: 'SauceLabs',
             browserName: 'chrome',
             platform: 'Linux',
-            version: '30'
+            version: '33'
           },
           'SL_Firefox': {
             base: 'SauceLabs',
@@ -125,17 +125,41 @@ module.exports = function (grunt) {
             platform: 'Windows 8.1',
             version: '11'
           },
-          'IOS': {
+          'SL_iOS_6': {
             base: 'SauceLabs',
             browserName: 'iphone',
             platform: 'OS X 10.8',
             version: '6.1'
           },
-          'ANDROID': {
+          'SL_iOS_7': {
+            base: 'SauceLabs',
+            browserName: 'iphone',
+            platform: 'OS X 10.9',
+            version: '7.1'
+          },
+          'SL_Android_4.0': {
             base: 'SauceLabs',
             browserName: 'ANDROID',
             platform: 'Linux',
             version: '4.0'
+          },
+          'SL_Android_4.1': {
+            base: 'SauceLabs',
+            browserName: 'ANDROID',
+            platform: 'Linux',
+            version: '4.1'
+          },
+          'SL_Android_4.2': {
+            base: 'SauceLabs',
+            browserName: 'ANDROID',
+            platform: 'Linux',
+            version: '4.2'
+          },
+          'SL_Android_4.3': {
+            base: 'SauceLabs',
+            browserName: 'ANDROID',
+            platform: 'Linux',
+            version: '4.3'
           }
         }
         //logLevel: 'LOG_INFO'
@@ -175,15 +199,15 @@ module.exports = function (grunt) {
         transports: ['xhr-polling'],
         singleRun: true,
         browserNoActivityTimeout: 20000,
-        captureTimeout: 180000,
-        browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'ANDROID'],
+        captureTimeout: 300000,
+        browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'SL_Android_4.0', 'SL_Android_4.1', 'SL_Android_4.2', 'SL_Android_4.3', 'SL_iOS_7'],
         reporters: ['dots', 'saucelabs']
       },
       sauce: {
         singleRun: true,
         browserNoActivityTimeout: 20000,
-        captureTimeout: 180000,
-        browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'ANDROID'],
+        captureTimeout: 300000,
+        browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'SL_Android_4.0', 'SL_Android_4.1', 'SL_Android_4.2', 'SL_Android_4.3', 'SL_iOS_7'],
         reporters: ['dots', 'saucelabs']
       }
     },

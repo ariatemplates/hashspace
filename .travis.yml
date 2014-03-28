@@ -4,8 +4,8 @@ node_js:
 
 env:
   global:
-    - SAUCE_USERNAME=ariatemplates
-    - SAUCE_ACCESS_KEY=620e638e-90d2-48e1-b66c-f9505dcb888b
+    - SAUCE_USERNAME=hashspace
+    - SAUCE_ACCESS_KEY=9e47b05c-b1de-43ce-b9f0-dc64a3bc5f35
     - secure: bGENSGZguDwxsHJu9JyEggr0KhNd9l/RguvlS4zknMV32Hujtt60tsD9X9IKRIO96Fv4loDburOco38SdzezVzd6AS/wsxJsoqD//C2+BXJKzU4MsGXeqS5hx6r2CiTWCnDoIu2QvyK9qiO+Gu0VII76//3pa50m7EVYT79jVxM=
 
 before_install:
