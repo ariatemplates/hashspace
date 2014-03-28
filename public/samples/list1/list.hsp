@@ -1,4 +1,4 @@
-var klass=require("hsp/klass"), $set=require("hsp/$set");
+var klass=require("hsp/klass");
   
 // simple list controller
 var ListController = klass({
@@ -67,7 +67,7 @@ var count=0, model={
 };
 
 function toggle() {
-  $set(model,"preferredOption",model.preferredOption? null : "My favourite things");
+  model.preferredOption = model.preferredOption? null : "My favourite things";
 }
 
 function empty() {
@@ -77,7 +77,7 @@ function empty() {
 function update() {
   count++;
   for (var i=0;count>i;i++) {
-    $set(model.items,i,"Item #"+(i+1)+" (change "+count+")");
+    model.items[i] = "Item #"+(i+1)+" (change "+count+")";
   }
 }
 

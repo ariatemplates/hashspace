@@ -1,5 +1,3 @@
-var $set = require("hsp/$set");
-
 # template test(ctxt)
   <div><a onclick="{swapTemplate()}">Change template</a></div>
   <#ctxt.view ctxt="{ctxt}"/>
@@ -25,7 +23,7 @@ var model={
 
 function swapTemplate() {
     var newtpl=(model.view===tplA)? tplB : tplA;
-    $set(model,"view",newtpl);
+    model.view = newtpl;
 }
 
 // display the template in the #output div
