@@ -47,11 +47,6 @@ module.exports = function (grunt) {
     karma: {
       options: {
         frameworks: ['mocha', 'expect', 'commonjs', 'sinon'],
-        plugins: [
-          // these plugins will be require()-d by Karma
-          'karma-*',
-          require('./build/karma-hsp-preprocessor')
-        ],
         files: [
           'hsp/**/*.js',
           'public/test/**/*.spec.*',
