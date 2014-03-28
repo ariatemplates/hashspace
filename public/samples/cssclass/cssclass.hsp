@@ -1,31 +1,29 @@
-var $set=require("hsp/$set");
-
 # template message(msg)
     // onselectstart: prevent double-click selection on a elements
     <div onselectstart="return false"> 
         <a onclick="{toggleUrgency()}">Change Urgency</a> - 
         <a onclick="{setCategory('personal')}">Set "Personal"</a> - 
         <a onclick="{setCategory('professional')}">Set "Professional"</a>
-        <div class="{'msg', 'urgent':msg.urgency===1, msg.category}">
+        <div class="{'msg', 'urgent':msg.urgency, msg.category}">
             Message: {msg.text}
         </div>
         <div class="note">
-            Class value: "{'msg', 'urgent':msg.urgency===1, msg.category}"
+            Class value: "{'msg', 'urgent':msg.urgency, msg.category}"
         </div>
     </div>
 # /template
 
 var msg={
     text:"Hello World",
-    urgency:0
+    urgency:false
 }
 
 function toggleUrgency() {
-    $set(msg,"urgency",msg.urgency? 0 : 1);
+    msg.urgency = !msg.urgency;
 }
 
 function setCategory(cat) {
-    $set(msg,"category",cat);
+    msg.category = cat;
 }
 
 // display the template in the #output div

@@ -1,4 +1,4 @@
-var klass=require("hsp/klass"), $set=require("hsp/$set");
+var klass=require("hsp/klass");
 
 // klass is a utility to create JS objects with constructors & prototypes
 var Timer=klass({
@@ -14,7 +14,7 @@ var Timer=klass({
     },
     tick:function() {
       console.log("tick");
-      $set(this,"secondsElapsed",this.secondsElapsed+1);
+      this.secondsElapsed++;
     }
 });
 

@@ -5,7 +5,8 @@ var path = require("path");
 module.exports = function(grunt) {
     grunt.registerTask('hspserver', 'Start a web server to server compiled templates on the fly', function () {
 
-      var renderer = require("../../hsp/compiler/renderer");
+        var renderer = require("../../hsp/compiler/renderer");
+        var transpiler = require("../../hsp/transpiler");
 
         grunt.config.requires('hspserver.port');
         grunt.config.requires('hspserver.base');
@@ -44,7 +45,7 @@ module.exports = function(grunt) {
                     if (r.serverErrors && r.serverErrors.length) {
                         res.send(500,r.serverErrors[0].description);
                     } else {
-                        res.send(200,r.code);
+                        res.send(200,transpiler.processString(r.code).code);
                     }
                 } else {
                     res.send(500,"[/hsp/compile] src parameter is undefined");

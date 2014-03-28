@@ -1,4 +1,4 @@
-var klass=require("hsp/klass"), $set=require("hsp/$set");
+var klass=require("hsp/klass");
     
 var PanelController = klass({ 
   attributes: {
@@ -36,7 +36,7 @@ var model={text:"Hello World"}, count=0;
 
 function update(incr) {
   count+=incr;
-  $set(model,"text","Hello World ("+count+")");
+  model.text = "Hello World ("+count+")";
 }
 
 // display the test template in the #output div

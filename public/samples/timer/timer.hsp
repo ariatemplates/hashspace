@@ -1,4 +1,4 @@
-var klass=require("hsp/klass"), $set=require("hsp/$set");
+var klass=require("hsp/klass");
 
 # template elapsedTime(timer)
     Seconds Elapsed: {timer.secondsElapsed}
@@ -16,7 +16,7 @@ var Timer=klass({
     	clearInterval(this._iid);
     },
     tick:function() {
-        $set(this,"secondsElapsed",this.secondsElapsed+1);
+        this.secondsElapsed++;
     }
 });
 
