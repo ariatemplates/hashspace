@@ -1,4 +1,4 @@
-var klass=require("hsp/klass"), $set=require("hsp/$set");
+var klass=require("hsp/klass");
 
 # template todolist(todo)
     <div>
@@ -28,7 +28,7 @@ var TodoCtl=klass({
         // add new item to the todo list
         items.splice(items.length,0,d.newTodoItem);
         // empty new todo field value
-        $set(d,"newTodoItem","");
+        d.newTodoItem = "";
         // return false to prevent default behaviour
         return false;
     }

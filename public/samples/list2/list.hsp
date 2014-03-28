@@ -1,4 +1,4 @@
-var klass=require("hsp/klass"), $set=require("hsp/$set");
+var klass=require("hsp/klass");
 
 // simple option controller
 var OptionCtrl = klass({
@@ -28,7 +28,7 @@ var ListCtrl = klass({
     var c=this.content;
     for (var i=0,sz=c.length;sz>i;i++) {
       if (c[i].tagName==="@option") {
-        $set(c[i],"selected",c[i].value===value);
+        c[i].selected = c[i].value===value;
       }
     }
     this.onselect({value:value});
@@ -95,12 +95,12 @@ function empty() {
 function update() {
   count++;
   for (var i=0;count>i;i++) {
-    $set(model.items,i,"Item #"+(i+1)+" (change "+count+")");
+    model.items[i] = "Item #"+(i+1)+" (change "+count+")";
   }
 }
 
 function showSelection(v) {
-  $set(model,"selectedItem",v);
+  model.selectedItem = v;
 }
 
 // display the test template in the #output div

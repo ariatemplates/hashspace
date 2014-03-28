@@ -1,4 +1,4 @@
-var klass=require("hsp/klass"), $set=require("hsp/$set");
+var klass=require("hsp/klass");
 
 var CITIES={
 	"SFO":{city:"San Francisco",offset:-8},
@@ -34,11 +34,11 @@ var ClockController=klass({
 		var to=CITIES[this.city].offset;
 		var o=d.getTimezoneOffset()/60;
 		d=new Date(d.getTime()+ ((o+to)*3600000)); // date in the target city
-		$set(this,"hours",d.getHours());
-		$set(this,"minutes",d.getMinutes());
-		$set(this,"seconds",d.getSeconds());
-		$set(this,"milliseconds",d.getMilliseconds());
-		$set(this,"cityName",CITIES[this.city].city);
+		this.hours = d.getHours();
+		this.minutes = d.getMinutes();
+		this.seconds = d.getSeconds();
+		this.milliseconds = d.getMilliseconds();
+		this.cityName = CITIES[this.city].city;
 	}
 });
 
