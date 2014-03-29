@@ -1,0 +1,70 @@
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var ht=require("hsp/utils/hashtester");
+
+var count = 0;
+var addItem = function (items) {
+   count++;
+   items.push({name:"item"+count, edit:true});
+};
+
+var removeItem = function (items, index) {
+   items.splice(index, 1);
+};
+
+# template displayItem(itms, idx)
+    <li onclick="{removeItem(itms, 0)}">Remove #{idx}</li>
+# /template
+
+# template list(items)
+    <ul>
+        {foreach index,curItem in items}
+            {if true}
+                // if node is necessary to create a sub-scope
+                <#displayItem itms="{items}" idx="{index}"/>
+            {/if}
+        {/foreach}
+    </ul>
+    <a onclick="{addItem(items)}">Add item</a>
+# /template
+
+
+describe("Sub- and parent- template scope interactions", function () {
+    it("validates property bubbling from sub-template to parent", function() {
+        var h=ht.newTestContext();
+        var items = [];
+        addItem(items);
+        addItem(items);
+        addItem(items);
+
+        list(items).render(h.container);
+
+        expect(h("li").length).to.equal(3);
+        expect(h("li").item(0).text()).to.equal("Remove #0");
+        
+        h("li").item(0).click();
+        expect(h("li").length).to.equal(2);
+        expect(h("li").item(0).text()).to.equal("Remove #0");
+
+        h("li").item(0).click();
+        expect(h("li").length).to.equal(1);
+        // the following assertion will fail if property changes are not properly bubbled
+        expect(h("li").item(0).text()).to.equal("Remove #0");
+        
+        h.$dispose();
+    });
+});
+
