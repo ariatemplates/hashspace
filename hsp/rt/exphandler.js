@@ -213,11 +213,17 @@ var DataRefExpr = klass({
             if (ppl < 1) {
                 return; // this case should not occur
             }
-            for (var i = 0; ppl - 1 > i; i++) {
-                v = v[this.path[i]];
-                if (v === undefined) {
-                    goahead = false;
-                    break;
+            if (ppl===1) {
+                if (!this.isLiteral) {
+                    v=ExpHandler.getScopeOwner(this.path[0], vscope);
+                }
+            } else {
+                for (var i = 0; ppl - 1 > i; i++) {
+                    v = v[this.path[i]];
+                    if (v === undefined) {
+                        goahead = false;
+                        break;
+                    }
                 }
             }
             if (goahead) {

@@ -200,7 +200,7 @@ describe("Sub-template insertion", function () {
         expect(input.value).to.equal("some text");
 
         input.value = "foo";
-        fireEvent("keydown",input); // triggers change propagation
+        fireEvent("keyup",input); // triggers change propagation
 
         // change must have been propagated to parent scope
         expect(dm.text).to.equal("foo");
@@ -223,7 +223,7 @@ describe("Sub-template insertion", function () {
         expect(input.value).to.equal("some text");
 
         input.value = "bar";
-        fireEvent("keydown",input);
+        fireEvent("keyup",input);
 
         // change must have been propagated to parent scope
         expect(dm.attributes.value).to.equal("bar");
@@ -269,7 +269,7 @@ describe("Sub-template insertion", function () {
         expect(input.value).to.equal("new text");
 
         input.value = "bar";
-        fireEvent("keydown",input);
+        fireEvent("keyup",input);
         expect(dm.value).to.equal("bar");
 
         n.$dispose();
