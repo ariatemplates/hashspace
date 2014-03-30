@@ -20,6 +20,7 @@ var doc = require("../document");
 var TNode = require("./tnode").TNode;
 var hsp = require("../rt");
 var gestures = require("../gestures/gestures");
+//var log = require("./log");
 
 var booleanAttributes = {
     async: true,
@@ -71,6 +72,7 @@ var EltNode = klass({
         }
         this.gesturesEventHandlers = null;
         this.needSubScope = (needSubScope===1);
+        this.preventRefresh=false; // if true will prevent the field from being refreshed during the typing sequence
     },
 
     $dispose : function () {
@@ -179,8 +181,8 @@ var EltNode = klass({
             }
 
             if (this.isInput) {
-                // ensure we listen to click, keydown and keyup
-                var et, inputEvts = ["click", "keydown", "keyup"];
+                // ensure we listen to click, focus and keyup
+                var et, inputEvts = ["click","focus","input","keyup"];
                 for (var idx in inputEvts) {
                     et = inputEvts[idx];
                     if (!evts[et]) {
@@ -204,15 +206,32 @@ var EltNode = klass({
 
         // if the element is an input tag we synchronize the value
         if (this.isInput && this.inputModelExpIdx) {
+            this.preventRefresh=false;
             var exp = this.eh.getExpr(this.inputModelExpIdx);
             if (exp.setValue) {
-                var v = this.node.value, tp = this.node.type;
-                if (tp === "checkbox") {
-                    v = this.node.checked;
+                if (et==="keydown") {
+                    // value is updated on keyup - so we must no refresh the field if the model
+                    // is updated during keydown, otherwise the value is lost
+                    this.preventRefresh=true;
+                } else if (et==="input" || et==="keyup" || et==="click" || et==="focus") {
+                    // push the field value to the data model
+                    // note: when the input event is properly implemented we don't need to listen to keyup
+                    // but IE8 and IE9 don't implement it completely - thus the need for keyup
+                    var v = this.node.value, tp = this.node.type;
+                    if (tp === "checkbox") {
+                        v = this.node.checked;
+                    }
+
+                    this._lastValue = v; // to avoid refreshing the field and move the cursor
+                    var currentValue=exp.getValue(this.vscope,this.eh);
+                    //log("[EltNode] handleEvent("+et+"): previous model value:["+currentValue+"] new value (from input):["+v+"]");
+                    // if the value is already set no need to set it again and force a resync
+                    if (v!==currentValue) {
+                        exp.setValue(this.vscope, v);
+                        // force refresh to resync other fields linked to the same data immediately
+                        hsp.refresh();
+                    }
                 }
-                this._lastValue = v; // to avoid refreshing the field and move the cursor
-                exp.setValue(this.vscope, v);
-                hsp.refresh(); // to force synchronous change
             }
         }
 
@@ -320,12 +339,17 @@ var EltNode = klass({
                 }
             } else {
                 if (this._lastValue !== v1) {
-                    nd.value = v1;
+                    // value change has not been triggered by typing in this field
+
+                    if (!this.preventRefresh && v1!=nd.value) {
+                        //only update if value is changing and if we are not between 'onkeydown' and 'onkeyup'
+                        //log("[EltNode] Node value update: current value:["+nd.value+"] new value:["+v1+"]");
+                        nd.value = v1;
+                    }
                 }
                 this._lastValue = null;
             }
         }
-
     }
 
 });
