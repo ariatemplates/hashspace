@@ -2,7 +2,7 @@ var msg={text:""}, count=-1;
 
 # template message(msg)
     <div title="click me!" onclick="{changeMessage()}" onselectstart="return false">
-        {if msg.isWarning}<div class="warning">WARNING: </div>{/if}
+        {if msg.isWarning}<div class="warning">WARNING:&nbsp;</div>{/if}
         {msg.text}
     </div>
 # /template

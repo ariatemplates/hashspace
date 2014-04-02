@@ -127,7 +127,7 @@ var Playground = module.exports = klass({
      */
     showSample : function (sampleIdx) {
         // load layout template
-        hsp.display(layout.mainLayout(this.data, this), this.containerId);
+        layout.mainLayout(this.data, this).render(this.containerId);
         this.initEditor();
         this.loadSample(sampleIdx);
     },

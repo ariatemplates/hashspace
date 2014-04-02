@@ -1,6 +1,7 @@
 var parser = require("./parser/index");
 var treebuilder = require("./treebuilder/index");
 var jsgenerator = require("./jsgenerator/index");
+var transpiler = require("../transpiler/index");
 
 /**
  * Compiles a template and return a JS compiled string and a list of errors.
@@ -43,6 +44,11 @@ exports.compile = function (template, path, includeSyntaxTree, bypassJSvalidatio
 
     //Step3 : jsgenerator
     res = jsgenerator.generate(res, template, fileName, dirPath, includeSyntaxTree, bypassJSvalidation);
+
+    //Step4 : transpiler
+    if (!res.errors || res.errors.length===0) {
+        res.code=transpiler.processString(res.code).code;
+    }
 
     return res;
 };

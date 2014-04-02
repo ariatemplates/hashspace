@@ -40,12 +40,11 @@ describe('Template compilation errors: ', function () {
         var s = [
                 jsgenerator.HEADER,
                 '\r\n',
-                'require("hsp/rt").logErrors("mixed1",[{',
-                '"description":"SyntaxError: Unexpected token",',
-                '"lineInfoTxt":"    foo({blah:\\\"hello\\\",});\\r\\n----------------------^--",',
-                '"lineInfoHTML":"<span class=\\\"code\\\">    foo({blah:\\\"hello\\\",<span class=\\\"error\\\" title=\\\"SyntaxError: Unexpected token\\\">}</span>);</span>",',
-                '"code":"    foo({blah:\\\"hello\\\",});",', '"line":13,', '"column":22', '}]);\r\n'].join('');
-
+                'require("hsp/rt/log").error(',
+                    '"SyntaxError: Unexpected token",',
+                    '{"type":"error","file":"mixed1","code":"    foo({blah:\\"hello\\",});","line":13,"column":22}',
+                ');\r\n'
+        ].join('');
         assert.equal(r.code, s, "generated code");
 
     });
