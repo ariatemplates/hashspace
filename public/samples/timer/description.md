@@ -3,7 +3,9 @@ This example originally demonstrated in the [react framework][react] documentati
 
 [#output]
 
-The most important point to note in this example is the **$set** utility that has to be used to update objects or values in the data-model. This utility ensures that objects observing the data-model will be notified of the changes. In the mid-term this utility should become obsolete once the [Object.observe][objobserve] feature is implemented by all web-browsers.
+The most important point to understand is that **hashspace is reprocessing JavaScript** to introduce a partial polyfill to [Object.observe][objobserve] in order to detect changes that occur to JavaScript objects. Hashspace actually uses a transpiler to encapsulate assignments with an internal **$set()** method that performs the assignment and notifies the potential observers. You can see the result [here][timer.hsp].
+
+In the mid-term the *$set()* utility will become obsolete once the [Object.observe][objobserve] feature is implemented by all web-browsers - and hashspace will rely on the browser's Object.observe implementation.
 
 The $set function has the following signature:
 	
@@ -15,3 +17,4 @@ You can also note the **klass** utility that is used to create the **Timer** con
 
 [react]: http://facebook.github.io/react/
 [objobserve]: http://www.youtube.com/watch?v=VO--VXFJnmE
+[timer.hsp]: /samples/timer/timer.hsp

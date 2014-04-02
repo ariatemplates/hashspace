@@ -146,7 +146,7 @@ describe('Block Parser: ', function () {
         // assert.equal(r.code,s,"template generated code"); // strange issue with non visible characters
         assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
 
-        var lm = [0, 5, 6, 7, 8, 8, 8, 13, 14, 15, 16, 17, 17, 17, 17, 22];
+        var lm = [0, 6, 7, 8, 9, 9, 9, 14, 15, 16, 17, 18, 18, 18, 18, 23];
         assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "", "line map comparison");
     });
 
@@ -154,8 +154,10 @@ describe('Block Parser: ', function () {
         var sample = ut.getSampleContent("template2");
         var r = compiler.compile(sample.template, "template2");
 
-        var s = [jsgenerator.HEADER, '', 'var hello4 = exports.hello4 = require("hsp/rt").template([], function(n){',
-                '  return [n.$text(0,["Hello World!"])];', '});'].join("\n");
+        var s = ['var $set=require("hsp/$set"); ',
+                jsgenerator.HEADER, '',
+                'var hello4 = $set(exports, "hello4", require("hsp/rt").template([], function(n){',
+                '  return [n.$text(0,["Hello World!"])];', '}));'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
         // console.log(s.length) // 587
