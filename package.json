@@ -28,7 +28,7 @@
     "karma": "~0.12.0",
     "grunt-karma": "~0.8.0",
     "karma-commonjs": "0.0.6",
-    "karma-sauce-launcher": "~0.2.2",
+    "karma-sauce-launcher-shahata": "~0.2.4",
     "karma-mocha": "~0.1.1",
     "karma-expect": "~1.0.0",
     "karma-chrome-launcher": "~0.1.2",

@@ -191,7 +191,7 @@ module.exports = function (grunt) {
           dir : 'test-results/karma/'
         }
       },
-      ci: {
+      ci1: {
         sauceLabs: {
           startConnect: false,
           tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
@@ -200,7 +200,19 @@ module.exports = function (grunt) {
         singleRun: true,
         browserNoActivityTimeout: 20000,
         captureTimeout: 300000,
-        browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'SL_Android_4.0', 'SL_Android_4.1', 'SL_Android_4.2', 'SL_Android_4.3', 'SL_iOS_7'],
+        browsers: ['SL_Chrome', 'SL_Android_4.0', 'SL_Android_4.1', 'SL_IE_8', 'SL_IE_9', 'SL_Safari_7'],
+        reporters: ['dots', 'saucelabs']
+      },
+      ci2: {
+        sauceLabs: {
+          startConnect: false,
+          tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
+        },
+        transports: ['xhr-polling'],
+        singleRun: true,
+        browserNoActivityTimeout: 20000,
+        captureTimeout: 300000,
+        browsers: ['SL_iOS_7', 'SL_Firefox', 'SL_Android_4.2', 'SL_Android_4.3', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6'],
         reporters: ['dots', 'saucelabs']
       },
       sauce: {
@@ -329,6 +341,6 @@ module.exports = function (grunt) {
   grunt.registerTask('package', ['prepublish', 'browserify', 'atpackager', 'uglify']);
   grunt.registerTask('mocha', ['peg', 'inittests', 'mochaTest', 'finalizetests']);
   grunt.registerTask('test', ['checkStyle', 'jscs', 'mocha', 'karma:unit']);
-  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci', 'karma:coverage', 'package']);
+  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci1', 'karma:ci2', 'karma:coverage', 'package']);
   grunt.registerTask('default', ['hspserver']);
 };
