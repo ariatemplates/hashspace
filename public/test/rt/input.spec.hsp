@@ -67,9 +67,9 @@ describe("Input Elements", function () {
         expect(input2.node.value).to.equal(v2);
 
         // change the value from input1 (value attribute)
-        var v3 = "bar";
+        var v3 = "bar2";
         input1.node.value = v3;
-        fireEvent("click",input1.node); // to simulate change
+        fireEvent("keyup",input1.node); // to simulate change
         expect(input1.node.value).to.equal(v3);
         expect(input2.node.value).to.equal(v3);
         expect(d.comment).to.equal(v3);
@@ -77,7 +77,7 @@ describe("Input Elements", function () {
         // change the value from input2 (model attribute)
         var v4 = "blah";
         input2.node.value = v4;
-        fireEvent("click",input2.node); // to simulate change
+        fireEvent("keyup",input2.node); // to simulate change
         expect(input1.node.value).to.equal(v4);
         expect(input2.node.value).to.equal(v4);
         expect(d.comment).to.equal(v4);
