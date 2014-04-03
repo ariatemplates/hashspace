@@ -1,8 +1,9 @@
-node_modules
+/node_modules
+/dist
+/sauce_connect.log
+/sc.log
+/test-results
+/tmp
+*.peg.js
 .DS_STORE
 ._.DS_STORE
-dist
-sauce_connect.log
-sc.log
-*.peg.js
-test-results
