@@ -296,18 +296,22 @@ module.exports = function (grunt) {
         }
     },
     atpackager : {
-        runtime : {
             options : {
                 sourceDirectories : ['.'],
                 sourceFiles : ['hsp/**/*.js'],
                 outputDirectory : 'dist/' + pkg.version,
-                defaultBuilder : {
-                    type : "NoderPackage",
-                    cfg : {
-                        outputFileWrapper : "(function(define){$CONTENT$;})(noder.define);"
-                    }
-                },
                 visitors : [{
+                            type : "ImportSourceFile",
+                            cfg : {
+                                sourceFile : "tmp/uglify-js.js",
+                                targetLogicalPath : "uglify-js.js"
+                            }
+                        }, {
+                            type : "NoderExportVars",
+                            cfg : {
+                                files : ["uglify-js.js"]
+                            }
+                        }, {
                             type : "ImportSourceFile",
                             cfg : {
                                 sourceFile : require.resolve("acorn/acorn"),
@@ -318,17 +322,41 @@ module.exports = function (grunt) {
                             cfg : {
                                 noCircularDependencies : false
                             }
-                        }],
-                packages : [{
-                            name : "hashspace-noder.js",
-                            files : ['hsp/*.js', 'hsp/rt/*.js', 'hsp/gestures/*.js']
-                        }, {
-                            name : "hashspace-noder-compiler.js",
-                            files : ['hsp/compiler/compiler.js']
                         }]
+
+            },
+            uglify : {
+                options : {
+                    sourceDirectories : ["node_modules/uglify-js/lib"],
+                    sourceFiles : [],
+                    outputDirectory : 'tmp',
+                    visitors : [],
+                    packages : [{
+                        builder : "Concat",
+                        name : 'uglify-js.js',
+                        files : ["utils.js", "ast.js", "parse.js", "transform.js", "scope.js", "output.js",
+                                "compress.js"]
+                    }]
+                }
+            },
+            runtime : {
+                options : {
+                    defaultBuilder : {
+                        type : "NoderPackage",
+                        cfg : {
+                            outputFileWrapper : "(function(define){$CONTENT$;})(noder.define);"
+                        }
+                    },
+                    packages : [{
+                                name : "hashspace-noder.js",
+                                files : ['hsp/*.js', 'hsp/rt/*.js', 'hsp/gestures/*.js']
+                            }, {
+                                name : "hashspace-noder-compiler.js",
+                                files : ['hsp/compiler/compile.js','hsp/transpiler/transpile.js']
+                            }]
+                }
             }
         }
-    }
   });
 
   // Automatically load all the grunt tasks
@@ -338,7 +366,7 @@ module.exports = function (grunt) {
   require('atpackager').loadNpmPlugin('noder-js');
 
   grunt.registerTask('prepublish', ['peg']);
-  grunt.registerTask('package', ['prepublish', 'browserify', 'atpackager', 'uglify']);
+  grunt.registerTask('package', ['prepublish', 'browserify', 'atpackager:uglify','atpackager:runtime','uglify']);
   grunt.registerTask('mocha', ['peg', 'inittests', 'mochaTest', 'finalizetests']);
   grunt.registerTask('test', ['checkStyle', 'jscs', 'mocha', 'karma:unit']);
   grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci1', 'karma:ci2', 'karma:coverage', 'package']);
