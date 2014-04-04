@@ -1,7 +1,7 @@
 var parser = require("./parser/index");
 var treebuilder = require("./treebuilder/index");
 var jsgenerator = require("./jsgenerator/index");
-var transpiler = require("../transpiler");
+var transpiler = require("../transpiler/index");
 
 /**
  * Compiles a template and return a JS compiled string and a list of errors.
