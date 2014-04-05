@@ -244,14 +244,6 @@ var TNode = klass({
     },
 
     /**
-     * Tell this node can be found in a component content 
-     * other (if false) the component will generate the default component content element
-     */
-    isValidCptAttElement:function () {
-        return false; // false by default
-    },
-
-    /**
      * Register the element in the list passed as argument
      * This allows for the component to dynamically rebuild the list of its attribute elements
      * Note: this method is only called when the $if node is used to dynamically create cpt attribute elements
@@ -367,6 +359,62 @@ var TNode = klass({
             }
         }
         return null;
+    },
+
+    /**
+     * Return the component attribute type of the current node
+     * @return {String} one of the following option:
+     *      "ATTELT" if the element is an attribute element (e.g. <@body>)
+     *      "CONTENT" if the node is a content element (e.g. <div>)
+     *      "INDEFINITE" if the element can be part of eithe an attribute or content collection (e.g. blank text nodes)
+     *      "ERROR" if elt mixes attribute and content elements
+     */
+    getCptAttType: function() {
+        // this method must be overridden by child classes
+        return "CONTENT";
+    },
+
+    /**
+     * Analyze the type of tnodes in a collection to determine if they are valid cpt attribute elements
+     * @parm nodes {Array} the list of node elements to validate (optional - if not provided this.children is used)
+     * @return {String} one of the following option:
+     *      "ATTELT" if only attribute elements are found (e.g. <@body>)
+     *      "CONTENT" if only content elements are found (e.g. <div>)
+     *      "INDEFINITE" if elements found can be either part of cpt att elts collection or content (e.g. blank text nodes)
+     *      "ERROR" if attelts are mixed with content elements (in this case an error should be raised)
+     */
+    getCptContentType: function(nodes) {
+        if (!nodes) {
+            nodes=this.children;
+        }
+        if (!nodes) {
+            return "INDEFINITE";
+        }
+        var ct, attFound=false, contentFound=false;
+        for (var i=0,sz=nodes.length; sz>i;i++) {
+            ct=nodes[i].getCptAttType();
+
+            if (ct==="ATTELT") {
+                attFound=true;
+                if (contentFound) {
+                    return "ERROR";
+                }
+            } else if (ct==="CONTENT") {
+                contentFound=true;
+                if (attFound) {
+                    return "ERROR";
+                }
+            } else if (ct==="ERROR") {
+                return "ERROR";
+            }
+        }
+        if (attFound) {
+            return "ATTELT";
+        } else if (contentFound) {
+            return "CONTENT";
+        } else {
+            return "INDEFINITE";
+        }
     }
 });
 
@@ -463,24 +511,6 @@ var TCbAtt = klass({
     }
 });
 
-/**
- * Determine if all the nodes of a collection are valid component attribute elements
- * @parm nodes {Array} the list of node elements to validate
- * @return {Boolean} true if all node elements are valid
- */
-function isValidCptContent(nodes) {
-    if (!nodes) {
-        return true;
-    }
-    for (var i=0,sz=nodes.length; sz>i;i++) {
-        if (!nodes[i].isValidCptAttElement()) {
-            return false;
-        }
-    }
-    return true;
-}
-
-module.exports.isValidCptContent = isValidCptContent;
 module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;

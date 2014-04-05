@@ -133,6 +133,7 @@ module.exports.newTestContext = function() {
     var logs=[];
     var logger=function(msg) {
         logs.push(msg);
+        return false;
     };
     log.addLogger(logger);
     
@@ -150,6 +151,13 @@ module.exports.newTestContext = function() {
         this.container=null;
         for (var i=0, sz=eltsToDispose.length;sz>i;i++) {
             eltsToDispose[i].$dispose();
+        }
+        if (logs && logs.length) {
+            var msg=[];
+            for (var i=0;logs.length>i;i++) {
+                msg.push(">> "+logs[i].type+": "+logs[i].message);
+            }
+            throw new Error("[hashtester] Unexpected logs:\n"+msg.join("\n"));
         }
         eltsToDispose=null;
         log.removeLogger(logger);

@@ -78,11 +78,15 @@ var LogNode = klass({
     },
 
     /**
-     * Tell this node can be found in a component content 
-     * Here only empty text nodes are considered as valid (and then ignored)
+     * Return the component attribute type of the current node
+     * @return {String} one of the following option:
+     *      "ATTELT" if the element is an attribute element (e.g. <@body>)
+     *      "CONTENT" if the node is a content element (e.g. <div>)
+     *      "INDEFINITE" if the element can be part of eithe an attribute or content collection (e.g. blank text nodes)
+     *      "ERROR" if elt mixes attribute and content elements
      */
-    isValidCptAttElement:function () {
-        return false; // TODO could be supported
+    getCptAttType: function() {
+        return "CONTENT"; // TODO could be INDEFINITE but must be validated first
     }
 });
 

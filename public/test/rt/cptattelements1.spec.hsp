@@ -1,4 +1,4 @@
- 
+
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,10 @@ var klass=require("hsp/klass"),
     ht=require("hsp/utils/hashtester");
 
 // sample controller
-PanelController = klass({ 
+PanelController = klass({
   attributes: {
     "expanded":{type:"boolean",binding:"2-way"},
-    "head":{type:"template"}, 
+    "head":{type:"template"},
     "body":{type:"template", defaultContent:true}
   }
 });
@@ -77,6 +77,21 @@ PanelController = klass({
   <#m.panel>{m.text}!!!</#m.panel>
 # /template
 
+# template test7(m)
+  Sample panel:
+  <#m.panel>
+  {if true}{m.text}!{/if} <hr/> {m.text} <a>Update model</a>
+  </#m.panel>
+# /template
+
+# template test8(m)
+  Sample panel:
+  <#m.panel>
+    {if true}{m.text}!{/if}
+    <@body>foo <a>Update model</a> </@body>
+  </#m.panel>
+# /template
+
 # template panel2 using c:PanelController
   <div class="panel">
     <div class="body">
@@ -105,7 +120,7 @@ var HEAD=".panel .head";
 var BODY=".panel .body";
 
 describe("Component attribute elements (1)", function () {
-  
+
   it("tests template attribute passed as sub-element", function() {
     var h=ht.newTestContext();
     var m={text:"Hello World"}
@@ -120,14 +135,14 @@ describe("Component attribute elements (1)", function () {
     h.$set(m,"text","Hello folks");
 
     expect(body.text()).to.equal("Hello folks! ");
-    
+
     h.$dispose();
   });
 
   it("tests template attribute passed as static text attribute", function() {
     var h=ht.newTestContext();
     test2().render(h.container);
-    
+
     expect(h(HEAD).length).to.equal(0);
     expect(h(BODY).length).to.equal(1);
     expect(h(BODY).text()).to.equal("Hello World!");
@@ -139,7 +154,7 @@ describe("Component attribute elements (1)", function () {
     var h=ht.newTestContext();
     var m={text:"Hello World"}
     test3(m).render(h.container);
-    
+
     expect(h(HEAD).length).to.equal(0);
     expect(h(BODY).length).to.equal(1);
     expect(h(BODY).text()).to.equal("Hello World!");
@@ -148,7 +163,7 @@ describe("Component attribute elements (1)", function () {
     h.$set(m,"text","Hello folks");
 
     expect(h(BODY).text()).to.equal("Hello folks!");
-    
+
     h.$dispose();
   });
 
@@ -156,7 +171,7 @@ describe("Component attribute elements (1)", function () {
     var h=ht.newTestContext();
     var m={text:"Hello World"}
     test4(m).render(h.container);
-    
+
     expect(h(BODY).length).to.equal(1);
     expect(h(BODY).text()).to.equal("Hello World!");
 
@@ -164,7 +179,7 @@ describe("Component attribute elements (1)", function () {
     h.$set(m,"text","Hello folks");
 
     expect(h(BODY).text()).to.equal("Hello folks!");
-    
+
     h.$dispose();
   });
 
@@ -172,7 +187,7 @@ describe("Component attribute elements (1)", function () {
     var h=ht.newTestContext();
     var m={panel:panel,text:"Hello World"}
     test5(m).render(h.container);
-    
+
     expect(h.logs().length).to.equal(0);
     expect(h(BODY).length).to.equal(1);
     expect(h(BODY).text()).to.equal("Hello World!");
@@ -197,7 +212,7 @@ describe("Component attribute elements (1)", function () {
     expect(h.logs().length).to.equal(0);
     expect(h(BODY).length).to.equal(1);
     expect(h(BODY).text()).to.equal("Hashspace rocks!");
-    
+
     h.$dispose();
   });
 
@@ -205,7 +220,7 @@ describe("Component attribute elements (1)", function () {
     var h=ht.newTestContext();
     var m={panel:panel,text:"Hello World"}
     test6(m).render(h.container);
-    
+
     expect(h.logs().length).to.equal(0);
     expect(h(BODY).length).to.equal(1);
     expect(h(BODY).text()).to.equal("Hello World!!!");
@@ -230,14 +245,14 @@ describe("Component attribute elements (1)", function () {
     expect(h.logs().length).to.equal(0);
     expect(h(BODY).length).to.equal(1);
     expect(h(BODY).text()).to.equal("Hashspace World!!!");
-    
+
     h.$dispose();
   });
 
   it("validates change propagation with long expression paths", function() {
     var h=ht.newTestContext();
     var count=0, model={prop:{value:"hello"}};
-    
+
     test7(model).render(h.container);
     expect(h(".content").text()).to.equal("Value: hello");
 
@@ -254,7 +269,30 @@ describe("Component attribute elements (1)", function () {
     count++;
     h.$set(model.prop,"value","hello"+count);
     expect(h(".content").text()).to.equal("Value: hello2");
-    
+
+    h.$dispose();
+  });
+
+  it("tests mixed content - with default template", function() {
+    var h=ht.newTestContext();
+    var m={panel:panel,text:"Hello World"}
+    test7(m).render(h.container);
+
+    expect(h.logs().length).to.equal(0);
+
+    h.$dispose();
+  });
+
+  it("tests invalid component content", function() {
+    var h=ht.newTestContext();
+    var m={panel:panel,text:"Hello World"}
+    test8(m).render(h.container);
+
+    expect(h.logs().length).to.equal(2);
+    expect(h.logs()[0].message).to.equal("[Component: #m.panel] Component content cannot mix attribute elements with content elements");
+    expect(h.logs()[1].message).to.equal("[Component: #c.body] Invalid component reference");
+
+    h.logs.clear();
     h.$dispose();
   });
 

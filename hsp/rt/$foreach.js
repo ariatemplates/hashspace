@@ -20,8 +20,7 @@ var klass = require("../klass"),
     doc = require("../document"),
     json = require("../json"),
     tnode = require("./tnode"),
-    TNode = tnode.TNode,
-    isValidCptContent = tnode.isValidCptContent;
+    TNode = tnode.TNode;
 
 /**
  * foreach node Implements the foreach conditional statement that can be used through 3 forms: # foreach (itm in todos) //
@@ -403,11 +402,16 @@ var $ForEachNode = klass({
     },
 
     /**
-     * Tell this node can be found in a component content 
-     * $foreach nodes are valid cpt attribute elements if it contains valid sub-elements
+     * Return the component attribute type of the current node
+     * @return {String} one of the following option:
+     *      "ATTELT" if the element is an attribute element (e.g. <@body>)
+     *      "CONTENT" if the node is a content element (e.g. <div>)
+     *      "INDEFINITE" if the element can be part of eithe an attribute or content collection (e.g. blank text nodes)
+     *      "ERROR" if elt mixes attribute and content elements
      */
-    isValidCptAttElement:function () {
-        return this.itemNode.isValidCptAttElement();
+    getCptAttType: function() {
+        // this method must be overridden by child classes
+        return this.itemNode.getCptAttType();
     },
 
     /**
@@ -553,13 +557,17 @@ var $ItemNode = klass({
         json.set(vs, itnm + "_islast", islast);
     },
 
-
     /**
-     * Tell this node can be found in a component content 
-     * Item nodes are valid cpt attribute elements if they only contain valid sub-elements
+     * Return the component attribute type of the current node
+     * @return {String} one of the following option:
+     *      "ATTELT" if the element is an attribute element (e.g. <@body>)
+     *      "CONTENT" if the node is a content element (e.g. <div>)
+     *      "INDEFINITE" if the element can be part of eithe an attribute or content collection (e.g. blank text nodes)
+     *      "ERROR" if elt mixes attribute and content elements
      */
-    isValidCptAttElement:function () {
-        return isValidCptContent(this.children);
+    getCptAttType: function() {
+        // this method must be overridden by child classes
+        return this.getCptContentType();
     },
 
     /**

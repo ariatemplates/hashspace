@@ -419,7 +419,9 @@ var $CptNode = klass({
       }
 
       if (!ni) {
-          throw new Error(this+" Invalid component reference");
+          log.error(this+" Invalid component reference");
+          // create an element to avoid generating other errors
+          ni=this.createCptInstance("$CptAttInsert",parent);
       }
       return ni;
     },
@@ -690,11 +692,15 @@ var $CptAttElement = klass({
     },
 
     /**
-     * Tell this node can be found in a component content 
-     * other (if false) the component will generate the default component content element
+     * Return the component attribute type of the current node
+     * @return {String} one of the following option:
+     *      "ATTELT" if the element is an attribute element (e.g. <@body>)
+     *      "CONTENT" if the node is a content element (e.g. <div>)
+     *      "INDEFINITE" if the element can be part of eithe an attribute or content collection (e.g. blank text nodes)
+     *      "ERROR" if elt mixes attribute and content elements
      */
-    isValidCptAttElement:function () {
-        return true;
+    getCptAttType: function() {
+        return "ATTELT";
     },
 
     createNodeInstance : function (parent) {

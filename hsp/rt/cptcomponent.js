@@ -270,54 +270,35 @@ exports.$CptComponent = {
     }
 
     // TODO memoize result at prototype level to avoid processing this multiple times
+    var ct=this.getCptContentType(), loadCpts=true;
 
-    //isValidCptAttElement
-    var cn=this.children, sz=cn.length;
-
-    // check in which case we fall:
-    // 1. valid and invalid cpt att element are found -> error
-    // 2. only valid cpt att element are found
-    // 3. only invalid cpt att element are found -> default cpt att element must be created
-    var validFound=false, invalidFound=false;
-    for (var i=0;sz>i;i++) {
-      if (cn[i].isValidCptAttElement()) {
-        validFound=true;
-      } else {
-        invalidFound=true;
-      }
-    }
-
-    if (validFound && invalidFound) {
-      // case #1: error
-      log.error(this+"Component content cannot mix attribute elements with content elements");
-    } else {
-      var loadCpts=false;
-      if (validFound && !invalidFound) {
-        // case #2: only valid cpt have been found - so we have to load them
-        loadCpts=true;
-      } else if (!validFound && invalidFound && defaultTplAtt) {
-        // case #3: only invalid cpt have been found - so we have to create a default attribute element
-        // to fall back in case #2
+    if (ct==="ERROR") {
+      loadCpts=false;
+      log.error(this+" Component content cannot mix attribute elements with content elements");
+    } else if (ct!=="ATTELT") {
+      if (defaultTplAtt) {
+        // ct is CONTENT or INDEFINITE - so we create a default attribute element
         var catt=new $CptAttElement(defaultTplAtt,0,0,0,this.children); // name, exps, attcfg, ehcfg, children
 
         // add this default cpt att element as unique child
         this.children=[catt];
-        cn=this.children;
-        sz=cn.length;
-        loadCpts=true;
+      } else {
+        // there is no defaultTplAtt
+        loadCpts=false;
       }
-      if (loadCpts) {
-        var ni;
-        if (!this.attEltNodes) {
-          this.attEltNodes=[];
-        }
-        for (var i=0;sz>i;i++) {
-          if (!cn[i].isEmptyTextNode) {
-            ni=cn[i].createNodeInstance(this);
-            ni.isCptContent=true;
-            this.attEltNodes.push(ni);
-            // attribute elements will automatically register through registerAttElement()
-          }
+    }
+
+    if (loadCpts) {
+      var ni, cn=this.children, sz=cn.length;
+      if (!this.attEltNodes) {
+        this.attEltNodes=[];
+      }
+      for (var i=0;sz>i;i++) {
+        if (!cn[i].isEmptyTextNode) {
+          ni=cn[i].createNodeInstance(this);
+          ni.isCptContent=true;
+          this.attEltNodes.push(ni);
+          // attribute elements will automatically register through registerAttElement()
         }
       }
     }

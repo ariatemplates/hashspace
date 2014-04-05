@@ -63,13 +63,6 @@ var LetNode = klass({
                 $set(this.vscope,args[i],v);
             }
         }
-    },
-
-    /**
-     * Tell this node can be found in a component content
-     */
-    isValidCptAttElement:function () {
-        return true;
     }
 });
 

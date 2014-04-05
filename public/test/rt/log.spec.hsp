@@ -57,6 +57,7 @@ describe("Log statement", function () {
         expect(h.logs(0).line).to.equal(27);
         expect(h.logs(0).column).to.equal(9);
         
+        h.logs.clear();
         h.$dispose();
     });
 
@@ -81,6 +82,7 @@ describe("Log statement", function () {
         expect(h.logs().length).to.equal(1);
         expect(h.logs(0).message).to.equal('[0:"a", 1:false, 2:null, 3:1.23, 4:undefined] {#y:2, x:1}');
 
+        h.logs.clear();
         h.$dispose();
     });
 
@@ -104,6 +106,7 @@ describe("Log statement", function () {
         expect(h.logs().length).to.equal(1);
         expect(h.logs(0).message).to.equal('1: {cities:Array[3], city:Object, city_isfirst:false, city_islast:false, idx:1, scope:Object}');
 
+        h.logs.clear();
         h.$dispose();
     });
 
