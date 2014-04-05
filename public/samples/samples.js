@@ -159,7 +159,7 @@ module.exports = [{
                         main : true
                     }]
         }, {
-            title : "Integrating 3rd party components: Chart.JS",
+            title : "Integrating 3rd party components: Chart.js",
             folder : "thirdpartycpts",
             description : "description.md",
             files : [{
