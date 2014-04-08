@@ -31,7 +31,7 @@ var removeItem = function (items, index) {
 
 # template list(items)
     <ul>
-        {foreach index,curItem in items}
+        {foreach curItem,index in items}
             {if true}
                 // if node is necessary to create a sub-scope
                 <#displayItem itms="{items}" idx="{index}"/>

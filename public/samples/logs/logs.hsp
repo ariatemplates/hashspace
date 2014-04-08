@@ -6,7 +6,7 @@ var log=require("hsp/rt/log");
   <a onclick="{decreaseList()}">Decrease list</a> - 
   <a onclick="{clearLogs()}">Clear logs</a>
   <ul>
-    {foreach idx,city in cities}
+    {foreach city,idx in cities}
       {log "item #"+idx+":", city}
       <li>{idx+1}. {city.name}</li>
     {/foreach}

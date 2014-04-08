@@ -144,7 +144,7 @@ ForeachArgs1
   {return {item:item, key:item+"_key", colref:col}}
 
 ForeachArgs2
-  = key:VarIdentifier _ "," _ item:VarIdentifier " " _ "in " _ col:JSObjectRef 
+  = item:VarIdentifier _ "," _  key:VarIdentifier " " _ "in " _ col:JSObjectRef
   {return {item:item, key:key, colref:col}}
 
 EndForeachBlock

@@ -49,7 +49,7 @@ var ClockController=klass({
 		  <g transform="translate(50,50)">
 		    <circle class="clock-face" r="48"/>
 		    // minute markers 
-        	{foreach idx,m in c.minuteMarkers}
+        	{foreach m,idx in c.minuteMarkers}
         		// {foreach i in [1..60]} should be supported in a future version
           		<line class="{'major':m.major,'minor':!m.major}" y1="{m.major?35:42}" 
           		y2="45" transform="rotate({360*idx/c.minuteMarkers.length})"/>

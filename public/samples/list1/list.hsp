@@ -24,7 +24,7 @@ var ListController = klass({
         <span class="nodata">Empty list</span>
     {else}
         <ul class="">
-            {foreach idx,itm in lc.content}
+            {foreach itm,idx in lc.content}
                 {if itm.tagName==="@option"}
                     <li class="opt"><#itm/></li>
                 {else if itm.tagName==="@separator" &&  !itm_isfirst && !itm_islast}
@@ -54,7 +54,7 @@ var ListController = klass({
       <@option>{d.preferredOption} (!)</@option>
       <@separator/>
     {/if}
-    {foreach idx,itm in d.items}
+    {foreach itm,idx in d.items}
       <@option>{idx+1}. {itm}</@option>
     {/foreach}
   </#list>

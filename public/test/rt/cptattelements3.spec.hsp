@@ -72,7 +72,7 @@ var ListController = klass({
 # template test4(d)
     <#list>
         <@option>1. First {d.itemName}</@option>
-        {foreach idx,itm in d.items}
+        {foreach itm,idx in d.items}
             <@option>{idx+2}. {itm}</@option>
         {/foreach}
     </#list>

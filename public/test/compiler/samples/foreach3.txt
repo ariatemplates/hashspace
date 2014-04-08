@@ -1,7 +1,7 @@
 ##### Template:
 # template test(label, passengers)
   <div>
-    {foreach k,name in passengers.names}
+    {foreach name,k in passengers.names}
       x
     {/foreach}
   </div>

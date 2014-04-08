@@ -31,7 +31,7 @@ var hsp=require("hsp/rt"),
 # /template
 
 # template test2(ds)
-    {foreach idx,person in ds.persons}
+    {foreach person,idx in ds.persons}
         Person #{idx}: {person.firstName} {person.lastName}
         {if (person_isfirst)}
             (first)
