@@ -4212,7 +4212,7 @@ var $CptNode = klass({
      */
     onAttributeChange : function (change) {
         var expIdx = -1;
-        // set the new attribute value in the parent scope to propagate change
+        // set the new attribute value in the parent vscope to propagate change
         var cfg = this.attcfg[change.name]; // change.name is the property name
         if (cfg && cfg.constructor === Array && cfg.length === 2 && cfg[0] === "") {
             // cfg is a text concatenation with an empty prefix - so 2nd element is the expression index
@@ -4220,9 +4220,14 @@ var $CptNode = klass({
         }
 
         if (expIdx > -1) {
-            var exp = this.eh.getExpr(expIdx);
+            var exp = this.eh.getExpr(expIdx), pvs=this.parent.vscope;
             if (exp.bound && exp.setValue) {
-                exp.setValue(this.parent.vscope, change.newValue);
+                var cv=exp.getValue(pvs,this.eh);
+                if (cv!==change.newValue) {
+                    // if current value is different, we update it on the scope object that owns it
+                    var vs=this.parent.getScopeOwner(exp.path[0],pvs);
+                    exp.setValue(vs, change.newValue);
+                }
             }
         }
     },
