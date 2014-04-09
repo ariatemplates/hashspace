@@ -36,13 +36,13 @@ var ChartCpt=klass({
   }
 });
 
-# template lineChart using c:ChartCpt
+# template chart using c:ChartCpt
   <canvas width="{c.width}" height="{c.height}"></canvas> 
 # /template
 
 # template test(data)
   {let datasets=(data.ds=="d1")? d1 : d2}
-  <#lineChart width="380" height="220" type="{data.type}" labels="{labels}" datasets="{datasets}"/>
+  <#chart width="380" height="220" type="{data.type}" labels="{labels}" datasets="{datasets}"/>
   <div style="padding:15 0 0 30">
     // Chart type selection buttons
     Chart type:

@@ -18,8 +18,7 @@
 var klass = require("../klass"),
     doc = require("../document"),
     tnode = require("./tnode"),
-    TNode = tnode.TNode,
-    isValidCptContent = tnode.isValidCptContent;
+    TNode = tnode.TNode;
 
 /**
  * If node Implements the if conditional statement. Adds a children2 collection that corresponds to the else block
@@ -136,15 +135,36 @@ var $IfNode = klass({
     },
 
     /**
-     * Tell this node can be found in a component content 
-     * other (if false) the component will generate the default component content element
-     * $if nodes are valid cpt attribute elements if all their conditions are also valid
+     * Return the component attribute type of the current node
+     * @return {String} one of the following option:
+     *      "ATTELT" if the element is an attribute element (e.g. <@body>)
+     *      "CONTENT" if the node is a content element (e.g. <div>)
+     *      "INDEFINITE" if the element can be part of eithe an attribute or content collection (e.g. blank text nodes)
+     *      "ERROR" if elt mixes attribute and content elements
      */
-    isValidCptAttElement:function () {
-        if (!isValidCptContent(this.children) || !isValidCptContent(this.children2)) {
-            return false;
+    getCptAttType: function() {
+        // this method must be overridden by child classes
+        var t1=this.getCptContentType(this.children), t2=this.getCptContentType(this.children2);
+        if (t1==="ERROR" || t2==="ERROR") {
+            return "ERROR";
         }
-        return true;
+        if (t1==="ATTELT") {
+            if (t2==="CONTENT") {
+                return "ERROR";
+            } else {
+                // t2 is either ATTELT or INDEFINITE
+                return "ATTELT";
+            }
+        } else if (t1==="CONTENT") {
+            if (t2==="ATTELT") {
+                return "ERROR";
+            } else {
+                // t2 is either CONTENT or INDEFINITE
+                return "CONTENT";
+            }
+        } else if (t1==="INDEFINITE") {
+            return t2;
+        }
     },
 
     /**

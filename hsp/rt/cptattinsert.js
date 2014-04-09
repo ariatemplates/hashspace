@@ -10,11 +10,13 @@ module.exports.$CptAttInsert = {
     // get the $RootNode corresponding to the templat to insert
     var root=cptAttElement.getTemplateNode();
 
-    // append root as childNode
-    this.childNodes=[];
-    this.childNodes[0]=root;
-    // instantiate sub-childNodes
-    root.render(this.node,false);
+    if (root) {
+      // append root as childNode
+      this.childNodes=[];
+      this.childNodes[0]=root;
+      // instantiate sub-childNodes
+      root.render(this.node,false);
+    }
   },
 
   /**
