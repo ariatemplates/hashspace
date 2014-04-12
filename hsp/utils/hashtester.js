@@ -81,6 +81,12 @@ var SelectionWrapper=klass({
     },
     type:function(text) {
         // TODO - cf. syn: https://github.com/bitovi/syn/blob/master/src/key.js
+
+        // temporary hack
+        var input=this.$selection[0];
+        input.value=text;
+        fireEvent("click",input); // will trigger an hashspace update
+        hsp.refresh();
     },
     /**
      * Return the value of input or textarea elements

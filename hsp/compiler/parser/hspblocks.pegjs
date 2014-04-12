@@ -9,16 +9,12 @@
  */
 
 TemplateFile
-  = blocks:(TemplateBlock / TextBlock)*  /*(RequireBlock / TemplateBlock / TextBlock)* */
+  = blocks:(TemplateBlock / TextBlock)* 
   {return blocks;}
 
 TextBlock
   = lines:(!(_ "#" _ "template") !(_ "#" _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+
   {return {type:"plaintext", value:lines.join('')}}
-
-RequireBlock "require block" // TODO: finalize!
-  = _ "# " _ "require" _ (EOL / EOF) 
-  {return {type:"require"}}
 
 TemplateBlock "template block"
   = start:TemplateStart content:TemplateContent? end:TemplateEnd? 

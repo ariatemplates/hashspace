@@ -33,6 +33,7 @@ var ExpHandler = klass({
      * 4: function call literal- e.g. {e1:[4,1,myfunc,1,2,1,0]}
      * 5: literal value - e.g. {e1:[5,"some value"]}
      * 6: function expression - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}
+     * 7: dynamic data reference - e.g. {e1:[7,2,function(i,a0,a1) {return [a0,a1][i];},2,3]}
      */
     $constructor : function (edef) {
         this.exps = {};
@@ -55,6 +56,8 @@ var ExpHandler = klass({
                 } else if (etype === 6) {
                     // function expression
                     exp = new FuncExpr(v, this);
+                } else if (etype === 7) {
+                    exp = new DynRefExpr(v, this);
                 } else {
                     log.warning("Unsupported expression type: " + etype);
                 }
@@ -460,7 +463,136 @@ var FuncExpr = klass({
      * @see $RootNode.createExpressionObservers
      */
     getObservablePairs : function (eh, vscope) {
-        // TODO return observable pairs for each of the function aguments
+        // Observable pairs are returned by the sub-expressions associated to the function arguments
         return null;
+    }
+});
+
+/**
+ * Class representing a dynamic data reference expression (used for data paths containing dynamic parts with the [] syntax)
+ * e.g. {person[person.name].foo} will be represented as:
+ * { e1:[7,3,function(i,a0,a1) {return [a0,a1,"foo"][i];},2,3],
+ *   e2:[1,1,"person"],
+ *   e3:[1,2,"person","name"] }
+ * where 7 = expression type
+ *       3 = number of fragments in the path ( person + person.name + foo) - NB: first fragment may have the a.b.c form
+ *       function(...) = function to get the value of each path fragment
+ *       2,3 = index of the subexpressions required to calculate the fragment values
+ */
+var DynRefExpr = klass({
+    /**
+     * Class constructor
+     * @param {Array} desc the expression descriptor - e.g. [7,3,function(i,a0,a1) {return [a0,a1,"foo"][i];},2,3]
+     * @param {ExpHandler} exphandler the expression handler that manages this expression
+     */
+    $constructor : function (desc, exphandler) {
+        // call parent constructor
+        this.nbrOfFragments = desc[1];
+        this.fn = desc[2];
+        this.eh = exphandler;
+        this.opairs = null; // observable pairs (if null == non initialized)
+        var argLength = desc.length - 3;
+        if (argLength > 0) {
+            this.args = desc.slice(3);
+        } else {
+            this.args = null;
+        }
+    },
+
+
+    /**
+     * Return the value targeted by this expression for the given scope
+     */
+    getValue : function (vscope, eh, defvalue) {
+        // calculate the value of each argument
+        var pfragments=this.getFragments(vscope), op=this.opairs=[];
+
+        if (pfragments===null) {
+            return defvalue;
+        }
+
+        // calculate the value of each fragment and the resulting value
+        var v,fragment;
+        for (var i = 0; pfragments.length>i; i++) {
+            fragment=pfragments[i];
+            if (i === 0) {
+                v=fragment;
+            } else {
+                if (typeof v === "object") {
+                    op.push([v,fragment]);
+                    v=v[fragment];
+                } else {
+                    return defvalue;
+                }
+                if (v === undefined || v === null) {
+                    return defvalue;
+                }
+            }
+        }
+        return v;
+    },
+
+    /**
+     * Process and return the value of the fragments that compose the expression for the given scope
+     * @return {Array} the list of fragments (can be empty) - or null if an error occurred
+     */
+    getFragments:function(vscope) {
+        var argvalues=[], pfragments=[];
+        if (this.args) {
+            for (var i = 0; this.args.length>i; i++) {
+                argvalues[i+1] = this.eh.getValue(this.args[i], vscope, null);
+            }
+        }
+        // calculate the value of each fragment and the resulting value
+        for (var i = 0; this.nbrOfFragments>i; i++) {
+            try {
+                argvalues[0]=i;
+                pfragments[i]=this.fn.apply({}, argvalues);
+            } catch (ex) {
+                return null;
+            }
+        }
+        return pfragments;
+    },
+
+    /**
+     * Set the value in the data object referenced by the current path
+     * This method shall be used by input elements to push DOM value changes in the data model
+     */
+    setValue : function (vscope, value) {
+        var pfragments=this.getFragments(vscope);
+
+        if (pfragments.length<2) {
+            log.error("[DynRefExpr.setValue] Invalid expression: "+this.fn.toString());
+        } else {
+            var v,fragment,sz=pfragments.length;
+            for (var i = 0; sz-1>i; i++) {
+                fragment=pfragments[i];
+                if (i === 0) {
+                    v=fragment;
+                } else {
+                    if (typeof v === "object") {
+                        v=v[fragment];
+                    } else {
+                        return;
+                    }
+                    if (v === undefined || v === null) {
+                        return;
+                    }
+                }
+                json.set(v, pfragments[sz-1], value);
+            }
+        }
+    },
+
+    /**
+     * Return the list of [object,property] pairs that have to be observed null should be returned if nothing should be
+     * observed (i.e. unbound property)
+     * @see $RootNode.createExpressionObservers
+     */
+    getObservablePairs : function (eh, vscope) {
+        // get Value also updates the opairs array
+        this.getValue(vscope,eh,"");
+        return this.opairs;
     }
 });

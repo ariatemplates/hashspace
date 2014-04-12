@@ -19,19 +19,24 @@ var HExpression = klass({
             this.syntaxTree = node;
         } else {
             this._objectRefs = []; // list of objectref expressions found in the jsexpression
-
-            var code = this._process(node);
+            var code = this._process(node), oref=this._objectRefs;
             this.rootExpression.code = code;
             this.syntaxTree = {
                 type : "expression",
                 category : "jsexpression",
-                objectrefs : this._objectRefs,
+                objectrefs : oref,
                 code : code
             };
 
             // if we have only one variable, we can simplify the syntaxtree
             if (code === "a0") {
-                this.syntaxTree = this._objectRefs[0];
+                this.syntaxTree = oref[0];
+            } else if (code.match(/^a\d+$/) && oref && oref[oref.length-1].category==="dynref") {
+                // this is a dynamic object path
+
+                this.syntaxTree = oref[oref.length-1];
+                oref.pop();
+                this.syntaxTree.objectrefs = oref;
             } else if (code.match(/^ *$/)) {
                 // there is no code to display
                 this.syntaxTree = {
@@ -74,15 +79,15 @@ var HExpression = klass({
     /**
      * Internal recursive method to process a node
      * @param {JSON} node the expression node to be processed
-     * @return {String} the JS code associated to this node
+     * @return {String} the JS code associated to this node - e.g. "((a0 + 2) + \"a\")"
      */
     _process : function (node) {
         var result = "";
         switch (node.type) {
-            case "expression" :
+            case "expression" : // root node - we have to look at node.category
                 result = this._getValue(node);
                 break;
-            case "BinaryExpression" :
+            case "BinaryExpression" : // e.g. a + b
                 result = '(' + this._process(node.left) + ' ' + node.operator + ' ' + this._process(node.right) + ')';
                 break;
             case "UnaryExpression" : // e.g. !x +x -x typeof x. Note that ++x and --x will not be supported
@@ -96,6 +101,7 @@ var HExpression = klass({
                 this._logError('Postfix operator ' + node.operator + ' is not allowed');
                 break;
             case "Variable" :
+                // return an argument name (e.g. "a0") through _getValue
                 result = this._getValue({
                     type : "expression",
                     "category" : "objectref",
@@ -104,24 +110,106 @@ var HExpression = klass({
                 });
                 break;
             case "PropertyAccess" :
-                // this is an object ref
-                var n = node, path = [], name;
+                // we fall in this category when we have sth like xxx.prop or xxx[yyy] where xxx and yyy are expressions
+                // in this case 'xxx' corresponds to the 'base' property of the parsed tree and 'yyy' corresponds to the 'name'
+                // e.g "a.b", "a.b['c'].d" or "a.b(foo)[blah]"
+
+                // as square-bracket access may contain sub-expressions we have to
+                // 1. split the expression in a list of objectrefs / expressions
+                //      e.g. for a.b[1+2][2+3].c.d we should have "a.b", "1+2", "2+3", "c", "d"
+                // 2. if there is only one chunk, create an objectref
+                // 3. otherwise create a dynref with sub-expressions (the 1st one being an objectref cf. a.b in previous example)
+
+                var n = node, path = [], name, dynref=false;
+                // determine if we are in an objectref or dynref use case:
                 while (n) {
                     name = n.name;
-                    if (name.type && name.type === "expression") {
-                        path.push(name.value);
+                    if (name.type) {
+                        // for person.name -> "name": "name"
+                        // for person["name"] -> "name": { "type": "Variable","name": "property","code": "property" }
+                        // for person["a"+123] -> "name": {"type": "BinaryExpression", "operator": "+", ...}
+
+                        if (name.type === "expression") {
+                            // in this case name is a simple type like number or string:
+                            // { type: 'expression', category: 'number', value: 2, code: '2' }
+                            path.push(name.value);
+                        } else {
+                            // name is a complex expression - so we will have to create a dynref instead of objectref
+                            dynref=true;
+                            break;
+                        }
                     } else {
                         path.push(name);
                     }
                     n = n.base;
                 }
-                path.reverse();
-                result = this._getValue({
-                    type : "expression",
-                    "category" : "objectref",
-                    bound : node.bound,
-                    "path" : path
-                });
+
+                if (!dynref) {
+                    // std objectref - e.g. "a.b.c"
+                    path.reverse();
+                    // _getValue will return an argument nbr - e.g. "a1"
+                    result = this._getValue({
+                        type : "expression",
+                        "category" : "objectref",
+                        bound : node.bound,
+                        "path" : path
+                    });
+                } else {
+
+                    // dynref: path contains expressions - e.g. a.b[foo][1+2]
+                    var exprs=[]; // list of expressions that compose the path
+                    n=node;
+                    while (n) {
+                        name = n.name;
+                        if (!name.type) {
+                            // name is a string
+                            name={ type: 'expression', category: 'string', value: name, code: name };
+                        }
+                        exprs.push(name);
+                        n = n.base;
+                    }
+                    exprs.reverse();
+
+                    // the first string expressions should be gathered as an objectref
+                    var p1=[], e;
+                    for (var i=0;exprs.length>i;i++) {
+                        e=exprs[i];
+                        if (e.type==='expression' && e.category === 'string') {
+                            p1.push(e.value);
+                            i--;
+                            exprs.shift();
+                        } else {
+                            break;
+                        }
+                    }
+
+                    // add objectref as first element
+                    if (!p1.length) {
+                        this._logError('Invalid dynamic data reference!');
+                    } else {
+                        exprs.splice(0,0,{
+                            type : "expression",
+                            "category" : "objectref",
+                            bound : node.bound,
+                            "path" : p1
+                        });
+                    }
+
+                    // convert all expressions
+                    var fragments=[];
+                    if (exprs) {
+                        for (var i=0;exprs.length>i;i++) {
+                            fragments.push(this._process(exprs[i])); // this can be "a1" or "(1+a3)"
+                        }
+                    }
+
+                    // _getValue will return an argument nbr - e.g. "a1"
+                    result = this._getValue({
+                        type : "expression",
+                        "category" : "dynref",
+                        "codefragments" : fragments
+                    });
+                }
                 break;
             case "ConditionalExpression" :
                 result = '(' + this._process(node.condition) + '? ' + this._process(node.trueExpression) + ' : '
@@ -206,13 +294,15 @@ var HExpression = klass({
             case "objectref" :
                 var length = this._objectRefs.length, expr, pathLength, ok;
 
-                // check if an indentical expression already exist
+                // check if an identical expression already exist
                 for (var i = 0; i < length; i++) {
-                    expr = this._objectRefs[i], pathLength = expr.path.length, ok = true;
-                    // only the path may vary
+                    expr = this._objectRefs[i];
                     if (expr.category !== "objectref") {
                         continue;
                     }
+                    pathLength = expr.path.length;
+                    ok = true;
+                    // only the path may vary
                     if (pathLength === node.path.length) {
                         for (var j = 0; j < pathLength; j++) {
                             if (expr.path[j] !== node.path[j]) {
@@ -232,6 +322,11 @@ var HExpression = klass({
                     result = "a" + length; // argument variable
                     this._objectRefs[length] = node;
                 }
+                break;
+            case "dynref":
+                var length = this._objectRefs.length;
+                result = "a" + length; // argument variable
+                this._objectRefs[length] = node;
                 break;
             case "functionref" :
                 // add the function call to the object ref list
