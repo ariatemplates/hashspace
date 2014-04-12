@@ -47,6 +47,14 @@ module.exports = [{
                         main : true
                     }]
         }, {
+            title : "Dynamic data path: simple grid",
+            folder : "dynpath",
+            description : "description.md",
+            files : [{
+                        src : "dynpath.hsp",
+                        main : true
+                    }]
+        }, {
             title : "Traces, logs and debugging",
             folder : "logs",
             description : "description.md",

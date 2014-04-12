@@ -178,13 +178,31 @@ ul.logs .msg {
 /* ************************************ */
 /* Samples */
 
+div.cell {
+  display:inline-block;
+  width:100px;
+  height:19px;
+  background-color: #999999;
+  padding: 2px 3px 1px 3px;
+  margin: 1px 1px 0px 1px;
+}
+
 input[type=text] {
     font-size: 14px;
     width: 20em;
     border:1px solid #AAAAAA;
     padding: 1px 2px;
-    margin:1px;
     border-radius: 3px;
+}
+
+input.cell {
+  position:relative;
+  top:1px;
+  width:100px;
+  height:22px;
+  margin: 0px 1px 0px 1px;
+  border-radius: 0px;
+  border:0px;
 }
 
 #output ul {

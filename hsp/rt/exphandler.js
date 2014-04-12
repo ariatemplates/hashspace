@@ -499,24 +499,16 @@ var DynRefExpr = klass({
      */
     getValue : function (vscope, eh, defvalue) {
         // calculate the value of each argument
-        var argvalues=[], pfragments=[], op=this.opairs=[];
+        var pfragments=this.getFragments(vscope), op=this.opairs=[];
 
-        if (this.args) {
-            for (var i = 0; this.args.length>i; i++) {
-                argvalues[i+1] = this.eh.getValue(this.args[i], vscope, null);
-            }
+        if (pfragments===null) {
+            return defvalue;
         }
+
         // calculate the value of each fragment and the resulting value
         var v,fragment;
-        for (var i = 0; this.nbrOfFragments>i; i++) {
-            try {
-                argvalues[0]=i;
-                fragment=this.fn.apply({}, argvalues);
-                pfragments[i]=fragment;
-            } catch (ex) {
-                //log(ex)
-                return defvalue;
-            }
+        for (var i = 0; pfragments.length>i; i++) {
+            fragment=pfragments[i];
             if (i === 0) {
                 v=fragment;
             } else {
@@ -531,8 +523,60 @@ var DynRefExpr = klass({
                 }
             }
         }
-
         return v;
+    },
+
+    /**
+     * Process and return the value of the fragments that compose the expression for the given scope
+     * @return {Array} the list of fragments (can be empty) - or null if an error occurred
+     */
+    getFragments:function(vscope) {
+        var argvalues=[], pfragments=[];
+        if (this.args) {
+            for (var i = 0; this.args.length>i; i++) {
+                argvalues[i+1] = this.eh.getValue(this.args[i], vscope, null);
+            }
+        }
+        // calculate the value of each fragment and the resulting value
+        for (var i = 0; this.nbrOfFragments>i; i++) {
+            try {
+                argvalues[0]=i;
+                pfragments[i]=this.fn.apply({}, argvalues);
+            } catch (ex) {
+                return null;
+            }
+        }
+        return pfragments;
+    },
+
+    /**
+     * Set the value in the data object referenced by the current path
+     * This method shall be used by input elements to push DOM value changes in the data model
+     */
+    setValue : function (vscope, value) {
+        var pfragments=this.getFragments(vscope);
+
+        if (pfragments.length<2) {
+            log.error("[DynRefExpr.setValue] Invalid expression: "+this.fn.toString());
+        } else {
+            var v,fragment,sz=pfragments.length;
+            for (var i = 0; sz-1>i; i++) {
+                fragment=pfragments[i];
+                if (i === 0) {
+                    v=fragment;
+                } else {
+                    if (typeof v === "object") {
+                        v=v[fragment];
+                    } else {
+                        return;
+                    }
+                    if (v === undefined || v === null) {
+                        return;
+                    }
+                }
+                json.set(v, pfragments[sz-1], value);
+            }
+        }
     },
 
     /**
@@ -541,10 +585,8 @@ var DynRefExpr = klass({
      * @see $RootNode.createExpressionObservers
      */
     getObservablePairs : function (eh, vscope) {
-        if (this.opairs===null) {
-            // value has never been calculated - so opairs is not set
-            this.getValue(vscope,eh,"");
-        }
+        // get Value also updates the opairs array
+        this.getValue(vscope,eh,"");
         return this.opairs;
     }
 });

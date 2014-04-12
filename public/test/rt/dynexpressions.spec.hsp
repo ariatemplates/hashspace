@@ -45,6 +45,10 @@ function foo(arg1,arg2) {
     </div>
 # /template
 
+# template test7(d)
+    <input type="text" model="{d.person[d.pp]}">
+# /template
+
 describe("Dynamic path expressions", function () {
     var C=".content";
 
@@ -196,6 +200,24 @@ describe("Dynamic path expressions", function () {
         h.$set(d,"condition","Simpson");
         expect(h(C).text()).to.equal("TRUE");
         h.$dispose();
-    });    
+    });
+
+    it("validates input binding with dynamic paths", function() {
+        var h=ht.newTestContext(), d={
+            person:{
+                firstName:"Homer",
+                lastName:"Simpson"
+            },
+            pp:"firstName"
+        };
+        // d.person[d.pp]
+        test7(d).render(h.container);
+        expect(h("input").value()).to.equal("Homer");
+
+        h("input").type("Marge");
+        expect(d.person.firstName).to.equal("Marge");
+
+        h.$dispose();
+    });
 
 });
