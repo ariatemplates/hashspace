@@ -1,0 +1,73 @@
+##### Template:
+# template hello(person,property)
+	Hello {person[property]}!
+# /template
+
+##### Parsed Tree:
+[
+  {
+    "type": "template","name": "hello","args": ["person","property"],
+    "content": [
+      { "type": "text","value": "Hello ","line": 2,"column": 2 },
+      {
+        "type": "expression",
+        "base": { "type": "Variable","name": "person","code": "person" },
+        "name": { "type": "Variable","name": "property","code": "property" },
+        "code": "person.property",
+        "category": "jsexpression",
+        "expType": "PropertyAccess",
+        "line": 2,
+        "column": 8,
+        "bound": true
+      },
+      { "type": "text","value": "!","line": 2,"column": 26 }
+    ],
+    "closed": true,
+    "endLine": 3
+  }
+]
+
+##### Syntax Tree:
+[
+  {
+    "type": "template","name": "hello","args": ["person","property"],"export": false,"startLine": 1,"endLine": 3,
+    "content": [
+      {
+        "type": "textblock",
+        "content": [
+          { "type": "text","value": "Hello ","line": 2,"column": 2 },
+          {
+            "type": "expression",
+            "category": "dynref",
+            "codefragments": ["a0","a1"],
+            "objectrefs": [
+              {
+                "type": "expression",
+                "category": "objectref",
+                "bound": true,
+                "path": [ "person" ]
+              },
+              {
+                "type": "expression",
+                "category": "objectref",
+                "path": [ "property" ]
+              }
+            ],
+            "line": 2,
+            "column": 8
+          },
+          { "type": "text","value": "!","line": 2,"column": 26 }
+        ]
+      }
+    ]
+  }
+]
+
+##### Template Code
+hello=[
+  n.$text({
+    e1:[7,2,function(i,a0,a1) {return [a0,a1][i];},2,3],
+    e2:[1,1,"person"],
+    e3:[1,1,"property"]
+  },["Hello ",1,"!"])
+]

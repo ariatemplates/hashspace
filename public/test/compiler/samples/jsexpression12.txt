@@ -1,0 +1,26 @@
+##### Template:
+# template hello(person,bar)
+  <div title="{person[bar]}" class="{person.foo[1+2].blah}">...</div>
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code
+hello=[
+    n.elt("div",{
+        e1:[7,2,function(i,a0,a1) {return [a0,a1][i];},2,3],
+        e2:[1,1,"person"],
+        e3:[1,1,"bar"],
+        e4:[7,3,function(i,a0) {return [a0,(1 + 2),"blah"][i];},5],
+        e5:[1,2,"person","foo"]
+    },{
+        "title":["",1],
+        "class":["",4]
+    },0,[
+        n.$text(0,["..."])
+    ])
+]

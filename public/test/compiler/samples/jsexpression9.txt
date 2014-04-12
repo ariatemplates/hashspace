@@ -1,0 +1,19 @@
+##### Template:
+# template hello(person,property)
+  {person[person.name].foo}
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code
+hello=[
+  n.$text({
+    e1:[7,3,function(i,a0,a1) {return [a0,a1,"foo"][i];},2,3],
+    e2:[1,1,"person"],
+    e3:[1,2,"person","name"]
+  },["",1])
+]

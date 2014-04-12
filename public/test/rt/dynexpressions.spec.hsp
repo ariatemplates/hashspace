@@ -1,0 +1,201 @@
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var ht=require("hsp/utils/hashtester");
+
+function foo(arg1,arg2) {
+    return arg1+arg2;
+}
+
+# template test1(d)
+    <div class="content">Value: {d.person[d.pp]}</div>
+# /template
+
+# template test2(d)
+    <div class="content">Value: {d.person[d.pp1+d.pp2]}</div>
+# /template
+
+# template test3(d)
+    <div class="content">Value: {d.person[foo(d.pp1,d.pp2)].value}</div>
+# /template
+
+# template test4(d)
+    <div class="content">Value: {d.person[d[d.prop]].value}</div>
+# /template
+
+# template test5(d)
+    <div class="content" title="{d.person[d.pp1][d.pp2]}">...</div>
+# /template
+
+# template test6(d)
+    <div class="content">
+        {if d.person[d.pp+"Name"].value === d.condition}TRUE{else}FALSE{/if}
+    </div>
+# /template
+
+describe("Dynamic path expressions", function () {
+    var C=".content";
+
+    it("validates content update with dynamic property", function() {
+        var h=ht.newTestContext(), d={
+            person:{
+                firstName:"Homer",
+                lastName:"Simpson"
+            },
+            pp:"firstName"
+        };
+        // d.person[d.pp]
+        test1(d).render(h.container);
+        expect(h(C).text(0)).to.equal("Value: Homer");
+
+        // change data
+        h.$set(d,"pp","lastName");
+        expect(h(C).text(0)).to.equal("Value: Simpson");
+
+        // change container
+        h.$set(d,"person",{firstName:"Marge",lastName:"S."});
+        expect(h(C).text(0)).to.equal("Value: S.");
+
+        // change data
+        h.$set(d,"pp","firstName");
+        expect(h(C).text(0)).to.equal("Value: Marge");
+
+        h.$dispose();
+    });
+
+    it("validates content update with expression property", function() {
+        var h=ht.newTestContext(), d={
+            person:{
+                firstName:"Homer",
+                lastName:"Simpson"
+            },
+            pp1:"first",
+            pp2:"Name"
+        };
+        test2(d).render(h.container);
+
+        expect(h(C).text(0)).to.equal("Value: Homer");
+
+        // change data
+        h.$set(d,"pp1","last");
+
+        expect(h(C).text(0)).to.equal("Value: Simpson");
+        h.$dispose();
+    });
+
+    it("validates content update with function property", function() {
+        var h=ht.newTestContext(), d={
+            person:{
+                firstName:{value:"Homer"},
+                lastName:{value:"Simpson"}
+            },
+            pp1:"first",
+            pp2:"Name"
+        };
+        // d.person[foo(d.pp1,d.pp2)].value
+        test3(d).render(h.container);
+        expect(h(C).text(0)).to.equal("Value: Homer");
+
+        // change data 1
+        h.$set(d.person.firstName,"value","Marge");
+        expect(h(C).text(0)).to.equal("Value: Marge");
+
+        // change data 2
+        h.$set(d,"pp1","last");
+        expect(h(C).text(0)).to.equal("Value: Simpson");
+
+        // change data 3
+        h.$set(d.person.lastName,"value","S.");
+        expect(h(C).text(0)).to.equal("Value: S.");
+
+        h.$dispose();
+    });
+
+    it("validates content update with nested dyanamic paths", function() {
+        var h=ht.newTestContext(), d={
+            person:{
+                firstName:{value:"Homer"},
+                lastName:{value:"Simpson"}
+            },
+            pp1:"firstName",
+            pp2:"lastName",
+            prop:"pp1"
+        };
+        // d.person[d[d.prop]].value
+        test4(d).render(h.container);
+        expect(h(C).text(0)).to.equal("Value: Homer");
+
+        // change data 1
+        h.$set(d,"prop","pp2");
+        expect(h(C).text(0)).to.equal("Value: Simpson");
+
+        // change data 2
+        h.$set(d,"person",{firstName:{value:"Marge"},lastName:{value:"S."}});
+        expect(h(C).text(0)).to.equal("Value: S.");
+
+        // change data 3
+        h.$set(d,"prop","pp1");
+        expect(h(C).text(0)).to.equal("Value: Marge");
+        h.$dispose();
+    });
+
+    it("validates attribute update with consecutive dynamic paths", function() {
+        var h=ht.newTestContext(), d={
+            person:{
+                firstName:{value:"Homer"},
+                lastName:{value:"Simpson"}
+            },
+            pp1:"firstName",
+            pp2:"value"
+        };
+        //d.person[d.pp1][d.pp2]
+        test5(d).render(h.container);
+        expect(h(C).attribute("title")).to.equal("Homer");
+
+        // change data 1
+        h.$set(d,"pp1","lastName");
+        expect(h(C).attribute("title")).to.equal("Simpson");
+
+        // change data 2
+        h.$set(d.person.lastName,"value","S.");
+        expect(h(C).attribute("title")).to.equal("S.");
+
+        h.$dispose();
+    });
+
+    it("validates if statement using dynamic paths", function() {
+        var h=ht.newTestContext(), d={
+            person:{
+                firstName:{value:"Homer"},
+                lastName:{value:"Simpson"}
+            },
+            pp:"first",
+            condition:"Homer"
+        };
+        // d.person[d.pp+"Name"] === d.condition
+        test6(d).render(h.container);
+        expect(h(C).text()).to.equal("TRUE");
+
+        // change data 1
+        h.$set(d,"pp","last");
+        expect(h(C).text()).to.equal("FALSE");
+        
+        // change data 2
+        h.$set(d,"condition","Simpson");
+        expect(h(C).text()).to.equal("TRUE");
+        h.$dispose();
+    });    
+
+});

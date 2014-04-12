@@ -417,28 +417,54 @@ function formatExpression (expression, firstIndex, walker) {
     } else if (category === 'string') {
         code = ['e', exprIndex, ':[5,"', ('' + expression.value).replace(/"/g, "\\\""), '"]'].join('');
         nextIndex++;
-    } else if (category === 'jsexpression') {
-        var refs = expression.objectrefs, ref, expr, index = exprIndex + 1, exprs = [], exprIdxs = [];
+    } else if (category === 'jsexpression' || category === 'dynref') {
+        var refs = expression.objectrefs, ref, expr, index = exprIndex + 1, codefragments=[], exprs = [], exprIdxs = [];
 
-        if (refs === undefined) {
+        if (category === 'jsexpression' && refs === undefined) {
             console.warn("[formatExpression] The following expression has not been pre-processed - parser should be updated: ");
             console.dir(expression);
         }
-
-        var args = [], length = refs.length, argSeparator = (length > 0) ? ',' : '';
-        for (var i = 0; length > i; i++) {
-            ref = refs[i];
-            args[i] = "a" + i;
-            expr = formatExpression(ref, index, walker);
-            exprs.push(expr.code);
-            exprIdxs[i] = expr.exprIdx;
-            index = expr.nextIndex;
+        var args = [], length=0, argSeparator = (length > 0) ? ',' : '';
+        if (refs) {
+            // this is the root expression
+            length = refs.length;
+            for (var i = 0; length > i; i++) {
+                ref = refs[i];
+                if (ref.category === "dynref") {
+                    // pass the args and expressions to the dynref expression
+                    ref.args=args;
+                    ref.exprIdxs=exprIdxs;
+                }
+                expr = formatExpression(ref, index, walker);
+                args[i] = "a" + i;
+                exprs.push(expr);
+                codefragments.push(expr.code);
+                exprIdxs[i] = expr.exprIdx;
+                index = expr.nextIndex;
+            }
+        } else if (expression.args || expression.exprIdxs) {
+            args=expression.args;
+            exprIdxs=expression.exprIdxs;
         }
-        var func = ['function(', args.join(','), ') {return ', expression.code, ';}'].join('');
-        var code0 = ['e', exprIndex, ':[6,', func, argSeparator, exprIdxs.join(','), ']'].join('');
-        exprs.splice(0, 0, code0);
-        code = exprs.join(',');
-        nextIndex = exprIdxs[exprIdxs.length - 1] + 1;
+
+        var func,code0;
+        argSeparator = (exprIdxs.length > 0) ? ',' : '';
+        if (category==='jsexpression') {
+            func = ['function(', args.join(','), ') {return ', expression.code, ';}'].join('');
+            code0 = ['e', exprIndex, ':[6,', func, argSeparator, exprIdxs.join(','), ']'].join('');
+        } else {
+            // category === 'dynref'
+            var cf = expression.codefragments;
+            if (cf.length === 0) {
+                walker.logError("Expression code fragments cannot be empty");
+            }
+            func = ['function(i', argSeparator, args.join(','), ') {return [', cf.join(','), '][i];}'].join('');
+            code0 = ['e', exprIndex, ':[7,',cf.length,',', func, argSeparator, exprIdxs.join(','), ']'].join('');
+
+        }
+        codefragments.splice(0, 0, code0);
+        code = codefragments.join(',');
+        nextIndex = index;
     } else {
         walker.logError("Unsupported expression: " + category, expression);
     }
