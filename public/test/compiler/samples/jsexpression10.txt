@@ -1,0 +1,56 @@
+##### Template:
+# template hello(person,foo,bar)
+  {person.name[foo[bar+1]]}
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+[
+  {
+    "type": "template",
+    "name": "hello",
+    "args": [ "person", "foo", "bar" ],
+    "export": false,
+    "startLine": 1,
+    "endLine": 3,
+    "content": [
+      {
+        "type": "textblock",
+        "content": [
+          {
+            "type": "expression",
+            "category": "dynref",
+            "codefragments": [ "a0", "a3" ],
+            "objectrefs": [
+              { "type": "expression", "category": "objectref", "bound": true, "path": ["person","name"] },
+              { "type": "expression", "category": "objectref", "path": ["foo"] },
+              { "type": "expression", "category": "objectref", "path": ["bar"] },
+              {
+                "type": "expression",
+                "category": "dynref",
+                "codefragments": ["a1","(a2 + 1)"],
+                "args": ["a0","a1","a2","a3"],
+                "exprIdxs": [2,3,4,5]
+              }
+            ],
+            "line": 2,
+            "column": 3
+          }
+        ]
+      }
+    ]
+  }
+]
+
+##### Template Code
+hello=[
+    n.$text({
+        e1:[7,2,function(i,a0,a1,a2,a3) {return [a0,a3][i];},2,3,4,5],
+        e2:[1,2,"person","name"],
+        e3:[1,1,"foo"],
+        e4:[1,1,"bar"],
+        e5:[7,2,function(i,a0,a1,a2) {return [a1,(a2 + 1)][i];},2,3,4]
+    },["",1])
+]

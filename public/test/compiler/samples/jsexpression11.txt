@@ -1,0 +1,22 @@
+##### Template:
+# template hello(person,foo,bar)
+  {person[person.name+1].foo + x.y}
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code
+hello=[
+    n.$text({
+        e1:[6,function(a0,a1,a2,a3) {return (a2 + a3);},2,3,4,5],
+        e2:[1,1,"person"],
+        e3:[1,2,"person","name"],
+        e4:[7,3,function(i,a0,a1) {return [a0,(a1 + 1),"foo"][i];},2,3],
+        e5:[2,2,_x,"y"]},
+        ["",1]
+    )
+]
