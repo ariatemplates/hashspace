@@ -85,6 +85,22 @@ PanelController = klass({
   </div>
 # /template
 
+var TestCtl=klass({
+      attributes:{
+        "value":{type:"string",binding:"1-way"}
+    }
+})
+
+# template item using c:TestCtl
+    Value: {c.value}
+# /template
+
+# template test7(m)
+  <div class="content">
+    <#item value="{m.prop.value}"/>
+  </div>
+# /template
+
 var HEAD=".panel .head";
 var BODY=".panel .body";
 
@@ -214,6 +230,30 @@ describe("Component attribute elements (1)", function () {
     expect(h.logs().length).to.equal(0);
     expect(h(BODY).length).to.equal(1);
     expect(h(BODY).text()).to.equal("Hashspace World!!!");
+    
+    h.$dispose();
+  });
+
+  it("validates change propagation with long expression paths", function() {
+    var h=ht.newTestContext();
+    var count=0, model={prop:{value:"hello"}};
+    
+    test7(model).render(h.container);
+    expect(h(".content").text()).to.equal("Value: hello");
+
+    // change data
+    count++;
+    h.$set(model.prop,"value","hello"+count);
+    expect(h(".content").text()).to.equal("Value: hello1");
+
+    // change path
+    h.$set(model,"prop",{value:"foo"});
+    expect(h(".content").text()).to.equal("Value: foo");
+
+    // change data
+    count++;
+    h.$set(model.prop,"value","hello"+count);
+    expect(h(".content").text()).to.equal("Value: hello2");
     
     h.$dispose();
   });

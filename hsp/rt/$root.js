@@ -502,6 +502,13 @@ var $CptNode = klass({
             } else {
                 if (this.refreshAttributes) {
                     this.refreshAttributes();
+                    // for component and sub-templates the original vscope is substituted 
+                    // to the one of the component- or sub-template
+                    // so we need to revert to the parent scope to observe the correct objects
+                    var vs=this.vscope;
+                    this.vscope=this.parent.vscope;
+                    this.root.updateObjectObservers(this);
+                    this.vscope=vs;
                 }
             }
             this.adirty = false;
