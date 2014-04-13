@@ -41,6 +41,15 @@ var removeItem = function (items, index) {
     <a onclick="{addItem(items)}">Add item</a>
 # /template
 
+# template item(value)
+    Value: {value}
+# /template
+
+# template test1(m)
+    <div class="content">
+        <#item value="{m.prop.value}"/>
+    </div>
+# /template
 
 describe("Sub- and parent- template scope interactions", function () {
     it("validates property bubbling from sub-template to parent", function() {
@@ -63,6 +72,30 @@ describe("Sub- and parent- template scope interactions", function () {
         expect(h("li").length).to.equal(1);
         // the following assertion will fail if property changes are not properly bubbled
         expect(h("li").item(0).text()).to.equal("Remove #0");
+        
+        h.$dispose();
+    });
+
+    it("validates change propagation with long expression paths", function() {
+        var h=ht.newTestContext();
+        var count=0, model={prop:{value:"hello"}};
+        
+        test1(model).render(h.container);
+        expect(h(".content").text()).to.equal("Value: hello");
+
+        // change data
+        count++;
+        h.$set(model.prop,"value","hello"+count);
+        expect(h(".content").text()).to.equal("Value: hello1");
+
+        // change path
+        h.$set(model,"prop",{value:"foo"});
+        expect(h(".content").text()).to.equal("Value: foo");
+
+        // change data
+        count++;
+        h.$set(model.prop,"value","hello"+count);
+        expect(h(".content").text()).to.equal("Value: hello2");
         
         h.$dispose();
     });
