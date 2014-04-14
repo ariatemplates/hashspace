@@ -38,11 +38,7 @@ exports.$CptComponent = {
       var needCommentNodes=(this.createPathObservers() || this.ctlConstuctor.$refresh);
 
       if (needCommentNodes) {
-        var nd=this.node;
-        this.node1 = doc.createComment("# cpt "+this.pathInfo);
-        this.node2 = doc.createComment("# /cpt "+this.pathInfo);
-        nd.appendChild(this.node1);
-        nd.appendChild(this.node2);
+        this.createCommentBoundaries("cpt");
         this.createChildNodeInstances();
       } else {
         // WARNING: this changes the original vscope to the template vscope

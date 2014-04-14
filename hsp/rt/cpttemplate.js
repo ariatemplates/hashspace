@@ -18,11 +18,7 @@ module.exports.$CptTemplate = {
     var isDynamicTpl=this.createPathObservers();
 
     if (isDynamicTpl) {
-      var nd=this.node;
-      this.node1 = doc.createComment("# template "+this.pathInfo);
-      this.node2 = doc.createComment("# /template "+this.pathInfo);
-      nd.appendChild(this.node1);
-      nd.appendChild(this.node2);
+      this.createCommentBoundaries("template");
       this.createChildNodeInstances();
     } else {
       arg.template.call(this, this.getTemplateArguments());

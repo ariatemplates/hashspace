@@ -29,7 +29,7 @@ function getNumber(s) {
     return Number(s); 
 }
 
-var lastNewMinValue=null;
+var lastNewMinValue=null, isBrCbEmpty=false;
 
 var lib={};
 // sample controller
@@ -105,6 +105,9 @@ lib.NbrField = klass({
   resetField:function() {
     var v1=this.value, v2=this.defaultvalue;
     this.onbeforereset();
+    if (this.onbeforereset.isEmpty) {
+      isBrCbEmpty=true;
+    }
     json.set(this,"internalValue",v2);
     json.set(this,"value",v2);
     this.checkValidity();
@@ -124,6 +127,11 @@ lib.nbrfield=nbrfield;
   <input type="text" value="{d.value}"/>
   <#lib.nbrfield value="{d.value}" min="-10" max="10" onbeforereset="{notifyReset(123,event)}" 
   onafterreset="{notifyReset2(event.type,event)}"/>
+# /template
+
+# template test2(d)
+  <input type="text" value="{d.value}"/>
+  <#lib.nbrfield value="{d.value}" min="-10" max="10"/>
 # /template
 
 var resetCount=0, lastResetArg=0, lastEvtType="";
@@ -302,6 +310,7 @@ it("tests a component inside another template", function() {
 
   it("tests a component event callback", function() {
     resetCount=0;
+    isBrCbEmpty=false;
     lastResetArg=0;
     lastEvtType="";
     lastEvtType2="";
@@ -315,9 +324,22 @@ it("tests a component inside another template", function() {
 
     expect(resetCount).to.equal(1); //validate that "onbeforereset" callback has been called
     expect(lastEvtType).to.equal("beforereset");
+    expect(isBrCbEmpty).to.equal(true);
     expect(lastResetArg).to.equal(123);
     expect(lastEvtType2).to.equal("afterreset");
     expect(lastEvtOldValue2).to.equal(42);
+  });
+
+  it("tests if callback is empty", function() {
+    isBrCbEmpty=false;
+    var d={value:'42'};
+    var n=test2(d);
+    var cptButton=n.node.childNodes[2];
+
+    fireEvent("click",cptButton);
+    hsp.refresh();
+
+    expect(isBrCbEmpty).to.equal(true); 
   });
 
   it("tests a component $afterRender callback", function() {
