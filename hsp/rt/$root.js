@@ -373,6 +373,10 @@ var $CptNode = klass({
         this.controller = null;
         this.ctlAttributes = null;
         this.template = null;
+        if (this.node1) {
+            this.node1=null;
+            this.node2=null;
+        }
     },
 
     /**
@@ -588,6 +592,9 @@ var $CptNode = klass({
         // Warning: this method may be called even if the object referenced by the path didn't change
         // because we observe all the properties of the object on the path - so we need to detect
         // first if one of the objects on the path really changed
+        if (!this.parent && !this.root) {
+            return; // object has been disposed, but notification callback is still in the call stack
+        }
         var pos = this.getPathObjects(), opos=this._observedPathObjects;
         var sz = pos? pos.length : -1;
         var osz = opos? opos.length : -1;
