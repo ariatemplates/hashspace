@@ -212,6 +212,7 @@ var CptWrapper = klass({
                 if (att.type === "callback") {
                     // create an even callback function
                     this.createEventFunction(k.slice(2));
+                    cpt[k].isEmpty=(iAtt===undefined);
                     continue;
                 } else if (att.type === "template") {
                     v=null;

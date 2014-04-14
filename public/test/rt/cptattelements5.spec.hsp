@@ -1,0 +1,115 @@
+ 
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var klass=require("hsp/klass"),
+    $set=require("hsp/$set"),
+    ht=require("hsp/utils/hashtester");
+
+var TabCtrl = klass({
+    attributes: {
+        label: { type: "template" },
+        body: { type: "template", defaultContent: true }
+    },
+    $init:function() {
+        $set(this,"selected",false);
+    }
+});
+
+var TabBarCtrl = klass({
+    attributes: {
+        "class": { type: "string" },
+        "selection": { type: "int", defaultValue: 0, binding: "2-way" }
+    },
+    elements: {
+        "tab": { type: "component", controller: TabCtrl }
+    },
+    $init: function() {
+        this.select(this.selection);
+    },
+    select: function(idx) {
+        if (this.selectedTab && idx===this.selection) {
+            return;
+        }
+        // unselect previous selection
+        if (this.selection>=0 && this.selection<this.content.length) {
+            $set(this.content[this.selection], "selected", false);
+        }
+        // select new tab
+        if (idx>=0 && idx<this.content.length) {
+            $set(this,"selection",idx);
+            var tab=this.content[idx];
+            $set(tab,"selected",true);
+            $set(this,"selectedTab",tab);
+        }
+    }
+});
+
+#template tabbar using ctrl:TabBarCtrl
+  <div class="x-tabbar">
+    <nav class="x-tabs">
+        {foreach idx, tab in ctrl.content}
+            {if tab.selected}
+                <span class="x-tab x-tab-selected">
+                    <#tab.label/>
+                </span>
+            {else}
+                <a class="x-tab" onclick="{ctrl.select(idx)}">
+                    <#tab.label/>
+                </a>
+            {/if}
+            &nbsp;
+        {/foreach}
+    </nav>
+    <div class="x-tab-content">
+        <#ctrl.selectedTab.body />
+    </div>
+  </div>
+#/template
+
+# template test1(m)
+  <#tabbar selection="{m.selection}">
+    <@tab label="Tab A">AAA Content AAA</@tab>
+    <@tab label="Tab B">BBB Content BBB</@tab>
+    <@tab label="Tab C">CCC Content CCC</@tab>
+  </#tabbar>
+# /template
+
+var TABS=".x-tab";
+var BODY=".x-tab-content";
+
+describe("Component attribute elements (5)", function () {
+  
+    it("validates sub-element template mapping on parent component", function() {
+        var h=ht.newTestContext();
+        var model={selection:1};
+        test1(model).render(h.container);
+
+        // validate initial display
+        expect(h(BODY).text()).to.equal("BBB Content BBB");
+        expect(h(TABS).length).to.equal(3);
+        expect(h(TABS).item(1).hasClass("x-tab-selected")).to.equal(true);
+
+        // change selection
+        h(TABS).item(0).click();
+        expect(model.selection).to.equal(0);
+        expect(h(BODY).text()).to.equal("AAA Content AAA");
+
+        h.$dispose();
+    });
+
+    // TODO: support empty att template - and consider it generates an empty string..
+
+});

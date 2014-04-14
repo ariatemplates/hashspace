@@ -413,6 +413,25 @@ svg {
   background-color: #FF4DBE;
 }
 
+.x-tabbar > .x-tabs {
+  margin-bottom: 3px;
+}
+
+.x-tabbar .x-tab {
+  padding: 3px 5px;
+}
+
+.x-tabbar .x-tab.x-tab-selected {
+  
+  background-color: #777777;
+}
+
+.x-tabbar .x-tab-content {
+  margin:0px;
+  padding: 5px;
+  background-color: #777777;
+}
+
 // ---------------------------------------------------------------------
 // Pagination classes from bootstrap
 

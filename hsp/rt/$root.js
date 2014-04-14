@@ -455,6 +455,18 @@ var $CptNode = klass({
         ni.node = ni.parent.node;
         return ni;
     },
+
+    /**
+     * Create and append the node1 and node2 boundary nodes used to delimit the component content
+     * in the parent node
+     */
+    createCommentBoundaries:function(comment) {
+        var nd=this.node;
+        this.node1 = doc.createComment("# "+comment+" "+this.pathInfo);
+        this.node2 = doc.createComment("# /"+comment+" "+this.pathInfo);
+        nd.appendChild(this.node1);
+        nd.appendChild(this.node2);
+    },
     
     /**
      * Callback called when a controller attribute or a template attribute has changed
@@ -494,6 +506,13 @@ var $CptNode = klass({
             if (this.template) {
                 var tpl=getObject(this.tplPath, this.parent.vscope);
                 tplChanged = (tpl!==this.template);
+            } else if (this.cptAttElement) {
+                // check if the cptattinsert path has changed
+                var o=getObject(this.tplPath, this.parent.vscope);
+                if (o.isCptAttElement && o!==this.cptAttElement) {
+                    // change the the cptAttElement and refresh the DOM
+                    this.createChildNodeInstances(o);
+                }
             }
 
             if (tplChanged) {

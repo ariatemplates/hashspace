@@ -143,7 +143,7 @@ module.exports = [{
                         main : true
                     }]
         }, {
-            title : "Component with template sub-elements: List #1",
+            title : "Component with sub-elements: List #1",
             folder : "list1",
             description : "description.md",
             files : [{
@@ -151,7 +151,7 @@ module.exports = [{
                         main : true
                     }]
         }, {
-            title : "Component with component sub-elements: List #2",
+            title : "Component with sub-elements: List #2",
             folder : "list2",
             description : "description.md",
             files : [{
@@ -159,7 +159,15 @@ module.exports = [{
                         main : true
                     }]
         }, {
-            title : "Integrating 3rd party components: Chart.JS",
+            title : "Component with sub-elements: Tabbar",
+            folder : "tabbar",
+            description : "description.md",
+            files : [{
+                        src : "tabbar.hsp",
+                        main : true
+                    }]
+        }, {
+            title : "Integrating 3rd party components: Chart.js",
             folder : "thirdpartycpts",
             description : "description.md",
             files : [{
