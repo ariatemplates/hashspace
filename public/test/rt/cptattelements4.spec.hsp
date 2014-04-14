@@ -82,6 +82,39 @@ var ListCtrl = klass({
     </#list>
 # /template
 
+# template tabA(tab)
+  {tab.title}
+# /template
+
+var TabCtrl = klass({
+  $init: function () {
+    this.tabs = [{title:"Tab A", template: tabA},{title:"Tab B"}];
+  },
+  removeTab: function (event, index) {    
+    this.tabs.splice(index, 1);
+    try {
+        event.preventDefault();
+    } catch (ex) {
+        // preventDefault is not supported on IE8!!
+    }
+  }
+});
+
+# template tabs using c:TabCtrl
+  <ul class="nav nav-tabs">
+  {foreach index,tab in c.tabs}
+    <li><a href="#">
+      {if tab.template}
+        <#tab.template tab="{tab}" />
+      {else}
+        {tab.title}
+     {/if}
+     &nbsp;/&nbsp;<a class="close" onclick="{c.removeTab(event, index)}">&times;</a>
+    </a></li>
+  {/foreach}
+  </ul>
+# /template
+
 var EMPTY_MSG=".nodata";
 var OPTIONS="ul .opt";
 
@@ -179,6 +212,23 @@ describe("Component attribute elements (4)", function () {
         hsp.refresh();
 
         expect(h(OPTIONS).length).to.equal(0);
+
+        h.$dispose();
+    });
+
+    it("validates that path change event are ignored when cpt object is disposed", function() {
+        var h=ht.newTestContext();
+        tabs().render(h.container);
+
+        expect(h("li .close").length).to.equal(2);
+
+        // remove first tab
+        h("li .close").item(0).click();
+        expect(h("li .close").length).to.equal(1);
+
+        // remove 2nd tab
+        h("li .close").item(0).click();
+        expect(h("li .close").length).to.equal(0);
 
         h.$dispose();
     });
