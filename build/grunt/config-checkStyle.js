@@ -29,13 +29,11 @@ module.exports = function (grunt) {
         source : {
             src : ['hsp/**/*.js', '!hsp/**/*.peg.js']
         },
-        public : {
+        docs : {
             files : {
-                src : [ 'public/**/*.js',
-                        '!public/**/test/**/*.js',
-                        '!public/lib/**/*.js',
-                        '!public/playground/markdown.js',
-                        '!public/expect.js'
+                src : [ 'docs/**/*.js',
+                        '!docs/libs/**/*.js',
+                        '!docs/**/test/**/*.js' // the test for todomvc is in docs
                 ]
             },
             options : {
@@ -62,7 +60,7 @@ module.exports = function (grunt) {
             }
         },
         test : {
-            src : ['public/**/test/**/*.js'],
+            src : ['test/**/*.js','docs/**/test/**/*.js'], // the test for todomvc is in docs
             options : {
                 "node" : true,
                 "globals" : {
@@ -83,12 +81,12 @@ module.exports = function (grunt) {
     });
 
     grunt.config.set('verifylowercase.sourceFiles', {
-        src : ['hsp/**', 'public/**']
+        src : ['hsp/**', 'docs/**', 'test/**']
     });
 
     grunt.config.set('leadingIndent.indentation', 'spaces');
     grunt.config.set('leadingIndent.jsFiles', {
-        src : ['hsp/**/*.js', 'public/**/*.js']
+        src : ['hsp/**/*.js', 'docs/**/*.js', 'test/**/*.js']
     });
 
     grunt.registerTask('checkStyle', ['jshint', 'verifylowercase:sourceFiles', 'leadingIndent:jsFiles']);
