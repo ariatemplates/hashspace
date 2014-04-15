@@ -31,7 +31,6 @@
                     var parseFunctions = {
                         TemplateFile: parse_TemplateFile,
                         TextBlock: parse_TextBlock,
-                        RequireBlock: parse_RequireBlock,
                         TemplateBlock: parse_TemplateBlock,
                         TemplateStart: parse_TemplateStart,
                         TemplateController: parse_TemplateController,
@@ -793,84 +792,6 @@
                         }
                         if (result0 === null) {
                             pos = clone(pos0);
-                        }
-                        return result0;
-                    }
-                    function parse_RequireBlock() {
-                        var result0, result1, result2, result3, result4, result5;
-                        var pos0, pos1;
-                        reportFailures++;
-                        pos0 = clone(pos);
-                        pos1 = clone(pos);
-                        result0 = parse__();
-                        if (result0 !== null) {
-                            if (input.substr(pos.offset, 2) === "# ") {
-                                result1 = "# ";
-                                advance(pos, 2);
-                            } else {
-                                result1 = null;
-                                if (reportFailures === 0) {
-                                    matchFailed('"# "');
-                                }
-                            }
-                            if (result1 !== null) {
-                                result2 = parse__();
-                                if (result2 !== null) {
-                                    if (input.substr(pos.offset, 7) === "require") {
-                                        result3 = "require";
-                                        advance(pos, 7);
-                                    } else {
-                                        result3 = null;
-                                        if (reportFailures === 0) {
-                                            matchFailed('"require"');
-                                        }
-                                    }
-                                    if (result3 !== null) {
-                                        result4 = parse__();
-                                        if (result4 !== null) {
-                                            result5 = parse_EOL();
-                                            if (result5 === null) {
-                                                result5 = parse_EOF();
-                                            }
-                                            if (result5 !== null) {
-                                                result0 = [ result0, result1, result2, result3, result4, result5 ];
-                                            } else {
-                                                result0 = null;
-                                                pos = clone(pos1);
-                                            }
-                                        } else {
-                                            result0 = null;
-                                            pos = clone(pos1);
-                                        }
-                                    } else {
-                                        result0 = null;
-                                        pos = clone(pos1);
-                                    }
-                                } else {
-                                    result0 = null;
-                                    pos = clone(pos1);
-                                }
-                            } else {
-                                result0 = null;
-                                pos = clone(pos1);
-                            }
-                        } else {
-                            result0 = null;
-                            pos = clone(pos1);
-                        }
-                        if (result0 !== null) {
-                            result0 = function(offset, line, column) {
-                                return {
-                                    type: "require"
-                                };
-                            }(pos0.offset, pos0.line, pos0.column);
-                        }
-                        if (result0 === null) {
-                            pos = clone(pos0);
-                        }
-                        reportFailures--;
-                        if (reportFailures === 0 && result0 === null) {
-                            matchFailed("require block");
                         }
                         return result0;
                     }
@@ -12254,17 +12175,22 @@
                 } else {
                     this._objectRefs = [];
                     // list of objectref expressions found in the jsexpression
-                    var code = this._process(node);
+                    var code = this._process(node), oref = this._objectRefs;
                     this.rootExpression.code = code;
                     this.syntaxTree = {
                         type: "expression",
                         category: "jsexpression",
-                        objectrefs: this._objectRefs,
+                        objectrefs: oref,
                         code: code
                     };
                     // if we have only one variable, we can simplify the syntaxtree
                     if (code === "a0") {
-                        this.syntaxTree = this._objectRefs[0];
+                        this.syntaxTree = oref[0];
+                    } else if (code.match(/^a\d+$/) && oref && oref[oref.length - 1].category === "dynref") {
+                        // this is a dynamic object path
+                        this.syntaxTree = oref[oref.length - 1];
+                        oref.pop();
+                        this.syntaxTree.objectrefs = oref;
                     } else if (code.match(/^ *$/)) {
                         // there is no code to display
                         this.syntaxTree = {
@@ -12303,16 +12229,18 @@
             /**
      * Internal recursive method to process a node
      * @param {JSON} node the expression node to be processed
-     * @return {String} the JS code associated to this node
+     * @return {String} the JS code associated to this node - e.g. "((a0 + 2) + \"a\")"
      */
             _process: function(node) {
                 var result = "";
                 switch (node.type) {
                   case "expression":
+                    // root node - we have to look at node.category
                     result = this._getValue(node);
                     break;
 
                   case "BinaryExpression":
+                    // e.g. a + b
                     result = "(" + this._process(node.left) + " " + node.operator + " " + this._process(node.right) + ")";
                     break;
 
@@ -12331,6 +12259,7 @@
                     break;
 
                   case "Variable":
+                    // return an argument name (e.g. "a0") through _getValue
                     result = this._getValue({
                         type: "expression",
                         category: "objectref",
@@ -12340,24 +12269,103 @@
                     break;
 
                   case "PropertyAccess":
-                    // this is an object ref
-                    var n = node, path = [], name;
+                    // we fall in this category when we have sth like xxx.prop or xxx[yyy] where xxx and yyy are expressions
+                    // in this case 'xxx' corresponds to the 'base' property of the parsed tree and 'yyy' corresponds to the 'name'
+                    // e.g "a.b", "a.b['c'].d" or "a.b(foo)[blah]"
+                    // as square-bracket access may contain sub-expressions we have to
+                    // 1. split the expression in a list of objectrefs / expressions
+                    //      e.g. for a.b[1+2][2+3].c.d we should have "a.b", "1+2", "2+3", "c", "d"
+                    // 2. if there is only one chunk, create an objectref
+                    // 3. otherwise create a dynref with sub-expressions (the 1st one being an objectref cf. a.b in previous example)
+                    var n = node, path = [], name, dynref = false;
+                    // determine if we are in an objectref or dynref use case:
                     while (n) {
                         name = n.name;
-                        if (name.type && name.type === "expression") {
-                            path.push(name.value);
+                        if (name.type) {
+                            // for person.name -> "name": "name"
+                            // for person["name"] -> "name": { "type": "Variable","name": "property","code": "property" }
+                            // for person["a"+123] -> "name": {"type": "BinaryExpression", "operator": "+", ...}
+                            if (name.type === "expression") {
+                                // in this case name is a simple type like number or string:
+                                // { type: 'expression', category: 'number', value: 2, code: '2' }
+                                path.push(name.value);
+                            } else {
+                                // name is a complex expression - so we will have to create a dynref instead of objectref
+                                dynref = true;
+                                break;
+                            }
                         } else {
                             path.push(name);
                         }
                         n = n.base;
                     }
-                    path.reverse();
-                    result = this._getValue({
-                        type: "expression",
-                        category: "objectref",
-                        bound: node.bound,
-                        path: path
-                    });
+                    if (!dynref) {
+                        // std objectref - e.g. "a.b.c"
+                        path.reverse();
+                        // _getValue will return an argument nbr - e.g. "a1"
+                        result = this._getValue({
+                            type: "expression",
+                            category: "objectref",
+                            bound: node.bound,
+                            path: path
+                        });
+                    } else {
+                        // dynref: path contains expressions - e.g. a.b[foo][1+2]
+                        var exprs = [];
+                        // list of expressions that compose the path
+                        n = node;
+                        while (n) {
+                            name = n.name;
+                            if (!name.type) {
+                                // name is a string
+                                name = {
+                                    type: "expression",
+                                    category: "string",
+                                    value: name,
+                                    code: name
+                                };
+                            }
+                            exprs.push(name);
+                            n = n.base;
+                        }
+                        exprs.reverse();
+                        // the first string expressions should be gathered as an objectref
+                        var p1 = [], e;
+                        for (var i = 0; exprs.length > i; i++) {
+                            e = exprs[i];
+                            if (e.type === "expression" && e.category === "string") {
+                                p1.push(e.value);
+                                i--;
+                                exprs.shift();
+                            } else {
+                                break;
+                            }
+                        }
+                        // add objectref as first element
+                        if (!p1.length) {
+                            this._logError("Invalid dynamic data reference!");
+                        } else {
+                            exprs.splice(0, 0, {
+                                type: "expression",
+                                category: "objectref",
+                                bound: node.bound,
+                                path: p1
+                            });
+                        }
+                        // convert all expressions
+                        var fragments = [];
+                        if (exprs) {
+                            for (var i = 0; exprs.length > i; i++) {
+                                fragments.push(this._process(exprs[i]));
+                            }
+                        }
+                        // _getValue will return an argument nbr - e.g. "a1"
+                        result = this._getValue({
+                            type: "expression",
+                            category: "dynref",
+                            codefragments: fragments
+                        });
+                    }
                     break;
 
                   case "ConditionalExpression":
@@ -12444,13 +12452,15 @@
                 switch (node.category) {
                   case "objectref":
                     var length = this._objectRefs.length, expr, pathLength, ok;
-                    // check if an indentical expression already exist
+                    // check if an identical expression already exist
                     for (var i = 0; i < length; i++) {
-                        expr = this._objectRefs[i], pathLength = expr.path.length, ok = true;
-                        // only the path may vary
+                        expr = this._objectRefs[i];
                         if (expr.category !== "objectref") {
                             continue;
                         }
+                        pathLength = expr.path.length;
+                        ok = true;
+                        // only the path may vary
                         if (pathLength === node.path.length) {
                             for (var j = 0; j < pathLength; j++) {
                                 if (expr.path[j] !== node.path[j]) {
@@ -12470,6 +12480,13 @@
                         // argument variable
                         this._objectRefs[length] = node;
                     }
+                    break;
+
+                  case "dynref":
+                    var length = this._objectRefs.length;
+                    result = "a" + length;
+                    // argument variable
+                    this._objectRefs[length] = node;
                     break;
 
                   case "functionref":
@@ -14110,26 +14127,51 @@
             } else if (category === "string") {
                 code = [ "e", exprIndex, ':[5,"', ("" + expression.value).replace(/"/g, '\\"'), '"]' ].join("");
                 nextIndex++;
-            } else if (category === "jsexpression") {
-                var refs = expression.objectrefs, ref, expr, index = exprIndex + 1, exprs = [], exprIdxs = [];
-                if (refs === undefined) {
+            } else if (category === "jsexpression" || category === "dynref") {
+                var refs = expression.objectrefs, ref, expr, index = exprIndex + 1, codefragments = [], exprs = [], exprIdxs = [];
+                if (category === "jsexpression" && refs === undefined) {
                     console.warn("[formatExpression] The following expression has not been pre-processed - parser should be updated: ");
                     console.dir(expression);
                 }
-                var args = [], length = refs.length, argSeparator = length > 0 ? "," : "";
-                for (var i = 0; length > i; i++) {
-                    ref = refs[i];
-                    args[i] = "a" + i;
-                    expr = formatExpression(ref, index, walker);
-                    exprs.push(expr.code);
-                    exprIdxs[i] = expr.exprIdx;
-                    index = expr.nextIndex;
+                var args = [], length = 0, argSeparator = length > 0 ? "," : "";
+                if (refs) {
+                    // this is the root expression
+                    length = refs.length;
+                    for (var i = 0; length > i; i++) {
+                        ref = refs[i];
+                        if (ref.category === "dynref") {
+                            // pass the args and expressions to the dynref expression
+                            ref.args = args;
+                            ref.exprIdxs = exprIdxs;
+                        }
+                        expr = formatExpression(ref, index, walker);
+                        args[i] = "a" + i;
+                        exprs.push(expr);
+                        codefragments.push(expr.code);
+                        exprIdxs[i] = expr.exprIdx;
+                        index = expr.nextIndex;
+                    }
+                } else if (expression.args || expression.exprIdxs) {
+                    args = expression.args;
+                    exprIdxs = expression.exprIdxs;
                 }
-                var func = [ "function(", args.join(","), ") {return ", expression.code, ";}" ].join("");
-                var code0 = [ "e", exprIndex, ":[6,", func, argSeparator, exprIdxs.join(","), "]" ].join("");
-                exprs.splice(0, 0, code0);
-                code = exprs.join(",");
-                nextIndex = exprIdxs[exprIdxs.length - 1] + 1;
+                var func, code0;
+                argSeparator = exprIdxs.length > 0 ? "," : "";
+                if (category === "jsexpression") {
+                    func = [ "function(", args.join(","), ") {return ", expression.code, ";}" ].join("");
+                    code0 = [ "e", exprIndex, ":[6,", func, argSeparator, exprIdxs.join(","), "]" ].join("");
+                } else {
+                    // category === 'dynref'
+                    var cf = expression.codefragments;
+                    if (cf.length === 0) {
+                        walker.logError("Expression code fragments cannot be empty");
+                    }
+                    func = [ "function(i", argSeparator, args.join(","), ") {return [", cf.join(","), "][i];}" ].join("");
+                    code0 = [ "e", exprIndex, ":[7,", cf.length, ",", func, argSeparator, exprIdxs.join(","), "]" ].join("");
+                }
+                codefragments.splice(0, 0, code0);
+                code = codefragments.join(",");
+                nextIndex = index;
             } else {
                 walker.logError("Unsupported expression: " + category, expression);
             }
@@ -16071,7 +16113,7 @@
         /**
  * Header added to all generated JS file
  */
-        var HEADER_ARR = [ "// ################################################################ ", "//  This file has been generated by the hashspace compiler          ", "//  Direct MODIFICATIONS WILL BE LOST when the file is recompiled!  ", "// ################################################################ ", "" ];
+        var HEADER_ARR = [ "", "// ################################################################ ", "//  This file has been generated by the hashspace compiler          ", "//  Direct MODIFICATIONS WILL BE LOST when the file is recompiled!  ", "// ################################################################ ", "" ];
         var HEADER = module.exports.HEADER = HEADER_ARR.join("\r\n");
         var HEADER_SZ = HEADER_ARR.length;
         /**
@@ -16173,7 +16215,15 @@
         function _getErrorScript(errors, fileName) {
             var result = "";
             if (errors && errors.length) {
-                result = [ '\r\nrequire("hsp/rt").logErrors("', fileName, '",', JSON.stringify(errors, null), ");\r\n" ].join("");
+                var err = errors[0];
+                var ctxt = {
+                    type: "error",
+                    file: fileName,
+                    code: err.code,
+                    line: err.line,
+                    column: err.column
+                };
+                result = [ '\r\nrequire("hsp/rt/log").error("', err.description, '",', JSON.stringify(ctxt, null), ");\r\n" ].join("");
             }
             return result;
         }
@@ -16238,73 +16288,6 @@
             }
             return lineMap;
         }
-    });
-    define("hsp/compiler/compiler.js", [ "./parser/index", "./treebuilder/index", "./jsgenerator/index" ], function(module, global) {
-        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var parser = require("./parser/index");
-        var treebuilder = require("./treebuilder/index");
-        var jsgenerator = require("./jsgenerator/index");
-        /**
- * Compiles a template and return a JS compiled string and a list of errors.
- * @param {String} template the template file content as a string.
- * @param {String} dirPath the directory path.
- * @param {String} fileName the name of the file being compiled (optional - used for error messages).
- * @param {Boolean} includeSyntaxTree  if true, the result object will contain the syntax tree generated by the compiler.
- * @param {Boolean} bypassJSvalidation  if true, the validation of the generated JS file (including non-template code) is bypassed - default:false.
- * @return {JSON} a JSON structure with the following properties:
- *      errors: {Array} the error list - each error having the following structure:
- *          description: {String} - a message describing the error 
- *          line: {Number} - the error line number
- *          column: {Number} - the error column number 
- *          code: {String} - a code extract showing where the error occurs (optional)
- *      code: {String} the generated JavaScript code
- *      syntaxTree: {JSON} the syntax tree generated by the parser (optional - cf. parameters)
- *      lineMap: {Array} array of the new line indexes: lineMap[3] returns the new line index for line 4 in
- *          the orginal file (lineMap[0] is always 0 as all line count starts at 1 for both input and output values)
- */
-        exports.compile = function(template, path, includeSyntaxTree, bypassJSvalidation) {
-            // Parsing might throw an exception
-            var res = {};
-            var m = path.match(/[^\/]+$/), fileName = m ? m[0] : "unknown", dirPath = "";
-            if (fileName.length < path.length) {
-                dirPath = path.slice(0, -fileName.length);
-            }
-            if (!template) {
-                res.errors = [ {
-                    description: "[Hashspace compiler] template argument is undefined"
-                } ];
-            } else {
-                //Step 1: parser
-                var blockList = parser.parse(template);
-                //Step2 : treebuilder
-                res = treebuilder.build(blockList);
-            }
-            //Step3 : jsgenerator
-            res = jsgenerator.generate(res, template, fileName, dirPath, includeSyntaxTree, bypassJSvalidation);
-            return res;
-        };
-    });
-    define("hsp/compiler/compile.js", [ "./compiler" ], function(module, global) {
-        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        /*
- * Copyright 2014 Amadeus s.a.s.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-        var compiler = require("./compiler");
-        module.exports = function(code, moduleName) {
-            var compileRes = compiler.compile(code, moduleName);
-            return compileRes.code;
-        };
     });
     define("uglify-js.js", [], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
@@ -23232,6 +23215,100 @@
                 code: changed ? formatAST(ast, fileContent, options) : fileContent,
                 ast: ast
             };
+        };
+    });
+    define("hsp/transpiler/index.js", [ "./processString", "./processAST", "./formatAST" ], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+        module.exports = {
+            processString: require("./processString"),
+            processAST: require("./processAST"),
+            formatAST: require("./formatAST")
+        };
+    });
+    define("hsp/compiler/compiler.js", [ "./parser/index", "./treebuilder/index", "./jsgenerator/index", "../transpiler/index" ], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        var parser = require("./parser/index");
+        var treebuilder = require("./treebuilder/index");
+        var jsgenerator = require("./jsgenerator/index");
+        var transpiler = require("../transpiler/index");
+        /**
+ * Compiles a template and return a JS compiled string and a list of errors.
+ * @param {String} template the template file content as a string.
+ * @param {String} dirPath the directory path.
+ * @param {String} fileName the name of the file being compiled (optional - used for error messages).
+ * @param {Boolean} includeSyntaxTree  if true, the result object will contain the syntax tree generated by the compiler.
+ * @param {Boolean} bypassJSvalidation  if true, the validation of the generated JS file (including non-template code) is bypassed - default:false.
+ * @return {JSON} a JSON structure with the following properties:
+ *      errors: {Array} the error list - each error having the following structure:
+ *          description: {String} - a message describing the error 
+ *          line: {Number} - the error line number
+ *          column: {Number} - the error column number 
+ *          code: {String} - a code extract showing where the error occurs (optional)
+ *      code: {String} the generated JavaScript code
+ *      syntaxTree: {JSON} the syntax tree generated by the parser (optional - cf. parameters)
+ *      lineMap: {Array} array of the new line indexes: lineMap[3] returns the new line index for line 4 in
+ *          the orginal file (lineMap[0] is always 0 as all line count starts at 1 for both input and output values)
+ */
+        exports.compile = function(template, path, includeSyntaxTree, bypassJSvalidation) {
+            // Parsing might throw an exception
+            var res = {};
+            var m = path.match(/[^\/]+$/), fileName = m ? m[0] : "unknown", dirPath = "";
+            if (fileName.length < path.length) {
+                dirPath = path.slice(0, -fileName.length);
+            }
+            if (!template) {
+                res.errors = [ {
+                    description: "[Hashspace compiler] template argument is undefined"
+                } ];
+            } else {
+                //Step 1: parser
+                var blockList = parser.parse(template);
+                //Step2 : treebuilder
+                res = treebuilder.build(blockList);
+            }
+            //Step3 : jsgenerator
+            res = jsgenerator.generate(res, template, fileName, dirPath, includeSyntaxTree, bypassJSvalidation);
+            //Step4 : transpiler
+            if (!res.errors || res.errors.length === 0) {
+                res.code = transpiler.processString(res.code).code;
+            }
+            return res;
+        };
+    });
+    define("hsp/compiler/compile.js", [ "./compiler" ], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+        var compiler = require("./compiler");
+        module.exports = function(code, moduleName) {
+            var compileRes = compiler.compile(code, moduleName);
+            return compileRes.code;
         };
     });
     define("hsp/transpiler/transpile.js", [ "./processString" ], function(module, global) {
