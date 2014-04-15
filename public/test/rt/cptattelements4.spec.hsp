@@ -90,9 +90,13 @@ var TabCtrl = klass({
   $init: function () {
     this.tabs = [{title:"Tab A", template: tabA},{title:"Tab B"}];
   },
-  removeTab: function (event, index) {
-    event.preventDefault();
+  removeTab: function (event, index) {    
     this.tabs.splice(index, 1);
+    try {
+        event.preventDefault();
+    } catch (ex) {
+        // preventDefault is not supported on IE8!!
+    }
   }
 });
 
@@ -212,7 +216,7 @@ describe("Component attribute elements (4)", function () {
         h.$dispose();
     });
 
-    it("validates that path change event are ignored when cpt object is disposed", function() {
+    it.only("validates that path change event are ignored when cpt object is disposed", function() {
         var h=ht.newTestContext();
         tabs().render(h.container);
 
