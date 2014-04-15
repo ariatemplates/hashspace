@@ -216,7 +216,7 @@ describe("Component attribute elements (4)", function () {
         h.$dispose();
     });
 
-    it.only("validates that path change event are ignored when cpt object is disposed", function() {
+    it("validates that path change event are ignored when cpt object is disposed", function() {
         var h=ht.newTestContext();
         tabs().render(h.container);
 
