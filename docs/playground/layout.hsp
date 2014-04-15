@@ -1,0 +1,54 @@
+
+# export template mainLayout(data,ctl)
+  <#sampleList data="{data}" ctl="{ctl}"/>
+
+  <div class="hsp-sample">
+    <div class="description">
+      <h4>Description</h4>
+      // TODO remove this fixed id
+      <div class="scroller">
+        <div id="description"></div>
+      </div>
+    </div>
+    <div class="editor">
+      <h4>Editor</h4>
+      <div id="editor"></div>
+    </div>
+  </div>
+# /template
+
+# template sampleList(data,ctl)
+  <div class="samples-list">
+    <h4>Samples</h4>
+      <div class="list">
+        {foreach idx,sample in data.samples}
+          <div class="{'item', 'selected': data.sampleIndex === idx}" onclick="{ctl.loadSample(idx)}">{sample.title}</div>
+        {/foreach}
+      </div>
+  </div>
+# /template
+
+# export template errorList(errors)
+    {if errors && errors.length}
+        <div class="errorlist">
+            <ul>
+                {foreach err in errors}
+                <li>
+                    <div class="description {err.type}"> {err.message} </div>
+                    {if err.line || err.file}
+                        <div class="ctxt">
+                            [{err.file}]
+                            {if err.line}line: {err.line}, column: {err.column}{/if}
+                        </div>
+                    {/if}
+                    {if err.code}
+                        <div class="code">
+                            >> code: <span class="codetext">{err.code}</span>
+                        </div>
+                    {/if}
+                </li>
+                {/foreach}
+            </ul>
+        </div>
+    {/if}
+# /template

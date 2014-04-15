@@ -1,0 +1,88 @@
+
+<!--
+/*
+ * Copyright 2012 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+-->
+<!doctype html> <!-- html5 -->
+<html>
+<head>
+	<meta http-equiv="x-ua-compatible" content="IE=Edge"/>
+	<link rel="stylesheet" href="/node_modules/mocha/mocha.css" />
+	<script src="/node_modules/expect.js/expect.js"></script>
+	<script src="/node_modules/mocha/mocha.js"></script>
+	<script src="/node_modules/sinon/pkg/sinon.js"></script>
+	<script src="/node_modules/sinon/pkg/sinon-ie.js"></script>
+	<script>mocha.setup('bdd')</script>
+	<script type="text/javascript" src="/node_modules/noder-js/dist/browser/noder.min.js">
+	{
+		packaging : {
+			baseUrl : "/"
+		}
+	}
+	</script>
+</head>
+<body>
+
+	<div id="mocha"></div>
+
+	<script type="noder">
+
+	// runtime tests
+	require("test/rt/log.spec.js");
+	require("test/rt/json.spec.js");
+	require("test/rt/klass.spec.js");
+	require("test/rt/propobserver.spec.js");
+	require("test/rt/text.spec.hsp");
+	require("test/rt/elt.spec.hsp");
+	require("test/rt/if.spec.hsp");
+	require("test/rt/foreach.spec.hsp");
+	require("test/rt/evthandler.spec.hsp");
+	require("test/rt/input.spec.hsp");
+	require("test/rt/cptwrapper.spec.hsp");
+	require("test/rt/cptbinding.spec.hsp");
+	require("test/rt/cptintegration.spec.hsp");
+	require("test/rt/subtemplates1.spec.hsp");
+	require("test/rt/subtemplates2.spec.hsp");
+	require("test/rt/subtemplates3.spec.hsp");
+	require("test/rt/cptattelements1.spec.hsp");
+	require("test/rt/cptattelements2.spec.hsp");
+	require("test/rt/cptattelements3.spec.hsp");
+	require("test/rt/cptattelements4.spec.hsp");
+	require("test/rt/cptattelements5.spec.hsp");
+	require("test/rt/log.spec.hsp");
+	require("test/rt/let.spec.hsp");
+	require("test/rt/exprbinding.spec.hsp");
+	require("test/rt/fnexpressions.spec.hsp");
+	require("test/rt/dynexpressions.spec.hsp");
+	require("test/gestures/touchEvent.spec.js");
+	require("test/gestures/tap.spec.hsp");
+	require("test/gestures/longPress.spec.hsp");
+	require("test/gestures/singleTap.spec.hsp");
+	require("test/gestures/doubleTap.spec.hsp");
+	require("test/gestures/drag.spec.hsp");
+	require("test/gestures/swipe.spec.hsp");
+	require("test/gestures/pinch.spec.hsp");
+	require("test/utils/hashtester.spec.hsp");
+	require("test/utils/eventgenerator.spec.hsp");
+	require("todomvc/test/todo.spec.js");
+
+	mocha.checkLeaks();
+	//mocha.globals(['jQuery']);
+	mocha.run();
+
+	</script>
+
+</body>
+</html>
