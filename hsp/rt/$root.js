@@ -340,6 +340,7 @@ var $CptNode = klass({
      */
     $constructor : function (tplPath, exps, attcfg, ehcfg, children) {
         this.pathInfo=tplPath.slice(1).join("."); // debugging info
+        this.info="[Component: #"+this.pathInfo+"]"; // debug info
         this.isCptNode = true;
         this.attEltNodes = null; // array of element nodes - used to trigger a refresh when elt content changes
         this.tplPath = tplPath;
@@ -415,7 +416,7 @@ var $CptNode = klass({
       }
 
       if (!ni) {
-          log.error(this+" Invalid component reference");
+          log.error(this.info+" Invalid component reference");
           // create an element to avoid generating other errors
           ni=this.createCptInstance("$CptAttInsert",parent);
       }
@@ -621,14 +622,6 @@ var $CptNode = klass({
             }
         }
         return args;
-    },
-
-    /**
-    * Helper function used to give contextual error information
-    * @return {String} - e.g. "[Component: #foo.bar]"
-    */
-    toString:function() {
-        return "[Component: #"+this.pathInfo+"]";
     }
 });
 
@@ -644,6 +637,7 @@ var $CptAttElement = klass({
      */
     $constructor : function (name, exps, attcfg, ehcfg, children) {
         this.name = name;
+        this.info = "[Component attribute element: @"+this.name+"]";
         this.tagName = "@"+name;
         $CptNode.$constructor.call(this,[null,name], exps, attcfg, ehcfg, children);
         this.isCptAttElement=true;
@@ -684,21 +678,21 @@ var $CptAttElement = klass({
                 
                 if (!eltDef && !attDef) {
                     // invalid elt
-                    log.error(this+" Element not supported by its parent component");
+                    log.error(this.info+" Element not supported by its parent component");
                 } else if (eltDef) {
                     var type=eltDef.type;
                     if (type==="template") {
                         ni=TNode.createNodeInstance.call(this,parent);
                     } else if (type==="component") {
                         if (!eltDef.controller) {
-                            log.error(this+" Controller property is mandatory for component elements");
+                            log.error(this.info+" Controller property is mandatory for component elements");
                         } else {
                             // this element is a sub-component - let's create its controller
                             ni=this.createCptInstance("$CptComponent",parent);
                             ni.initCpt({cptattelement:ni,ctlConstuctor:eltDef.controller,parentCtrl:p.controller});
                         }
                     } else {
-                        log.error(this+" Invalid component element type: "+eltDef.type);
+                        log.error(this.info+" Invalid component element type: "+eltDef.type);
                     }
                 } else if (attDef) {
                     if (attDef.type==="template") {
@@ -711,7 +705,7 @@ var $CptAttElement = klass({
             }
         }
         if (!found) {
-            log.error(this+" Attribute elements cannot be used outside components");
+            log.error(this.info+" Attribute elements cannot be used outside components");
         }
         return ni;
     },
@@ -729,14 +723,6 @@ var $CptAttElement = klass({
      */
     getTemplateNode:function() {
         return new $RootNode(this.vscope, this.children);
-    },
-
-    /**
-    * Helper function used to give contextual error information
-    * @return {String} - e.g. "[Component attribute element: @body]"
-    */
-    toString:function() {
-        return "[Component attribute element: @"+this.name+"]";
     }
 });
 
