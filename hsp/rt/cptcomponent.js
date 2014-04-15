@@ -274,7 +274,7 @@ exports.$CptComponent = {
 
     if (ct==="ERROR") {
       loadCpts=false;
-      log.error(this+" Component content cannot mix attribute elements with content elements");
+      log.error(this.info+" Component content cannot mix attribute elements with content elements");
     } else if (ct!=="ATTELT") {
       if (defaultTplAtt) {
         // ct is CONTENT or INDEFINITE - so we create a default attribute element
