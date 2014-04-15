@@ -1,0 +1,284 @@
+// The micro clearfix http://nicolasgallagher.com/micro-clearfix-hack/
+.clearfix() {
+  *zoom:1;
+
+  &:before,
+  &:after {
+      content:"";
+      display:table;
+  }
+  &:after {
+      clear:both;
+  }
+}
+
+
+body {
+  line-height: 24px;
+}
+.logo img {
+  margin-left: -15px;
+}
+
+a:focus {
+  background-color: transparent !important;
+  color: #494949 !important;
+}
+
+.navselected() {
+  background-color: #5092BD;
+  border-radius: 3px;
+  color: #FFFFFF !important;
+}
+
+footer {
+  margin-top: 60px;
+}
+
+code {
+  background-color: #f0f0f0;
+  padding: 4px;
+  text-transform: none;
+  font-weight: normal;
+}
+
+pre code, code {
+  font-family: "ubuntu-mono";
+}
+
+#wip {
+  font-family: Ubuntu;
+  font-size: 32px;
+  opacity: 0.1;
+  position: absolute;
+  right: 30px;
+  text-transform: lowercase;
+  top: 30px;
+}
+
+
+/* HOMEPAGE */
+.shadow() {
+  color: #f9f9f9;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+}
+
+.home {
+  .not-found {
+    .shadow();
+    display: block;
+    margin: 100px 0;
+    text-align: center;
+  }
+  .column {
+    margin-bottom: 40px;
+  }
+  h2 {
+    margin: 60px 0 20px;
+  }
+  .mantra {
+    margin: 40px 0;
+    h2,  h3  {
+      .shadow();
+    }
+
+    h2 {
+      font-size: 38px;
+      margin: 10px 0;
+    }
+
+    h3 {
+      line-height: 1.25em;
+    }
+    .actions {
+      margin: 80px auto 20px;
+      text-align: center;
+      a {
+        padding: 15px;
+        margin: 15px;
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+/* API */
+
+.api {
+  nav a.api {
+    .navselected();
+  }
+  .content-wrapper {
+    section.content {
+      background: #fff;
+      border: 1px solid #dedede;
+      border-radius: 5px;
+
+      .column {
+        > section {
+          margin: 30px 0 60px;
+        }
+      }
+    }
+  }
+
+  h2 {
+    margin: 60px 0 20px;
+  }
+
+  h4 {
+    margin: 40px 0;
+  }
+
+  h5 {
+    padding-top: 20px;
+    margin: 30px 0;
+    color: #535353;
+  }
+
+  p + hr, pre + hr, ul + hr {
+    border: 0px;
+    border-top: 1px dotted #dedede;
+    height: 1px;
+    margin-top: 40px;
+  }
+
+}
+
+/* PLAYGROUND */
+.playground {
+  nav a.playground {
+    .navselected();
+  }
+  #header, > .content-wrapper, #footer > section.content {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .content-wrapper {
+    .content {
+      width: auto;
+      background-image: none;
+
+      .wrapper {
+        padding: 10px 0;
+        overflow: hidden;
+        .clearfix();
+        position: relative;
+      }
+    }
+  }
+
+  h4 {
+    margin-top: 15px;
+  }
+
+  #main {
+    .clearfix();
+  }
+
+  div.logsection {
+    padding-top: 10px;
+  }
+  ul.logs .msg {
+    font-family: 'Ubuntu Mono','Monaco','Menlo', 'Droid Sans Mono','Consolas', monospace;
+    font-size: 11px;
+  }
+  .logs .ctxt {
+    color: #AAAAAA;
+  }
+  .logs .msg {
+    color: #FF8800;
+    margin: 0;
+  }
+
+  @sample-list-width: 300px;
+
+  .samples-list {
+    float: left;
+    width: @sample-list-width;
+    position: relative;
+    z-index: 1000;
+
+    h4 {
+      padding-left: 5px;
+    }
+
+    .list {
+      .item {
+        cursor: pointer;
+        padding: 2px 5px;
+        &.selected {
+          background-color: #fff;
+          border-left: 1px solid #dedede;
+          border-top: 1px solid #dedede;
+          border-bottom: 1px solid #dedede;
+          border-radius: 5px 0 0 5px;
+          position: relative;
+          right: -1px;
+          margin-left: -1px;
+        }
+      }
+    }
+  }
+
+  .hsp-sample {
+    background: #fff;
+    border: 1px solid #dedede;
+    border-radius: 5px;
+
+    position: absolute;
+    z-index: 500;
+    left: @sample-list-width;
+    bottom: 0px;
+    top: 10px;
+    right: 0px;
+
+    .output {
+      background-color: #444;
+      color: #fff;
+      font-weight: 300;
+      padding: 10px;
+      line-height: 1rem;
+
+      ul {
+        margin: 0;
+        padding-left: 30px;
+      }
+    }
+  }
+
+  .description, .editor {
+    position: absolute;
+    top: 0px;
+    bottom: 15px;
+  }
+
+  .description {
+    left: 15px;
+    width: 38%;
+    .scroller {
+      position: absolute;
+      top: 40px;
+      bottom: 0px;
+      width: 100%;
+      overflow: auto;
+    }
+  }
+
+  .editor {
+    right: 15px;
+    width: 58%;
+
+    .ace_editor {
+      position: absolute;
+      top: 40px;
+      bottom: 0px;
+      width: 100%;
+      font-size: 14px;
+      line-height: 18px;
+    }
+  }
+
+}
+

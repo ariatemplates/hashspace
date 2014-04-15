@@ -7,3 +7,5 @@
 *.peg.js
 .DS_STORE
 ._.DS_STORE
+/hashspace-gh-pages
+/docs/*.exe
