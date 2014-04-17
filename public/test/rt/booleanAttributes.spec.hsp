@@ -3,20 +3,27 @@ hsp=require("hsp/rt");
 
 #template tpl(model)
 <input type = "text" required = "{model.flag}">
+<input type = "radio" checked = "{model.flag2}">
 # /template
 
 describe('boolean attributes', function () {
 
     it('should add / remove boolean attributes with truthy / falsy values', function () {
-        var model = {flag: true};
+        var model = {
+            flag: true,
+            flag2: false
+        };
         var n = tpl(model);
 
         expect(n.node.firstChild.required).to.equal(true);
+        expect(n.node.childNodes[1].checked).to.equal(false);
 
         // test property change
         json.set(model, "flag", false);
+        json.set(model, "flag2", true);
         hsp.refresh();
         expect(n.node.firstChild.required).to.equal(false);
+        expect(n.node.childNodes[1].checked).to.equal(true);
 
         n.$dispose();
     });

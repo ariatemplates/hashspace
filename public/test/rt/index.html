@@ -40,32 +40,34 @@
 	<script type="noder">
 
 	// runtime tests
-	require("test/rt/log.spec.js");
-	require("test/rt/json.spec.js");
-	require("test/rt/klass.spec.js");
-	require("test/rt/propobserver.spec.js");
-	require("test/rt/text.spec.hsp");
-	require("test/rt/elt.spec.hsp");
-	require("test/rt/if.spec.hsp");
-	require("test/rt/foreach.spec.hsp");
-	require("test/rt/evthandler.spec.hsp");
-	require("test/rt/input.spec.hsp");
-	require("test/rt/cptwrapper.spec.hsp");
-	require("test/rt/cptbinding.spec.hsp");
-	require("test/rt/cptintegration.spec.hsp");
-	require("test/rt/subtemplates1.spec.hsp");
-	require("test/rt/subtemplates2.spec.hsp");
-	require("test/rt/subtemplates3.spec.hsp");
+	require("test/rt/$set.spec.js");
+	require("test/rt/booleanAttributes.spec.hsp");
 	require("test/rt/cptattelements1.spec.hsp");
 	require("test/rt/cptattelements2.spec.hsp");
 	require("test/rt/cptattelements3.spec.hsp");
 	require("test/rt/cptattelements4.spec.hsp");
 	require("test/rt/cptattelements5.spec.hsp");
-	require("test/rt/log.spec.hsp");
-	require("test/rt/let.spec.hsp");
+	require("test/rt/cptbinding.spec.hsp");
+	require("test/rt/cptintegration.spec.hsp");
+	require("test/rt/cptwrapper.spec.hsp");
+	require("test/rt/dynexpressions.spec.hsp");
+	require("test/rt/elt.spec.hsp");
+	require("test/rt/evthandler.spec.hsp");
 	require("test/rt/exprbinding.spec.hsp");
 	require("test/rt/fnexpressions.spec.hsp");
-	require("test/rt/dynexpressions.spec.hsp");
+	require("test/rt/foreach.spec.hsp");
+	require("test/rt/if.spec.hsp");
+	require("test/rt/input.spec.hsp");
+	require("test/rt/json.spec.js");
+	require("test/rt/klass.spec.js");
+	require("test/rt/let.spec.hsp");
+	require("test/rt/log.spec.hsp");
+	require("test/rt/log.spec.js");
+	require("test/rt/propobserver.spec.js");
+	require("test/rt/subtemplates1.spec.hsp");
+	require("test/rt/subtemplates2.spec.hsp");
+	require("test/rt/subtemplates3.spec.hsp");
+	require("test/rt/text.spec.hsp");
 	require("test/gestures/touchEvent.spec.js");
 	require("test/gestures/tap.spec.hsp");
 	require("test/gestures/longPress.spec.hsp");
@@ -74,8 +76,8 @@
 	require("test/gestures/drag.spec.hsp");
 	require("test/gestures/swipe.spec.hsp");
 	require("test/gestures/pinch.spec.hsp");
-	require("test/utils/hashtester.spec.hsp");
 	require("test/utils/eventgenerator.spec.hsp");
+	require("test/utils/hashtester.spec.hsp");
 	require("todomvc/test/todo.spec.js");
 
 	mocha.checkLeaks();
