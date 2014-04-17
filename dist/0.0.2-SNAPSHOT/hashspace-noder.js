@@ -6284,6 +6284,7 @@
             async: true,
             autofocus: true,
             autoplay: true,
+            checked: true,
             controls: true,
             defer: true,
             disabled: true,
