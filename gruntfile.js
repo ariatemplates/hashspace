@@ -18,6 +18,7 @@ module.exports = function (grunt) {
   var pkg = require('./package.json');
 
   grunt.initConfig({
+    pkg: pkg,
     mochaTest: {
       test: {
         options: {
@@ -25,8 +26,8 @@ module.exports = function (grunt) {
           require: 'build/blanket'
         },
         src: [
-          'public/test/compiler/**/*.js',
-          'public/test/transpiler/*.js'
+          'test/compiler/**/*.js',
+          'test/transpiler/*.js'
         ]
       },
       coverage: {
@@ -49,21 +50,21 @@ module.exports = function (grunt) {
         frameworks: ['mocha', 'expect', 'commonjs', 'sinon'],
         files: [
           'hsp/**/*.js',
-          'public/test/**/*.spec.*',
+          'test/**/*.spec.*',
           'node_modules/sinon/pkg/sinon-ie.js',
           'node_modules/jquery/dist/jquery.min.js',
           'node_modules/sinon/pkg/sinon-ie.js'
         ],
         exclude: [
           'hsp/compiler/**/*.js',
-          'public/test/transpiler/**/*.spec.js',
-          'public/test/compiler/**/*.spec.js'
+          'test/transpiler/**/*.spec.js',
+          'test/compiler/**/*.spec.js'
         ],
         preprocessors: {
           'hsp/**/*.js': ['commonjs'],
-          'public/test/lib/*.js': ['commonjs'],
-          'public/test/**/*.spec.js': ['commonjs'],
-          'public/test/**/*.spec.hsp': ['hsp', 'commonjs'],
+          'test/lib/*.js': ['commonjs'],
+          'test/**/*.spec.js': ['commonjs'],
+          'test/**/*.spec.hsp': ['hsp', 'commonjs'],
           'node_modules/jquery/dist/jquery.min.js': ['commonjs']
         },
         commonjsPreprocessor: {
@@ -224,19 +225,18 @@ module.exports = function (grunt) {
       }
     },
     jscs: {
-        src: ['hsp/**/*.js', 'public/**/*.js', '!public/**/markdown.js','!public/lib/*.js'],
+        src: ['hsp/**/*.js', 'docs/**/*.js', '!docs/**/*.js'],
         options: {
             config: '.jscs.json'
         }
     },
     hspserver: {
       port: 8000,
-      base: __dirname,
-      templateExtension: "hsp"
+      base: __dirname + '/hsp'
     },
     watch: {
       mocha: {
-        files: ['hsp/compiler/**', 'public/test/**'],
+        files: ['hsp/compiler/**', 'test/**'],
         tasks: ['mochaTest']
       }
     },
@@ -307,11 +307,6 @@ module.exports = function (grunt) {
                                 targetLogicalPath : "uglify-js.js"
                             }
                         }, {
-                            type : "NoderExportVars",
-                            cfg : {
-                                files : ["uglify-js.js"]
-                            }
-                        }, {
                             type : "ImportSourceFile",
                             cfg : {
                                 sourceFile : require.resolve("acorn/acorn"),
@@ -330,7 +325,7 @@ module.exports = function (grunt) {
                     sourceDirectories : ["node_modules/uglify-js/lib"],
                     sourceFiles : [],
                     outputDirectory : 'tmp',
-                    visitors : [],
+                    visitors : ["NoderExportVars"],
                     packages : [{
                         builder : "Concat",
                         name : 'uglify-js.js',
@@ -370,5 +365,6 @@ module.exports = function (grunt) {
   grunt.registerTask('mocha', ['peg', 'inittests', 'mochaTest', 'finalizetests']);
   grunt.registerTask('test', ['checkStyle', 'jscs', 'mocha', 'karma:unit']);
   grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci1', 'karma:ci2', 'karma:coverage', 'package']);
-  grunt.registerTask('default', ['hspserver']);
+  grunt.registerTask('release', ['docs:release']);
+  grunt.registerTask('default', ['docs:playground']);
 };

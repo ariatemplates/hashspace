@@ -1,6 +1,7 @@
 build
 dist
-public
+docs
+hashspace-gh-pages
 .idea
 sauce_connect.log
 .gitattributes
