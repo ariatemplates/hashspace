@@ -6,8 +6,12 @@ if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_SECURE_ENV_VARS" = "true" 
     git config user.name "Titan Bot" &&
     git checkout -b gh-pages origin/gh-pages &&
     cp -rv ../dist . &&
-    grunt docs
-    git add -f dist &&
+    grunt release &&
+    # we add everything
+    git add -f . &&
+    # we let git check for deleted files (grunt release is auto removing all
+    # files related to docs 
+    git add -u &&
     git commit -m "release ${TRAVIS_COMMIT}" &&
     git push --quiet "https://${GH_CREDENTIALS}@github.com/${TRAVIS_REPO_SLUG}.git" gh-pages
 fi
