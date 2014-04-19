@@ -125,11 +125,23 @@ var $IfNode = klass({
      * the else statement. Otherwise performs the regular recursive refresh
      */
     refresh : function () {
-        var cond = this.getConditionValue();
+        var cond = this.getConditionValue(), ch;
         if (cond !== this.lastConditionValue) {
             this.createChildNodeInstances(cond);
             this.root.updateObjectObservers(this);
+
             this.cdirty = false;
+
+            // check if one child is dirty
+            if (this.childNodes) {
+                for (var i=0;this.childNodes.length>i;i++) {
+                    ch=this.childNodes[i];
+                    if (ch.adirty || ch.cdirty) {
+                        this.cdirty=true;
+                        break;
+                    }
+                }
+            }
         }
         TNode.refresh.call(this);
     },
