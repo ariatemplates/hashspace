@@ -76,7 +76,7 @@ var ListCtrl = klass({
 
 # template test3(d)
     <#list>
-        {foreach idx,itm in d.items}
+        {foreach itm,idx in d.items}
             <@option value="{idx}">{idx+1}. {itm}</@option>
         {/foreach}
     </#list>

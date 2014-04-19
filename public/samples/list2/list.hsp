@@ -46,7 +46,7 @@ var ListCtrl = klass({
       <span class="nodata">Empty list</span>
     {else}
       <ul class="">
-        {foreach idx,itm in lc.content}
+        {foreach itm,idx in lc.content}
           {if itm.tagName==="@option"}
             <li class="opt" onclick="{lc.select(itm.value)}">
               <span class="{'item','highlight':itm.selected}"><#itm.label/></span>
@@ -75,7 +75,7 @@ var ListCtrl = klass({
       <a onclick="{empty()}">Empty</a> - 
       <a onclick="{update()}">Update list</a> 
     </@head>
-    {foreach idx,itm in d.items}
+    {foreach itm,idx in d.items}
       <@option value="K{idx}">{idx+1}. {itm}</@option>
     {/foreach}
   </#list>

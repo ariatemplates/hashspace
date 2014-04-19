@@ -1,6 +1,6 @@
 ##### Template:
 # template test(label, passengers)
-  {foreach k,name in passengers.names}
+  {foreach name,k in passengers.names}
     {if name_isfirst}
       \<\<
     {/if}
