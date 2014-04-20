@@ -13,7 +13,17 @@
     "args": ["things"],
     "content": [
       {"type": "text","value": "Foreach test: "},
-      {"type": "foreach","item":"thing","key":"thing_key",colref:{"category":"objectref","path": ["things"]}},
+      {"type": "foreach","item":"thing","key":"thing_key",
+        "colref": {
+          "type": "Variable",
+          "name": "things",
+          "code": "things",
+          "category": "jsexpression",
+          "expType": "Variable",
+          "line": 3,
+          "column": 22
+        }
+      },
       {"type": "text","value": " - "},
       {"type": "expression", expType:"Variable", "category": "jsexpression", name:"thing"},
       {"type": "text","value": " - "},
@@ -31,13 +41,23 @@
     "args": ["things"],
     "content": [
       {"type": "text","value": "Foreach test: "},
-      {"type": "foreach","item":"thing","key":"thing_key",collection:{"category":"objectref","path": ["things"]}, content:[
-        {"type": "textblock", "content": [
-          {"type": "text","value": " - "},
-          {"type": "expression", "category": "objectref", "bound": true, "path": [ "thing" ]}, 
-          {"type": "text","value": " - "}
-        ]}
-      ]}
+        {"type": "foreach","item":"thing","key":"thing_key",
+        "collection": {
+            "type": "expression",
+            "category": "objectref",
+            "bound": true,
+            "path": [ "things" ],
+            "line": 3,
+            "column": 22
+        },
+        content:[
+          {"type": "textblock", "content": [
+            {"type": "text","value": " - "},
+            {"type": "expression", "category": "objectref", "bound": true, "path": [ "thing" ]}, 
+            {"type": "text","value": " - "}
+          ]}
+        ]
+      }
     ]
   }
 ]

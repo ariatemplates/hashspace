@@ -1,0 +1,28 @@
+##### Template:
+# template test
+  {foreach itm in items}
+    {itm}
+  {/foreach}
+# /template
+
+##### Parsed Tree
+
+"skip"
+
+##### Syntax Tree
+
+"skip"
+
+##### Template Code
+test=[
+  n.$foreach (
+    {e1:[2,1,_items]},
+    "itm_key",
+    "itm",
+    0,
+    1,
+    [
+      n.$text({e1:[1,1,"itm"]}, ["",1," "])
+    ]
+  )
+]

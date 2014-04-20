@@ -8,6 +8,7 @@
 # /template
 
 ##### Parsed Tree
+
 [
   {
     "type": "template",
@@ -16,7 +17,18 @@
     "closed": true,
     "content": [
       {"type": "element","name": "div","closed": false,"attributes": []},
-      {"type": "foreach","item":"name","key":"k",colref:{"category":"objectref","path": ["passengers","names"]}},
+      {"type": "foreach","item":"name","key":"k",
+        "colref": {
+          "type": "PropertyAccess",
+          "base": { "type": "Variable", "name": "passengers", "code": "passengers" },
+          "name": "names",
+          "code": "passengers.names",
+          "category": "jsexpression",
+          "expType": "PropertyAccess",
+          "line": 3,
+          "column": 24
+        }
+      },
       {"type": "text","value": "x "},
       {"type": "endforeach"},
       {"type": "text","value": " "},
@@ -26,6 +38,7 @@
 ]
 
 ##### Syntax Tree
+
 [
   {
     "type": "template",
@@ -34,7 +47,14 @@
     "content": [
       {"type": "element","name": "div","closed": false,"attributes": [],"content": [
           {"type": "foreach","item": "name","key": "k", 
-            "collection": {"category": "objectref","path": ["passengers","names"],"code": "passengers.names", "bound": true},
+            "collection": {
+              "type": "expression",
+              "category": "objectref",
+              "bound": true,
+              "path": [ "passengers", "names" ],
+              "line": 3,
+              "column": 24
+            },
             "content": [
               {"type": "text","value": "x "}
             ]

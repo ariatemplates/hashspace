@@ -80,6 +80,18 @@ var hsp=require("hsp/rt"),
     {/foreach}
 # /template
 
+var items=[
+    {value:"Iteam A"},
+    {value:"Item B"}
+];
+# template test7
+    {foreach item in items}
+        <div class="itm">
+            {item.value}
+        </div>
+    {/foreach}
+# /template
+
 describe("ForEach Node", function () {
     function test1Count (arrayLength) {
         // return number of items produced by test 1
@@ -551,6 +563,21 @@ describe("ForEach Node", function () {
         expect(inputNodes.length).to.equal(0);
         expect(spanNodes.length).to.equal(1);
         expect(spanNodes.item(0).text()).to.equal("AA");
+
+        h.$dispose();
+    });
+
+    it("validates display with global collection", function() {
+        var h=ht.newTestContext();
+        test7().render(h.container);
+
+        expect(h(".itm").length).to.equal(2);
+
+        items.push({value:"Item C"});
+        h.refresh();
+
+        // no binding - so nbr of items should be the same
+        expect(h(".itm").length).to.equal(2);
 
         h.$dispose();
     });
