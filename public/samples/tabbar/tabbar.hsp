@@ -67,21 +67,27 @@ var TabBarCtrl = klass({
   </div>
 #/template
 
-var model={selection:0};
-# template test(m)
-  <#tabbar selection="{m.selection}">
-    <@tab label="Tab A">This content A...</@tab>
-    <@tab>
-      <@label> Tab <b>B</b> <i>!!</i>   </@label>
-      <@body>  
-        Now you see content B... <br/>
-        (on two lines)
-      </@body>
+# template test
+  {let showSubTabs=false, selection1=0, selection2=0}
+  <#tabbar selection="{selection1}">
+    <@tab label="Tab A">
+      {if showSubTabs}
+        <#tabbar selection="{selection2}">
+            <@tab label="Tab 1">Sub tab 1</@tab>
+            <@tab label="Tab 2">Sub tab 2</@tab>
+        </#tabbar>
+      {else}
+        Tab A content...
+      {/if}
     </@tab>
-    <@tab label="Tab C">...and now content C</@tab>
+    <@tab label="Tab B">Tab B content...</@tab>
+    <@tab label="Tab C">Tab C content...</@tab>
   </#tabbar>
-  <hr/>
-  Selected tab: <span class="textvalue">{m.selection}</span>
+  <label for="cb1">
+    <input id="cb1" type="checkbox" model="{showSubTabs}"/>
+    Show nested tabs in tab A
+  </label>
 # /template
 
-test(model).render("output");
+
+test().render("output");
