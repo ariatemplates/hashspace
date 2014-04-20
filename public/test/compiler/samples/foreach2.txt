@@ -19,7 +19,18 @@
     "name": "test",
     "args": ["label","passengers"],
     "content": [
-      {"type": "foreach","item":"name","key":"k",colref:{"category":"objectref","path": ["passengers","names"]}},
+      {"type": "foreach","item":"name","key":"k",
+        "colref": {
+          "type": "PropertyAccess",
+          "base": { "type": "Variable", "name": "passengers", "code": "passengers"},
+          "name": "names",
+          "code": "passengers.names",
+          "category": "jsexpression",
+          "expType": "PropertyAccess",
+          "line": 2,
+          "column": 22
+        }
+      },
       {"type": "if", "condition": {type: "Variable", "category": "jsexpression", "name": "name_isfirst"}},
       {"type": "text","value": "<< "},
       {"type": "endif"},
@@ -45,29 +56,39 @@
     "name": "test",
     "args": ["label","passengers"],
     "content": [
-      {"type": "foreach","item":"name","key":"k",collection:{"category":"objectref","path": ["passengers","names"]},content:[
-        {"type": "if",
-          "condition": {"category": "objectref", "path": ["name_isfirst"]},
-          "content1": [
-            {"type": "text", "value": "<< "}
-          ]
+      {"type": "foreach","item":"name","key":"k",
+        "collection": {
+          "type": "expression",
+          "category": "objectref",
+          "bound": true,
+          "path": [ "passengers", "names" ],
+          "line": 2,
+          "column": 22
         },
-        {"type": "textblock", "content": [
-          {"type": "expression", "category": "objectref", "bound": false, "path": [ "label" ]},
-          {"type": "text", "value": " "},
-          {"type": "expression", "category": "objectref", "bound": true, "path": [ "k" ]},
-          {"type": "text", "value": ": "},
-          {"type": "expression", "category": "objectref", "bound": true, "path": [ "name" ]},
-          {"type": "text", "value": " "}
-        ]},
-        {"type": "if",
-          "condition": {"category": "objectref", "path": ["name_islast"]},
-          "content1": [
-            {"type": "text", "value": ">> "}
-          ]
-        }
-      ]
-    }]
+        content:[
+          {"type": "if",
+            "condition": {"category": "objectref", "path": ["name_isfirst"]},
+            "content1": [
+              {"type": "text", "value": "<< "}
+            ]
+          },
+          {"type": "textblock", "content": [
+            {"type": "expression", "category": "objectref", "bound": false, "path": [ "label" ]},
+            {"type": "text", "value": " "},
+            {"type": "expression", "category": "objectref", "bound": true, "path": [ "k" ]},
+            {"type": "text", "value": ": "},
+            {"type": "expression", "category": "objectref", "bound": true, "path": [ "name" ]},
+            {"type": "text", "value": " "}
+          ]},
+          {"type": "if",
+            "condition": {"category": "objectref", "path": ["name_islast"]},
+            "content1": [
+              {"type": "text", "value": ">> "}
+            ]
+          }
+        ]
+      }
+    ]
   }
 ]
 

@@ -136,11 +136,11 @@ ForeachArgs
   = ForeachArgs1 / ForeachArgs2
 
 ForeachArgs1
-  = item:VarIdentifier " " _ "in " _ col:JSObjectRef 
+  = item:VarIdentifier " " _ "in " _ col:HExpressionContent 
   {return {item:item, key:item+"_key", colref:col}}
 
 ForeachArgs2
-  = key:VarIdentifier _ "," _ item:VarIdentifier " " _ "in " _ col:JSObjectRef 
+  = key:VarIdentifier _ "," _ item:VarIdentifier " " _ "in " _ col:HExpressionContent 
   {return {item:item, key:key, colref:col}}
 
 EndForeachBlock
