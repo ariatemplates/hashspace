@@ -24,7 +24,7 @@ describe('Template compilation errors: ', function () {
     var samples = ut.getSampleNames(__dirname + "/errsamples").filter(function(name){
       return name.substr(0, 5) != 'mixed';
     });
-    //samples=["component2"];
+    //samples=["component3"];
 
     for (var i = 0, sz = samples.length; sz > i; i++) {
         // create one test for each sample

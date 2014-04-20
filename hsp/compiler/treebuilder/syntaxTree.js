@@ -699,6 +699,9 @@ var SyntaxTree = klass({
                     return (type === "end" + blockType); // && name===blockName
                 });
                 if (index < 0 || !blocks[index]) {
+                    if (blockType==="component") {
+                        blockName="#"+this._getComponentPathAsString(block.ref);
+                    }
                     // we didn't find any endelement or endcomponent
                     this._logError("Missing end " + blockType + " </" + blockName + ">", block);
                     endFound = true;
