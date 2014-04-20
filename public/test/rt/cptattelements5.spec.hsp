@@ -87,6 +87,19 @@ var TabBarCtrl = klass({
   </#tabbar>
 # /template
 
+# template test2(m)
+  <#tabbar selection="{m.selection1}">
+    <@tab label="Tab A">
+        <#tabbar selection="{m.selection2}">
+            <@tab label="tab1">Sub tab 1</@tab>
+            <@tab label="tab2">Sub tab 2</@tab>
+        </#tabbar>
+    </@tab>
+    <@tab label="Tab B">BBB Content BBB</@tab>
+    <@tab label="Tab C">CCC Content CCC</@tab>
+  </#tabbar>
+# /template
+
 var TABS=".x-tab";
 var BODY=".x-tab-content";
 
@@ -106,6 +119,48 @@ describe("Component attribute elements (5)", function () {
         h(TABS).item(0).click();
         expect(model.selection).to.equal(0);
         expect(h(BODY).text()).to.equal("AAA Content AAA");
+
+        h.$dispose();
+    });
+
+    it("validates nested component with template sub-elements", function() {
+        var h=ht.newTestContext();
+        var model={selection1:0,selection2:1};
+        test2(model).render(h.container);
+
+        // validate initial display
+        expect(h(BODY).length).to.equal(2);
+        expect(h(BODY).item(1).text()).to.equal("Sub tab 2");
+        expect(h(TABS).length).to.equal(5);
+        expect(h(TABS).item(0).hasClass("x-tab-selected")).to.equal(true);
+        expect(h(TABS).item(4).hasClass("x-tab-selected")).to.equal(true);
+
+        // change main-tab selection
+        h(TABS).item(1).click();
+        expect(h(BODY).length).to.equal(1);
+        expect(h(TABS).length).to.equal(3);
+        expect(h(BODY).text()).to.equal("BBB Content BBB");
+
+        // set back
+        h(TABS).item(0).click();
+        expect(h(BODY).length).to.equal(2);
+        expect(h(TABS).length).to.equal(5);
+        expect(h(BODY).item(1).text()).to.equal("Sub tab 2");
+
+        // change sub-tab
+        h(TABS).item(3).click();
+        expect(h(BODY).item(1).text()).to.equal("Sub tab 1");
+
+        // change main again
+        h(TABS).item(2).click();
+        expect(h(BODY).length).to.equal(1);
+        expect(h(TABS).length).to.equal(3);
+        expect(h(BODY).text()).to.equal("CCC Content CCC");
+
+        // set back
+        h(TABS).item(0).click();
+        expect(h(BODY).length).to.equal(2);
+        expect(h(BODY).item(1).text()).to.equal("Sub tab 1");
 
         h.$dispose();
     });

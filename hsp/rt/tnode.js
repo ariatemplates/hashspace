@@ -63,13 +63,16 @@ var TNode = klass({
         if (this.root) {
             this.root.rmAllObjectObservers(this);
         }
+        // Note: we must not set this.children to null here.
+        // Indeed children are usually static (on the constructor) and so children=null should have no
+        // effect, except for $CptAttElement where it may be set at at instance level for cpt attributes
+        // created by the run-time
         this.obsPairs = null;
         this.htmlCbs = null;
         this.node = null;
         this.parent = null;
         this.root = null;
         this.vscope = null;
-        this.children = null;
         this.atts = null;
         this.evtHandlers = null;
     },
