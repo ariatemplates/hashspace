@@ -1589,13 +1589,16 @@
                 if (this.root) {
                     this.root.rmAllObjectObservers(this);
                 }
+                // Note: we must not set this.children to null here.
+                // Indeed children are usually static (on the constructor) and so children=null should have no
+                // effect, except for $CptAttElement where it may be set at at instance level for cpt attributes
+                // created by the run-time
                 this.obsPairs = null;
                 this.htmlCbs = null;
                 this.node = null;
                 this.parent = null;
                 this.root = null;
                 this.vscope = null;
-                this.children = null;
                 this.atts = null;
                 this.evtHandlers = null;
             },
@@ -3921,11 +3924,21 @@
      * the else statement. Otherwise performs the regular recursive refresh
      */
             refresh: function() {
-                var cond = this.getConditionValue();
+                var cond = this.getConditionValue(), ch;
                 if (cond !== this.lastConditionValue) {
                     this.createChildNodeInstances(cond);
                     this.root.updateObjectObservers(this);
                     this.cdirty = false;
+                    // check if one child is dirty
+                    if (this.childNodes) {
+                        for (var i = 0; this.childNodes.length > i; i++) {
+                            ch = this.childNodes[i];
+                            if (ch.adirty || ch.cdirty) {
+                                this.cdirty = true;
+                                break;
+                            }
+                        }
+                    }
                 }
                 TNode.refresh.call(this);
             },
@@ -4019,9 +4032,8 @@
                 this.forType = 0;
                 // 0=in / 1=of / 2=on
                 this.colExpIdx = colExpIdx;
-                // force binding for the collection
-                exps["e" + colExpIdx][0] = 1;
                 TNode.$constructor.call(this, exps);
+                this.isBound = this.eh.getExpr(colExpIdx).bound === true;
                 this.displayedCol = null;
                 // displayed collection
                 this.itemNode = new $ItemNode(children, itemName, itemKeyName);
@@ -4057,7 +4069,9 @@
                 var cn, forType = this.forType, itemNode = this.itemNode;
                 if (col) {
                     // create an observer on the collection to be notified of the changes (cf. refresh)
-                    this.root.createObjectObserver(this, col);
+                    if (this.isBound) {
+                        this.root.createObjectObserver(this, col);
+                    }
                     this.displayedCol = col;
                     this.childNodes = cn = [];
                     if (forType === 0 && col.constructor !== Array) {

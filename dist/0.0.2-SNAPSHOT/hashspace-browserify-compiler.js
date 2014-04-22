@@ -3884,7 +3884,7 @@ module.exports = (function(){
               if (result3 !== null) {
                 result4 = parse__();
                 if (result4 !== null) {
-                  result5 = parse_JSObjectRef();
+                  result5 = parse_HExpressionContent();
                   if (result5 !== null) {
                     result0 = [result0, result1, result2, result3, result4, result5];
                   } else {
@@ -3968,7 +3968,7 @@ module.exports = (function(){
                       if (result7 !== null) {
                         result8 = parse__();
                         if (result8 !== null) {
-                          result9 = parse_JSObjectRef();
+                          result9 = parse_HExpressionContent();
                           if (result9 !== null) {
                             result0 = [result0, result1, result2, result3, result4, result5, result6, result7, result8, result9];
                           } else {
@@ -14276,8 +14276,13 @@ var SyntaxTree = klass({
         var node = new Node("foreach"), block = blocks[index];
         node.item = block.item;
         node.key = block.key;
-        node.collection = block.colref;
+        //node.collection = block.colref;
+        //node.collection.bound = true;
+
+        var expr = new HExpression(block.colref, this);
+        node.collection = expr.getSyntaxTree();
         node.collection.bound = true;
+
         node.content = [];
         out.push(node);
 
@@ -14461,6 +14466,9 @@ var SyntaxTree = klass({
                     return (type === "end" + blockType); // && name===blockName
                 });
                 if (index < 0 || !blocks[index]) {
+                    if (blockType==="component") {
+                        blockName="#"+this._getComponentPathAsString(block.ref);
+                    }
                     // we didn't find any endelement or endcomponent
                     this._logError("Missing end " + blockType + " </" + blockName + ">", block);
                     endFound = true;
@@ -27640,4 +27648,4 @@ exports.describe_ast = function () {
     doitem(UglifyJS.AST_Node);
     return out + "";
 };
-},{"source-map":24,"util":23}]},{},[1]);
+},{"source-map":24,"util":23}]},{},[1])
