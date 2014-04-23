@@ -43,7 +43,78 @@ var hsp=require("hsp/rt"),
     </div>
 # /template
 
+# template enterEmptiesFieldSample(object)
+    <div class="info section">Please type a command and press enter.</div>
+    <pre>{object.commandsHistory}</pre>
+    <input type="text" value="{object.value}" onkeydown="{object.keydown(event)}" placeholder="Your command"><br>
+    <input type="text" model="{object.value}" onkeydown="{object.keydown(event)}" placeholder="Your command"><br>
+# /template
+
 describe("Input Elements", function () {
+    it("input model sync", function () {
+        var v1 = "init value";
+        var enterKeyDownCalled = 0;
+        var object = {
+            commandsHistory: "",
+            value: v1,
+            keydown: function (event) {
+              if (event.keyCode == 13) { // enter key
+                enterKeyDownCalled++;
+                json.set(this, "commandsHistory", this.commandsHistory + "\n" + this.value);
+                json.set(this, "value", ""); // this should empty the field
+              }
+            }
+        };
+        var n = enterEmptiesFieldSample(object);
+        var input1 = n.childNodes[2];
+        var input2 = n.childNodes[4];
+
+        expect(input1.node.value).to.equal(v1);
+        expect(input2.node.value).to.equal(v1);
+
+        // test with input 1
+        var v2 = "new value";
+        input1.node.value = v2;
+        fireEvent("keydown", input1.node);
+        fireEvent("keyup", input1.node);
+        hsp.refresh();
+
+        expect(object.value).to.equal(v2);
+        expect(input1.node.value).to.equal(v2);
+        expect(input2.node.value).to.equal(v2);
+
+        expect(enterKeyDownCalled).to.equal(0);
+        fireEvent("keydown", input1.node, {keyCode: 13});
+        fireEvent("keyup", input1.node, {keyCode: 13});
+        expect(enterKeyDownCalled).to.equal(1);
+        hsp.refresh();
+
+        expect(object.value).to.equal("");
+        expect(input1.node.value).to.equal("");
+        expect(input2.node.value).to.equal("");
+
+        // test with input 2
+        var v3 = "other value";
+        input2.node.value = v3;
+        fireEvent("keydown", input2.node);
+        fireEvent("keyup", input2.node);
+        hsp.refresh();
+
+        expect(object.value).to.equal(v3);
+        expect(input1.node.value).to.equal(v3);
+        expect(input2.node.value).to.equal(v3);
+
+        expect(enterKeyDownCalled).to.equal(1);
+        fireEvent("keydown", input2.node, {keyCode: 13});
+        fireEvent("keyup", input2.node, {keyCode: 13});
+        expect(enterKeyDownCalled).to.equal(2);
+        hsp.refresh();
+
+        expect(object.value).to.equal("");
+        expect(input1.node.value).to.equal("");
+        expect(input2.node.value).to.equal("");
+    });
+
     it("validates text elements", function () {
         var v1 = "edit me!";
         var d = {

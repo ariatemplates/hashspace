@@ -73,7 +73,7 @@ var EltNode = klass({
         }
         this.gesturesEventHandlers = null;
         this.needSubScope = (needSubScope===1);
-        this.preventRefresh=false; // if true will prevent the field from being refreshed during the typing sequence
+        this._lastValue = null;
     },
 
     $dispose : function () {
@@ -207,14 +207,9 @@ var EltNode = klass({
 
         // if the element is an input tag we synchronize the value
         if (this.isInput && this.inputModelExpIdx) {
-            this.preventRefresh=false;
             var exp = this.eh.getExpr(this.inputModelExpIdx);
             if (exp.setValue) {
-                if (et==="keydown") {
-                    // value is updated on keyup - so we must no refresh the field if the model
-                    // is updated during keydown, otherwise the value is lost
-                    this.preventRefresh=true;
-                } else if (et==="input" || et==="keyup" || et==="click" || et==="focus") {
+                if (et==="input" || et==="keyup" || et==="click" || et==="focus") {
                     // push the field value to the data model
                     // note: when the input event is properly implemented we don't need to listen to keyup
                     // but IE8 and IE9 don't implement it completely - thus the need for keyup
@@ -222,15 +217,17 @@ var EltNode = klass({
                     if (tp === "checkbox") {
                         v = this.node.checked;
                     }
-
-                    this._lastValue = v; // to avoid refreshing the field and move the cursor
-                    var currentValue=exp.getValue(this.vscope,this.eh);
-                    //log("[EltNode] handleEvent("+et+"): previous model value:["+currentValue+"] new value (from input):["+v+"]");
-                    // if the value is already set no need to set it again and force a resync
-                    if (v!==currentValue) {
-                        exp.setValue(this.vscope, v);
-                        // force refresh to resync other fields linked to the same data immediately
-                        hsp.refresh();
+                    if (v!==this._lastValue) {
+                        // only set the value in the data model if the value in the field changed
+                        this._lastValue = v;
+                        var currentValue=exp.getValue(this.vscope,this.eh);
+                        //log("[EltNode] handleEvent("+et+"): previous model value:["+currentValue+"] new value (from input):["+v+"]");
+                        // if the value is already set no need to set it again and force a resync
+                        if (v!==currentValue) {
+                            exp.setValue(this.vscope, v);
+                            // force refresh to resync other fields linked to the same data immediately
+                            hsp.refresh();
+                        }
                     }
                 }
             }
@@ -330,25 +327,22 @@ var EltNode = klass({
         if (this.inputModelExpIdx) {
             // update the checked state (must be done at the end as the value attribute may not have been set)
             var exp = this.eh.getExpr(this.inputModelExpIdx), v1 = '' + exp.getValue(vs, this.eh, "");
-            if (nd.type === "radio") {
-                var v2 = '' + nd.value;
-                nd.checked = (v1 === v2);
-            } else if (nd.type === "checkbox") {
-                var v2 = '' + nd.checked;
-                if (v1 !== v2) {
-                    nd.checked = !nd.checked;
-                }
-            } else {
-                if (this._lastValue !== v1) {
-                    // value change has not been triggered by typing in this field
-
-                    if (!this.preventRefresh && v1!=nd.value) {
-                        //only update if value is changing and if we are not between 'onkeydown' and 'onkeyup'
-                        //log("[EltNode] Node value update: current value:["+nd.value+"] new value:["+v1+"]");
-                        nd.value = v1;
+            if (v1 !== this._lastValue) {
+                // only set the value if it changed in the model since last sync
+                this._lastValue = v1;
+                if (nd.type === "radio") {
+                    var v2 = '' + nd.value;
+                    nd.checked = (v1 === v2);
+                } else if (nd.type === "checkbox") {
+                    var v2 = '' + nd.checked;
+                    if (v1 !== v2) {
+                        nd.checked = !nd.checked;
                     }
+                } else if (v1!=nd.value) {
+                    //only update if value is changing
+                    //log("[EltNode] Node value update: current value:["+nd.value+"] new value:["+v1+"]");
+                    nd.value = v1;
                 }
-                this._lastValue = null;
             }
         }
     }
