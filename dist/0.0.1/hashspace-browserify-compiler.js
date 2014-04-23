@@ -16374,4 +16374,4 @@ module.exports = klass;
 
 })(typeof exports === "undefined" ? (self.acorn = {}) : exports);
 
-},{}]},{},[1]);
+},{}]},{},[1])
