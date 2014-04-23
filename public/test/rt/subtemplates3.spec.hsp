@@ -51,6 +51,21 @@ var removeItem = function (items, index) {
     </div>
 # /template
 
+# template innerTemplate(data)
+    {if data.checked}[x]{else}[ ]{/if} Checked
+# /template
+
+# template intermediateTemplate(data)
+  <#innerTemplate data="{data}"/>
+# /template 
+
+# template test2(data)
+  <div class="content">
+    <#data.template data="{data}"/>
+  </div>
+# /template
+
+
 describe("Sub- and parent- template scope interactions", function () {
     it("validates property bubbling from sub-template to parent", function() {
         var h=ht.newTestContext();
@@ -97,6 +112,20 @@ describe("Sub- and parent- template scope interactions", function () {
         h.$set(model.prop,"value","hello"+count);
         expect(h(".content").text()).to.equal("Value: hello2");
         
+        h.$dispose();
+    });
+
+    it("validates root node change propagation after render", function() {
+        var h=ht.newTestContext(), model={template:intermediateTemplate, checked: true};
+
+        var r=test2(model);
+        r.render(h.container);
+        expect(h(".content").text()).to.equal("[x] Checked");
+
+        // uncheck
+        h.$set(model,"checked",false);
+        expect(h(".content").text()).to.equal("[ ] Checked");
+
         h.$dispose();
     });
 });
