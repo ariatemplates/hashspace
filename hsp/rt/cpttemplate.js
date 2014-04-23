@@ -49,9 +49,9 @@ module.exports.$CptTemplate = {
         this.node = df;
         this.template.call(this, args);
 
-        this.node = realNode;
-        this.node.insertBefore(df, this.node2);
+        realNode.insertBefore(df, this.node2);
         this.replaceNodeBy(df , realNode); // recursively remove doc fragment reference
+        // now this.node=realNode
         this.isDOMempty = false;
       }
   },
