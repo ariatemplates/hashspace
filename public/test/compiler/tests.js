@@ -75,7 +75,7 @@ describe('Block Parser: ', function () {
             assert.equal(r.errors.length, 0, "No compilation errors");
 
             for (var k in sample.codeFragments) {
-                //console.log("compilation result ["+k+"]\n\n"+r.codeFragments[k]+"\n\n");
+                // console.log("compilation result ["+k+"]\n\n"+r.codeFragments[k]+"\n\n");
 
                 // validate generated code
                 if (!r.codeFragments)
@@ -89,7 +89,7 @@ describe('Block Parser: ', function () {
     };
 
     var samples = ut.getSampleNames(__dirname + "/samples");
-    //samples=["foreach4"];
+    //samples=["let4"];
 
     for (var i = 0, sz = samples.length; sz > i; i++) {
         // create one test for each sample

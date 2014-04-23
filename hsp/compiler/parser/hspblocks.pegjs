@@ -99,11 +99,11 @@ InvalidBlock
   {return {type:"invalidblock", code:chars.join(''), line:line, column:column}}
 
 IfBlock "if statement"
-  = "{" _ "if " _ expr:HExpression _ "}" EOS?
+  = "{" _ "if " _ expr:HPipeExpression _ "}" EOS?
   {return {type:"if", condition:expr, line:line, column:column}}
 
 ElseIfBlock "elseif statement" 
-  = "{" _ "else " _ "if" _ expr:HExpression _ "}" EOS?
+  = "{" _ "else " _ "if" _ expr:HPipeExpression _ "}" EOS?
   {return {type:"elseif", condition:expr, line:line, column:column}}
 
 ElseBlock
@@ -136,11 +136,11 @@ ForeachArgs
   = ForeachArgs1 / ForeachArgs2
 
 ForeachArgs1
-  = item:VarIdentifier " " _ "in " _ col:HExpressionContent 
+  = item:VarIdentifier " " _ "in " _ col:HPipeExpression 
   {return {item:item, key:item+"_key", colref:col}}
 
 ForeachArgs2
-  = key:VarIdentifier _ "," _ item:VarIdentifier " " _ "in " _ col:HExpressionContent 
+  = key:VarIdentifier _ "," _ item:VarIdentifier " " _ "in " _ col:HPipeExpression 
   {return {item:item, key:key, colref:col}}
 
 EndForeachBlock
@@ -206,7 +206,7 @@ HTMLAttributeChar // TODO look at W3C specs
     / [^{\"\n\r]
 
 LogBlock
-  = "{" _ "log " _ first:HExpressionContent _ next:("," _ HExpressionContent)* _"}" EOS?
+  = "{" _ "log " _ first:HPipeExpression _ next:("," _ HPipeExpression)* _"}" EOS?
   {
     var exprs=[first];
     if (next) {
@@ -218,7 +218,7 @@ LogBlock
   }
 
 LetBlock
-  = "{" _ "let " _ first:LetAssignment _ next:("," _ LetAssignment)* "}" EOS?
+  = "{" _ "let " _ first:LetAssignment __ next:("," __ LetAssignment)* "}" EOS?
   {
     var asn=[first];
     if (next) {
@@ -230,7 +230,7 @@ LetBlock
   }
 
 LetAssignment
-  =  nm:Identifier _ "=" _ val:HExpressionContent
+  =  nm:Identifier _ "=" _ val:HPipeExpression
   {
     return {identifier:nm, value:val}
   }
@@ -286,14 +286,39 @@ ExpressionBlock
 
 HExpression
   =   HExpressionCssClassElt 
-    / HExpressionContent 
+    / HPipeExpression 
     / "," __ cce:HExpressionCssClassElt __ {return cce}
-    / "," __ exp:HExpressionContent __ {return exp}
+    / "," __ exp:HPipeExpression __ {return exp}
     / InvalidExpressionValue
 
-HExpressionContent
-  =  ce:ConditionalExpressionNoIn
-  {if (!ce.category) ce.category="jsexpression"; ce.expType=ce.type;ce.line=line;ce.column=column;return ce;}
+HPipeExpression
+  =  ce:ConditionalExpressionNoIn pipes:(__ "|" __ HPipeFunction)*
+  {
+    if (!ce.category) ce.category="jsexpression"; 
+    ce.expType=ce.type;
+    ce.line=line;
+    ce.column=column;
+    if (pipes && pipes.length>0) {
+      ce.pipes=[];
+      for (var i=0;pipes.length>i;i++) {
+        ce.pipes.push(pipes[i][3]);
+      }
+    }
+    return ce;
+  }
+
+HPipeFunction
+ = fn:ConditionalExpressionNoIn args:(__ ":" __ ConditionalExpressionNoIn)*
+ {
+   var expr={fnexpr:fn};
+   if (args) {
+     expr.args=[];
+     for (var i=0;args.length>i;i++) {
+       expr.args.push(args[i][3]);
+     }
+   }
+   return expr;
+ }
 
 HExpressionCssClassElt
   = head:LogicalORExpression __ ":" __ tail:LogicalORExpression 
@@ -441,6 +466,8 @@ FutureReservedWord
       / "super"
     )
     !IdentifierPart
+
+NewToken = "new" !IdentifierPart
 
 NullLiteral
   = "null" 
@@ -616,9 +643,12 @@ PropertyName
 PropertySetParameterList
   = Identifier
 
-MemberExpression // changed
+MemberExpression
   = base:(
-        PrimaryExpression
+          PrimaryExpression
+        / NewToken __ callee:MemberExpression __ args:Arguments {
+          return { type: "NewExpression", callee: callee, arguments: args };
+        }
     )
     accessors:(
         __ "[" __ name:Expression __ "]" { return name; }
@@ -646,8 +676,11 @@ MemberExpression // changed
       return result;
     }
 
-NewExpression // changed
+NewExpression
   = MemberExpression
+  / NewToken " " __ callee:NewExpression {
+    return { type: "NewExpression", callee: callee, arguments: [] };
+  }
 
 CallExpression
   = base:(
@@ -995,8 +1028,8 @@ BitwiseOROperator
   = "|" !("|" / "=") { return "|"; }
 
 LogicalANDExpression
-  = head:BitwiseORExpression
-    tail:(__ LogicalANDOperator __ BitwiseORExpression)* {
+  = head:BitwiseXORExpression
+    tail:(__ LogicalANDOperator __ BitwiseXORExpression)* { // changes here: was BitwiseORExpression
       var result = head;
       for (var i = 0; i < tail.length; i++) {
         result = {
@@ -1010,8 +1043,8 @@ LogicalANDExpression
     }
 
 LogicalANDExpressionNoIn
-  = head:BitwiseORExpressionNoIn
-    tail:(__ LogicalANDOperator __ BitwiseORExpressionNoIn)* {
+  = head:BitwiseXORExpressionNoIn
+    tail:(__ LogicalANDOperator __ BitwiseXORExpressionNoIn)* { // changes here: was BitwiseORExpressionNoIn
       var result = head;
       for (var i = 0; i < tail.length; i++) {
         result = {

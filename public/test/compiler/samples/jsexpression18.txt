@@ -1,0 +1,29 @@
+##### Template:
+# template test(person)
+  {foreach p in person.list|orderBy:"name"}
+    {p.name}
+  {/foreach}
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code
+test=[
+  n.$foreach(
+    {
+      e1:[4,1,_orderBy,1,2,0,"name"],
+      e2:[1,2,"person","list"]
+    },
+    "p_key",
+    "p",
+    0,
+    1,
+    [
+      n.$text({e1:[1,2,"p","name"]},["",1," "])
+    ]
+  )
+]

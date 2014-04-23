@@ -1,0 +1,14 @@
+##### Template:
+# template test(person)
+  {person.name|}
+# /template
+
+##### Error:
+[
+  {
+    "description": "Invalid expression",
+    "line": 2,
+    "column": 3,
+    "code": "person.name|"
+  }
+]
