@@ -29,6 +29,20 @@ function changeValue (data,val) {
     <input class="in2" type="text" value="{data.object.value}" />
 # /template
 
+# template header(document)
+  <div class="title"> 
+      {if document && document.title}
+        {document.title}
+      {else}
+        Untitled document
+      {/if}
+  </div>
+# /template
+
+# template test2(data)
+   <#header document="{data.document}" />
+# /template
+
 describe("Expression Bindings", function () {
     var INPUT1=".in1", INPUT2=".in2";
 
@@ -69,6 +83,28 @@ describe("Expression Bindings", function () {
 
         expect(h(INPUT1).value()).to.equal("v3");
         expect(h(INPUT2).value()).to.equal("v3");
+
+        h.$dispose();
+    });
+
+    it("validates handling of null and deleted values", function() {
+        var h=ht.newTestContext(), dm={document:{title:"No title"}};
+        test2(dm).render(h.container);
+
+        expect(h(".title").text()).to.equal("No title ");
+
+        // change data
+        h.$set(dm,"document",null);
+        expect(h(".title").text()).to.equal("Untitled document ");
+
+        // set back
+        h.$set(dm,"document",{title:"Doc 1"});
+        expect(h(".title").text()).to.equal("Doc 1 ");
+
+        // delete data
+        delete dm.document;
+        h.refresh();
+        expect(h(".title").text()).to.equal("Untitled document ");
 
         h.$dispose();
     });
