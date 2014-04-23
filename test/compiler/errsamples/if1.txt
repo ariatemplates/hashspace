@@ -6,9 +6,16 @@
 # /template
 
 ##### Error:
-[ { 
-    description: 'Invalid if condition',
-    line: 2,
-    column: 9,
-    code: '(person.isAdult' 
-} ]
+[
+  {
+    "description": "Invalid expression",
+    "line": 2,
+    "column": 5,
+    "code": "if (person.isAdult"
+  },
+  {
+    "description": "{/if} statement does not match any {if} block",
+    "line": 4,
+    "column": 5
+  }
+]

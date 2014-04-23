@@ -18,6 +18,10 @@ var HExpression = klass({
             // we only reprocess jsexpression
             this.syntaxTree = node;
         } else {
+            if (node.pipes) {
+                node=this._transformPipesIntoFnCalls(node);
+                node.type=node.expType;
+            }
             this._objectRefs = []; // list of objectref expressions found in the jsexpression
             var code = this._process(node), oref=this._objectRefs;
             this.rootExpression.code = code;
@@ -215,6 +219,15 @@ var HExpression = klass({
                 result = '(' + this._process(node.condition) + '? ' + this._process(node.trueExpression) + ' : '
                         + this._process(node.falseExpression) + ')';
                 break;
+            case "NewExpression":
+                var constr=this._process(node.callee), args=[];
+                if (node.arguments) {
+                    for (var i=0;node.arguments.length>i;i++) {
+                        args.push(this._process(node.arguments[i]));
+                    }
+                }
+                result = 'new ' + constr + '(' + args.join(',') + ')';
+                break;
             case "FunctionCall" :
                 // this is an object ref
                 var n = node.name, path = [];
@@ -348,6 +361,55 @@ var HExpression = klass({
                 break;
         }
         return result;
+    },
+
+    /**
+     * Transforms a node that contains a pipes[] collection into another node
+     * that uses function call expressions and that can be processed in a standard way
+     */
+    _transformPipesIntoFnCalls:function(node) {
+        var pipes=node.pipes, p, arg0, args;
+        if (!pipes || !pipes.length) {
+            return node;
+        }
+
+        var nd;
+        for (var i=0;pipes.length>i;i++) {
+            p=pipes[i];
+            // create the node corresponding to the first argument
+            if (i===0) {
+                arg0={};
+                // copy properties from the original node
+                for (var k in node) {
+                    if (node.hasOwnProperty(k)) {
+                        if (k==="expType") {
+                            arg0.type=node[k];
+                        } else if (k!=="pipes" && k!=="line" && k!=="column" && k!=="bound" && k!=="type" && k!=="category") {
+                            arg0[k]=node[k];
+                        }
+                    }
+                }
+            } else {
+                arg0=nd;
+            }
+            args=p.args;
+            args.splice(0,0,arg0);
+            nd={
+                "type": "FunctionCall",
+                "name": p.fnexpr,
+                "arguments": args
+            };
+        }
+
+        // add general information to the main node
+        nd.type="expression";
+        nd.category="jsexpression";
+        nd.expType="FunctionCall";
+        nd.line=node.line;
+        nd.column=node.column;
+        nd.bound=node.bound;
+
+        return nd;
     }
 });
 exports.HExpression = HExpression;

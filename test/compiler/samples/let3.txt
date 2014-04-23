@@ -1,0 +1,28 @@
+##### Template:
+# template test(foo)
+  <div class="foo">
+    // Some comment
+    {let aVarName = new Foo(), anotherName = new foo.Bar()}
+  </div>
+# /template
+
+##### Parsed Tree
+"skip"
+
+##### Syntax Tree
+"skip"
+    
+##### Template Code
+test=[
+  n.elt(
+    "div",0,{"class":"foo"},0,[
+      n.$text(0,[" "]),
+      n.let({
+        e1:[6,function(a0) {return new a0();},2],
+        e2:[2,1,_Foo],
+        e3:[6,function(a0) {return new a0();},4],
+        e4:[1,2,"foo","Bar"]
+      },['aVarName',1,'anotherName',3])
+    ],1
+  )
+]

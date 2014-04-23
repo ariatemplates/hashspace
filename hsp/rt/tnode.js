@@ -38,11 +38,11 @@ var TNode = klass({
     obsPairs : null,      // Array of observed [obj, property] pairs associated to this object
     needSubScope : false, // true if a dedicated sub-scope should be created for this node
 
-    $constructor : function (exps) {
+    $constructor : function (exps,observeExpTarget) {
         this.isStatic = (exps === 0);
         if (!this.isStatic) {
             // create ExpHandler
-            this.eh = new ExpHandler(exps);
+            this.eh = new ExpHandler(exps,observeExpTarget);
         }
     },
 

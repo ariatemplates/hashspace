@@ -55,19 +55,27 @@ module.exports = [{
                         main : true
                     }]
         }, {
-            title : "Traces, logs and debugging",
-            folder : "logs",
-            description : "description.md",
-            files : [{
-                        src : "logs.hsp",
-                        main : true
-                    }]
-        }, {
             title : "Local variables with {let}",
             folder : "let",
             description : "description.md",
             files : [{
                         src : "let.hsp",
+                        main : true
+                    }]
+        }, {
+            title : "Modifiers: piped expressions",
+            folder : "modifiers",
+            description : "description.md",
+            files : [{
+                        src : "modifiers.hsp",
+                        main : true
+                    }]
+        }, {
+            title : "Traces, logs and debugging",
+            folder : "logs",
+            description : "description.md",
+            files : [{
+                        src : "logs.hsp",
                         main : true
                     }]
         }, {
