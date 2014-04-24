@@ -18,8 +18,8 @@
  * Taken from Aria Templates: https://github.com/ariatemplates/ariatemplates/blob/master/src/aria/utils/FireDomEvent.js
  */
 
-var typeUtils = require("hsp/utils/type"),
-    log = require("hsp/rt/log");
+var typeUtils = require("./type"),
+    log = require("../rt/log");
 
 var // mouse events supported
 events = {
