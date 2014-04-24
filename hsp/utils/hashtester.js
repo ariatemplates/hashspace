@@ -1,10 +1,10 @@
-var klass = require("hsp/klass"),
-    doc=require("hsp/document"),
-    hsp=require("hsp/rt"),
-    fireEvent=require("hsp/utils/eventgenerator").fireEvent,
+var klass = require("../klass"),
+    doc=require("../document"),
+    hsp=require("../rt"),
+    fireEvent=require("./eventgenerator").fireEvent,
     $=require("node_modules/jquery/dist/jquery.min.js"),
-    log=require("hsp/rt/log"),
-    $set=require("hsp/$set");
+    log=require("../rt/log"),
+    $set=require("../$set");
 
 var HtException=klass({
     $constructor:function(code,text) {
