@@ -15,7 +15,7 @@
 
 var processString = require("./processString");
 
-module.exports = function (code, moduleName) {
-    var transpileRes = processString(code, moduleName);
+module.exports = function (code, moduleName, options) {
+    var transpileRes = processString(code, moduleName, options);
     return transpileRes.code;
 };
