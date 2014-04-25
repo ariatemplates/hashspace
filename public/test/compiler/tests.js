@@ -53,7 +53,10 @@ describe('Block Parser: ', function () {
             }
         }
 
-        var r = compiler.compile(sample.template, this.name, true, true);
+        var r = compiler.compile(sample.template, this.name, {
+            includeSyntaxTree: true,
+            bypassJSvalidation: true
+        });
         skip = (sample.syntaxTree && sample.syntaxTree === "skip");
         if (!skip) {
             if (sample.syntaxTree) {

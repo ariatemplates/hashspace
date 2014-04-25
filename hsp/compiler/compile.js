@@ -15,7 +15,7 @@
 
 var compiler = require("./compiler");
 
-module.exports = function (code, moduleName) {
-    var compileRes = compiler.compile(code, moduleName);
+module.exports = function (code, moduleName, options) {
+    var compileRes = compiler.compile(code, moduleName, options);
     return compileRes.code;
 };
