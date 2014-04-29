@@ -1,0 +1,28 @@
+# template sample(data)
+    <div class="info2">The following textarea elements are synchronized:</div>
+    <div class="section">
+        <div>Text #1:</div>
+        <textarea rows="4" cols="40" model="{data.text}"/>
+    </div>
+    <div class="section">
+        <div>Text #2:</div>
+        <textarea rows="4" cols="40"  model="{data.text}"/>
+    </div>
+    <a onclick="{changeText(data)}">Change text</a>
+# /template
+
+var d={
+    // Frog by Donna Shepherd
+    text:"    @..@\n   (----)\n  ( >__< )\n ^^ ~~ ^^"
+}
+
+var count=1;
+function changeText(d) {
+    count++, msg=[];
+    for (var i=0;count>i;i++) {
+        msg.push("This text contains "+count+" lines")
+    }
+    d.text=msg.join("\n");
+}
+
+sample(d).render("output");

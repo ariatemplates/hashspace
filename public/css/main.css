@@ -195,6 +195,13 @@ input[type=text] {
     border-radius: 3px;
 }
 
+textarea {
+    font-size: 14px;
+    border:1px solid #AAAAAA;
+    padding: 1px 2px;
+    border-radius: 3px;
+}
+
 input.cell {
   position:relative;
   top:1px;
