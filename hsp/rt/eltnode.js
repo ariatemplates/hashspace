@@ -66,7 +66,7 @@ var EltNode = klass({
     $constructor : function (tag, exps, attcfg, ehcfg, children, needSubScope) {
         TNode.$constructor.call(this, exps);
         this.tag = tag;
-        this.isInput = (this.tag === "input");
+        this.isInput = (this.tag === "input" || this.tag === "textarea");
         this.createAttList(attcfg, ehcfg);
         if (children && children !== 0) {
             this.children = children;
