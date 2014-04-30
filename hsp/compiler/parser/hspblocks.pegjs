@@ -421,61 +421,96 @@ Letter
 Digit
   = [0-9]
 
+/* Tokens */
+
+BreakToken      = "break"      !IdentifierPart
+CaseToken       = "case"       !IdentifierPart
+CatchToken      = "catch"      !IdentifierPart
+ClassToken      = "class"      !IdentifierPart
+ConstToken      = "const"      !IdentifierPart
+ContinueToken   = "continue"   !IdentifierPart
+DebuggerToken   = "debugger"   !IdentifierPart
+DefaultToken    = "default"    !IdentifierPart
+DeleteToken     = "delete"     !IdentifierPart
+DoToken         = "do"         !IdentifierPart
+ElseToken       = "else"       !IdentifierPart
+EnumToken       = "enum"       !IdentifierPart
+ExportToken     = "export"     !IdentifierPart
+ExtendsToken    = "extends"    !IdentifierPart
+FalseToken      = "false"      !IdentifierPart
+FinallyToken    = "finally"    !IdentifierPart
+ForToken        = "for"        !IdentifierPart
+FunctionToken   = "function"   !IdentifierPart
+GetToken        = "get"        !IdentifierPart
+IfToken         = "if"         !IdentifierPart
+ImportToken     = "import"     !IdentifierPart
+InstanceofToken = "instanceof" !IdentifierPart
+InToken         = "in"         !IdentifierPart
+NewToken        = "new"        !IdentifierPart
+NullToken       = "null"       !IdentifierPart
+ReturnToken     = "return"     !IdentifierPart
+SetToken        = "set"        !IdentifierPart
+SuperToken      = "super"      !IdentifierPart
+SwitchToken     = "switch"     !IdentifierPart
+ThisToken       = "this"       !IdentifierPart
+ThrowToken      = "throw"      !IdentifierPart
+TrueToken       = "true"       !IdentifierPart
+TryToken        = "try"        !IdentifierPart
+TypeofToken     = "typeof"     !IdentifierPart
+VarToken        = "var"        !IdentifierPart
+VoidToken       = "void"       !IdentifierPart
+WhileToken      = "while"      !IdentifierPart
+WithToken       = "with"       !IdentifierPart
+
 ReservedWord
   = Keyword / FutureReservedWord / NullLiteral / BooleanLiteral
 
 Keyword
-  = (
-        "break"
-      / "case"
-      / "catch"
-      / "continue"
-      / "debugger"
-      / "default"
-      / "delete"
-      / "do"
-      / "else"
-      / "finally"
-      / "for"
-      / "function"
-      / "if"
-      / "instanceof"
-      / "in"
-      / "new"
-      / "return"
-      / "switch"
-      / "this"
-      / "throw"
-      / "try"
-      / "typeof"
-      / "var"
-      / "void"
-      / "while"
-      / "with"
-    )
-    !IdentifierPart
+  = BreakToken
+  / CaseToken
+  / CatchToken
+  / ContinueToken
+  / DebuggerToken
+  / DefaultToken
+  / DeleteToken
+  / DoToken
+  / ElseToken
+  / FinallyToken
+  / ForToken
+  / FunctionToken
+  / IfToken
+  / InstanceofToken
+  / InToken
+  / NewToken
+  / ReturnToken
+  / SwitchToken
+  / ThisToken
+  / ThrowToken
+  / TryToken
+  / TypeofToken
+  / VarToken
+  / VoidToken
+  / WhileToken
+  / WithToken
 
 FutureReservedWord
-  = (
-        "class"
-      / "const"
-      / "enum"
-      / "export"
-      / "extends"
-      / "import"
-      / "super"
-    )
-    !IdentifierPart
+  = ClassToken
+  / ConstToken
+  / EnumToken
+  / ExportToken
+  / ExtendsToken
+  / ImportToken
+  / SuperToken
 
 NewToken = "new" !IdentifierPart
 
 NullLiteral
-  = "null" 
+  = NullToken
   {return { type: "nullliteral", value: null }; }
 
 BooleanLiteral
-  = "true"  { return { type: "booleanliteral", value: true  }; }
-  / "false" { return { type: "booleanliteral", value: false }; }
+  = TrueToken  { return { type: "booleanliteral", value: true  }; }
+  / FalseToken { return { type: "booleanliteral", value: false }; }
 
 NumericLiteral "number"
   = literal:(HexIntegerLiteral / DecimalLiteral) !IdentifierStart 
@@ -781,8 +816,8 @@ UnaryExpression
     }
 
 UnaryOperator // changed
-  = "void"
-  / "typeof"
+  = VoidToken
+  / TypeofToken
   / "++"
   / "--"
   / "+"
@@ -867,8 +902,8 @@ RelationalOperator
   / ">="
   / "<"
   / ">"
-  / "instanceof"
-  / "in"
+  / InstanceofToken
+  / InToken
 
 RelationalExpressionNoIn
   = head:ShiftExpression
@@ -890,7 +925,7 @@ RelationalOperatorNoIn
   / ">="
   / "<"
   / ">"
-  / "instanceof"
+  / InstanceofToken
 
 EqualityExpression
   = head:RelationalExpression
