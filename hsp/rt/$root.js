@@ -217,8 +217,8 @@ var $RootNode = klass({
     updateObjectObservers : function (ni) {
         if (ni.obsPairs) {
             this.rmAllObjectObservers(ni);
-            this.createExpressionObservers(ni);
         }
+        this.createExpressionObservers(ni);
     },
 
     /**
