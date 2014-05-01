@@ -21,21 +21,26 @@ var hsp=require("hsp/rt"),
     <textarea rows="4" cols="40"  model="{data.text}"/>
 # /template
 
+// normalize carriage returns to avoic OS discrepancies
+function normalizeCR(s) {
+    return s.replace(/\r\n|[\r\n]/gi,"\n");
+}
+
 describe("Textarea Elements", function () {
     it("validates model synchronization", function () {
         var h=ht.newTestContext();
         var model={text:"line 1\nline2"};
 
         test1(model).render(h.container);
-        expect(h("textarea").value()).to.equal("line 1\nline2");
+        expect(normalizeCR(h("textarea").value())).to.equal("line 1\nline2");
 
         // change value from the DOM
         h("textarea").type("AAA\nBBB\nCCC");
-        expect(model.text).to.equal("AAA\nBBB\nCCC"); 
+        expect(normalizeCR(model.text)).to.equal("AAA\nBBB\nCCC"); 
 
         // change value from the model
         h.$set(model,"text","Hello\nWorld!");
-        expect(h("textarea").value()).to.equal("Hello\nWorld!");
+        expect(normalizeCR(h("textarea").value())).to.equal("Hello\nWorld!");
 
         h.$dispose();
     });
