@@ -1,0 +1,15 @@
+##### Template:
+# template test using c:Ctrl
+   <#c.tpl />
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code:
+test=[
+  n.cpt([null,"c","tpl"],0,0,0)
+]

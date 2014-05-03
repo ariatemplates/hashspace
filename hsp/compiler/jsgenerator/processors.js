@@ -292,9 +292,16 @@ exports["component"] = function (node, walker) {
     var generatedNode = elementOrComponent(node, walker);
     var path = node.ref.path;
 
-    walker.addGlobalRef(path[0]);
-
-    return ['n.cpt([_', path[0], ',"', path.join('","'), '"],', generatedNode, ')'].join('');
+    // TODO: a path is a special case of an expression
+    // components should be refactored to use expressions
+    var globalRoot, root = path[0];
+    if (walker.isInScope(root)) {
+        globalRoot = 'null';
+    } else {
+        walker.addGlobalRef(root);
+        globalRoot = '_' + root;
+    }
+    return ['n.cpt([', globalRoot, ',"', path.join('","'), '"],', generatedNode, ')'].join('');
 };
 
 /**
