@@ -23271,22 +23271,22 @@
  */
         exports.compile = function(template, path, options) {
             options = options || {};
+            if (!template) {
+                throw new Error("The template content to compile is mandatory.");
+            }
+            if (!path) {
+                throw new Error('The template "path" argument is mandatory.');
+            }
             // Parsing might throw an exception
-            var res = {};
+            var res;
             var m = path.match(/[^\/]+$/), fileName = m ? m[0] : "unknown", dirPath = "";
             if (fileName.length < path.length) {
                 dirPath = path.slice(0, -fileName.length);
             }
-            if (!template) {
-                res.errors = [ {
-                    description: "[Hashspace compiler] template argument is undefined"
-                } ];
-            } else {
-                //Step 1: parser
-                var blockList = parser.parse(template);
-                //Step2 : treebuilder
-                res = treebuilder.build(blockList);
-            }
+            //Step 1: parser
+            var blockList = parser.parse(template);
+            //Step2 : treebuilder
+            res = treebuilder.build(blockList);
             //Step3 : jsgenerator
             res = jsgenerator.generate(res, template, fileName, dirPath, options.includeSyntaxTree, options.bypassJSvalidation);
             //Step4 : transpiler
