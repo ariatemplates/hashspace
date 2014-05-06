@@ -62,12 +62,58 @@ var TestCtrl1=klass({
 # /template
 
 
+var TextareaWithOnDisposeCtrl=klass({
+  attributes:{
+    text: {type:"string",binding:"2-way"}
+  },
+  $refresh: function() {
+    this.onTextChange();
+  },
+  onTextChange: function () {
+    var textarea = this.$getElement(0);
+    if (textarea) {
+      textarea.value = this.text;
+    }
+  },
+  $dispose: function() {
+    var textarea = this.$getElement(0);
+    if (textarea) {
+      this.text = textarea.value; 
+    }
+  }
+});
+
+# template textareaWithOnDispose using c:TextareaWithOnDisposeCtrl
+  <textarea></textarea>
+# /template
+
+# template useTextarea(data)
+  {if data.visible}
+    <#textareaWithOnDispose text="{data.text}" />
+  {/if}
+# /template
+
 describe("External component integration", function () {
     beforeEach(function() {
         msg='';
         refreshCount=0;
     });
   
+    it("validates $dispose is called before bindings are removed", function () {
+        var firstValue = "hello";
+        var h=ht.newTestContext(), d={visible: true, text:firstValue};
+        useTextarea(d).render(h.container);
+        var textarea = h("textarea");
+        expect(textarea.value()).to.equal(firstValue);
+        expect(d.text).to.equal(firstValue);
+        var secondValue = "new value";
+        textarea.type(secondValue);
+        expect(textarea.value()).to.equal(secondValue);
+        expect(d.text).to.equal(firstValue); // still the first value because the update in the data model is on dispose
+        h.$set(d,"visible", false);
+        expect(d.text).to.equal(secondValue); // data model update normally happens when disposing the textarea on the previous line
+    });
+    
     it("validates $getElement() method through direct template call", function() {
         var h=ht.newTestContext(), d={value:"hello"};
         

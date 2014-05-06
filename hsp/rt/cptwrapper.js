@@ -152,15 +152,17 @@ var CptWrapper = klass({
 
     $dispose : function () {
         // unobserve properties and events
+        var c=this.cpt;
+        if (c && c.$dispose) {
+            // call $dispose before removing the observer in case
+            // there is a last synchronization to do
+            c.$dispose();
+        }
         if (this._cptChgeCb) {
             json.unobserve(this.cpt, this._cptChgeCb);
             this._cptChgeCb = null;
         }
-        var c=this.cpt;
         if (c) {
-            if (c.$dispose) {
-                c.$dispose();
-            }
             c.nodeInstance = null;
             this.cpt = null;
         }
@@ -397,7 +399,7 @@ function createCptWrapper(Ctl, cptArgs) {
 
             if (attributes) {
                 for (var k in attributes) {
-                    
+
                     // set the template attribute value on the component instance
                     if (attributes.hasOwnProperty(k)) {
                         att=cw.cpt.attributes[k];
