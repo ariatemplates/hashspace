@@ -134,9 +134,9 @@ exports.$CptComponent = {
         this.node = df;
         this.template.call(this, targs, cargs); // WARNING: this changes vscope to the template vscope
 
-        this.node = realNode;
-        this.node.insertBefore(df, this.node2);
+        realNode.insertBefore(df, this.node2);
         this.replaceNodeBy(df , realNode); // recursively remove doc fragment reference
+        // now this.node=realNode
         this.isDOMempty = false;
       }
   },
