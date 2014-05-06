@@ -53,8 +53,7 @@ var $ForEachNode = klass({
         this.forType = 0; // 0=in / 1=of / 2=on
         this.colExpIdx = colExpIdx;
 
-        TNode.$constructor.call(this, exps);
-        this.isBound=(this.eh.getExpr(colExpIdx).bound===true);
+        TNode.$constructor.call(this, exps, true);
         this.displayedCol = null; // displayed collection
 
         this.itemNode = new $ItemNode(children, itemName, itemKeyName); // will be used as generator for each childNode
@@ -93,9 +92,6 @@ var $ForEachNode = klass({
         var cn, forType = this.forType, itemNode = this.itemNode;
         if (col) {
             // create an observer on the collection to be notified of the changes (cf. refresh)
-            if (this.isBound) {
-                this.root.createObjectObserver(this, col);
-            }
             this.displayedCol = col;
 
             this.childNodes = cn = [];

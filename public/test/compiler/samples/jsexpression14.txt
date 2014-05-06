@@ -1,0 +1,91 @@
+##### Template:
+# template test(person)
+  {person.list|orderBy:"firstName"}
+# /template
+
+##### Parsed Tree:
+[
+  {
+    "type": "template","name": "test","args": ["person"],"line": 1,"column": 1,
+    "content": [
+      {
+        "type": "expression",
+        "base": { "type": "Variable", "name": "person", "code": "person" },
+        "name": "list",
+        "code": "person.list",
+        "category": "jsexpression",
+        "expType": "PropertyAccess",
+        "line": 2,
+        "column": 3,
+        "pipes": [
+          {
+            "fnexpr": {
+              "type": "Variable",
+              "name": "orderBy",
+              "code": "orderBy"
+            },
+            "args": [
+              {
+                "type": "expression",
+                "category": "string",
+                "value": "firstName",
+                "code": "firstName"
+              }
+            ]
+          }
+        ],
+        "bound": true
+      }
+    ],
+    "closed": true,
+    "endLine": 3
+  }
+]
+
+##### Syntax Tree:
+[
+  {
+    "type": "template","name": "test","args": ["person"],"export": false,"startLine": 1,"endLine": 3,
+    "content": [
+      {
+        "type": "textblock",
+        "content": [
+          {
+            "type": "expression",
+            "category": "functionref",
+            "bound": true,
+            "path": [
+              "_orderBy"
+            ],
+            "args": [
+              {
+                "type": "expression",
+                "category": "objectref",
+                "path": [
+                  "person",
+                  "list"
+                ]
+              },
+              {
+                "type": "expression",
+                "category": "string",
+                "value": "firstName",
+                "code": "firstName"
+              }
+            ],
+            "line": 2,
+            "column": 3
+          }
+        ]
+      }
+    ]
+  }
+]
+
+##### Template Code
+test=[
+  n.$text({
+    e1:[4,1,_orderBy,1,2,0,"firstName"],
+    e2:[1,2,"person","list"]
+  },["",1])
+]
