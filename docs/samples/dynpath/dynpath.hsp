@@ -13,9 +13,9 @@
             </div>
         {/foreach}
     </div>
-    <a onclick="{update()}">Update columns B&C</a>
+    <a href="javascript:void(0)" onclick="{update()}">Update columns B&C</a>
     &nbsp;-&nbsp;
-    <a onclick="{swapC()}">Show/Hide columns C</a>
+    <a href="javascript:void(0)" onclick="{swapC()}">Show/Hide columns C</a>
 {/template}
 
 // create dummy data

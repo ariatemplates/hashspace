@@ -1,6 +1,6 @@
 {template people(d)}
     <div class="msg">Click on a person to see more details:</div>
-    <ul>
+    <ul class="noTextSelection">
     {foreach p in d.people}
         <li class="{'details':p.showdetails, 'special':p.name==='Bart'}"
             onclick="{toggleDetails(p)}">

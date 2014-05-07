@@ -52,7 +52,7 @@ var TabBarCtrl = klass({
                     <#tab.label/>
                 </span>
             {else}
-                <a class="x-tab" onclick="{ctrl.select(idx)}">
+                <a class="x-tab" href="javascript:void(0)" onclick="{ctrl.select(idx)}">
                     <#tab.label/>
                 </a>
             {/if}

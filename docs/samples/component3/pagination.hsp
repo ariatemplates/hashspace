@@ -46,15 +46,15 @@ var Pagination=klass({
 {template pagination using p:Pagination}
     <ul class="pagination">
         <li class="{'disabled':p.activepage===0}">
-            <a onclick="{p.selectPage(p.activepage-1)}">Previous</a>
+            <a href="javascript:void(0)" onclick="{p.selectPage(p.activepage-1)}">Previous</a>
         </li>
         {foreach page in p.pages}
             <li class="{'active':page==p.activepage}">
-                <a onclick="{p.selectPage(page)}">{page + 1}</a>
+                <a href="javascript:void(0)" onclick="{p.selectPage(page)}">{page + 1}</a>
             </li>
         {/foreach}
         <li class="{'disabled':p.activepage>=p.noOfPages-1}">
-            <a onclick="{p.selectPage(p.activepage+1)}">Next</a>
+            <a href="javascript:void(0)" onclick="{p.selectPage(p.activepage+1)}">Next</a>
         </li>
     </ul>
 {/template}
