@@ -1,14 +1,13 @@
 # template list(persons)
-    // onselectstart: prevent double-click selection on a elements
-    <div onselectstart="return false"> 
+    <div>
         <div class="msg">
-        	<a onclick="{addElement()}">Add element</a> - 
-        	<a onclick="{deleteElement()}">Delete element</a> - 
-        	<a onclick="{changeAll()}">Change all elements</a>
+            <a href="javascript:void(0)" onclick="{addElement()}">Add element</a> -
+            <a href="javascript:void(0)" onclick="{deleteElement()}">Delete element</a> -
+            <a href="javascript:void(0)" onclick="{changeAll()}">Change all elements</a>
         </div>
         <ol>
             {foreach p in persons}
-            	<li>
+                <li>
                     {p.firstName} {p.lastName}
                     {if p_isfirst}<span class="info">(first)</span>{/if}
                     {if p_islast}<span class="info">(last)</span>{/if}
@@ -22,35 +21,35 @@
 # /template
 
 var persons=[
-	{firstName:"Homer",lastName:"Simpsons"},
-	{firstName:"Marge",lastName:"Simpsons"},
-	{firstName:"Bart"},
-	{firstName:"Lisa"},
-	{firstName:"Maggy"}
+    {firstName:"Homer",lastName:"Simpsons"},
+    {firstName:"Marge",lastName:"Simpsons"},
+    {firstName:"Bart"},
+    {firstName:"Lisa"},
+    {firstName:"Maggy"}
 ]
 
 var count=0;
 
 function addElement() {
-	count++;
-	// add one element without removing any at position 1
+    count++;
+    // add one element without removing any at position 1
     persons.splice(1,0,{firstName:"John",lastName:'Doe'+count});
 }
 
 function deleteElement() {
-	// remove one element at position 0
-    persons.shift(); // same as persons.splice(0,1); 
+    // remove one element at position 0
+    persons.shift(); // same as persons.splice(0,1);
 }
 
 function changeAll() {
-	// replace all elements (from 0 to persons.length-1) with the array provided as last argument
-	persons.splice2(0,persons.length,[
-		{firstName:"Charlie", lastName:"Parker"},
-		{firstName:"Sonny", lastName:"Stitt"},
-		{firstName:"Cannonball", lastName:"Adderley"},
-		{firstName:"Stefano", lastName:"Di Battista"},
-		{firstName:"Kenny", lastName:"Garrett"}
-	]);
+    // replace all elements (from 0 to persons.length-1) with the array provided as last argument
+    persons.splice2(0,persons.length,[
+        {firstName:"Charlie", lastName:"Parker"},
+        {firstName:"Sonny", lastName:"Stitt"},
+        {firstName:"Cannonball", lastName:"Adderley"},
+        {firstName:"Stefano", lastName:"Di Battista"},
+        {firstName:"Kenny", lastName:"Garrett"}
+    ]);
 }
 
 // display the template in the #output div

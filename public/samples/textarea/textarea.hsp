@@ -8,7 +8,7 @@
         <div>Text #2:</div>
         <textarea rows="4" cols="40"  model="{data.text}"/>
     </div>
-    <a onclick="{changeText(data)}">Change text</a>
+    <a href="javascript:void(0)" onclick="{changeText(data)}">Change text</a>
 # /template
 
 var d={

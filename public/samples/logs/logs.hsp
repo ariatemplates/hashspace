@@ -2,9 +2,9 @@ var log=require("hsp/rt/log");
 
 # template test(cities, logs)
   {log "top-level:",scope}
-  <a onclick="{increaseList()}">Increase list</a> - 
-  <a onclick="{decreaseList()}">Decrease list</a> - 
-  <a onclick="{clearLogs()}">Clear logs</a>
+  <a href="javascript:void(0)" onclick="{increaseList()}">Increase list</a> -
+  <a href="javascript:void(0)" onclick="{decreaseList()}">Decrease list</a> -
+  <a href="javascript:void(0)" onclick="{clearLogs()}">Clear logs</a>
   <ul>
     {foreach idx,city in cities}
       {log "item #"+idx+":", city}

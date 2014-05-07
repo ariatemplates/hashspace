@@ -1,5 +1,5 @@
 var klass=require("hsp/klass");
-  
+
 // simple list controller
 var ListController = klass({
   attributes: {
@@ -20,10 +20,10 @@ var ListController = klass({
     {if lc.head}
       <div class="head"><#lc.head/></div>
     {/if}
-    {if !lc.content} 
+    {if !lc.content}
         <span class="nodata">Empty list</span>
     {else}
-        <ul class="">
+        <ul class="noTextSelection">
             {foreach idx,itm in lc.content}
                 {if itm.tagName==="@option"}
                     <li class="opt"><#itm/></li>
@@ -45,10 +45,10 @@ var ListController = klass({
 
   <#list class="listcpt">
     <@head>
-      Dynamic list: 
-      <a onclick="{toggle()}">Toggle favourite</a> - 
-      <a onclick="{empty()}">Empty</a> - 
-      <a onclick="{update()}">Update list</a> 
+      Dynamic list:
+      <a href="javascript:void(0)" onclick="{toggle()}">Toggle favourite</a> -
+      <a href="javascript:void(0)" onclick="{empty()}">Empty</a> -
+      <a href="javascript:void(0)" onclick="{update()}">Update list</a>
     </@head>
     {if d.preferredOption}
       <@option>{d.preferredOption} (!)</@option>

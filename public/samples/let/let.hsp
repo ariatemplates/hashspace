@@ -10,7 +10,7 @@
       p11 is of course not visible in the 2nd element scope
     {/if}
   </div>
-  <a onclick="{updateModel()}">Change Model</a>
+  <a href="javascript:void(0)" onclick="{updateModel()}">Change Model</a>
 # /template
 
 var model={
