@@ -18,8 +18,8 @@ var klass=require("hsp/klass");
     	</span>
 	</div>
     <div class="section2">
-	    <a onclick="{nt.increment(1)}">Increment Number</a> - 
-	    <a onclick="{nt.increment(-1)}">Decrement Number</a>
+	    <a href="javascript:void(0)" onclick="{nt.increment(1)}">Increment Number</a> - 
+	    <a href="javascript:void(0)" onclick="{nt.increment(-1)}">Decrement Number</a>
     </div>
 # /template
 

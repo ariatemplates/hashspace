@@ -1,10 +1,9 @@
 # template list(persons)
-    // onselectstart: prevent double-click selection on a elements
-    <div onselectstart="return false"> 
+    <div> 
         <div class="msg">
-        	<a onclick="{addElement()}">Add element</a> - 
-        	<a onclick="{deleteElement()}">Delete element</a> - 
-        	<a onclick="{changeAll()}">Change all elements</a>
+        	<a href="javascript:void(0)" onclick="{addElement()}">Add element</a> - 
+        	<a href="javascript:void(0)" onclick="{deleteElement()}">Delete element</a> - 
+        	<a href="javascript:void(0)" onclick="{changeAll()}">Change all elements</a>
         </div>
         <ol>
             {foreach p in persons}
