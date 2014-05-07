@@ -43,6 +43,21 @@ function changeValue (data,val) {
    <#header document="{data.document}" />
 # /template
 
+
+# template title(document)
+  {if document && document.title}
+    {document.title}
+  {else}
+    No title
+  {/if}
+# /template
+
+# template test3(data)
+  <div class="content">
+    <#title document="{data.document}" />
+  </div>
+# /template
+
 describe("Expression Bindings", function () {
     var INPUT1=".in1", INPUT2=".in2";
 
@@ -105,6 +120,31 @@ describe("Expression Bindings", function () {
         delete dm.document;
         h.refresh();
         expect(h(".title").text()).to.equal("Untitled document ");
+
+        h.$dispose();
+    });
+
+    it("validates expression handling when observable pairs are set to null", function() {
+        var h=ht.newTestContext(), dm={};
+        test3(dm).render(h.container);
+
+        expect(h("div.content").text()).to.equal("No title ");
+
+        // create document
+        h.$set(dm,"document",{title:"foo"});
+        expect(h("div.content").text()).to.equal("foo ");
+
+        // change title
+        h.$set(dm.document,"title","f");
+        expect(h("div.content").text()).to.equal("f ");
+
+        // empty title
+        h.$set(dm.document,"title","");
+        expect(h("div.content").text()).to.equal("No title ");
+
+        // change title
+        h.$set(dm.document,"title","bar");
+        expect(h("div.content").text()).to.equal("bar ");
 
         h.$dispose();
     });
