@@ -42,7 +42,7 @@ var ListCtrl = klass({
     {if lc.head}
       <div class="head"><#lc.head/></div>
     {/if}
-    {if !lc.content} 
+    {if !lc.content}
       <span class="nodata">Empty list</span>
     {else}
       <ul class="noTextSelection">
@@ -63,7 +63,7 @@ var ListCtrl = klass({
 // test template
 # template test(d)
   Click on an item to select it:
-  
+
   <#list head="Static list" class="listcpt" onselect="{showSelection(event.value)}">
     <@option value="A" label="First {d.itemName}"/>
     <@option value="B">Second {d.itemName}</@option>
@@ -71,9 +71,9 @@ var ListCtrl = klass({
 
   <#list class="listcpt" onselect="{showSelection(event.value)}">
     <@head>
-      Dynamic list: 
-      <a href="javascript:void(0)" onclick="{empty()}">Empty</a> - 
-      <a href="javascript:void(0)" onclick="{update()}">Update list</a> 
+      Dynamic list:
+      <a href="javascript:void(0)" onclick="{empty()}">Empty</a> -
+      <a href="javascript:void(0)" onclick="{update()}">Update list</a>
     </@head>
     {foreach idx,itm in d.items}
       <@option value="K{idx}">{idx+1}. {itm}</@option>

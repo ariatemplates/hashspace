@@ -1,8 +1,8 @@
 var klass=require("hsp/klass");
-    
-var PanelController = klass({ 
+
+var PanelController = klass({
   attributes: {
-    "head":{type:"template"}, 
+    "head":{type:"template"},
     "body":{type:"template",defaultContent:true}
   }
 });
