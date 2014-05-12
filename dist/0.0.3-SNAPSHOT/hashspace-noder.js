@@ -993,8 +993,10 @@
      * 5: literal value - e.g. {e1:[5,"some value"]}
      * 6: function expression - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}
      * 7: dynamic data reference - e.g. {e1:[7,2,function(i,a0,a1) {return [a0,a1][i];},2,3]}
+     * @param {Boolean} observeTarget if true the targeted data objects will be also observed (e.g. foreach collections) - default:false
      */
-            $constructor: function(edef) {
+            $constructor: function(edef, observeTarget) {
+                this.observeTarget = observeTarget === true;
                 this.exps = {};
                 // initialize the exps map to support a fast accessor function
                 var v, etype, exp = null;
@@ -1008,10 +1010,10 @@
                             exp = new LiteralExpr(v);
                         } else if (etype === 0 || etype === 1 || etype === 2) {
                             // simple expressions
-                            exp = new DataRefExpr(v);
+                            exp = new DataRefExpr(v, this);
                         } else if (etype === 3 || etype === 4) {
                             // function call expression
-                            exp = new FuncRefExpr(v);
+                            exp = new FuncRefExpr(v, this);
                         } else if (etype === 6) {
                             // function expression
                             exp = new FuncExpr(v, this);
@@ -1075,6 +1077,7 @@
  * Little class representing literal expressions 5: literal value - e.g. {e1:[5,"some value"]}
  */
         var LiteralExpr = klass({
+            bound: false,
             /**
      * Class constructor
      * @param {Array} desc the expression descriptor - e.g. [5,"some value"]
@@ -1104,8 +1107,9 @@
             /**
      * Class constructor
      * @param {Array} desc the expression descriptor - e.g. [1,2,"person","name"]
+     * @param {ExpHandler} eh the associated expression handler
      */
-            $constructor: function(desc) {
+            $constructor: function(desc, eh) {
                 var etype = desc[0], pl = desc[1], isLiteral = etype === 2 || etype === 4, root, path = [], ppl;
                 // pl: path
                 // length
@@ -1121,6 +1125,7 @@
                 }
                 this.bound = etype === 1;
                 // literal data ref are considered unbound
+                this.observeTarget = eh.observeTarget && this.bound;
                 this.isLiteral = isLiteral;
                 this.root = root;
                 this.path = path;
@@ -1192,7 +1197,7 @@
                 if (ppl < 1) {
                     return null;
                 }
-                var v = this.root;
+                var v = this.root, r = null;
                 if (!this.isLiteral) {
                     v = ExpHandler.getScopeOwner(p[0], vscope);
                     if (v === null) {
@@ -1206,7 +1211,8 @@
                 }
                 if (ppl === 1) {
                     // optimize standard case
-                    return [ [ v, p[0] ] ];
+                    r = [ [ v, p[0] ] ];
+                    v = v[p[0]];
                 } else {
                     var r = [], pp;
                     for (var i = 0; ppl > i; i++) {
@@ -1217,8 +1223,11 @@
                             break;
                         }
                     }
-                    return r;
                 }
+                if (this.observeTarget && v !== undefined && v !== null) {
+                    r.push([ v, null ]);
+                }
+                return r;
             }
         });
         /**
@@ -1228,14 +1237,16 @@
  */
         var FuncRefExpr = klass({
             $extends: DataRefExpr,
+            bound: false,
+            // default bound value
             /**
      * Class constructor
      * @param {Array} desc the expression descriptor - e.g. [1,2,"person","getDetails",0,"arg1"]
      */
-            $constructor: function(desc) {
+            $constructor: function(desc, eh) {
                 var etype = desc[0];
                 // call parent constructor
-                DataRefExpr.$constructor.call(this, desc);
+                DataRefExpr.$constructor.call(this, desc, eh);
                 this.bound = etype === 3;
                 // literal data ref are considered unbound
                 var argIdx = desc[1] + 2;
@@ -1291,15 +1302,17 @@
      */
             executeCb: function(evt, eh, vscope) {
                 var v = this.getFuncRef(vscope, null);
-                var fn;
+                var fn, info = "";
                 if (!v) {
-                    // TODO add more info about callback (debugging)
-                    return log.error("[hashspace event handler] Invalid callback context");
+                    if (this.path && this.path.length > 0) {
+                        info = this.path[0];
+                    }
+                    return log.error("[function expression] Invalid reference: " + info);
                 } else {
                     fn = v.fn;
                     if (!fn || fn.constructor !== Function) {
-                        // TODO add more info about callback (debugging)
-                        return log.error("[hashspace event handler] Invalid callback function");
+                        info = this.path ? this.path.join(".") : "";
+                        return log.error("[function expression] Object is not a function: " + info);
                     }
                 }
                 // process argument list
@@ -1410,13 +1423,14 @@
             /**
      * Class constructor
      * @param {Array} desc the expression descriptor - e.g. [7,3,function(i,a0,a1) {return [a0,a1,"foo"][i];},2,3]
-     * @param {ExpHandler} exphandler the expression handler that manages this expression
+     * @param {ExpHandler} eh the expression handler that manages this expression
      */
-            $constructor: function(desc, exphandler) {
+            $constructor: function(desc, eh) {
                 // call parent constructor
                 this.nbrOfFragments = desc[1];
                 this.fn = desc[2];
-                this.eh = exphandler;
+                this.eh = eh;
+                this.observeTarget = eh.observeTarget;
                 this.opairs = null;
                 // observable pairs (if null == non initialized)
                 var argLength = desc.length - 3;
@@ -1436,7 +1450,7 @@
                     return defvalue;
                 }
                 // calculate the value of each fragment and the resulting value
-                var v, fragment;
+                var v = null, fragment;
                 for (var i = 0; pfragments.length > i; i++) {
                     fragment = pfragments[i];
                     if (i === 0) {
@@ -1452,6 +1466,9 @@
                             return defvalue;
                         }
                     }
+                }
+                if (v && this.observeTarget) {
+                    op.push([ v, null ]);
                 }
                 return v;
             },
@@ -1566,11 +1583,11 @@
             // Array of observed [obj, property] pairs associated to this object
             needSubScope: false,
             // true if a dedicated sub-scope should be created for this node
-            $constructor: function(exps) {
+            $constructor: function(exps, observeExpTarget) {
                 this.isStatic = exps === 0;
                 if (!this.isStatic) {
                     // create ExpHandler
-                    this.eh = new ExpHandler(exps);
+                    this.eh = new ExpHandler(exps, observeExpTarget);
                 }
             },
             /**
@@ -2613,10 +2630,10 @@
                     this.node = df;
                     this.template.call(this, targs, cargs);
                     // WARNING: this changes vscope to the template vscope
-                    this.node = realNode;
-                    this.node.insertBefore(df, this.node2);
+                    realNode.insertBefore(df, this.node2);
                     this.replaceNodeBy(df, realNode);
                     // recursively remove doc fragment reference
+                    // now this.node=realNode
                     this.isDOMempty = false;
                 }
             },
@@ -3279,8 +3296,8 @@
             updateObjectObservers: function(ni) {
                 if (ni.obsPairs) {
                     this.rmAllObjectObservers(ni);
-                    this.createExpressionObservers(ni);
                 }
+                this.createExpressionObservers(ni);
             },
             /**
      * Dynamically update the value of one of the arguments used by the template The refresh() method must be called
@@ -4032,8 +4049,7 @@
                 this.forType = 0;
                 // 0=in / 1=of / 2=on
                 this.colExpIdx = colExpIdx;
-                TNode.$constructor.call(this, exps);
-                this.isBound = this.eh.getExpr(colExpIdx).bound === true;
+                TNode.$constructor.call(this, exps, true);
                 this.displayedCol = null;
                 // displayed collection
                 this.itemNode = new $ItemNode(children, itemName, itemKeyName);
@@ -4069,9 +4085,6 @@
                 var cn, forType = this.forType, itemNode = this.itemNode;
                 if (col) {
                     // create an observer on the collection to be notified of the changes (cf. refresh)
-                    if (this.isBound) {
-                        this.root.createObjectObserver(this, col);
-                    }
                     this.displayedCol = col;
                     this.childNodes = cn = [];
                     if (forType === 0 && col.constructor !== Array) {
