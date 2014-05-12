@@ -54,6 +54,8 @@ describe("Transpiler", function () {
             a.i = -1;
             a.i ^= 1;
             a.i |= 1;
+            a.j = a.k = 7;
+            (a.l = {}).m = 12;
         };
         var result = processString("(" + mySourceFunction.toString() + ")");
         assert.equal(result.changed, true);
@@ -186,6 +188,21 @@ describe("Transpiler", function () {
                     name : "i",
                     newValue : -1,
                     oldValue : -2
+                }, {
+                    type : "new",
+                    name : "k",
+                    newValue : 7,
+                    oldValue : undefined
+                }, {
+                    type : "new",
+                    name : "j",
+                    newValue : 7,
+                    oldValue : undefined
+                }, {
+                    type : "new",
+                    name : "l",
+                    newValue : {},
+                    oldValue : undefined
                 }];
         var observer = function (chgList) {
             assert.equal(chgList.length, 1);
