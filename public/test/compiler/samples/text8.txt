@@ -1,0 +1,17 @@
+##### Template:
+var nullValue = "null";
+
+# template main()
+    before-{nullValue}-after
+# /template 
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code
+main=[
+    n.$text({e1:[2,1,_nullValue]},["before-",1,"-after"])
+]
