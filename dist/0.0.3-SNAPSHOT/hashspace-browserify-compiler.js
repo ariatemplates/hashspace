@@ -16243,9 +16243,12 @@ module.exports = function (ast, fileContent, options) {
     }
 
     function walkFunction (node, descend) {
+        var newStart = (nextStart === null);
         var formatInfo = node.formatInfo;
         if (formatInfo) {
-            continueUntil(formatInfo.originalStartPos);
+            if (!newStart) {
+                continueUntil(formatInfo.originalStartPos);
+            }
             out.push(formatInfo.before);
             var middle = formatInfo.middle;
             for (var i = 0, l = middle.length; i < l; i++) {
@@ -16255,11 +16258,12 @@ module.exports = function (ast, fileContent, options) {
                 walkNode(middle[i]);
             }
             out.push(formatInfo.after);
-            restartFrom(formatInfo.originalEndPos);
-        } else if (!(node.start && node.end)) {
+            if (!newStart) {
+                restartFrom(formatInfo.originalEndPos);
+            }
+        } else if (newStart && !(node.start && node.end)) {
             out.push(node.print_to_string());
         } else {
-            var newStart = (nextStart === null);
             if (newStart) {
                 restartFrom(node.start.pos);
             }
