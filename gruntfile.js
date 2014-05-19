@@ -243,7 +243,7 @@ module.exports = function (grunt) {
     },
     browserify: {
       runtime: {
-        files: [{dest: 'dist/'+pkg.version+'/hashspace-browserify.js', src: ['hsp/rt.js']}],
+        files: [{dest: 'dist/hashspace-browserify.js', src: ['hsp/rt.js']}],
         options: {
           aliasMappings: [
             {
@@ -265,7 +265,7 @@ module.exports = function (grunt) {
         }
       },
       compiler: {
-        files: [{dest: 'dist/'+pkg.version+'/hashspace-browserify-compiler.js', src: ['hsp/compiler/compiler.js']}],
+        files: [{dest: 'dist/hashspace-browserify-compiler.js', src: ['hsp/compiler/compiler.js']}],
         options: {
           aliasMappings: [
             {
@@ -280,10 +280,10 @@ module.exports = function (grunt) {
     uglify: {
       hsp: {
         files: [
-          {dest: 'dist/'+pkg.version+'/hashspace-browserify.min.js', src: ['dist/'+pkg.version+'/hashspace-browserify.js']},
-          {dest: 'dist/'+pkg.version+'/hashspace-browserify-compiler.min.js', src: ['dist/'+pkg.version+'/hashspace-browserify-compiler.js']},
-          {dest: 'dist/'+pkg.version+'/hashspace-noder.min.js', src: ['dist/'+pkg.version+'/hashspace-noder.js']},
-          {dest: 'dist/'+pkg.version+'/hashspace-noder-compiler.min.js', src: ['dist/'+pkg.version+'/hashspace-noder-compiler.js']}
+          {dest: 'dist/hashspace-browserify.min.js', src: ['dist/hashspace-browserify.js']},
+          {dest: 'dist/hashspace-browserify-compiler.min.js', src: ['dist/hashspace-browserify-compiler.js']},
+          {dest: 'dist/hashspace-noder.min.js', src: ['dist/hashspace-noder.js']},
+          {dest: 'dist/hashspace-noder-compiler.min.js', src: ['dist/hashspace-noder-compiler.js']}
         ]
       }
     },
@@ -300,7 +300,7 @@ module.exports = function (grunt) {
             options : {
                 sourceDirectories : ['.'],
                 sourceFiles : ['hsp/**/*.js'],
-                outputDirectory : 'dist/' + pkg.version,
+                outputDirectory : 'dist/',
                 visitors : [{
                             type : "ImportSourceFile",
                             cfg : {
@@ -361,11 +361,11 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('atpackager');
   require('atpackager').loadNpmPlugin('noder-js');
 
-  grunt.registerTask('prepublish', ['peg']);
-  grunt.registerTask('package', ['prepublish', 'browserify', 'atpackager:uglify','atpackager:runtime','uglify']);
+  grunt.registerTask('prepublish', ['package']);
+  grunt.registerTask('package', ['peg', 'browserify', 'atpackager:uglify','atpackager:runtime','uglify']);
   grunt.registerTask('mocha', ['peg', 'inittests', 'mochaTest', 'finalizetests']);
   grunt.registerTask('test', ['checkStyle', 'jscs', 'mocha', 'karma:unit']);
-  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci1', 'karma:ci2', 'karma:coverage', 'package']);
+  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci1', 'karma:ci2', 'karma:coverage']);
   grunt.registerTask('release', ['docs:release']);
   grunt.registerTask('default', ['docs:playground']);
 };
