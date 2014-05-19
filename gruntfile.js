@@ -51,6 +51,9 @@ module.exports = function (grunt) {
         files: [
           'hsp/**/*.js',
           'test/**/*.spec.*',
+          'docs/libs/Chart.min.js',
+          'docs/samples/*/*.hsp',
+          'docs/samples/*/*.spec.js',
           'node_modules/sinon/pkg/sinon-ie.js',
           'node_modules/jquery/dist/jquery.min.js',
           'node_modules/sinon/pkg/sinon-ie.js'
@@ -59,13 +62,16 @@ module.exports = function (grunt) {
           'hsp/compiler/**/*.js',
           'hsp/transpiler/**/*.js',
           'test/transpiler/**/*.spec.js',
-          'test/compiler/**/*.spec.js'
+          'test/compiler/**/*.spec.js',
+          'docs/samples/thirdpartycpts/**/*.*',
         ],
         preprocessors: {
           'hsp/**/*.js': ['commonjs'],
           'test/lib/*.js': ['commonjs'],
           'test/**/*.spec.js': ['commonjs'],
           'test/**/*.spec.hsp': ['hsp', 'commonjs'],
+          'docs/samples/*/*.hsp': ['hsp', 'commonjs'],
+          'docs/samples/*/*.spec.js': ['commonjs'],
           'node_modules/jquery/dist/jquery.min.js': ['commonjs']
         },
         commonjsPreprocessor: {
@@ -163,19 +169,12 @@ module.exports = function (grunt) {
             platform: 'Linux',
             version: '4.3'
           }
-        }
-        //logLevel: 'LOG_INFO'
+        },
+        logLevel: 'LOG_DEBUG'
       },
       unit: {
         singleRun: true,
-        preprocessors: {
-          'hsp/**/*.js': ['commonjs', 'coverage']
-        },
-        reporters: ['progress', 'coverage'],
-        coverageReporter: {
-          type : 'lcov',
-          dir : 'test-results/karma/'
-        }
+        reporters: ['progress', 'coverage']
       },
       tdd: {
         singleRun: false,
@@ -215,14 +214,16 @@ module.exports = function (grunt) {
         browserNoActivityTimeout: 20000,
         captureTimeout: 300000,
         browsers: ['SL_iOS_7', 'SL_Firefox', 'SL_Android_4.2', 'SL_Android_4.3', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6'],
-        reporters: ['dots', 'saucelabs']
+        reporters: ['dots', 'saucelabs'],
+        verbose: true
       },
       sauce: {
         singleRun: true,
         browserNoActivityTimeout: 20000,
         captureTimeout: 300000,
         browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'SL_Android_4.0', 'SL_Android_4.1', 'SL_Android_4.2', 'SL_Android_4.3', 'SL_iOS_7'],
-        reporters: ['dots', 'saucelabs']
+        reporters: ['dots', 'saucelabs'],
+        verbose: true
       }
     },
     jscs: {

@@ -1,5 +1,5 @@
 
-# template hello(name)
+# export template hello(name)
     <div class="msg">
         Hello {name}!
     </div>
