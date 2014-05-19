@@ -71,14 +71,14 @@ describe("Let statement", function () {
         var h=ht.newTestContext(), d={value:"hello"};
         test1(d).render(h.container);
 
-        expect(h(".foo").text()).to.equal("Blah hello ");
-        expect(h(".bar").text()).to.equal("hello3AL ");
+        expect(h(".foo").text()).to.equal("Blah hello");
+        expect(h(".bar").text()).to.equal("hello3AL");
 
         // change value dynamically
         h.$set(d,"value","salut");
 
-        expect(h(".foo").text()).to.equal("Blah salut ");
-        expect(h(".bar").text()).to.equal("salut3AL ");
+        expect(h(".foo").text()).to.equal("Blah salut");
+        expect(h(".bar").text()).to.equal("salut3AL");
         expect(h.logs().length).to.equal(0);
         
         h.$dispose();
@@ -88,14 +88,14 @@ describe("Let statement", function () {
         var h=ht.newTestContext(), d={value:"Hello"};
         test2(d).render(h.container);
 
-        expect(h(".foo").text()).to.equal("Hello World ");
-        expect(h(".bar").text()).to.equal(" ");
+        expect(h(".foo").text()).to.equal("Hello World");
+        expect(h(".bar").text()).to.equal("");
 
         // change value dynamically
         h.$set(d,"value","How are you");
 
-        expect(h(".foo").text()).to.equal("How are you World ");
-        expect(h(".bar").text()).to.equal(" ");
+        expect(h(".foo").text()).to.equal("How are you World");
+        expect(h(".bar").text()).to.equal("");
         expect(h.logs().length).to.equal(0);
     });
 
@@ -103,17 +103,17 @@ describe("Let statement", function () {
         var h=ht.newTestContext(), d={condition:true,value1:"Hello",value2:"How are you?"};
         test3(d).render(h.container);
 
-        expect(h(".foo").text()).to.equal("x: Hello World - y:  ");
+        expect(h(".foo").text()).to.equal("x: Hello World - y:");
 
         // change condition dynamically
         h.$set(d,"condition",false);
 
-        expect(h(".foo").text()).to.equal("x:  - y: How are you? ");
+        expect(h(".foo").text()).to.equal("x:  - y: How are you?");
 
         // change back
         h.$set(d,"condition",true);
 
-        expect(h(".foo").text()).to.equal("x: Hello World - y:  ");    
+        expect(h(".foo").text()).to.equal("x: Hello World - y:");
         expect(h.logs().length).to.equal(0);
     });
 

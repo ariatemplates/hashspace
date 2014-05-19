@@ -88,19 +88,19 @@ describe("Dynamic template insertion", function () {
         test1(c).render(h.container);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentA - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentA - After");
 
         // change template dynamically
         h.$set(c,"tpl",contentB);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentB - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentB - After");
 
         // change template dynamically, again
         h.$set(c,"tpl",contentC);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentC - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentC - After");
         
         h.$dispose();
     });
@@ -110,25 +110,25 @@ describe("Dynamic template insertion", function () {
         test2(c).render(h.container);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentA - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentA - After");
 
         // change template dynamically
         h.$set(c.a.b,"tpl",contentB);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentB - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentB - After");
 
         // change path but not the template
         h.$set(c.a,"b",{tpl:contentB,foo:"bar"});
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentB - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentB - After");
 
         // change path and template
         h.$set(c.a,"b",{tpl:contentC,foo:"bar"});
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentC - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentC - After");
 
         h.$dispose();
     });
@@ -138,25 +138,25 @@ describe("Dynamic template insertion", function () {
         test3(c).render(h.container);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - contentA2: foo - After ");
+        expect(h(".content").text()).to.equal("Before - contentA2: foo - After");
 
         // change template dynamically
         h.$set(c,"tpl",contentB2);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - contentB2: foo - After ");
+        expect(h(".content").text()).to.equal("Before - contentB2: foo - After");
 
         // change txt value
         h.$set(c,"txt","bar");
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - contentB2: bar - After ");
+        expect(h(".content").text()).to.equal("Before - contentB2: bar - After");
         
         // change template again dynamically
         h.$set(c,"tpl",contentA2);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - contentA2: bar - After ");
+        expect(h(".content").text()).to.equal("Before - contentA2: bar - After");
 
         h.$dispose();
     });
@@ -166,13 +166,13 @@ describe("Dynamic template insertion", function () {
         test4(c).render(h.container);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentA - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentA - After");
 
         // change template dynamically
         h.$set(c,"tpl",contentB2);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - contentB2: hello - After ");
+        expect(h(".content").text()).to.equal("Before - contentB2: hello - After");
 
         h.$dispose();
     });
@@ -182,19 +182,19 @@ describe("Dynamic template insertion", function () {
         test5(c).render(h.container);
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentA - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentA - After");
 
         // change intermediate object in the template path
         h.$set(c,"a",{b:{tpl:contentB,foo:"bar"}});
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentB - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentB - After");
 
         // change path and template
         h.$set(c.a,"b",{tpl:contentC,foo:"bar"});
 
         expect(h.logs().length).to.equal(0);
-        expect(h(".content").text()).to.equal("Before - This is contentC - After ");
+        expect(h(".content").text()).to.equal("Before - This is contentC - After");
 
         h.$dispose();
     });

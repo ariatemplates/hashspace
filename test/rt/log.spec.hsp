@@ -47,7 +47,7 @@ describe("Log statement", function () {
         var h=ht.newTestContext();
         test1({value:123}).render(h.container);
 
-        expect(h(".foo").text()).to.equal("Blah ");
+        expect(h(".foo").text()).to.equal("Blah");
 
         expect(h.logs().length).to.equal(1);
         expect(h.logs(0).message).to.equal("123");
@@ -67,7 +67,7 @@ describe("Log statement", function () {
         var x;
         test2(m).render(h.container);
 
-        expect(h(".foo").text()).to.equal("... ");
+        expect(h(".foo").text()).to.equal("...");
 
         expect(h.logs().length).to.equal(1);
         expect(h.logs(0).message).to.equal('abc {bar:Array[3], foo:1}');

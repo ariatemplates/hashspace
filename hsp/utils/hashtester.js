@@ -34,10 +34,13 @@ var SelectionWrapper=klass({
     },
     /**
      * Return the textual content of the selection. Will recursively go through all DOM sub-nodes
-     * and concatenate the different text node content
+     * and concatenate the different text node content. By default will trim the returned text.
+     *
+     * @param {Boolean} trim the returned text - true by default
      **/
-    text:function() {
-        return this.$selection.text();
+    text:function(trim) {
+        var text = this.$selection.text();
+        return trim === false ? text : $.trim(text);
     },
     /**
      * Return the selection corresponding to the nth element in the selection

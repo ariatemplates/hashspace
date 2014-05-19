@@ -159,15 +159,15 @@ describe("Function expressions", function () {
         };
         test4(d).render(h.container);
 
-        expect(h(C).text()).to.equal("[hello world]! ");
+        expect(h(C).text()).to.equal("[hello world]!");
 
         // change arg
         h.$set(d,"msg2","earth");
-        expect(h(C).text()).to.equal("[hello earth]! ");
+        expect(h(C).text()).to.equal("[hello earth]!");
 
         // trigger if
         h.$set(d,"showEndText",true);
-        expect(h(C).text()).to.equal("[hello earth]! *123* ");
+        expect(h(C).text()).to.equal("[hello earth]! *123*");
 
         h.$dispose();
     });
