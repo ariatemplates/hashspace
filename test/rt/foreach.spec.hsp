@@ -659,39 +659,39 @@ describe("ForEach Node", function () {
 
         expect(h("li").length).to.equal(5);
 
-        expect(h("li").item(0).text()).to.equal("Bart  ");
-        expect(h("li").item(1).text()).to.equal("Homer Simpsons ");
-        expect(h("li").item(2).text()).to.equal("Lisa  ");
-        expect(h("li").item(3).text()).to.equal("Maggy  ");
-        expect(h("li").item(4).text()).to.equal("Marge Simpsons ");
+        expect(h("li").item(0).text()).to.equal("Bart");
+        expect(h("li").item(1).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Lisa");
+        expect(h("li").item(3).text()).to.equal("Maggy");
+        expect(h("li").item(4).text()).to.equal("Marge Simpsons");
 
         // toggle display
         h("a.toggle").click();
 
-        expect(h("li").item(4).text()).to.equal("Bart  ");
-        expect(h("li").item(3).text()).to.equal("Homer Simpsons ");
-        expect(h("li").item(2).text()).to.equal("Lisa  ");
-        expect(h("li").item(1).text()).to.equal("Maggy  ");
-        expect(h("li").item(0).text()).to.equal("Marge Simpsons ");
+        expect(h("li").item(4).text()).to.equal("Bart");
+        expect(h("li").item(3).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Lisa");
+        expect(h("li").item(1).text()).to.equal("Maggy");
+        expect(h("li").item(0).text()).to.equal("Marge Simpsons");
 
         // toggle back
         h("a.toggle").click();
 
-        expect(h("li").item(0).text()).to.equal("Bart  ");
-        expect(h("li").item(1).text()).to.equal("Homer Simpsons ");
-        expect(h("li").item(2).text()).to.equal("Lisa  ");
-        expect(h("li").item(3).text()).to.equal("Maggy  ");
-        expect(h("li").item(4).text()).to.equal("Marge Simpsons ");
+        expect(h("li").item(0).text()).to.equal("Bart");
+        expect(h("li").item(1).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Lisa");
+        expect(h("li").item(3).text()).to.equal("Maggy");
+        expect(h("li").item(4).text()).to.equal("Marge Simpsons");
 
         // modify collection
         data.persons.splice(1,0,{firstName:"Kevin"});
         h.refresh();
 
         expect(h("li").length).to.equal(6);
-        expect(h("li").item(0).text()).to.equal("Bart  ");
-        expect(h("li").item(1).text()).to.equal("Homer Simpsons ");
-        expect(h("li").item(2).text()).to.equal("Kevin  ");
-        expect(h("li").item(3).text()).to.equal("Lisa  ");
+        expect(h("li").item(0).text()).to.equal("Bart");
+        expect(h("li").item(1).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Kevin");
+        expect(h("li").item(3).text()).to.equal("Lisa");
 
         h.$dispose();
     });
@@ -713,39 +713,39 @@ describe("ForEach Node", function () {
 
         expect(h("li").length).to.equal(5);
 
-        expect(h("li").item(0).text()).to.equal("Bart  ");
-        expect(h("li").item(1).text()).to.equal("Homer Simpsons ");
-        expect(h("li").item(2).text()).to.equal("Lisa  ");
-        expect(h("li").item(3).text()).to.equal("Maggy  ");
-        expect(h("li").item(4).text()).to.equal("Marge Simpsons ");
+        expect(h("li").item(0).text()).to.equal("Bart");
+        expect(h("li").item(1).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Lisa");
+        expect(h("li").item(3).text()).to.equal("Maggy");
+        expect(h("li").item(4).text()).to.equal("Marge Simpsons");
 
         // toggle display
         h("a.toggle").click();
 
-        expect(h("li").item(4).text()).to.equal("Bart  ");
-        expect(h("li").item(3).text()).to.equal("Homer Simpsons ");
-        expect(h("li").item(2).text()).to.equal("Lisa  ");
-        expect(h("li").item(1).text()).to.equal("Maggy  ");
-        expect(h("li").item(0).text()).to.equal("Marge Simpsons ");
+        expect(h("li").item(4).text()).to.equal("Bart");
+        expect(h("li").item(3).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Lisa");
+        expect(h("li").item(1).text()).to.equal("Maggy");
+        expect(h("li").item(0).text()).to.equal("Marge Simpsons");
 
         // toggle back
         h("a.toggle").click();
 
-        expect(h("li").item(0).text()).to.equal("Bart  ");
-        expect(h("li").item(1).text()).to.equal("Homer Simpsons ");
-        expect(h("li").item(2).text()).to.equal("Lisa  ");
-        expect(h("li").item(3).text()).to.equal("Maggy  ");
-        expect(h("li").item(4).text()).to.equal("Marge Simpsons ");
+        expect(h("li").item(0).text()).to.equal("Bart");
+        expect(h("li").item(1).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Lisa");
+        expect(h("li").item(3).text()).to.equal("Maggy");
+        expect(h("li").item(4).text()).to.equal("Marge Simpsons");
 
         // modify collection
         data.persons.splice(1,0,{firstName:"Kevin"});
         h.refresh();
 
         expect(h("li").length).to.equal(6);
-        expect(h("li").item(0).text()).to.equal("Bart  ");
-        expect(h("li").item(1).text()).to.equal("Homer Simpsons ");
-        expect(h("li").item(2).text()).to.equal("Kevin  ");
-        expect(h("li").item(3).text()).to.equal("Lisa  ");
+        expect(h("li").item(0).text()).to.equal("Bart");
+        expect(h("li").item(1).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Kevin");
+        expect(h("li").item(3).text()).to.equal("Lisa");
 
         h.$dispose();
     });

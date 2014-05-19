@@ -106,20 +106,20 @@ describe("Expression Bindings", function () {
         var h=ht.newTestContext(), dm={document:{title:"No title"}};
         test2(dm).render(h.container);
 
-        expect(h(".title").text()).to.equal("No title ");
+        expect(h(".title").text()).to.equal("No title");
 
         // change data
         h.$set(dm,"document",null);
-        expect(h(".title").text()).to.equal("Untitled document ");
+        expect(h(".title").text()).to.equal("Untitled document");
 
         // set back
         h.$set(dm,"document",{title:"Doc 1"});
-        expect(h(".title").text()).to.equal("Doc 1 ");
+        expect(h(".title").text()).to.equal("Doc 1");
 
         // delete data
         delete dm.document;
         h.refresh();
-        expect(h(".title").text()).to.equal("Untitled document ");
+        expect(h(".title").text()).to.equal("Untitled document");
 
         h.$dispose();
     });
@@ -128,23 +128,23 @@ describe("Expression Bindings", function () {
         var h=ht.newTestContext(), dm={};
         test3(dm).render(h.container);
 
-        expect(h("div.content").text()).to.equal("No title ");
+        expect(h("div.content").text()).to.equal("No title");
 
         // create document
         h.$set(dm,"document",{title:"foo"});
-        expect(h("div.content").text()).to.equal("foo ");
+        expect(h("div.content").text()).to.equal("foo");
 
         // change title
         h.$set(dm.document,"title","f");
-        expect(h("div.content").text()).to.equal("f ");
+        expect(h("div.content").text()).to.equal("f");
 
         // empty title
         h.$set(dm.document,"title","");
-        expect(h("div.content").text()).to.equal("No title ");
+        expect(h("div.content").text()).to.equal("No title");
 
         // change title
         h.$set(dm.document,"title","bar");
-        expect(h("div.content").text()).to.equal("bar ");
+        expect(h("div.content").text()).to.equal("bar");
 
         h.$dispose();
     });
