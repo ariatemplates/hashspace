@@ -33,6 +33,7 @@ module.exports = function (grunt) {
             files : {
                 src : [ 'docs/**/*.js',
                         '!docs/libs/**/*.js',
+                        '!docs/samples/**/*.spec.js',
                         '!docs/**/test/**/*.js' // the test for todomvc is in docs
                 ]
             },
@@ -60,7 +61,7 @@ module.exports = function (grunt) {
             }
         },
         test : {
-            src : ['test/**/*.js','docs/**/test/**/*.js'], // the test for todomvc is in docs
+            src : ['test/**/*.js', 'docs/samples/**/*.spec.js', 'docs/**/test/**/*.js'], // the test for todomvc is in docs
             options : {
                 "node" : true,
                 "globals" : {

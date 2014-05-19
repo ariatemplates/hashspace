@@ -51,6 +51,9 @@ module.exports = function (grunt) {
         files: [
           'hsp/**/*.js',
           'test/**/*.spec.*',
+          'docs/libs/Chart.min.js',
+          'docs/samples/*/*.hsp',
+          'docs/samples/*/*.spec.js',
           'node_modules/sinon/pkg/sinon-ie.js',
           'node_modules/jquery/dist/jquery.min.js',
           'node_modules/sinon/pkg/sinon-ie.js'
@@ -65,7 +68,9 @@ module.exports = function (grunt) {
           'hsp/**/*.js': ['commonjs'],
           'test/lib/*.js': ['commonjs'],
           'test/**/*.spec.js': ['commonjs'],
-          'test/**/*.spec.hsp': ['hsp-compile', 'commonjs'],
+          'test/**/*.spec.hsp': ['hsp', 'commonjs'],
+          'docs/samples/*/*.hsp': ['hsp', 'commonjs'],
+          'docs/samples/*/*.spec.js': ['commonjs'],
           'node_modules/jquery/dist/jquery.min.js': ['commonjs']
         },
         commonjsPreprocessor: {
