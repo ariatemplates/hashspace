@@ -17,7 +17,7 @@
 // This module contains the $Root and $Insert nodes used to instantiate new templates
 var klass = require("../klass"),
     log = require("./log"),
-    doc = require("../document"),
+    doc = require("./document"),
     json = require("../json"),
     PropObserver = require("../propobserver"),
     tn = require("./tnode"),

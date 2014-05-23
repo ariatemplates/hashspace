@@ -16,7 +16,7 @@
 
 var hsp=require("hsp/rt"),
     json=require("hsp/json"),
-    doc=require("hsp/document"),
+    doc=require("hsp/rt/document"),
     ht=require("hsp/utils/hashtester"),
     klass=require("hsp/klass");
 

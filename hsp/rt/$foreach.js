@@ -17,7 +17,7 @@
 // ForEachNode implementation
 var klass = require("../klass"),
     log = require("./log"),
-    doc = require("../document"),
+    doc = require("./document"),
     json = require("../json"),
     tnode = require("./tnode"),
     TNode = tnode.TNode;

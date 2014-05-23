@@ -1,5 +1,5 @@
 var json = require("../json"),
-    doc = require("../document");
+    doc = require("./document");
 
 /**
  * $CptTemplate contains methods that will be added to the prototype of all

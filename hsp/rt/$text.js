@@ -16,7 +16,7 @@
 
 // This module contains the text node
 var klass = require("../klass"),
-    doc = require("../document"),
+    doc = require("./document"),
     TNode = require("./tnode").TNode,
     TExpAtt = require("./tnode").TExpAtt;
 

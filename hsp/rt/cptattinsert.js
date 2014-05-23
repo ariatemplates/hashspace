@@ -1,4 +1,4 @@
-var doc = require("../document");
+var doc = require("./document");
 
 /**
  * $CptAttInsert contains methods that will be added to the prototype of all
