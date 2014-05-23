@@ -1,0 +1,29 @@
+var hsp = require("hsp/rt");
+var browser = require("hsp/rt/browser");
+var ht = require("hsp/utils/hashtester");
+
+# template svgTest()
+    <svg>
+        <circle cx="60" cy="60" r="50" stroke="black" stroke-width="5" fill="silver"/>
+    </svg>
+# /template
+
+describe('svg support', function() {
+
+    it('should not break and log error in browsers that dont support svg', function() {
+        var h=ht.newTestContext();
+        var svgErrLogs;
+
+        svgTest().render(h.container);
+
+        if (!browser.supportsSvg()) {
+            svgErrLogs = h.logs();
+            expect(svgErrLogs.length).to.equal(1);
+            expect(svgErrLogs[0].type).to.equal('error');
+            expect(svgErrLogs[0].message).to.equal('This browser does not support SVG elements');
+            h.logs.clear();
+        }
+
+        h.$dispose();
+    });
+})

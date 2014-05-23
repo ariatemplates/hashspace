@@ -17,7 +17,7 @@
 // This module contains the log node
 var klass = require("../klass"),
     $set = require("../$set"),
-    doc = require("../document"),
+    doc = require("./document"),
     TNode = require("./tnode").TNode;
 
 var LetNode = klass({

@@ -1,5 +1,5 @@
 var klass = require("../klass"),
-    doc=require("../document"),
+    doc=require("../rt/document"),
     hsp=require("../rt"),
     fireEvent=require("./eventgenerator").fireEvent,
     $=require("node_modules/jquery/dist/jquery.min.js"),

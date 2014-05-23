@@ -1,6 +1,6 @@
 var json = require("../json"),
     log = require("./log"),
-    doc = require("../document"),
+    doc = require("./document"),
     $TextNode = require("./$text"),
     cptwrapper = require("./cptwrapper");
 

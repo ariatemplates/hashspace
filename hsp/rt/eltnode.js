@@ -16,11 +16,12 @@
 
 // Element Node used for any standard HTML element (i.e. having attributes and child elements)
 var klass = require("../klass");
-var doc = require("../document");
+var browser = require("./browser");
+var doc = require("./document");
 var TNode = require("./tnode").TNode;
 var hsp = require("../rt");
 var gestures = require("../gestures/gestures");
-//var log = require("./log");
+var log = require("./log");
 
 var booleanAttributes = {
     async: true,
@@ -108,7 +109,11 @@ var EltNode = klass({
         this.TYPE = this.tag; // for debugging purposes
         var nd;
         if (this.tag === "svg") {
-            this.nodeNS = "http://www.w3.org/2000/svg";
+            if (browser.supportsSvg()) {
+                this.nodeNS = "http://www.w3.org/2000/svg";
+            } else {
+                log.error('This browser does not support SVG elements');
+            }
         }
         if (this.nodeNS) {
             nd = doc.createElementNS(this.nodeNS, this.tag);

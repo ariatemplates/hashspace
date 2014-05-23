@@ -16,7 +16,7 @@
 
 // If condition node
 var klass = require("../klass"),
-    doc = require("../document"),
+    doc = require("./document"),
     tnode = require("./tnode"),
     TNode = tnode.TNode;
 
