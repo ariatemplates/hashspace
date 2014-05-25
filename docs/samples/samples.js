@@ -95,6 +95,14 @@ module.exports = [{
                         main : true
                     }]
         }, {
+            title : "Setting global references: the global object",
+            folder : "global",
+            description : "description.md",
+            files : [{
+                        src : "global.hsp",
+                        main : true
+                    }]
+        }, {
             title : "Dynamic templates",
             folder : "dyntemplates",
             description : "description.md",

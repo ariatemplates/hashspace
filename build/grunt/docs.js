@@ -146,7 +146,7 @@ module.exports = function(grunt) {
     grunt.config.requires('hspserver.base');
 
     var port            = grunt.config('hspserver.port'),
-        hspRoot         = grunt.config('hspserver.base'),
+        hspRoot         = grunt.config('hspserver.base')+"/hsp",
         emptyJsResponse = function(req, res) { res.set('Content-Type', 'application/x-javascript'); return res.send(""); },
         compilerPath    = '/dist/' + VERSION + '/hashspace-noder-compiler.min.js',
         runtimePath     = '/dist/' + VERSION + '/hashspace-noder.min.js';

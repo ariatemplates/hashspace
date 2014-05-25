@@ -1,5 +1,5 @@
 
-var todos=require("todomvc/todo.hsp").todos,
+var todos=require("../todo.hsp").todos,
     ht=require("hsp/utils/hashtester");
 
 var NEW_TODO="#new-todo";

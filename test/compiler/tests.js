@@ -202,7 +202,7 @@ describe('Block Parser: ', function () {
                 jsgenerator.HEADER,
                 '',
                 'var test = require("hsp/rt").template([], function(n){',
-                '  var _body,_panel;try {_body=body} catch(e) {};try {_panel=panel} catch(e) {};',
+                '  var _body,_panel;try {_body=body} catch(e) {_body=n.g(\'body\')};try {_panel=panel} catch(e) {_panel=n.g(\'panel\')};',
                 '  return [',
                 '  n.cpt([_panel,"panel"],0,0,0,[n.cpt([_body,"body"],0,{"class":"foo"},0,[n.$text(0,["Hello World! "])])])];',
                 '});'

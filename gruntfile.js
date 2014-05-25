@@ -233,12 +233,13 @@ module.exports = function (grunt) {
     },
     hspserver: {
       port: 8000,
-      base: __dirname + '/hsp'
+      base: __dirname,
+      templateExtension: "hsp"
     },
     watch: {
       mocha: {
         files: ['hsp/compiler/**', 'test/**'],
-        tasks: ['mochaTest']
+        tasks: [] //'mochaTest'
       }
     },
     browserify: {
@@ -367,5 +368,6 @@ module.exports = function (grunt) {
   grunt.registerTask('test', ['checkStyle', 'jscs', 'mocha', 'karma:unit']);
   grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci1', 'karma:ci2', 'karma:coverage']);
   grunt.registerTask('release', ['docs:release']);
+  grunt.registerTask('tddrt', ['hspserver','watch']);
   grunt.registerTask('default', ['docs:playground']);
 };
