@@ -45,9 +45,11 @@ exports["template"] = function (node, walker) {
     //Generates globals validation statement - e.g. var _c;try {_c=c} catch(e) {};
     var globalsStatement = [], globalsLength = globals.length;
     if (globalsLength) {
+        var gnm;
         globalsStatement = ["  var _" + globals.join(',_') + ";"];
         for (var i=0; i < globalsLength; i++) {
-            globalsStatement.push( "try {_" + globals[i] + "=" + globals[i] + "} catch(e) {};");
+            gnm=globals[i];
+            globalsStatement.push( "try {_" + gnm + "=", gnm ,"} catch(e) {_" + gnm + "=n.g('", gnm ,"')};");
         }
         globalsStatement.push(CRLF);
     }

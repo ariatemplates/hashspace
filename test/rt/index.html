@@ -18,6 +18,7 @@
 <!doctype html> <!-- html5 -->
 <html>
 <head>
+	<!-- to run these test launch: grunt tddrt -->
 	<meta http-equiv="x-ua-compatible" content="IE=Edge"/>
 	<link rel="stylesheet" href="/node_modules/mocha/mocha.css" />
 	<script src="/node_modules/expect.js/expect.js"></script>
@@ -28,14 +29,7 @@
 	<script type="text/javascript" src="/node_modules/noder-js/dist/browser/noder.min.js">
 	{
 		packaging: {
-			baseUrl: "/",
-			preprocessors: [{
-				pattern: /\.hsp$/,
-				module: "hsp/compiler/compile"
-			}, {
-				pattern: /^(?!hsp\/|libs\/).*\.js$/,
-				module: "hsp/transpiler/transpile"
-			}]
+			baseUrl: "/"
 		},
 		resolver: {
 			"default" : {
@@ -53,6 +47,7 @@
 
 	// runtime tests
 	require("test/rt/$set.spec.js");
+	require("test/rt/global.spec.hsp");
 	require("test/rt/booleanAttributes.spec.hsp");
 	require("test/rt/cptattelements1.spec.hsp");
 	require("test/rt/cptattelements2.spec.hsp");
@@ -93,8 +88,7 @@
 	require("test/gestures/pinch.spec.hsp");
 	require("test/utils/eventgenerator.spec.hsp");
 	require("test/utils/hashtester.spec.hsp");
-	require("todomvc/test/todo.spec.js");
-
+	require("docs/todomvc/test/todo.spec.js");
 	mocha.checkLeaks();
 	//mocha.globals(['jQuery']);
 	mocha.run();

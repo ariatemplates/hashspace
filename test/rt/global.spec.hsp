@@ -1,0 +1,132 @@
+
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var hsp=require("hsp/rt"),
+    ht=require("hsp/utils/hashtester");
+
+# template test1()
+    <div class="content">Hello {msg}</div>
+# /template
+
+# template test2()
+    <div class="content">{g.msg}!</div>
+# /template
+
+# template w1(message)
+    <span class="wmsg">{message}</span>
+# /template
+
+# template test3(msg)
+    <div class="content">
+        <#mywidget message="{msg}"/>
+    </div>
+# /template
+
+# template test4(msg)
+    <div class="content">
+        <#lib.widget message="{msg}"/>
+    </div>
+# /template
+
+# template test5(values)
+    <div class="content">
+        Values: {mytransform(values)}
+    </div>
+# /template
+
+# template test6(values)
+    {let t=new TestTransform("A")}
+    <div class="content">
+        Values: {t.process(values)}
+    </div>
+# /template
+
+
+describe("Hashspace global object", function () {
+    var h;
+    // TODO
+    // global functio    // global object constructor with {let}
+
+    beforeEach(function () {
+         h=ht.newTestContext();
+     });
+
+    afterEach(function () {
+        hsp.global.msg=null;
+        hsp.global.mywidget=null;
+        hsp.global.lib=null;
+        hsp.global.mytransform=null;
+        hsp.global.TestTransform=null;
+        h.$dispose();
+    });
+
+    it("validates global String in text node", function () {
+        hsp.global["msg"]="World";
+
+        test1().render(h.container);
+        expect(h(".content").text()).to.equal("Hello World");
+
+        // change in global should not trigger a refresh
+        h.$set(hsp.global,"msg", "World2");
+        expect(h(".content").text()).to.equal("Hello World");
+    });
+
+    it("validates global Object in text node", function () {
+        hsp.global.g={msg:"Hello World"};
+
+        test2().render(h.container);
+        expect(h(".content").text()).to.equal("Hello World!");
+
+        // change in global should not trigger a refresh
+        h.$set(hsp.global.g,"msg", "Hello Folks");
+        expect(h(".content").text()).to.equal("Hello World!");
+    });
+
+    it("validates global cpt call", function () {
+        hsp.global.mywidget=w1; // must be set before the 1st call
+        test3("KISS").render(h.container);
+        expect(h(".wmsg").text()).to.equal("KISS");
+    });
+
+    it("validates global cpt lib", function () {
+        hsp.global.lib={widget:w1};
+        test4("Cpt lib call").render(h.container);
+        expect(h(".wmsg").text()).to.equal("Cpt lib call");
+    });
+
+    it("validates global transform function", function () {
+        hsp.global.mytransform=function(arr) {
+            return arr.join("-");
+        }
+        test5([1,2,3,4,5]).render(h.container);
+        expect(h(".content").text()).to.equal("Values: 1-2-3-4-5");
+    });
+
+    function Tt(v) {
+        this.val=v;
+    }
+
+    Tt.prototype.process=function(arr) {
+        return this.val+"/"+arr.join("-");
+    }
+
+    it("validates global transform object with {let}", function () {
+        hsp.global.TestTransform=Tt;
+        test6([1,2,3,4,5]).render(h.container);
+        expect(h(".content").text()).to.equal("Values: A/1-2-3-4-5");
+    });
+
+});

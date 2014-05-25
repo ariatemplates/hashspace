@@ -77,7 +77,7 @@ and all the tests (compiler and runtime).
 
 For the browser runtime tests:
 
-- run `grunt` - this will launch a local webserver and a watch task on your files
+- run `grunt tddrt` - this will launch a local webserver and a watch task on your files
 - and access `http://localhost:8000/test/rt` to run the tests in your favorite browsers
 
 [key_features_blog]: http://ariatemplates.com/blog/2012/11/key-features-for-client-side-templates/
