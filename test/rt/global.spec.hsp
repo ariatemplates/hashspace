@@ -57,8 +57,6 @@ var hsp=require("hsp/rt"),
 
 describe("Hashspace global object", function () {
     var h;
-    // TODO
-    // global functio    // global object constructor with {let}
 
     beforeEach(function () {
          h=ht.newTestContext();
