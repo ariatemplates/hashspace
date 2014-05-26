@@ -107,7 +107,9 @@ var EltNode = klass({
      */
     createNode : function () {
         this.TYPE = this.tag; // for debugging purposes
-        var nd;
+        var nodeType = null, nodeName = null;
+        var nd, docFragment;
+
         if (this.tag === "svg") {
             if (browser.supportsSvg()) {
                 this.nodeNS = "http://www.w3.org/2000/svg";
@@ -115,12 +117,13 @@ var EltNode = klass({
                 log.error('This browser does not support SVG elements');
             }
         }
+
         if (this.nodeNS) {
             nd = doc.createElementNS(this.nodeNS, this.tag);
         } else {
             if (this.atts && this.atts.length > 0) {
-                var nodeType = null;
-                var nodeName = null;
+
+                nd = doc.createElement(this.tag);
                 for (var i = 0; i < this.atts.length; i++) {
                     if (this.atts[i].name === "type") {
                         nodeType = this.atts[i].value;
@@ -130,20 +133,19 @@ var EltNode = klass({
                     }
                 }
                 if (nodeType || nodeName) {
-                    // we have to use a special creation mode as IE doesn't support dynamic type and name change
                     try {
-                      nd = doc.createElement('<' + this.tag + (nodeType?' type=' + nodeType : '') + (nodeName?' name=' + nodeName : '') + ' >');
-                    } catch (ex) {
-                        nd = doc.createElement(this.tag);
                         if (nodeType) {
                             nd.type = nodeType;
                         }
                         if (nodeName) {
                             nd.name = nodeName;
                         }
+                    } catch (ex) {
+                        // we have to use a special creation mode as IE doesn't support dynamic type and name change
+                        docFragment = doc.createElement('div');
+                        docFragment.innerHTML = '<' + this.tag + (nodeType?' type=' + nodeType : '') + (nodeName?' name=' + nodeName : '') + ' >';
+                        nd = docFragment.children[0];
                     }
-                } else {
-                    nd = doc.createElement(this.tag);
                 }
             }
             else {

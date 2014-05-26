@@ -50,6 +50,10 @@ var hsp=require("hsp/rt"),
     <input type="text" model="{object.value}" onkeydown="{object.keydown(event)}" placeholder="Your command"><br>
 # /template
 
+# template html5NumberInput(model)
+    <div><input type="number" model="{model.value}"/></div>
+# /template
+
 describe("Input Elements", function () {
     it("input model sync", function () {
         var v1 = "init value";
@@ -226,4 +230,7 @@ describe("Input Elements", function () {
         n.$dispose();
     });
 
+    it("should not fail on HTML5 input elements in browsers that dont support them", function() {
+        var n = html5NumberInput({value: 5});
+    });
 });
