@@ -292,6 +292,7 @@ module.exports = function (grunt) {
             src: "hsp/compiler/parser/hspblocks.pegjs",
             dest: "hsp/compiler/parser/hspblocks.peg.js",
             options:{
+                cache:true,
                 trackLineAndColumn : true
             }
         }
