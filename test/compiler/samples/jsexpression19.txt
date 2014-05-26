@@ -1,0 +1,23 @@
+##### Template:
+# template test(person)
+  <div title="{{main : {'value' : {A : 'val A', B : person.name, C: {C1:'val C1', C2:'val C2'}}}}}">Hello</div>
+# /template
+
+##### Parsed Tree:
+"skip"
+
+##### Syntax Tree:
+"skip"
+
+##### Template Code
+test=[
+  n.elt(
+    "div",{
+      e1:[6,function(a0) {return {main:{value:{A:"val A",B:a0,C:{C1:"val C1",C2:"val C2"}}}};},2],
+      e2:[1,2,"person","name"]
+    },
+    {"title":["",1]},
+    0,
+    [n.$text(0,["Hello"])]
+  )
+]
