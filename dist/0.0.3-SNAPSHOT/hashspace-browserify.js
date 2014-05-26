@@ -2609,7 +2609,7 @@ var tplTimeoutId = null; // Timer id to trigger refresh automatically
  * Refresh method that automatically refreshes all templates that may haven been impacted by changes in data structures
  * This method is automatically triggered by a setTimeout and doesn't need to be explicitelly called
  */
-var refresh = module.exports.refresh = function () {
+var refresh = exports.refresh = function () {
     var t;
     if (tplTimeoutId) {
         clearTimeout(tplTimeoutId);
@@ -2624,6 +2624,23 @@ var refreshTimeout = function () {
     tplTimeoutId = null;
     refresh();
 };
+
+var global=exports.global={};
+
+/**
+ * Return the global reference corresponding to a given name
+ * This function is used by template to retrieve global references that are first searched in the template module
+ * scope, then in the hashspace global object. Null is returned if no reference is found
+ * @param {String} name the name of the reference to look for
+ * @param {Object} obj the object found in the module scope
+ */
+function getGlobalRef(name) {
+    var r=global[name];
+    if (r===undefined) {
+        r=null;
+    }
+    return r;
+}
 
 /**
  * Add a template to the list of templates that must be refreshed when all changes are done in the data structures. This
@@ -2642,10 +2659,10 @@ refresh.addTemplate = function (tpl) {
 /**
  * Helper to create template functions
  * @param {Array|Object} arg the list of argument names - e.g. ["label", "value"]
- * @param {Function} contentFunction a function returning the structure of the template e.g. function(n) { return
+ * @param {Function} contentFunction a function returning the structure of the template e.g. function(n,g) { return
  * [n.$text({e1:[0,0,"label"],e2:[1,0,"value"]},["",1,": ",2])] }
  */
-module.exports.template = function (arg, contentFunction) {
+exports.template = function (arg, contentFunction) {
     // closure variables
     var ng = new NodeGenerator(null), args = [], sz = 0, hasController = false, Ctl = null;
     if (arg.constructor === Array) {
@@ -2707,8 +2724,6 @@ module.exports.template = function (arg, contentFunction) {
     return f;
 };
 
-
-
 /**
  * Collection of the node types supported by the NodeGenerator This collection is attached to the Nodegenerator
  * constructor through a nodes property
@@ -2729,6 +2744,7 @@ var nodeList = [
 for (var i = 0, sz = nodeList.length; sz > i; i += 2) {
     createShortcut(nodeList[i], nodeList[i + 1]);
 }
+nodes.g=getGlobalRef;
 
 /**
  * Create shortcut functions on the nodes collection to simplify the template functions e.g. nodes.$text=function(exps,
