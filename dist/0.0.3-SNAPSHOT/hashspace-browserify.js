@@ -54,64 +54,7 @@ $set.dec = function (object, property) {
     return previousValue;
 };
 
-},{"./json":14}],2:[function(require,module,exports){
-
-/*
- * Copyright 2012 Amadeus s.a.s.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-// Document object wrapper
-// used by the hash_space runtime
-var doc = window.document;
-
-module.exports.createDocumentFragment = function () {
-    return doc.createDocumentFragment();
-};
-
-module.exports.createElement = function (type) {
-    return doc.createElement(type);
-};
-
-module.exports.createElementNS = function (ns, type) {
-    return doc.createElementNS(ns, type);
-};
-
-module.exports.createTextNode = function (text) {
-    return doc.createTextNode(text);
-};
-
-module.exports.createComment = function (text) {
-    return doc.createComment(text);
-};
-
-module.exports.getElementById = function (eltId) {
-    return doc.getElementById(eltId);
-};
-
-if (doc.createEvent) {
-    module.exports.createEvent = function () {
-        return doc.createEvent.apply(doc,arguments);
-    };
-}
-
-if (doc.createEventObject) {
-    module.exports.createEventObject = function () {
-        return doc.createEventObject.apply(doc,arguments);
-    };
-}
-
-},{}],3:[function(require,module,exports){
+},{"./json":13}],2:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -183,7 +126,7 @@ if (!Function.prototype.bind) {
     };
 }
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -345,7 +288,7 @@ var DoubleTap = klass({
 });
 
 module.exports.DoubleTap = DoubleTap;
-},{"../klass":15,"./gesture":6,"./touchEvent":13}],5:[function(require,module,exports){
+},{"../klass":14,"./gesture":5,"./touchEvent":12}],4:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -461,7 +404,7 @@ var Drag = klass({
 });
 
 module.exports.Drag = Drag;
-},{"../klass":15,"./gesture":6,"./touchEvent":13}],6:[function(require,module,exports){
+},{"../klass":14,"./gesture":5,"./touchEvent":12}],5:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -829,7 +772,7 @@ var Gesture = klass({
 });
 
 module.exports.Gesture = Gesture;
-},{"../klass":15,"./touchEvent":13}],7:[function(require,module,exports){
+},{"../klass":14,"./touchEvent":12}],6:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -936,7 +879,7 @@ var Gestures = klass({
 module.exports.Gestures = Gestures;
 
 
-},{"../klass":15,"./doubleTap":4,"./drag":5,"./longPress":8,"./pinch":9,"./singleTap":10,"./swipe":11,"./tap":12}],8:[function(require,module,exports){
+},{"../klass":14,"./doubleTap":3,"./drag":4,"./longPress":7,"./pinch":8,"./singleTap":9,"./swipe":10,"./tap":11}],7:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1066,7 +1009,7 @@ var LongPress = klass({
 });
 
 module.exports.LongPress = LongPress;
-},{"../klass":15,"./gesture":6,"./touchEvent":13}],9:[function(require,module,exports){
+},{"../klass":14,"./gesture":5,"./touchEvent":12}],8:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1249,7 +1192,7 @@ var Pinch = klass({
 });
 
 module.exports.Pinch = Pinch;
-},{"../klass":15,"./gesture":6,"./touchEvent":13}],10:[function(require,module,exports){
+},{"../klass":14,"./gesture":5,"./touchEvent":12}],9:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1408,7 +1351,7 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"../klass":15,"./gesture":6,"./touchEvent":13}],11:[function(require,module,exports){
+},{"../klass":14,"./gesture":5,"./touchEvent":12}],10:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1567,7 +1510,7 @@ var Swipe = klass({
 });
 
 module.exports.Swipe = Swipe;
-},{"../klass":15,"./gesture":6,"./touchEvent":13}],12:[function(require,module,exports){
+},{"../klass":14,"./gesture":5,"./touchEvent":12}],11:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1663,7 +1606,7 @@ var Tap = klass({
 });
 
 module.exports.Tap = Tap;
-},{"../klass":15,"./gesture":6,"./touchEvent":13}],13:[function(require,module,exports){
+},{"../klass":14,"./gesture":5,"./touchEvent":12}],12:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -2038,7 +1981,7 @@ exports.getFakeEvent = function(type, target) {
     fakeEvent.target = target;
     return fakeEvent;
 };
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2376,7 +2319,7 @@ function unobserve (object, callback, metaProperty) {
     }
 }
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2472,7 +2415,7 @@ klass.createMetaDataPrefix = createMetaDataPrefix;
 
 module.exports = klass;
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2589,7 +2532,7 @@ function PropObserver_notifyChange (po, chge, chgName) {
 
 module.exports = PropObserver;
 
-},{"./json":14,"./klass":15}],17:[function(require,module,exports){
+},{"./json":13,"./klass":14}],16:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2797,7 +2740,7 @@ function createShortcut (tagName, tagConstructor) {
     };
 }
 
-},{"./es5":3,"./klass":15,"./rt/$foreach":18,"./rt/$if":19,"./rt/$let":20,"./rt/$log":21,"./rt/$root":22,"./rt/$text":23,"./rt/cptwrapper":27,"./rt/eltnode":28,"./rt/log":30}],18:[function(require,module,exports){
+},{"./es5":2,"./klass":14,"./rt/$foreach":17,"./rt/$if":18,"./rt/$let":19,"./rt/$log":20,"./rt/$root":21,"./rt/$text":22,"./rt/cptwrapper":27,"./rt/eltnode":29,"./rt/log":31}],17:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2817,7 +2760,7 @@ function createShortcut (tagName, tagConstructor) {
 // ForEachNode implementation
 var klass = require("../klass"),
     log = require("./log"),
-    doc = require("../document"),
+    doc = require("./document"),
     json = require("../json"),
     tnode = require("./tnode"),
     TNode = tnode.TNode;
@@ -3379,7 +3322,7 @@ var $ItemNode = klass({
 
 module.exports = $ForEachNode;
 
-},{"../document":2,"../json":14,"../klass":15,"./log":30,"./tnode":31}],19:[function(require,module,exports){
+},{"../json":13,"../klass":14,"./document":28,"./log":31,"./tnode":32}],18:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3398,7 +3341,7 @@ module.exports = $ForEachNode;
 
 // If condition node
 var klass = require("../klass"),
-    doc = require("../document"),
+    doc = require("./document"),
     tnode = require("./tnode"),
     TNode = tnode.TNode;
 
@@ -3571,7 +3514,7 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"../document":2,"../klass":15,"./tnode":31}],20:[function(require,module,exports){
+},{"../klass":14,"./document":28,"./tnode":32}],19:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -3591,7 +3534,7 @@ module.exports = $IfNode;
 // This module contains the log node
 var klass = require("../klass"),
     $set = require("../$set"),
-    doc = require("../document"),
+    doc = require("./document"),
     TNode = require("./tnode").TNode;
 
 var LetNode = klass({
@@ -3644,7 +3587,7 @@ var LetNode = klass({
 module.exports=LetNode;
 
 
-},{"../$set":1,"../document":2,"../klass":15,"./tnode":31}],21:[function(require,module,exports){
+},{"../$set":1,"../klass":14,"./document":28,"./tnode":32}],20:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -3664,7 +3607,7 @@ module.exports=LetNode;
 // This module contains the log node
 var klass = require("../klass"),
     log = require("./log"),
-    doc = require("../document"),
+    doc = require("./document"),
     TNode = require("./tnode").TNode;
 
 var LogNode = klass({
@@ -3741,7 +3684,7 @@ var LogNode = klass({
 module.exports=LogNode;
 
 
-},{"../document":2,"../klass":15,"./log":30,"./tnode":31}],22:[function(require,module,exports){
+},{"../klass":14,"./document":28,"./log":31,"./tnode":32}],21:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3761,7 +3704,7 @@ module.exports=LogNode;
 // This module contains the $Root and $Insert nodes used to instantiate new templates
 var klass = require("../klass"),
     log = require("./log"),
-    doc = require("../document"),
+    doc = require("./document"),
     json = require("../json"),
     PropObserver = require("../propobserver"),
     tn = require("./tnode"),
@@ -4516,7 +4459,7 @@ exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
 
 
-},{"../document":2,"../json":14,"../klass":15,"../propobserver":16,"./cptattinsert":24,"./cptcomponent":25,"./cpttemplate":26,"./log":30,"./tnode":31}],23:[function(require,module,exports){
+},{"../json":13,"../klass":14,"../propobserver":15,"./cptattinsert":24,"./cptcomponent":25,"./cpttemplate":26,"./document":28,"./log":31,"./tnode":32}],22:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4535,7 +4478,7 @@ exports.$CptAttElement = $CptAttElement;
 
 // This module contains the text node
 var klass = require("../klass"),
-    doc = require("../document"),
+    doc = require("./document"),
     TNode = require("./tnode").TNode,
     TExpAtt = require("./tnode").TExpAtt;
 
@@ -4610,8 +4553,39 @@ var $TextNode = klass({
 });
 
 module.exports = $TextNode;
-},{"../document":2,"../klass":15,"./tnode":31}],24:[function(require,module,exports){
-var doc = require("../document");
+},{"../klass":14,"./document":28,"./tnode":32}],23:[function(require,module,exports){
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Checks if a given browser supports svg
+ * Based on //http://stackoverflow.com/questions/9689310/which-svg-support-detection-method-is-best
+ * @returns {boolean}
+ */
+function supportsSvg() {
+    return !!window.document.createElementNS &&
+        !!window.document.createElementNS('http://www.w3.org/2000/svg', "svg").createSVGRect;
+}
+
+/**
+ * A utility with various browser-related routines.
+ * Most importantly it contains feature-detection logic.
+ */
+module.exports.supportsSvg = supportsSvg;
+},{}],24:[function(require,module,exports){
+var doc = require("./document");
 
 /**
  * $CptAttInsert contains methods that will be added to the prototype of all
@@ -4660,10 +4634,10 @@ module.exports.$CptAttInsert = {
   }
 };
 
-},{"../document":2}],25:[function(require,module,exports){
+},{"./document":28}],25:[function(require,module,exports){
 var json = require("../json"),
     log = require("./log"),
-    doc = require("../document"),
+    doc = require("./document"),
     $TextNode = require("./$text"),
     cptwrapper = require("./cptwrapper");
 
@@ -5149,9 +5123,9 @@ exports.$CptComponent = {
   }
 };
 
-},{"../document":2,"../json":14,"./$text":23,"./cptwrapper":27,"./log":30}],26:[function(require,module,exports){
+},{"../json":13,"./$text":22,"./cptwrapper":27,"./document":28,"./log":31}],26:[function(require,module,exports){
 var json = require("../json"),
-    doc = require("../document");
+    doc = require("./document");
 
 /**
  * $CptTemplate contains methods that will be added to the prototype of all
@@ -5246,7 +5220,7 @@ module.exports.$CptTemplate = {
   }
 };
 
-},{"../document":2,"../json":14}],27:[function(require,module,exports){
+},{"../json":13,"./document":28}],27:[function(require,module,exports){
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5679,7 +5653,64 @@ function createCptWrapper(Ctl, cptArgs) {
 exports.CptWrapper = CptWrapper;
 exports.createCptWrapper=createCptWrapper;
 
-},{"../json":14,"../klass":15,"./log":30}],28:[function(require,module,exports){
+},{"../json":13,"../klass":14,"./log":31}],28:[function(require,module,exports){
+
+/*
+ * Copyright 2012 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Document object wrapper
+// used by the hash_space runtime
+var doc = window.document;
+
+module.exports.createDocumentFragment = function () {
+    return doc.createDocumentFragment();
+};
+
+module.exports.createElement = function (type) {
+    return doc.createElement(type);
+};
+
+module.exports.createElementNS = function (ns, type) {
+    return doc.createElementNS(ns, type);
+};
+
+module.exports.createTextNode = function (text) {
+    return doc.createTextNode(text);
+};
+
+module.exports.createComment = function (text) {
+    return doc.createComment(text);
+};
+
+module.exports.getElementById = function (eltId) {
+    return doc.getElementById(eltId);
+};
+
+if (doc.createEvent) {
+    module.exports.createEvent = function () {
+        return doc.createEvent.apply(doc,arguments);
+    };
+}
+
+if (doc.createEventObject) {
+    module.exports.createEventObject = function () {
+        return doc.createEventObject.apply(doc,arguments);
+    };
+}
+
+},{}],29:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5698,11 +5729,12 @@ exports.createCptWrapper=createCptWrapper;
 
 // Element Node used for any standard HTML element (i.e. having attributes and child elements)
 var klass = require("../klass");
-var doc = require("../document");
+var browser = require("./browser");
+var doc = require("./document");
 var TNode = require("./tnode").TNode;
 var hsp = require("../rt");
 var gestures = require("../gestures/gestures");
-//var log = require("./log");
+var log = require("./log");
 
 var booleanAttributes = {
     async: true,
@@ -5790,7 +5822,11 @@ var EltNode = klass({
         this.TYPE = this.tag; // for debugging purposes
         var nd;
         if (this.tag === "svg") {
-            this.nodeNS = "http://www.w3.org/2000/svg";
+            if (browser.supportsSvg()) {
+                this.nodeNS = "http://www.w3.org/2000/svg";
+            } else {
+                log.error('This browser does not support SVG elements');
+            }
         }
         if (this.nodeNS) {
             nd = doc.createElementNS(this.nodeNS, this.tag);
@@ -6033,7 +6069,7 @@ var EltNode = klass({
 
 module.exports = EltNode;
 
-},{"../document":2,"../gestures/gestures":7,"../klass":15,"../rt":17,"./tnode":31}],29:[function(require,module,exports){
+},{"../gestures/gestures":6,"../klass":14,"../rt":16,"./browser":23,"./document":28,"./log":31,"./tnode":32}],30:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -6651,7 +6687,7 @@ var DynRefExpr = klass({
     }
 });
 
-},{"../json":14,"../klass":15,"./log":30}],30:[function(require,module,exports){
+},{"../json":13,"../klass":14,"./log":31}],31:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -6960,7 +6996,7 @@ function formatValue(v,depth) {
 
 module.exports = log;
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -7481,4 +7517,4 @@ module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;
 
-},{"../klass":15,"../rt":17,"./exphandler":29,"./log":30}]},{},[17])
+},{"../klass":14,"../rt":16,"./exphandler":30,"./log":31}]},{},[16])

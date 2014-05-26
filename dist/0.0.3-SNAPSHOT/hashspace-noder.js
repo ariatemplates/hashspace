@@ -354,54 +354,6 @@
             return previousValue;
         };
     });
-    define("hsp/document.js", [], function(module, global) {
-        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        /*
- * Copyright 2012 Amadeus s.a.s.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-        // Document object wrapper
-        // used by the hash_space runtime
-        var doc = window.document;
-        module.exports.createDocumentFragment = function() {
-            return doc.createDocumentFragment();
-        };
-        module.exports.createElement = function(type) {
-            return doc.createElement(type);
-        };
-        module.exports.createElementNS = function(ns, type) {
-            return doc.createElementNS(ns, type);
-        };
-        module.exports.createTextNode = function(text) {
-            return doc.createTextNode(text);
-        };
-        module.exports.createComment = function(text) {
-            return doc.createComment(text);
-        };
-        module.exports.getElementById = function(eltId) {
-            return doc.getElementById(eltId);
-        };
-        if (doc.createEvent) {
-            module.exports.createEvent = function() {
-                return doc.createEvent.apply(doc, arguments);
-            };
-        }
-        if (doc.createEventObject) {
-            module.exports.createEventObject = function() {
-                return doc.createEventObject.apply(doc, arguments);
-            };
-        }
-    });
     define("hsp/es5.js", [], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
@@ -958,6 +910,54 @@
             }
         }
         module.exports = log;
+    });
+    define("hsp/rt/document.js", [], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2012 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+        // Document object wrapper
+        // used by the hash_space runtime
+        var doc = window.document;
+        module.exports.createDocumentFragment = function() {
+            return doc.createDocumentFragment();
+        };
+        module.exports.createElement = function(type) {
+            return doc.createElement(type);
+        };
+        module.exports.createElementNS = function(ns, type) {
+            return doc.createElementNS(ns, type);
+        };
+        module.exports.createTextNode = function(text) {
+            return doc.createTextNode(text);
+        };
+        module.exports.createComment = function(text) {
+            return doc.createComment(text);
+        };
+        module.exports.getElementById = function(eltId) {
+            return doc.getElementById(eltId);
+        };
+        if (doc.createEvent) {
+            module.exports.createEvent = function() {
+                return doc.createEvent.apply(doc, arguments);
+            };
+        }
+        if (doc.createEventObject) {
+            module.exports.createEventObject = function() {
+                return doc.createEventObject.apply(doc, arguments);
+            };
+        }
     });
     define("hsp/rt/exphandler.js", [ "../klass", "./log", "../json" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
@@ -2023,7 +2023,7 @@
         module.exports.TSimpleAtt = TSimpleAtt;
         module.exports.TExpAtt = TExpAtt;
     });
-    define("hsp/rt/$text.js", [ "../klass", "../document", "./tnode" ], function(module, global) {
+    define("hsp/rt/$text.js", [ "../klass", "./document", "./tnode" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2040,7 +2040,7 @@
  * limitations under the License.
  */
         // This module contains the text node
-        var klass = require("../klass"), doc = require("../document"), TNode = require("./tnode").TNode, TExpAtt = require("./tnode").TExpAtt;
+        var klass = require("../klass"), doc = require("./document"), TNode = require("./tnode").TNode, TExpAtt = require("./tnode").TExpAtt;
         var $TextNode = klass({
             $extends: TNode,
             /**
@@ -2508,9 +2508,9 @@
         exports.CptWrapper = CptWrapper;
         exports.createCptWrapper = createCptWrapper;
     });
-    define("hsp/rt/cptcomponent.js", [ "../json", "./log", "../document", "./$text", "./cptwrapper" ], function(module, global) {
+    define("hsp/rt/cptcomponent.js", [ "../json", "./log", "./document", "./$text", "./cptwrapper" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var json = require("../json"), log = require("./log"), doc = require("../document"), $TextNode = require("./$text"), cptwrapper = require("./cptwrapper");
+        var json = require("../json"), log = require("./log"), doc = require("./document"), $TextNode = require("./$text"), cptwrapper = require("./cptwrapper");
         var $CptNode, $CptAttElement, TNode;
         // injected through setDependency to avoid circular dependencies
         exports.setDependency = function(name, value) {
@@ -2961,9 +2961,9 @@
             }
         };
     });
-    define("hsp/rt/cptattinsert.js", [ "../document" ], function(module, global) {
+    define("hsp/rt/cptattinsert.js", [ "./document" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var doc = require("../document");
+        var doc = require("./document");
         /**
  * $CptAttInsert contains methods that will be added to the prototype of all
  * $CptNode node instance that correspond to an insertion of a component attribute
@@ -3007,9 +3007,9 @@
             }
         };
     });
-    define("hsp/rt/cpttemplate.js", [ "../json", "../document" ], function(module, global) {
+    define("hsp/rt/cpttemplate.js", [ "../json", "./document" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        var json = require("../json"), doc = require("../document");
+        var json = require("../json"), doc = require("./document");
         /**
  * $CptTemplate contains methods that will be added to the prototype of all
  * $CptNode node instance that correspond to a template insertion:
@@ -3095,7 +3095,7 @@
             }
         };
     });
-    define("hsp/rt/$root.js", [ "../klass", "./log", "../document", "../json", "../propobserver", "./tnode", "./cptcomponent", "./cptattinsert", "./cpttemplate" ], function(module, global) {
+    define("hsp/rt/$root.js", [ "../klass", "./log", "./document", "../json", "../propobserver", "./tnode", "./cptcomponent", "./cptattinsert", "./cpttemplate" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3112,7 +3112,7 @@
  * limitations under the License.
  */
         // This module contains the $Root and $Insert nodes used to instantiate new templates
-        var klass = require("../klass"), log = require("./log"), doc = require("../document"), json = require("../json"), PropObserver = require("../propobserver"), tn = require("./tnode"), TNode = tn.TNode, cptComponent = require("./cptcomponent");
+        var klass = require("../klass"), log = require("./log"), doc = require("./document"), json = require("../json"), PropObserver = require("../propobserver"), tn = require("./tnode"), TNode = tn.TNode, cptComponent = require("./cptcomponent");
         var CPT_TYPES = {
             $CptAttInsert: require("./cptattinsert").$CptAttInsert,
             $CptComponent: cptComponent.$CptComponent,
@@ -3825,7 +3825,7 @@
         exports.$CptNode = $CptNode;
         exports.$CptAttElement = $CptAttElement;
     });
-    define("hsp/rt/$if.js", [ "../klass", "../document", "./tnode" ], function(module, global) {
+    define("hsp/rt/$if.js", [ "../klass", "./document", "./tnode" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3842,7 +3842,7 @@
  * limitations under the License.
  */
         // If condition node
-        var klass = require("../klass"), doc = require("../document"), tnode = require("./tnode"), TNode = tnode.TNode;
+        var klass = require("../klass"), doc = require("./document"), tnode = require("./tnode"), TNode = tnode.TNode;
         /**
  * If node Implements the if conditional statement. Adds a children2 collection that corresponds to the else block
  */
@@ -4001,7 +4001,7 @@
         });
         module.exports = $IfNode;
     });
-    define("hsp/rt/$foreach.js", [ "../klass", "./log", "../document", "../json", "./tnode" ], function(module, global) {
+    define("hsp/rt/$foreach.js", [ "../klass", "./log", "./document", "../json", "./tnode" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4018,7 +4018,7 @@
  * limitations under the License.
  */
         // ForEachNode implementation
-        var klass = require("../klass"), log = require("./log"), doc = require("../document"), json = require("../json"), tnode = require("./tnode"), TNode = tnode.TNode;
+        var klass = require("../klass"), log = require("./log"), doc = require("./document"), json = require("../json"), tnode = require("./tnode"), TNode = tnode.TNode;
         /**
  * foreach node Implements the foreach conditional statement that can be used through 3 forms: # foreach (itm in todos) //
  * iteration over an array on the integer indexes - if todos in not an array "in" will be considered as "of" # foreach
@@ -4520,6 +4520,36 @@
             }
         });
         module.exports = $ForEachNode;
+    });
+    define("hsp/rt/browser.js", [], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+        /**
+ * Checks if a given browser supports svg
+ * Based on //http://stackoverflow.com/questions/9689310/which-svg-support-detection-method-is-best
+ * @returns {boolean}
+ */
+        function supportsSvg() {
+            return !!window.document.createElementNS && !!window.document.createElementNS("http://www.w3.org/2000/svg", "svg").createSVGRect;
+        }
+        /**
+ * A utility with various browser-related routines.
+ * Most importantly it contains feature-detection logic.
+ */
+        module.exports.supportsSvg = supportsSvg;
     });
     define("hsp/gestures/touchEvent.js", [], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
@@ -6284,7 +6314,7 @@
         });
         module.exports.Gestures = Gestures;
     });
-    define("hsp/rt/eltnode.js", [ "../klass", "../document", "./tnode", "../rt", "../gestures/gestures" ], function(module, global) {
+    define("hsp/rt/eltnode.js", [ "../klass", "./browser", "./document", "./tnode", "../rt", "../gestures/gestures", "./log" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -6302,11 +6332,12 @@
  */
         // Element Node used for any standard HTML element (i.e. having attributes and child elements)
         var klass = require("../klass");
-        var doc = require("../document");
+        var browser = require("./browser");
+        var doc = require("./document");
         var TNode = require("./tnode").TNode;
         var hsp = require("../rt");
         var gestures = require("../gestures/gestures");
-        //var log = require("./log");
+        var log = require("./log");
         var booleanAttributes = {
             async: true,
             autofocus: true,
@@ -6389,7 +6420,11 @@
                 // for debugging purposes
                 var nd;
                 if (this.tag === "svg") {
-                    this.nodeNS = "http://www.w3.org/2000/svg";
+                    if (browser.supportsSvg()) {
+                        this.nodeNS = "http://www.w3.org/2000/svg";
+                    } else {
+                        log.error("This browser does not support SVG elements");
+                    }
                 }
                 if (this.nodeNS) {
                     nd = doc.createElementNS(this.nodeNS, this.tag);
@@ -6616,7 +6651,7 @@
         });
         module.exports = EltNode;
     });
-    define("hsp/rt/$log.js", [ "../klass", "./log", "../document", "./tnode" ], function(module, global) {
+    define("hsp/rt/$log.js", [ "../klass", "./log", "./document", "./tnode" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2014 Amadeus s.a.s.
@@ -6633,7 +6668,7 @@
  * limitations under the License.
  */
         // This module contains the log node
-        var klass = require("../klass"), log = require("./log"), doc = require("../document"), TNode = require("./tnode").TNode;
+        var klass = require("../klass"), log = require("./log"), doc = require("./document"), TNode = require("./tnode").TNode;
         var LogNode = klass({
             $extends: TNode,
             /**
@@ -6706,7 +6741,7 @@
         });
         module.exports = LogNode;
     });
-    define("hsp/rt/$let.js", [ "../klass", "../$set", "../document", "./tnode" ], function(module, global) {
+    define("hsp/rt/$let.js", [ "../klass", "../$set", "./document", "./tnode" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2014 Amadeus s.a.s.
@@ -6723,7 +6758,7 @@
  * limitations under the License.
  */
         // This module contains the log node
-        var klass = require("../klass"), $set = require("../$set"), doc = require("../document"), TNode = require("./tnode").TNode;
+        var klass = require("../klass"), $set = require("../$set"), doc = require("./document"), TNode = require("./tnode").TNode;
         var LetNode = klass({
             $extends: TNode,
             /**
