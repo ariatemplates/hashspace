@@ -203,7 +203,7 @@ module.exports = function (grunt) {
         browserNoActivityTimeout: 20000,
         captureTimeout: 300000,
         browsers: ['SL_Chrome', 'SL_Android_4.0', 'SL_Android_4.1', 'SL_IE_8', 'SL_IE_9', 'SL_Safari_7'],
-        reporters: ['dots', 'saucelabs']
+        reporters: process.env.TRAVIS_PULL_REQUEST ? ['dots'] : ['dots', 'saucelabs']
       },
       ci2: {
         sauceLabs: {
@@ -215,14 +215,14 @@ module.exports = function (grunt) {
         browserNoActivityTimeout: 20000,
         captureTimeout: 300000,
         browsers: ['SL_iOS_7', 'SL_Firefox', 'SL_Android_4.2', 'SL_Android_4.3', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6'],
-        reporters: ['dots', 'saucelabs']
+        reporters: process.env.TRAVIS_PULL_REQUEST ? ['dots'] : ['dots', 'saucelabs']
       },
       sauce: {
         singleRun: true,
         browserNoActivityTimeout: 20000,
         captureTimeout: 300000,
         browsers: ['SL_IE_8', 'SL_IE_9', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Safari_7', 'SL_Firefox', 'SL_Chrome', 'SL_Android_4.0', 'SL_Android_4.1', 'SL_Android_4.2', 'SL_Android_4.3', 'SL_iOS_7'],
-        reporters: ['dots', 'saucelabs']
+        reporters: ['dots']
       }
     },
     jscs: {
