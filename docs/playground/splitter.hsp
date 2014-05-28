@@ -1,0 +1,79 @@
+var Class = require("hsp/klass");
+
+var SplitterCtrl = Class({
+  attributes: {
+    "type": { type: "string", defaultValue: "horizontal" },
+    "size": { type: "int", defaultValue: 3 },
+    "onrelease": { type: "callback" }
+  },
+
+  $init: function() {
+    document.onmousemove = this.onMouseMove.bind(this);
+    document.onmouseup = this.onMouseUp.bind(this);
+  },
+
+  $dispose: function() {
+    document.onmousevent = null;
+    document.onmouseup = null;
+  },
+
+  $refresh: function() {
+    if (!this.proxy) {
+      this.handle = this.$getElement(0);
+      this.proxy = this.$getElement(1);
+    }
+  },
+
+  onMouseDown: function(event) {
+    this.active = true;
+    var pos = this.getNewPos(event);
+    this.updatePos(this.proxy, pos);
+    event.preventDefault();
+  },
+
+  onMouseMove: function(event) {
+    if (this.active) {
+      var pos = this.getNewPos(event);
+      this.updatePos(this.proxy, pos);
+      event.preventDefault();
+    }
+  },
+
+  onMouseUp: function(event) {
+    if (this.active) {
+      var newHandlePos = this.afterMouseUp(event);
+      this.onrelease({position: newHandlePos});
+      event.preventDefault();
+    }
+  },
+
+  afterMouseUp: function(event) {
+    this.active = false;
+    var pos = this.getNewPos(event);
+    this.updatePos(this.handle, pos);
+    return pos;
+  },
+
+  getNewPos: function(event) {
+    var parent = this.handle.parentNode, offset;
+    if (this.type == "vertical") {
+      offset = parent.offsetTop;
+      return Math.ceil(event.pageY - offset - (this.size/2));
+    } else {
+      offset = parent.offsetLeft;
+      return Math.ceil(event.pageX - offset - (this.size/2));
+    }
+  },
+
+  updatePos: function(elt, pos) {
+    elt.style[this.type === "vertical" ? "top" : "left"] = pos + "px";
+  }
+});
+
+
+#template splitter using ctrl:SplitterCtrl
+  <div class="splitter" onmousedown="{ctrl.onMouseDown(event)}"></div>
+  <div class="{'splitter-proxy', 'splitter-proxy-hidden': !ctrl.active}"></div>
+#/template
+
+module.exports = splitter;

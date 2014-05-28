@@ -31,7 +31,10 @@ var Playground = module.exports = klass({
             sampleIndex : -1,
             sampleTitle : "",
             files : [],
-            samples : samples
+            samples : samples,
+            navCollapsed: false,
+            navHover: false,
+            splitterPos: "50%"
         };
     },
 

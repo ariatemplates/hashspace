@@ -5,7 +5,7 @@ headerscripts: |
 footerscripts: |
   <script src="/libs/ace.js" type="text/javascript" charset="utf-8"></script>
   <script src="/libs/Chart.min.js" type="text/javascript" charset="utf-8"></script>
-  <script src="http://noder-js.ariatemplates.com/dist/v1.3.0/noder.dev.min.js">
+  <script src="http://noder-js.ariatemplates.com/dist/v1.3.1/noder.dev.min.js">
     {
       packaging: {
         baseUrl: "/",
