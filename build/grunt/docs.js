@@ -29,7 +29,9 @@ module.exports = function(grunt) {
         'playground/**/*.css',
         'playground/**/*.hsp'
       ],
-      DOCS_SAMPLES_GLOB = [ 'samples/**/*' ];
+      DOCS_SAMPLES_GLOB = [ 'samples/**/*' ],
+
+      DOCS_TODOMVC_INDEX = 'todomvc/index.html';
 
 
   var pathifyFromDocs = function(path) { return DOCS_PATH + path; };
@@ -243,6 +245,18 @@ module.exports = function(grunt) {
   });
 
 
+  grunt.registerTask("docs:dynamic-version", "Bump new version everywhere needed", function() {
+    // TodoMVC index.html
+    grunt.file.copy(DOCS_PATH + DOCS_TODOMVC_INDEX,
+      GH_PAGES_PATH + '/' + DOCS_TODOMVC_INDEX,
+      {
+        process: function(content, filepath) {
+          return content.replace(/<%=version%>/g, VERSION);
+        }
+      });
+  });
+
+
   // Watching stuff...
 
   grunt.registerTask("docs:watch", "Watching any file where local website should be rebuild", function() {
@@ -281,6 +295,7 @@ module.exports = function(grunt) {
     "docs:setup",
     "atpackager:uglify",
     "docs:copy-statics",
+    "docs:dynamic-version",
     "less:docs",
     "markdown:docs"
   ]);
