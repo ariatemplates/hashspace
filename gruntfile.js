@@ -167,15 +167,7 @@ module.exports = function (grunt) {
         //logLevel: 'LOG_INFO'
       },
       unit: {
-        singleRun: true,
-        preprocessors: {
-          'hsp/**/*.js': ['commonjs', 'coverage']
-        },
-        reporters: ['progress', 'coverage'],
-        coverageReporter: {
-          type : 'lcov',
-          dir : 'test-results/karma/'
-        }
+        singleRun: true
       },
       tdd: {
         singleRun: false,
@@ -187,7 +179,7 @@ module.exports = function (grunt) {
           'hsp/**/*.js': ['commonjs', 'coverage']
         },
         reporters: ['dots', 'coverage'],
-        browsers: ['PhantomJS'],
+        browsers: ['Firefox'],
         coverageReporter: {
           type : 'lcovonly',
           dir : 'test-results/karma/'
