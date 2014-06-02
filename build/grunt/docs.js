@@ -12,7 +12,11 @@ module.exports = function(grunt) {
   var VERSION = grunt.config('pkg').version;
 
   var GH_PAGES_PATH = './hashspace-gh-pages/';
-  var GH_PAGES_GLOB = [ GH_PAGES_PATH + '*' , '!README.md', '!CNAME', '!dist/*'];
+  var GH_PAGES_GLOB = [
+    GH_PAGES_PATH + '**/*' ,
+    '!' + GH_PAGES_PATH + 'README.md',
+    '!' + GH_PAGES_PATH + 'CNAME',
+    '!' + GH_PAGES_PATH + 'dist/**/*'];
 
   var DOCS_PATH = "./docs/";
 

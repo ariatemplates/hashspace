@@ -9,8 +9,8 @@ if [ "$TRAVIS_PULL_REQUEST" = "false" ] && [ "$TRAVIS_SECURE_ENV_VARS" = "true" 
     git checkout -b gh-pages origin/gh-pages &&
     mkdir -p "./dist/${HASHSPACE_VERSION}" &&
     cp -rv ../dist/* "./dist/${HASHSPACE_VERSION}/" &&
-    # web site publication is disabled for now:
-    # grunt release &&
+    # we execute the release task
+    grunt release &&
     # we add everything
     git add -f . &&
     # we let git check for deleted files (grunt release is auto removing all
