@@ -192,8 +192,8 @@ module.exports = function (grunt) {
         },
         transports: ['xhr-polling'],
         singleRun: true,
-        browserNoActivityTimeout: 20000,
-        captureTimeout: 300000,
+        browserNoActivityTimeout: 0,
+        captureTimeout: 0,
         browsers: ['SL_Chrome', 'SL_IE_8', 'SL_IE_9', 'SL_Safari_7'],
         reporters: process.env.TRAVIS_PULL_REQUEST !== 'false' ? ['dots'] : ['dots', 'saucelabs']
       },
@@ -204,8 +204,8 @@ module.exports = function (grunt) {
         },
         transports: ['xhr-polling'],
         singleRun: true,
-        browserNoActivityTimeout: 20000,
-        captureTimeout: 300000,
+        browserNoActivityTimeout: 0,
+        captureTimeout: 0,
         browsers: ['SL_iOS_7', 'SL_Firefox', 'SL_Android_4.3', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6'],
         reporters: process.env.TRAVIS_PULL_REQUEST !== 'false' ? ['dots'] : ['dots', 'saucelabs']
       },
