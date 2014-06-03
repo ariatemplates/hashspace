@@ -1,0 +1,43 @@
+var klass=require("hsp/klass");
+    
+var PanelController = klass({ 
+  attributes: {
+    "head":{type:"template"}, 
+    "body":{type:"template",defaultContent:true}
+  }
+});
+
+// sample panel template
+# template panel using c:PanelController
+  <div class="panel">
+    {if c.head}
+      <div class="head"> <#c.head/> </div>
+    {/if}
+    <div class="body">
+      <#c.body/>
+    </div>
+  </div>
+# /template
+
+# template test(m)
+  <#panel body="Panel A (headless): {m.text}"/>
+
+  <#panel head="Panel B ({m.text}!)">
+    {m.text}! <a onclick="{update(1)}">Update model</a>
+  </#panel>
+
+  <#panel>
+    <@head>Panel C: <a onclick="{update(10)}">Update model</a></@head>
+    <@body>{m.text}! <a onclick="{update(100)}">Update model</a></@body>
+  </#panel>
+# /template
+
+var model={text:"Hello World"}, count=0;
+
+function update(incr) {
+  count+=incr;
+  model.text = "Hello World ("+count+")";
+}
+
+// display the test template in the #output div
+test(model).render("output");

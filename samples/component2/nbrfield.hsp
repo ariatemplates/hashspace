@@ -1,0 +1,92 @@
+var klass=require("hsp/klass");
+
+// Component controller
+var NbrField = klass({ 
+  attributes:{ 
+    "value":{type:"float",defaultValue:0,binding:"2-way"}, 
+    "defaultvalue":{type:"float",defaultValue:0}, 
+    "min":{type:"float",defaultValue:-Number.MAX_VALUE,binding:"1-way"}, 
+    "max":{type:"float",defaultValue:Number.MAX_VALUE,binding:"1-way"},
+    "onreset":{type:"callback"}
+  },
+  /**
+   * init method called when all attributes have been initialized
+   */
+  $init:function() { 
+    // set and init internal properties
+    this.internalValue=''+this.value; // type:string but bound to value
+    this.isValid=true;                // bound to internalValue, min and max
+    this.checkValidity();
+  },
+  /** 
+   * attribute change handlers - notify the controller that an external object
+   * (template or host) updated the value attribute
+   */
+  onValueChange:function(newValue,oldValue) {
+    var n=getNumber(newValue);
+    this.internalValue = n!==null? n : 0;
+    this.checkValidity(); 
+  },
+  onMinChange:function(newValue,oldValue) {
+    this.checkValidity(); 
+  },
+  onMaxChange:function(newValue,oldValue) {
+    this.checkValidity(); 
+  },
+  /** 
+   * property change handler - notify the controller that the template
+   * changed an internal property 
+   */ 
+  onInternalValueChange:function(newValue,oldValue) { 
+    // validate and expose as attribute if ok
+    this.value = this.checkValidity()? parseInt(this.internalValue,10) : this.defaultvalue;
+  }, 
+  /** 
+   * Check if the internal value is valid and update the isValid property accordingly 
+   */ 
+  checkValidity:function() { 
+    var n=getNumber(this.internalValue); 
+    var v=(n===null)? false : (n>=this.min) && (n<=this.max);
+    return this.isValid = v;
+  },
+  /**
+   * Reset the field value
+   */
+  resetField:function() {
+    var v1=this.value, v2=this.defaultvalue;
+    this.internalValue = v2;
+    this.value = v2;
+    this.checkValidity();
+    this.onreset({oldValue:v1,newValue:v2}); // call back event listener
+  }
+})
+
+// transform a string to a number 
+var NBR_DIGITS=/^(\-|\.|\+)?\d+(\.)?(\d+)?$/; 
+function getNumber(s) { 
+    s=""+s; 
+    if (!NBR_DIGITS.test(s)) return null; 
+    return Number(s); 
+}
+
+// component template associated with the NbrField controller
+# export template nbrfield using c:NbrField
+  <span class="nbrfield">
+    <input type="text" model="{c.internalValue}" 
+    class="{'nbrfield', 'error': !c.isValid}"/>
+    <button onclick="{c.resetField()}">reset</button>
+  </span>
+# /template
+
+// component usage
+# template test(d)
+  Component #1: <#nbrfield value="{d.value1}" min="-10" max="1000"/><br/>
+  Value in the data model: <span class="textValue">{d.value1}</span> 
+  (min:-10 / max:1000 / default:0)
+  <hr/>
+  Component #2: <#nbrfield value="{d.value2}"/><br/>
+  Value in the data model: <span class="textValue">{d.value2}</span>
+# /template
+
+// display the template in the #output div
+test({value1:123}).render("output");

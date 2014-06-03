@@ -1,0 +1,93 @@
+var klass = require("hsp/klass");
+
+var TabCtrl = klass({
+    attributes: {
+        label: { type: "template" },
+        body: { type: "template", defaultContent: true }
+    },
+    $init:function(parent) {
+        if (!this.selected) {
+          // as parent.$init() is called before this $init()
+          // selected may be already set (to true in this case)
+          this.selected=false;
+        }
+    }
+});
+
+var TabBarCtrl = klass({
+    attributes: {
+        "class": { type: "string" },
+        "selection": { type: "int", defaultValue: 0, binding: "2-way" }
+    },
+    elements: {
+        "tab": { type: "component", controller: TabCtrl }
+    },
+    $init: function() {
+        this.select(this.selection);
+    },
+    select: function(idx) {
+        if (this.selectedTab && idx===this.selection) {
+            return;
+        }
+        // unselect previous tab
+        if (this.selection>=0 && this.selection<this.content.length) {
+            this.content[this.selection].selected=false;
+        }
+        // select new tab
+        if (idx>=0 && idx<this.content.length) {
+            this.selection=idx;
+            var tab=this.content[idx];
+            tab.selected=true;
+            this.selectedTab=tab;
+        }
+    }
+});
+
+#template tabbar using ctrl:TabBarCtrl
+  <div class="x-tabbar">
+    <nav class="x-tabs">
+        {foreach idx, tab in ctrl.content}
+            {if tab.selected}
+                <span class="x-tab x-tab-selected">
+                    <#tab.label/>
+                </span>
+            {else}
+                <a class="x-tab" onclick="{ctrl.select(idx)}">
+                    <#tab.label/>
+                </a>
+            {/if}
+            {if !tab_islast}
+              &nbsp; // separator
+            {/if}
+        {/foreach}
+    </nav>
+    <div class="x-tab-content">
+        <#ctrl.selectedTab.body />
+    </div>
+  </div>
+#/template
+
+# template test
+  {let showSubTabs=false, selection1=0, selection2=0}
+  <#tabbar selection="{selection1}">
+    <@tab label="Tab A">
+      {if showSubTabs}
+        <#tabbar selection="{selection2}">
+            <@tab label="Tab 1">Sub tab 1</@tab>
+            <@tab label="Tab 2">Sub tab 2</@tab>
+        </#tabbar>
+      {else}
+        Tab A content...
+      {/if}
+    </@tab>
+    <@tab label="Tab B">Tab B content...</@tab>
+    <@tab label="Tab C">Tab C content...</@tab>
+  </#tabbar>
+  <label for="cb1">
+    <input id="cb1" type="checkbox" model="{showSubTabs}"/>
+    Show nested tabs in tab A
+  </label>
+# /template
+
+
+test().render("output");

@@ -1,0 +1,54 @@
+var log=require("hsp/rt/log");
+
+# template test(cities, logs)
+  {log "top-level:",scope}
+  <a onclick="{increaseList()}">Increase list</a> - 
+  <a onclick="{decreaseList()}">Decrease list</a> - 
+  <a onclick="{clearLogs()}">Clear logs</a>
+  <ul>
+    {foreach idx,city in cities}
+      {log "item #"+idx+":", city}
+      <li>{idx+1}. {city.name}</li>
+    {/foreach}
+  </ul>
+  <div class="logsection">
+    Logs:
+    <ul class="logs">
+      {foreach msg in logs}
+        <li>
+          <span class="ctxt"> [{msg.file} {msg.line}:{msg.column}] </span>
+          <span class="msg"> {msg.message} </span>
+        </li>
+      {/foreach}
+    </ul>
+  </div>
+# /template
+
+// register new logger
+var logs=[];
+log.addLogger(function(msg) {
+  logs.push(msg);
+  return false; // to prevent the main logger to be notified
+});
+
+var cities=[
+    {name:"Paris", code:"PAR"},
+    {name:"London", code:"LON"},
+    {name:"New York", code:"NYC"}
+];
+
+function increaseList() {
+  var idx=cities.length+1;
+  cities.push({name:"City "+idx, code:"C"+idx});
+}
+
+function decreaseList() {
+  cities.shift(); // remove first item
+}
+
+function clearLogs() {
+  logs.splice(0,logs.length);
+}
+
+// render template in the #output div
+test(cities,logs).render("output");

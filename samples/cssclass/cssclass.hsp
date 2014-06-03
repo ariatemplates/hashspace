@@ -1,0 +1,30 @@
+# template message(msg)
+    // onselectstart: prevent double-click selection on a elements
+    <div onselectstart="return false"> 
+        <a onclick="{toggleUrgency()}">Change Urgency</a> - 
+        <a onclick="{setCategory('personal')}">Set "Personal"</a> - 
+        <a onclick="{setCategory('professional')}">Set "Professional"</a>
+        <div class="{'msg', 'urgent':msg.urgency, msg.category}">
+            Message: {msg.text}
+        </div>
+        <div class="note">
+            Class value: "{'msg', 'urgent':msg.urgency, msg.category}"
+        </div>
+    </div>
+# /template
+
+var msg={
+    text:"Hello World",
+    urgency:false
+}
+
+function toggleUrgency() {
+    msg.urgency = !msg.urgency;
+}
+
+function setCategory(cat) {
+    msg.category = cat;
+}
+
+// display the template in the #output div
+message(msg).render("output");

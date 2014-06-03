@@ -1,19 +1,105 @@
 <!DOCTYPE html>
 <html>
-
   <head>
-    <meta charset='utf-8' />
-    <meta name="robots" content="noindex" />
-    <script>
-      var url = document.location;
-      if (url.hostname.indexOf("ariatemplates.com") == -1) {
-        document.location = "http://hashspace.ariatemplates.com";
+    <meta charset="utf-8"/>
+    <title>Javascript Framework - Hashspace</title>
+    <link href="/images/favicon.ico" type="image/ico" rel="shortcut icon"/>
+    <link rel="stylesheet" href="/css/all.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/site.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/highlightjs/default-8.0.min.css" type="text/css"/>
+    <script src="/libs/highlightjs/highlight-8.0.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js" type="text/javascript" charset="utf-8"></script>
+    <![endif]-->
+    
+
+  </head>
+  <body class="home">
+    <header id="header">
+      <div class="logo">
+        <h1><a href="/">
+          
+          <img src="/images/logo-home.png" alt="Hashspace"/>
+          
+        </a></h1>
+      </div>
+      <nav>
+        <a class="api" href="/api/">Api</a>
+        <a class="playground" href="/playground/">Playground</a>
+        <a href="http://github.com/ariatemplates/hashspace">Github</a>
+        <a class="download button green" target="_blank" href="https://github.com/ariatemplates/hashspace/releases">Download</a>
+      </nav>
+    </header>
+    <div class="content-wrapper">
+      <section class="content">
+        <div class="wrapper"><div class="mantra">
+<h2 id="web-fuel-for-the-long-run">Web fuel for the long run</h2>
+<h3 id="hashspace-is-a-powerful-and-lightweight-javascript-template-engine-that-focuses-on-simplicity-and-efficiency-br-br-it-is-free-and-open-source-">Hashspace is a powerful and lightweight JavaScript template engine that focuses on simplicity and efficiency. <br /><br />It is free and open-source.</h3>
+</div>
+<article class="columns"><div class="column">
+<h2 id="easy">Easy</h2>
+<h4 id="syntax">Syntax</h4>
+<p>Hashspace turns static HTML pages into dynamic templates with the help of a few easy to learn statements that feel very natural to use:</p>
+<pre><code class="lang-html">{if tasklist.length &gt; 0}
+  <span class="tag">&lt;<span class="title">ul</span>&gt;</span>
+  {foreach task in tasklist}
+    <span class="tag">&lt;<span class="title">li</span> <span class="attribute">class</span>=<span class="value">"{'done': task.completed, 'ongoing': !task.completed}"</span>&gt;</span>
+      {task.description}
+    <span class="tag">&lt;/<span class="title">li</span>&gt;</span>
+  {/foreach}
+  <span class="tag">&lt;/<span class="title">ul</span>&gt;</span>
+{/if}</code></pre>
+<h4 id="errors-management">Errors management</h4>
+<p>Templates are compiled into pure JavaScript modules, which is great because browsers don’t need extra processing to run them.
+The generation of meaningful errors is another nice feature that makes debugging straightforward:</p>
+<pre><code class="lang-bash">Fatal error: HSP compilation error <span class="keyword">in</span> src/hello.hsp (2,3): Missing end <span class="keyword">if</span> statement
+Fatal error: HSP compilation error <span class="keyword">in</span> src/hello.hsp (2,3): Missing end element &amp;lt;/h1&gt;</code></pre>
+<h2 id="performant">Performant</h2>
+<p>Working with templates means that, at any given time, only the necessary markup is processed and displayed on the browser: no more juggling with <code>display:none</code> and keeping useless elements active inside the DOM.</p>
+<h2 id="powerful">Powerful</h2>
+<p>Hashspace takes care for you of the finicky plumbing required to synchronize the DOM and the data model so that you focus on what matters: designing your interface.</p>
+<p>Implicit bindings modify your model as soon as a value is changed in the user interface while, conversely, changes in the data model will automatically reflect on the display.
+And because Hashspace uses a virtual DOM for its computations, these updates are optimized and actual DOM manipulations are kept to a minimum.</p>
+<h2 id="future-proof">Future-proof</h2>
+<p>We believe in standards and best practices, so we built Hashspace with these in mind so that your code stays as much forward-compatible as possible.</p>
+<p>The engine is compatible with <a href="http://noder-js.ariatemplates.com">CommonJS dependency management</a> principles and the upcoming object.observe() implementation.
+Hashspace components (have a look at the <a href="/playground/">playground</a> also bring forward the much anticipated web components and make them available to every supported browser today.</p>
+<h2 id="robust">Robust</h2>
+<p>Hashspace’s code reliability is monitored by a comprehensive test suite.
+Each new feature is reviewed and checked before it is integrated.
+The people behind Hashspace have years of experience in framework design and building solid solutions, mostly thanks to the work they put in <a href="http://ariatemplates.com">Aria Templates</a>.</p>
+</div></article>
+</div>
+      </section>
+    </div>
+    <footer id="footer">
+      <section class="content legal">
+        &copy; 2013-2014 Hashspace is licensed under Apache 2.0 license. See our <a href="/license.html">licensing page</a>.
+      </section>
+    </footer>
+    <script type="text/javascript">
+      var links = document.links;
+
+      for (var i = 0, linksLength = links.length; i < linksLength; i++) {
+        if (links[i].hostname != window.location.hostname) {
+          links[i].target = '_blank';
+        }
       }
     </script>
-    <title>Hashspace Templating Engine</title>
-  </head>
-  <body>
-    <h1>Hashspace</h1>
+    
+    <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
+    <script type="text/javascript">
+      /*var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-29575860-5']);
+      _gaq.push(['_setDomainName', 'ariatemplates.com']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();*/
+    </script>
+
   </body>
 </html>
-

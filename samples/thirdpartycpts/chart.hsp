@@ -1,0 +1,59 @@
+var klass=require("hsp/klass"), log=require("hsp/rt/log");
+
+var labels=["January","February","March","April","May","June","July"];
+var d1 = [
+  {data : [65,59,90,81,56,55,40], fillColor : "#CCCCCC", pointStrokeColor : "#FFF"},
+  {data : [28,48,40,19,96,27,100], fillColor : "#279CE6", pointStrokeColor : "#FFF"}
+];
+var d2 = [
+  {data : [145,181,120,178,100,123,190], fillColor : "#FF4DBE", pointStrokeColor : "#FFF"},
+  {data : [123,45,76,43,97,12,38], fillColor : "#CCCCCC", pointStrokeColor : "#FFF"},
+  {data : [12,36,37,85,47,90,27], fillColor : "#279CE6", pointStrokeColor : "#FFF"}
+
+];
+
+var ChartCpt=klass({
+  attributes:{
+    width:{type:"int",binding:"1-way",defaultValue:100},
+    height:{type:"int",binding:"1-way",defaultValue:100},
+    type:{type:"string",binding:"1-way",defaultValue:"line"},
+    labels:{type:"object",binding:"1-way",defaultValue:[]},
+    datasets:{type:"object",binding:"1-way",defaultValue:[]},
+    options:{type:"object",defaultValue:{scaleFontColor:"#fff",scaleLineColor:"#AAA"}}
+  },
+  $refresh:function() {
+    if (!this.chart) {
+      var canvas=this.$getElement(0);
+      this.chart=new Chart(canvas.getContext("2d"));
+    }
+    if (this.type==="bar") {
+      this.chart.Bar({labels:this.labels,datasets:this.datasets},this.options);
+    } else if (this.type==="line") {
+      this.chart.Line({labels:this.labels,datasets:this.datasets},this.options);
+    } else {
+      log.error("[ChartCpt] Invalid type: "+this.type);
+    }
+  }
+});
+
+# template chart using c:ChartCpt
+  <canvas width="{c.width}" height="{c.height}"></canvas> 
+# /template
+
+# template test(data)
+  {let datasets=(data.ds=="d1")? d1 : d2}
+  <#chart width="380" height="220" type="{data.type}" labels="{labels}" datasets="{datasets}"/>
+  <div style="padding:15 0 0 30">
+    // Chart type selection buttons
+    Chart type:
+    <label for="rb1"><input id="rb1" type="radio" model="{data.type}" value="line"/>Line</label>&nbsp;
+    <label for="rb2"><input id="rb2" type="radio" model="{data.type}" value="bar"/>Bar</label><br/>
+    // Chart dataset selection buttons
+    Datasets:
+    <label for="rb3"><input id="rb3" type="radio" model="{data.ds}" value="d1"/> d1</label>&nbsp;
+    <label for="rb4"><input id="rb4" type="radio" model="{data.ds}" value="d2"/> d2</label>
+  </div>
+# /template
+
+// display the template in the #output div
+test({type:"line",ds:"d1"}).render("output");

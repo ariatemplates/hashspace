@@ -1,0 +1,32 @@
+var klass=require("hsp/klass");
+
+// klass is a utility to create JS objects with constructors & prototypes
+var Timer=klass({
+    attributes: {
+      initvalue:{type:"int",defaultValue:0,binding:"none"}
+    },
+    $init:function() {
+      this.secondsElapsed=this.initvalue;
+      this._iid=setInterval(this.tick.bind(this),1000);
+    },
+    $dispose:function() {
+      clearInterval(this._iid);
+    },
+    tick:function() {
+      console.log("tick");
+      this.secondsElapsed++;
+    }
+});
+
+# template timer using t:Timer
+    Elapsed time: {t.secondsElapsed}s 
+# /template
+
+# template test
+  Sample showing two timer instances with different init values:<br/>
+  <#timer/> <br/>
+  <#timer initvalue="10"/>
+# /template
+
+// display the test template in the #output div
+test().render("output");

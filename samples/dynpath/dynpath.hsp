@@ -1,0 +1,56 @@
+# template grid(data)
+    <div> 
+        {foreach idx in data.rows}
+            <div>
+                {foreach name in data.columns}
+                    {if name==="c"} 
+                        <input class="cell" type="text" model="{data.items[idx][name]}">
+                    {/if}
+                    <div class="cell" title="Ref: {idx}/{name}">
+                        {data.items[idx][name]} &nbsp;
+                    </div>
+                {/foreach}
+            </div>
+        {/foreach}
+    </div>
+    <a onclick="{update()}">Update columns B&C</a>
+    &nbsp;-&nbsp;
+    <a onclick="{swapC()}">Show/Hide columns C</a>
+# /template
+
+// create dummy data
+var list=[], count=5;
+for (var i=0;count>i;i++) {
+    list.push({
+        a:"A"+i,
+        b:"B"+i,
+        c:"C"+i,
+        d:"D"+i
+    })
+}
+
+var model={
+    items:list,
+    rows:[0,1,2,3,4],
+    columns:["a","b","c","d"]
+}
+
+function update() {
+    for (var i=0;count>i;i++) {
+        list[i].b+="!";
+        list[i].c+="?";
+    }
+}
+
+function swapC() {
+    var col=model.columns;
+    if (col[2]==="c") {
+        col.splice(2,1);
+    } else {
+        col.splice(2,0,"c");
+    }
+}
+
+// display the template in the #output div
+grid(model).render("output");
+

@@ -1,0 +1,74 @@
+var klass=require("hsp/klass");
+
+function changeCase(s,arg) {
+    if (arg==="upper") {
+        return (""+s).toUpperCase();
+    } else if (arg==="lower") {
+        return (""+s).toLowerCase();
+    } 
+    return s;
+}
+
+var Sorter=klass({
+    $constructor:function(property) {
+        this.ascending=true;
+        this.pp=property;
+    },
+    sort:function(array) {
+        // copy array
+        var arr=[], pp=this.pp, ascending=this.ascending;
+        for (var i=0,sz=array.length;sz>i;i++) {
+            arr[i]=array[i];
+        }
+        // sort
+        arr.sort(function (a,b) {
+            if (a[pp]>b[pp]) {
+                return ascending? 1 : -1;
+            } else if (a[pp]==b[pp]) {
+                return 0;
+            } else {
+                return ascending? -1 : 1;
+            }
+        });
+        return arr;
+    },
+    toggleOrder:function() {
+        this.ascending=!this.ascending;
+    }
+})
+
+# template sample(d)
+    <div class="section2">
+        Message in capital letters:
+        <span class="textvalue">{d.msg|changeCase:"upper"}</span><br/>
+        Message in lower case:
+        <span class="textvalue">{d.msg|changeCase:"lower"}</span>
+    </div>
+    <div class="section2">
+        {let fnSorter=new Sorter("firstName")}
+        Sorted list:
+        <ol>
+            {foreach p in d.persons|fnSorter.sort}
+                <li>
+                    {p.firstName} {p.lastName}
+                </li>
+            {/foreach}
+        </ol>
+        <a onclick="{fnSorter.toggleOrder()}">
+            Toggle sort order (current: {fnSorter.ascending? "ascending" : "descending"})
+        </a>
+    </div>
+# /template
+
+var data={
+    msg:"Hello Simpsons!",
+    persons:[
+        {firstName:"Homer",lastName:"Simpsons"},
+        {firstName:"Marge",lastName:"Simpsons"},
+        {firstName:"Bart"},
+        {firstName:"Lisa"},
+        {firstName:"Maggy"}
+    ]
+};
+
+sample(data).render("output");

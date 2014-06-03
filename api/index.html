@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>API Reference - Hashspace</title>
+    <link href="/images/favicon.ico" type="image/ico" rel="shortcut icon"/>
+    <link rel="stylesheet" href="/css/all.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/site.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/highlightjs/default-8.0.min.css" type="text/css"/>
+    <script src="/libs/highlightjs/highlight-8.0.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js" type="text/javascript" charset="utf-8"></script>
+    <![endif]-->
+    
+
+  </head>
+  <body class="api">
+    <header id="header">
+      <div class="logo">
+        <h1><a href="/">
+          
+          <img src="/images/logo-page.png" alt="Hashspace"/>
+          
+        </a></h1>
+      </div>
+      <nav>
+        <a class="api" href="/api/">Api</a>
+        <a class="playground" href="/playground/">Playground</a>
+        <a href="http://github.com/ariatemplates/hashspace">Github</a>
+        <a class="download button green" target="_blank" href="https://github.com/ariatemplates/hashspace/releases">Download</a>
+      </nav>
+    </header>
+    <div class="content-wrapper">
+      <section class="content">
+        <div class="wrapper"><div id="wip">Work in progress</div>
+<article class="columns"><div class="column">
+<h1 id="api-reference">API Reference</h1>
+<h2 id="general-setup">General setup</h2>
+<h4 id="template-bootstrap">Template bootstrap</h4>
+<p>One way to use a template inside any <code>.html</code> page is to use <a href="http://noder-js.ariatemplates.com">noderjs</a>.
+Simply require the template file, and specify the <code>div</code> reference to which you want to render it.</p>
+<pre><code class="lang-html"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"mydiv"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span> <span class="attribute">src</span>=<span class="value">"noder-js.min.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"noder"</span>&gt;</span><span class="javascript">
+  <span class="keyword">var</span> mytpl = require(<span class="string">"path/to/mytpl"</span>);
+  mytpl.render(<span class="string">"mydiv"</span>);
+</span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></code></pre>
+<p>The <code>div</code> reference can be either:</p>
+<ul>
+<li>a <code>&quot;string&quot;</code> id.</li>
+<li>an <code>HTMLElement</code> directly.</li>
+</ul>
+<h2 id="compiler-usage-and-options">Compiler usage and options</h2>
+<p>TBD</p>
+<h2 id="template-statements">Template statements</h2>
+<h4 id="template-definition">Template definition</h4>
+<p>Inside an <code>.hsp</code> file, you can define a template using <code>#template</code> statement. A single <code>.hsp</code> can define multiple templates.</p>
+<pre><code class="lang-cs"><span class="preprocessor">#template tplname(arg1, arg2)</span>
+  <span class="comment">//your template code goes here</span>
+  &lt;div&gt;Hello world&lt;/div&gt;
+<span class="preprocessor">#/template</span></code></pre>
+<p>A template has the following properties:</p>
+<ul>
+<li><strong>a name</strong>: the name of the local reference to the template</li>
+<li><strong>formal parameters</strong>: a list of names for formal parameters. Inside the template, the names are used as references to the actual parameters. From the outside, actual parameters can be given <strong>by both position and name</strong>, depending on how the template is instantiated.</li>
+</ul>
+<p>The template definition accepts an optional prefix <code>export</code>, which adds the template reference under a property of the wrapping module&#39;s <code>exports</code>: it follows the CommonJS specifications. The property gets the same name as the template.</p>
+<p>Technically, a template is compiled by the engine and converted to a function (whose name is the template&#39;s one), which when get called returns a template instance bound to the given actual parameters.</p>
+<hr>
+<h4 id="text-output-expression-">Text output <code>{expression}</code></h4>
+<p>All <code>{...}</code> occurrences which don&#39;t correspond to a statement are expressions. Have a look at the dedicated <a href="#expressions">section</a> to see the list of supported expressions.</p>
+<hr>
+<h4 id="conditions-if-else-and-else-if-">Conditions <code>{if}</code>, <code>{else}</code> and <code>{else if}</code></h4>
+<p>You can define conditional parts of a template using the <code>{if}/{else if}/{else}</code> statements.</p>
+<p>This statement is a block statement.</p>
+<p>Note that as a kind of alternative, in some cases a ternary expression can be used instead of the statement.</p>
+<pre><code class="lang-cs"><span class="preprocessor"># template example(context)</span>
+  Number <span class="keyword">is</span>:
+  {<span class="keyword">if</span> context.number &lt; <span class="number">0</span>}
+    negative
+  {<span class="keyword">else</span> <span class="keyword">if</span> context.number &gt; <span class="number">0</span>}
+    positive
+  {<span class="keyword">else</span>}
+    <span class="keyword">null</span>
+  {/<span class="keyword">if</span>}
+  &amp;nbsp;({context.number === <span class="number">0</span> ? <span class="string">'null'</span> : context.number}).
+<span class="preprocessor"># /template</span></code></pre>
+<hr>
+<h4 id="loops-foreach-">Loops <code>{foreach}</code></h4>
+<p>Use the <code>{foreach value in array}</code> or <code>{foreach index, value in array}</code> expression to iterate over an array.</p>
+<p>This statement is a block statement.</p>
+<p>Note that the statement creates its own local environment containing the reference to the current value and possibly the one to the current index.</p>
+<pre><code class="lang-cs"><span class="preprocessor"># template example(array)</span>
+  &lt;ul&gt;
+  {<span class="keyword">foreach</span> index, <span class="keyword">value</span> <span class="keyword">in</span> array}
+    &lt;li onclick=<span class="string">"{process(value)}"</span>&gt;{index}: {<span class="keyword">value</span>}&lt;/li&gt;
+  {/<span class="keyword">foreach</span>}
+  &lt;/ul&gt;
+<span class="preprocessor"># /template</span></code></pre>
+<hr>
+<h4 id="html-elements-div-class-div-">html elements <code>&lt;div class=&quot;&quot;&gt;...&lt;/div&gt;</code></h4>
+<p>Templates contain enhanced HTML elements.</p>
+<p>HTML elements in templates are almost like standard elements, but they have a special syntax allowing the use of <strong>expressions and statements</strong>.</p>
+<p>Expressions can be found anywhere in text content of block elements. Expressions can also be found in values of tags&#39; attributes. However, there are different kind of expressions and there can be restrictions in some cases (required to use a specific kind or forbidden to use some).</p>
+<p>Statements on the other hand can only be found inside the content of block elements (and not the tag). There are <em>block</em> and <em>inline</em> statements, and they follow the same strict rules of nesting as XHTML elements, which means for instance that you can&#39;t surround an opening tag with a block statement.</p>
+<p>For more information on expressions and statements, please refer to their corresponding sections.</p>
+<pre><code class="lang-cs">&lt;div id=<span class="string">"{myid}"</span>&gt;
+  {<span class="keyword">if</span> displayed}
+    &lt;div&gt;
+      Some text with variable content: {content}
+    &lt;/div&gt;
+  {/<span class="keyword">if</span>}
+&lt;/div&gt;</code></pre>
+<hr>
+<h4 id="logs-log-myvar-">Logs <code>{log myvar}</code></h4>
+<p>Logs the given values.</p>
+<p>This statement is an inline statement.</p>
+<p>As for other statements, its parameters are observed, so that <strong>a new</strong> log entry will be issued anytime one of these parameters changes.</p>
+<p>The log statement relies on the available logging methods, and uses specifically the <code>log</code> one. To know more about logging, please refer to the dedicated documentation section.</p>
+<p>It will forward all the given parameters, and add its own metadata with the following values:</p>
+<ul>
+<li><code>type</code>: <code>&quot;debug&quot;</code></li>
+<li><code>file</code>: the file name in which the statement is used</li>
+<li><code>dir</code>: the path of the directory in which the file is</li>
+<li><code>line</code>: the line number in which the statement appears in the file</li>
+<li><code>column</code>: the column number in which the statement appears on the line</li>
+</ul>
+<pre><code class="lang-cs"><span class="preprocessor"># template example()</span>
+  {log scope}
+<span class="preprocessor"># /template</span></code></pre>
+<hr>
+<h4 id="scoped-variables-let-myvar-1-2-3-">Scoped variables <code>{let myvar = [1, 2, 3]}</code></h4>
+<p>Creates local variables in the current environment.</p>
+<p>This statement is an inline statement.</p>
+<p>Creating a local variable means declaring its name and initializing its value, with the common syntax: <code>reference = value</code>. The statement allows creating multiple variables in a row, using the comma to separate each.</p>
+<p>The scope of the created variable is the container block in which the statement appears. This can be one of:</p>
+<ul>
+<li>template blocks</li>
+<li>html block elements</li>
+<li>condition blocks: <code>{if}</code>, <code>{else if}</code> or <code>{else}</code></li>
+<li><code>{foreach}</code> block</li>
+</ul>
+<p><code>{let}</code> statements <strong>MUST</strong> appear at the beginning of the blocks in which they are used!</p>
+<pre><code class="lang-hashspace"><span class="preprocessor"># template example()</span>
+  {<span class="keyword">let</span> tpl = <span class="string">"Variable in template environment"</span>}
+
+  &lt;div&gt;
+    {<span class="keyword">let</span> htmlBlock = <span class="string">"Variable in HTML block environment"</span>}
+  &lt;/div&gt;
+
+  {<span class="keyword">if</span> condition}
+    {<span class="keyword">let</span> if_ = <span class="string">"Variable in if environment"</span>}
+  {<span class="keyword">else</span> <span class="keyword">if</span> condition2}
+    {<span class="keyword">let</span> elseIf = <span class="string">"Variable in an elseif environment"</span>}
+  {<span class="keyword">else</span>}
+    {<span class="keyword">let</span> else_= <span class="string">"Variable in else environment"</span>}
+  {/<span class="keyword">if</span>}
+
+  {<span class="keyword">foreach</span> <span class="keyword">value</span> <span class="keyword">in</span> container}
+    {<span class="keyword">let</span> foreach_ = <span class="string">"Variable in foreach environment"</span>}
+  {/<span class="keyword">foreach</span>}
+<span class="preprocessor"># /template</span></code></pre>
+<hr>
+<h4 id="component-template-definitions-template-mycpt-using-ctrl-mycontroller-">Component template definitions <code>#template mycpt using ctrl:MyController</code></h4>
+<p>Defines a component, that is a template tied to a specific <em>class</em> to be used as controller.</p>
+<p>A template is considered as a component as soon as it uses the <code>using</code> keyword. The latter defines which class to use to build an instance of the controller, and under which name this instance will be referred inside the template.</p>
+<p>Controllers are just a specific kind of class whose features are focused on interaction with templates. More information on what controllers really are and how they work is available in a <a href="#interfaces">dedicated section</a> in this documentation.</p>
+<hr>
+<h4 id="sub-template-calls-mytemplate-attr1-hello-">Sub-template calls <code>&lt;#mytemplate attr1=&quot;hello&quot; /&gt;</code></h4>
+<p>Full syntax looks like this: <code>&lt;#subTemplateReference param1=&quot;param1Value param2=&quot;param2Value&quot;/&gt;</code> or <code>&lt;#subTemplateReference param1=&quot;param1Value param2=&quot;param2Value&quot;&gt; ... &lt;/#subTemplateReference&gt;</code>.</p>
+<p>It is intended to look like a standard HTML element in use: it is an element with a name and attributes, and that can be used with or without any child elements.</p>
+<p>The above means mainly two important things:</p>
+<ul>
+<li>parameters of the template (equivalent of element attributes) are <strong>passed by name</strong>, not by position</li>
+<li>it not only instantiates the template but also renders it automatically in a DOM element inserted exactly where the statement is used</li>
+</ul>
+<p>There is also an additional subtlety regarding the passing of the parameters. As said, they are passed by name, so if you use <code>&lt;tplref arg1=&quot;...&quot; /&gt;</code> for a template defined like this <code># template(whatever, arg1)</code>, <code>arg1</code> will be properly passed, wherever it is defined in the parameters list. However the actual subtlety resides in the <strong>first</strong> parameter of the function: if it doesn&#39;t match any attribute name, it is not left <code>undefined</code> as one could think. Instead, it refers to an object built from the attribute/value pairs. In our little example, <code>whatever</code> would refer to an object like this: <code>{arg1: &quot;...&quot;}</code>. This is implicitely due to the internal way hashspace is managing components instantiation (components are discussed later in this documentation).</p>
+<p><strong>Reference</strong>:</p>
+<p>Note also that the statement is not expecting a simple template name, it takes a reference to it. The syntax limits it to be a simple reference access (which means that it can&#39;t be returned by a function call, that the ternary operator can&#39;t be used, etc.)</p>
+<p><strong>Using a template as a container</strong>:</p>
+<p>Using a template as a container with child elements is only useful if you have to pass <code>template</code> attributes&#39; values to the subtemplate. It is not oftenly used, and you might prefer implement here a <a href="#interfaces">component</a> instead.</p>
+<hr>
+<h4 id="component-calls-mycpt-attr-hello-">Component calls <code>&lt;#mycpt attr=&quot;hello&quot; /&gt;</code></h4>
+<p>Instantiating a component is more or less defined like a template could be instantiated. The syntax remains the same.</p>
+<p>The following rules mentioned for template instantiation also apply to components:</p>
+<ul>
+<li>the statement expects a reference to the component</li>
+<li>it can be declared as self-closed or defining a content with child elements</li>
+<li>the attributes of the statement are used to build an object with properties matching their names</li>
+</ul>
+<p>Using a component with some nested child elements is actually really useful. The content inside the block is used to fulfill some of the attributes of the controller.</p>
+<p>This content can have 2 forms, which cannot be mixed:</p>
+<ul>
+<li>a classical template content, with text, elements, statements, etc.</li>
+<li>a set of sub-attribute elements, each containing template content (as for previous point)</li>
+</ul>
+<p>See <a href="#interfaces">below</a> for more information about the different types of attributes, including <code>template</code>.</p>
+<hr>
+<h4 id="component-elements-body-class-foo-body-">Component elements <code>&lt;@body class=&quot;foo&quot;&gt;...&lt;/@body&gt;</code></h4>
+<p>These elements are a reference to some special component attributes. You can only use them from within a component.
+Please refer to their specific <a href="#elements">section</a> for more information and samples.</p>
+<h2 id="expressions">Expressions</h2>
+<h4 id="text-expressions-details-a-b-myvalue-3-a-getdetails-">Text expressions <code>{&#39;details: &#39; + (a.b.myValue*3) + &#39; &#39; + a.getDetails()}</code></h4>
+<p>Expressions which don&#39;t fall into a specific category are <em>text expressions</em>.</p>
+<p>A text expression is evaluated and its return value is converted to a string.</p>
+<p>This string is then output in place of the expression.</p>
+<pre><code class="lang-cs">&lt;div <span class="keyword">class</span>={element.tag.<span class="keyword">class</span>}&gt;
+  {element.text.content}
+&lt;/div&gt;</code></pre>
+<hr>
+<h4 id="function-expressions-title-a-b-gettooltip-d1-d2-">Function expressions <code>title=&quot;{a.b.getTooltip(d1,d2)}&quot;</code></h4>
+<p>A function expression is an expression executing a function call.</p>
+<p>Function expressions are useful for event handlers, but they can also be used to fetch any content: the return value of the function will be used as the output value of the expression.</p>
+<p>The parameters of the function are observed (if applicable) to enable <em>refreshing</em> the expression.</p>
+<p>Note that the syntax doesn&#39;t allow you to directly access a property of the returned object, so you can&#39;t write something like this: <code>{cb().prop}</code></p>
+<pre><code class="lang-hashspace"><span class="comment">{capitalize(context</span>.<span class="comment">name)</span> <span class="literal">+</span> <span class="comment">"</span>.<span class="comment">"}</code></pre>
+<hr>
+<h4 id="conditionnal-expressions-value-isoutput-">Conditionnal expressions <code>{&quot;value&quot;: isOutput}</code></h4>
+<p>Conditionally outputs a value.</p>
+<p>We&#39;ll consider two parts in this kind of expression: the <strong>left expression</strong>, before the colon, and the <strong>right expression</strong> which lays after. Note that they are not surrounded by braces in this case, only the global one is.</p>
+<p>Those parts can be any simple expressions, which means not compound nor conditional ones.</p>
+<p>The right one determines whether the result of the left one should be output or not: yes if the right part is truthy, no otherwise.</p>
+<hr>
+<h4 id="css-expressions-class-urgent-msg-urgency-msg-category-or-compound-expressions">CSS expressions <code>class=&quot;{&#39;urgent&#39;:msg.urgency, msg.category}&quot;</code> or compound expressions</h4>
+<p>You can combine several expressions into one expression statement using the comma; note that there is only one pair of braces which is for the compound expression, subexpressions being delimited by commas.</p>
+<p>The results of the expressions will be concatenated with a single white space before it is output.</p>
+<p>Because of the space which always gets <em>inserted between the expressions</em>, it does not suit all use cases. However, this is perfect to define the <code>class</code> attribute of a HTML element for instance.</p>
+<pre><code class="lang-cs">&lt;div <span class="keyword">class</span>=<span class="string">"{'urgent':msg.urgency, msg.category}"</span>&gt;&lt;/div&gt;</code></pre>
+<h2 id="modifiers">Modifiers</h2>
+<p>TBD</p>
+<h2 id="special-html-element-attributes">Special HTML element attributes</h2>
+<h4 id="event-handlers-onclick-a-b-dothis-event-mydata-">Event handlers <code>onclick=&quot;{a.b.doThis(event, mydata)}&quot;</code></h4>
+<p>Event handler attributes of HTML elements accept function expressions.</p>
+<p>This means that instead of giving a piece of JavaScript code to be executed in the global environment, you can use the standard call mechanisms, in the environment of the current module (file).</p>
+<p>Event handlers have a particularity though: in your function call, you can pass the <code>event</code> object to your handler function. This <code>event</code> object is implicitly available in the context of your expression, but it is not automatically passed, so you need to explicitly pass it if you want to have it available in your function.</p>
+<pre><code class="lang-cs"><span class="preprocessor"># template example()</span>
+  &lt;span onclick=<span class="string">"{handler(event)}"</span>&gt;Click me&lt;/span&gt;
+<span class="preprocessor"># /template</span>
+
+function handler(<span class="keyword">event</span>) {
+  <span class="comment">// ...</span>
+}</code></pre>
+<hr>
+<h4 id="model-attribute">Model attribute</h4>
+<p>Input elements have special consideration by the engine to handle UI data binding.</p>
+<p>They are elements like others, so they support expressions with observing mechanisms inside their attributes, including the <code>value</code> attribute.</p>
+<p>However the input value is changed from a user interaction and therefore the value referenced by the expression used in the <code>value</code> should reflect this change.</p>
+<p>This process is know as <em>data binding</em>. The binding update occurs on <code>input</code> events.</p>
+<h5 id="text-based-input-and-textarea">Text based input and textarea</h5>
+<p>The engine also introduces a new attribute, called <code>model</code>. For most input types and textarea, this can be used interchangeably with <code>value</code>. However, for some of them like input type radio, the <code>value</code> and <code>model</code> attributes have distinct, specific roles.</p>
+<pre><code class="lang-html"><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"text"</span> <span class="attribute">value</span>=<span class="value">"{data.text}"</span> /&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"text"</span> <span class="attribute">model</span>=<span class="value">"{data.text}"</span> /&gt;</span> <span class="comment">&lt;!--Will do the same--&gt;</span>
+<span class="tag">&lt;<span class="title">textarea</span> <span class="attribute">model</span>=<span class="value">"{data.text}"</span>&gt;</span><span class="tag">&lt;/<span class="title">textarea</span>&gt;</span></code></pre>
+<h5 id="input-type-radio-input-type-radio-">Input type radio <code>&lt;input type=&quot;radio&quot; /&gt;</code></h5>
+<p>Radio buttons are a specific kind of inputs, since they behave as a group of values where only one is <em>selected</em> at a time.</p>
+<p>The relevant value is thus not anymore attached to one single input, but to a group of inputs. Each of those inputs holds a specific alternative for the value, and when it gets selected, this alternative becomes the value of the group.</p>
+<p>To handle easy data binding from many values to one value, a new attribute has been introduced, called <code>model</code>.</p>
+<p>Put the reference of the model to bind inside <code>model</code> (using an expression), and put the specific value attached to an input inside <code>value</code>.</p>
+<p>When a button gets selected, the reference in <code>model</code> is updated to the <code>value</code> of this button.</p>
+<p>Doing it this way also allows the engine to automatically detect and create button groups: all buttons whose bound model is the same belong to the same group.</p>
+<pre><code class="lang-html"><span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"radio"</span> <span class="attribute">model</span>=<span class="value">"{data.value}"</span> <span class="attribute">value</span>=<span class="value">"{data.choice1}"</span> /&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"radio"</span> <span class="attribute">model</span>=<span class="value">"{data.value}"</span> <span class="attribute">value</span>=<span class="value">"{data.choice2}"</span> /&gt;</span>
+<span class="tag">&lt;<span class="title">input</span> <span class="attribute">type</span>=<span class="value">"radio"</span> <span class="attribute">model</span>=<span class="value">"{data.value}"</span> <span class="attribute">value</span>=<span class="value">"{data.choice3}"</span> /&gt;</span></code></pre>
+<hr>
+<h4 id="gestures-event-handlers-attributes">Gestures event handlers attributes</h4>
+<p>The engine adds a bunch of attributes to HTML elements to add support for gesture events.</p>
+<p><em>Gesture</em> attributes are like other attributes expecting event handlers (e.g. <code>onclick</code>, etc.), so you can use function expressions with it.</p>
+<p>Currently, here are the attributes for supported events:</p>
+<ul>
+<li>tap: <code>ontap</code>, <code>ontapstart</code>, <code>ontapcancel</code></li>
+<li>longpress: <code>onlongpress</code>, <code>onlongpressstart</code>, <code>onlongpresscancel</code></li>
+<li>single tap: <code>onsingletap</code>, <code>onsingletapstart</code>, <code>onsingletapcancel</code></li>
+<li>double tap: <code>ondoubletap</code>, <code>ondoubletapstart</code>, <code>ondoubletapcancel</code></li>
+<li>drag: <code>ondrag</code>, <code>ondragstart</code>, <code>ondragmove</code>, <code>ondragcancel</code></li>
+<li>swipe: <code>onswipe</code>, <code>onswipestart</code>, <code>onswipemove</code>, <code>onswipecancel</code></li>
+<li>pinch: <code>onpinch</code>, <code>onpinchstart</code>, <code>onpinchmove</code>, <code>onpinchcancel</code></li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-html"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">ontap</span>=<span class="value">"{ontapHandler(event)}"</span> <span class="attribute">ontapstart</span>=<span class="value">"{ontapHandler(event)}"</span> <span class="attribute">ontapcancel</span>=<span class="value">"{ontapHandler(event)}"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span></code></pre>
+<h2 id="interfaces">Interfaces</h2>
+<h4 id="component-controllers">Component controllers</h4>
+<h5 id="general-life-cycle">General life cycle</h5>
+<p>When a component template is instantiated, a new instance of its controller is created and bound to the defined variable name, whose scope is the template. After instantiating its controller and performing all sorts of internal processing, the template calls its <code>$init</code> method, if defined.</p>
+<p>Then, in order to be displayed for the first time, an internal refresh occurs, followed by the execution of <code>$refresh()</code> if defined.</p>
+<p>A the end of the life cycle, when the component is not needed anymore, the <code>$dipose()</code> method, if defined, is executed.</p>
+<hr>
+<h5 id="attributes">Attributes</h5>
+<p>Defines the attributes of the controller, also considered as the attributes of the component.</p>
+<p>In the <em>klass</em> definition of the controller, a specific property called <code>attributes</code> is used to define the attributes of the controller/component. It allows you to define the public API of the controller itself.</p>
+<p>It expects a map of attribute names (the keys) with their definitions (the values).</p>
+<p>Here are the properties used to define a single attribute:</p>
+<ul>
+<li><code>type</code>: defines the type of the property. Input values will be converted to that type or validated to conform to it. Specific types are discussed in sections below.</li>
+<li><code>binding</code>: can be set to <code>&quot;none&quot;</code> (default), <code>&quot;1-way&quot;</code> or <code>&quot;2-way&quot;</code>. See below for more information about binding.</li>
+<li><code>defaultValue</code>: used as the attribute value if its input value is <strong>strictly</strong> <code>undefined</code></li>
+<li><code>defaultContent</code>: specific for attributes of type <code>template</code>, please see corresponding section for more information.</li>
+</ul>
+<hr>
+<h5 id="attributes-types">Attributes Types</h5>
+<p>Hashspace natively supports different types of attributes:</p>
+<ul>
+<li><p><strong>Basic types</strong></p>
+<p>The basic types attributes, to be declared when defining your component class:</p>
+<pre><code class="lang-json">attributes: {
+  &quot;count&quot;: { type: &quot;int&quot;, defaultValue: 0 },
+  &quot;price&quot;: { type: &quot;float&quot;, defaultValue: 19.90 },
+  &quot;active&quot;: { type: &quot;boolean&quot;, defaultValue: true },
+  &quot;label&quot;: { type: &quot;string&quot;, defaultValue: &quot;Label&quot; }
+}</code></pre>
+<ul>
+<li><code>int</code>: the input value is converted using <a href="http://devdocs.io/javascript/global_objects/parseint"><code>parseInt</code></a>, with a radix of 10</li>
+<li><code>float</code>: the input value is converted using <a href="http://devdocs.io/javascript/global_objects/parsefloat"><code>parseFloat</code></a></li>
+<li><code>boolean</code>: evaluates to <code>true</code> if the input value is strictly equal to one of: <code>true</code>, <code>1</code>, <code>&#39;1&#39;</code> or <code>&#39;true&#39;</code>. Evaluates to <code>false</code> otherwise.</li>
+<li><code>string</code>: the input value is converted using the concatenation with an empty string</li>
+<li><code>object</code>: <em>no processing of the input value</em></li>
+</ul>
+</li>
+<li><p><strong>Callback type</strong></p>
+<p>We also support <code>callback</code> attributes. They are especially useful to be associated with you r component external events based API.</p>
+<pre><code class="lang-json">attributes: {
+  onclick: { type: &quot;callback&quot; },
+  onselect: { type: &quot;callback&quot; }
+}</code></pre>
+<p>Attributes of type callback have strict restrictions, and they are used to define new event handlers on the component.</p>
+<p>Usage of such an attribute is simple: call it whenever you need it. You don&#39;t even have to test for the actual presence of a function behind it. If the attribute is <code>undefined</code> hashspace provides a default empty function to void the execution.</p>
+<pre><code class="lang-javascript">onSelected: <span class="keyword">function</span>(event, index) {
+  <span class="comment">// no need to test for existence. simply use it!</span>
+  event.index = index; <span class="comment">// We enrich the event object with what is needed</span>
+  <span class="keyword">this</span>.onselect(event);
+}</code></pre>
+<p>Attributes of type <code>callback</code> behave like event handlers, and expect the same content as them: usually function expressions. From a user point of view, there is thus no change compared to a standard <code>onclick</code> handler for instance.</p>
+<p>The <code>event</code> argument is optionnal, hashspace takes care of creating one for you if not provided:</p>
+<ul>
+<li>if no argument is specified, the object is simply created, with this property</li>
+<li>if the first argument is specified, it must:<ol>
+<li>explicitly be an object</li>
+<li>not define a property named <code>type</code>, to avoid accidental overriding</li>
+</ol>
+</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li><p><strong>Template type</strong></p>
+<p>Last type of supported attribute is <code>template</code>. Those attributes are references to an existing template definition, or even inline template code to be used from within the component.</p>
+<p>Let&#39;s consider this component definition:</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> MyCpt = klass({
+  attributes: {
+    header: { type: <span class="string">"template"</span> },
+    body: { type: <span class="string">"template"</span>, defaultcontent: <span class="literal">true</span> }
+  }
+});</code></pre>
+<pre><code class="lang-cs"><span class="preprocessor">#template mycpt using ctrl:MyCpt</span>
+  &lt;header&gt;
+    &lt;<span class="preprocessor">#ctrl.header /&gt;</span>
+  &lt;/header&gt;
+  &lt;section&gt;
+    &lt;<span class="preprocessor">#ctrl.body /&gt;</span>
+  &lt;/section&gt;
+<span class="preprocessor">#/template</span></code></pre>
+<p>In terms of usage, it would be done with several different syntaxes:</p>
+<pre><code class="lang-html"><span class="comment">&lt;!-- First one, with header as an attribute, and body as the default content --&gt;</span>
+<span class="tag">&lt;<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">#mycpt</span> <span class="attribute">label</span>=<span class="value">"This is my header"</span>&gt;</span>
+    This is my body <span class="comment">&lt;!--templating syntax could be used here ! --&gt;</span>
+  <span class="tag">&lt;/<span class="title">#mycpt</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+
+<span class="comment">&lt;!-- With header and body as embedded attribute elements --&gt;</span>
+<span class="tag">&lt;<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">#mycpt</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">@header</span>&gt;</span>This is my header<span class="tag">&lt;/<span class="title">@header</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">@body</span>&gt;</span>
+      {foreach name in names}
+        <span class="tag">&lt;<span class="title">div</span>&gt;</span>{name}<span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+      {/foreach}
+    <span class="tag">&lt;/<span class="title">@body</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">#mycpt</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">div</span>&gt;</span></code></pre>
+</li>
+</ul>
+<hr>
+<h5 id="attributes-bindings">Attributes bindings</h5>
+<p><em>Binding</em> means linking two references, so that they point to the same value when one is changed. More concretely in this context it means:</p>
+<ul>
+<li>updating the value of the attribute in the component if something outside bound to it changes: this is the <em>1-way</em> binding</li>
+<li>updating the value of anything outside bound to the attribute when the latter is directly changed: this is the counterpart of the <em>1-way</em> (no option for that)</li>
+<li>doing both: this is the <em>2-way</em> binding</li>
+<li>doing none: this is the <em>none</em> option</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-json">attributes: {
+  attr: {type: &quot;string&quot;, defaultValue: &quot;&quot;, binding: &quot;2-way&quot;}
+}</code></pre>
+<hr>
+<h5 id="elements">Elements</h5>
+<p><code>template</code> type attributes are great to templatize the content of you component. But you can&#39;t use them publicly more than one time in your component content.</p>
+<pre><code class="lang-cs">&lt;#mycpt&gt;
+  &lt;@header&gt;This is my header&lt;/@header&gt;
+  &lt;@header&gt;This is my header&lt;/@header&gt; &lt;!-- Can't do that with template attribute --&gt;
+&lt;/#mycpt&gt;</code></pre>
+<p>Elements are here to address this lack. They are somehow smarter <code>template</code> attributes. With them, you have the ability to use them as collections (or iterative elements).</p>
+<pre><code class="lang-json">elements: {
+  option: { type: &quot;template&quot; }
+}</code></pre>
+<pre><code class="lang-cs">&lt;<span class="preprocessor">#mylist&gt;</span>
+  &lt;@option&gt;item <span class="number">1</span>&lt;/@option&gt;
+  &lt;@option&gt;item <span class="number">2</span>&lt;/@option&gt;
+  &lt;@option&gt;item <span class="number">3</span>&lt;/@option&gt;
+&lt;/<span class="preprocessor">#mylist&gt;</span></code></pre>
+<p>To have an overview on how to use <code>template</code> elements, have a look at <a href="#content-property">content property</a></p>
+<hr>
+<h5 id="-init-">$init()</h5>
+<p>A user method to initialize the instance.</p>
+<p>This method, if defined, is called after the instance has been built, and the attributes initialized. This is the last step of the process of creating a new instance.</p>
+<p><strong>Don&#39;t forget to call the parent&#39;s <code>$init</code> method when appropriate!</strong></p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> Controller = klass({
+  $init: <span class="keyword">function</span>() {
+    <span class="comment">// ...</span>
+  }
+});</code></pre>
+<hr>
+<h5 id="-dispose-">$dispose()</h5>
+<p>A user method to clean properly a <em>destroyed</em> instance.</p>
+<p>This method is automatically called when the component instance is not used anymore by any other template. This means that it will be called even if it&#39;s not actually collected by the underlying system&#39;s garbage collector.</p>
+<p>Use it to do some custom cleanup process.</p>
+<p><strong>Don&#39;t forget to call the parent&#39;s <code>$dispose</code> method when appropriate!</strong></p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> Controller = klass({
+  $dispose: <span class="keyword">function</span>() {
+    <span class="comment">// ...</span>
+  }
+});</code></pre>
+<hr>
+<h5 id="-render-">$render()</h5>
+<p>A user method called after a component has been refreshed. Usefull in case you need to use third party libraries.</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> Controller = klass({
+  $refresh: <span class="keyword">function</span>() {
+    <span class="comment">// ...</span>
+  }
+});</code></pre>
+<hr>
+<h5 id="-getelement-index-">$getElement(index)</h5>
+<p>A method provided by controllers to retrieve an HTML element in the component.</p>
+<p>First, this method actually takes into account only HTML Elements. All other types of HTML nodes (mainly text nodes) will be ignored in the process.</p>
+<p>Then, this takes into account only top-level elements. The hierarchy of nodes is not traversed.</p>
+<p>It is especially useful when you implement your own <code>$refresh()</code> method.</p>
+<p>Note that the index is 0-based.</p>
+<pre><code class="lang-cs"><span class="keyword">var</span> Controller = klass({
+  $refresh: function() {
+    console.log(<span class="keyword">this</span>.$getElement(<span class="number">0</span>)); <span class="comment">// div</span>
+    console.log(<span class="keyword">this</span>.$getElement(<span class="number">1</span>)); <span class="comment">// hr</span>
+  }
+});
+
+<span class="preprocessor"># template example using controller:Controller</span>
+  &lt;div&gt;
+    &lt;span&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  Ignored text
+  &lt;hr /&gt;
+<span class="preprocessor"># /template</span></code></pre>
+<hr>
+<h5 id="on-lt-attribute-gt-change-newvalue-oldvalue-">on&lt;Attribute&gt;Change(newValue, oldValue)</h5>
+<p>User methods whose names follow a specific pattern, used to react to change events triggered by attributes.</p>
+<p>When a property&#39;s value changes, <strong>and if the property is bound in at least one way</strong>, the engine automatically calls - if defined - a method of the controller whose name is built from the name of the property:</p>
+<ul>
+<li>the name of the property is taken and its first letter is upper cased, the rest is left untouched</li>
+<li>the function must then be named like this: <code>&quot;on&quot; + transformedName + &quot;Change&quot;</code></li>
+</ul>
+<p>Now, let&#39;s talk quickly about what is a property change. A property&#39;s value is said to have changed when the reference associated to the property has changed, nothing more. That means that all inplace transformations are not taken into account, since the property will still refer to the same object.</p>
+<p><strong>Important note</strong>: any property change occurring in a change handler doesn&#39;t trigger any change event. That means that no change handler for any property will be called. This is done to prevent a possible automatic infinite recursive call to the current change handler (either directly or by some sorts of side-effects).</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> Controller = klass({
+  attributes: {
+    text: {type: <span class="string">"string"</span>, binding: <span class="string">"1-way"</span>}
+  },
+  onTextChange: <span class="keyword">function</span>(newValue, oldValue) {
+    <span class="comment">// ...</span>
+  },
+});</code></pre>
+<hr>
+<h5 id="content-property">Content property</h5>
+<p>TBD</p>
+<hr>
+<h5 id="attributes-properties">Attributes properties</h5>
+<p>TBD</p>
+<h2 id="javascript-libraries">JavaScript libraries</h2>
+<h4 id="class-utility-require-hsp-klass-">Class utility <code>require(&quot;hsp/klass&quot;)</code></h4>
+<p>A utility to define (JavaScript) classes easily.</p>
+<p>What this utility does is very simple: it returns a constructor function with a properly set prototype.</p>
+<p>The function <code>klass</code> expects a class definition as an object. All non-specific properties present in this object are put in a newly created prototype object, than set as the prototype of the constructor function that <code>klass</code> returns.</p>
+<p>Specific properties on their side are various and are described in sections below.</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> klass = require(<span class="string">"hsp/klass"</span>);
+
+<span class="keyword">var</span> myClass = klass({
+  $constructor: {
+    <span class="comment">// ...</span>
+  },
+  method1: <span class="keyword">function</span>() {
+    <span class="comment">// ...</span>
+  }
+  <span class="comment">// ...</span>
+});</code></pre>
+<h5 id="-constructor-">$constructor()</h5>
+<p>User method called when building a new instance of the class.</p>
+<p>It is equivalent to defining any custom constructor function: it works on a freshly created object available as <code>this</code> and doesn&#39;t need to return it.</p>
+<p>If no <code>$constructor</code> method is provided, <code>klass</code> will automatically build one, which will simply call the constructor function of the parent class, if any.</p>
+<p><strong>Don&#39;t forget to call the parent class&#39; <code>$constructor</code> method when appropriate!</strong></p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> myClass = klass({
+  $constructor: <span class="keyword">function</span>() {
+    <span class="comment">// this....</span>
+  }
+});</code></pre>
+<h5 id="-extends-parentclass">$extends: ParentClass</h5>
+<p>A reference to the parent class, for prototypal inheritance.</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> Parent = klass({
+  <span class="comment">// ...</span>
+});
+
+<span class="keyword">var</span> Child = klass({
+  $extends: Parent
+  <span class="comment">// ...</span>
+});</code></pre>
+<h5 id="-dispose-">$dispose()</h5>
+<p>User method called to properly clean a <em>destroyed</em> instance.</p>
+<h5 id="accessing-parent-class-methods">Accessing parent class methods</h5>
+<p>TBD</p>
+<h4 id="model-updates">Model updates</h4>
+<h5 id="object-update">Object update</h5>
+<p>TBD</p>
+<h5 id="array-update">Array update</h5>
+<p><code>Array</code> methods have been reimplemented to make native arrays observable.</p>
+<p>The following standard methods of Array&#39;s prototype have been overridden for this purpose: <a href="http://devdocs.io/javascript/global_objects/array/splice"><code>splice</code></a>, <a href="http://devdocs.io/javascript/global_objects/array/push"><code>push</code></a>, <a href="http://devdocs.io/javascript/global_objects/array/pop"><code>pop</code></a>, <a href="http://devdocs.io/javascript/global_objects/array/shift"><code>shift</code></a>, <a href="http://devdocs.io/javascript/global_objects/array/unshift"><code>unshift</code></a>, <a href="http://devdocs.io/javascript/global_objects/array/reverse"><code>reverse</code></a>, <a href="http://devdocs.io/javascript/global_objects/array/sort"><code>sort</code></a>.</p>
+<p>This means that listeners added on the array will be notified about the inplace changes made using these functions. This makes them compatible with the automatic refresh mechanism of templates.</p>
+<p>In addition to those methods, one more has been added: <code>splice2</code>, <code>Array.prototype.splice2(index, howMany, elements)</code></p>
+<p>Equivalent of standard <a href="http://devdocs.io/javascript/global_objects/array/splice"><code>splice</code></a> but using a list of items instead of relying on the variable length of the arguments list.</p>
+<p>This method implements observing mechanisms.</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> array = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'e'</span>, <span class="string">'f'</span>];
+array.splice2(<span class="number">2</span>, <span class="number">0</span>, [<span class="string">'c'</span>, <span class="string">'d'</span>]); <span class="comment">// =&gt; ['a', 'b', 'c', 'd', 'e', 'f']</span></code></pre>
+<hr>
+<h4 id="hashspace-runtime-require-hsp-rt-">Hashspace runtime <code>require(&quot;hsp/rt&quot;)</code></h4>
+<h5 id="hsp-refresh-">hsp.refresh()</h5>
+<p>TBD</p>
+<h5 id="hsp-template-">hsp.template()</h5>
+<p>TBD</p>
+<hr>
+<h4 id="logging-require-hsp-rt-log-">Logging <code>require(&quot;hsp/rt/log&quot;)</code></h4>
+<p>A logging utility.</p>
+<p>Logging is managed at application level, which means that there is only one logging context.</p>
+<p>First, attach loggers with <code>log.addLogger(callback)</code>: they will receive the log entries when they are pushed.</p>
+<p>Then, to create and push a log entry, you can use one of the logging methods or the <code>{log}</code> statement which works the same but sets itself more contextual information.</p>
+<p>Note that there is a specific logger built in the engine itself, which will also receive the entries that are pushed after all the other (user) loggers have processed. However if one of the latter returns <code>false</code>, this built-in will be skipped.</p>
+<p>Here are the properties of a log entry:</p>
+<ul>
+<li><code>type {String}</code>: The level of the log, that you can use to filter the entries. Will always be one of: <code>&quot;info&quot;</code>, <code>&quot;error&quot;</code>, <code>&quot;warning&quot;</code> or <code>&quot;debug&quot;</code>.</li>
+<li><code>message {String}</code>: The message of the log.</li>
+<li><code>id {String|Number}</code>: You can use it to identify your entries.</li>
+<li><code>file {String}</code>: The name of the file where the entry was issued.</li>
+<li><code>dir {String}</code>: The name of the directory containing the previously mentioned file.</li>
+<li><code>code {String}</code>: You can use it to specify a piece of code illustrating your message.</li>
+<li><code>line {Number}</code>: The line number associated to the entry; usually it corresponds to where you pushed the entry.</li>
+<li><code>column {Number}</code>: The column number associated to the entry inside the previously mentioned line.</li>
+</ul>
+<h5 id="log-">log()</h5>
+<p>Creates and pushes a log entry.</p>
+<p>It takes two types of arguments:</p>
+<ul>
+<li>A variable list of any kind of object: each will be converted to a string and then they will all be concatenated using a single white space. Finally, this will be used as the value for the <code>message</code> property of the entry.</li>
+<li>An optional set of metadata that mainly matches the properties of the created entry (see below).</li>
+</ul>
+<p>The very last argument will be interpreted as the metadata object only if:</p>
+<ol>
+<li>it is not the first argument and,</li>
+<li>it is an object:<ol>
+<li>which contains a property <code>type</code> and,</li>
+<li>whose value exactly corresponds to one of those we can find in entries&#39; <code>type</code> property</li>
+</ol>
+</li>
+</ol>
+<p>Here are the properties of the metadata object and how they are used to build the log entry:</p>
+<ul>
+<li><code>type {String|Number}</code>: Will set the <code>type</code> of the entry, and by definition will always be one of the accepted types.</li>
+<li><code>id</code>, <code>file</code>, <code>dir</code>, <code>code</code>, <code>line</code>, <code>column</code>: sets the corresponding property of the entry.</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> log = require(<span class="string">"hsp/rt/log"</span>);
+
+log(<span class="string">"The message"</span>, {
+  type: <span class="string">"debug"</span>
+});</code></pre>
+<h5 id="log-debug-object-metadata-">log.debug(object... [, metaData)])</h5>
+<p>Equivalent to <code>log</code> but sets the <code>type</code> property to <code>&quot;debug&quot;</code>.</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> log = require(<span class="string">"hsp/rt/log"</span>);
+
+log.debug(<span class="string">"Debug message"</span>);</code></pre>
+<h5 id="log-info-object-metadata-">log.info(object... [, metaData)])</h5>
+<p>Equivalent to <code>log</code> but sets the <code>type</code> property to <code>&quot;info&quot;</code>.</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> log = require(<span class="string">"hsp/rt/log"</span>);
+
+log.info(<span class="string">"Info message"</span>);</code></pre>
+<h5 id="log-warning-object-metadata-">log.warning(object... [, metaData)])</h5>
+<p>Equivalent to <code>log</code> but sets the <code>type</code> property to <code>&quot;warning&quot;</code>.</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> log = require(<span class="string">"hsp/rt/log"</span>);
+
+log.warning(<span class="string">"Warning message"</span>);</code></pre>
+<h5 id="log-error-object-metadata-">log.error(object... [, metaData)])</h5>
+<p>Equivalent to <code>log</code> but sets the <code>type</code> property to <code>&quot;error&quot;</code>.</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> log = require(<span class="string">"hsp/rt/log"</span>);
+
+log.error(<span class="string">"Error message"</span>);</code></pre>
+<h5 id="multiple-loggers-with-log-addlogger-">Multiple loggers with log.addLogger()</h5>
+<p>Adds a logger to the logging utility.</p>
+<p>The <code>handler</code> is a function receiving the log entry.</p>
+<p>If the function returns a falsy value (therefore including the case where it doesn&#39;t return anything explicitly), the main logger (at engine level) will not receive this entry.</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> log = require(<span class="string">"hsp/rt/log"</span>);
+
+log.addLogger(<span class="keyword">function</span>(entry) {
+  console.log(entry)
+  <span class="keyword">return</span> <span class="literal">false</span>;
+});</code></pre>
+<h2 id="tests-with-hashtester-require-hsp-utils-hashtester-">Tests with Hashtester <code>require(&quot;hsp/utils/hashtester&quot;)</code></h2>
+<h4 id="create-a-new-testcontext-">Create a <code>new TestContext()</code></h4>
+<p>TBD</p>
+<hr>
+<h4 id="test-context-usage">Test context usage</h4>
+<p>TBD</p>
+<h5 id="selector-accessor-">Selector accessor <code>.()</code></h5>
+<ul>
+<li><h6 id="-find-"><code>.find()</code></h6>
+<p>TBD</p>
+</li>
+<li><h6 id="-text-"><code>.text()</code></h6>
+<p>TBD</p>
+</li>
+<li><h6 id="-value-"><code>.value()</code></h6>
+<p>TBD</p>
+</li>
+<li><h6 id="-attribute-"><code>.attribute()</code></h6>
+<p>TBD</p>
+</li>
+<li><h6 id="-hasclass-"><code>.hasClass()</code></h6>
+<p>TBD</p>
+</li>
+<li><h6 id="-item-"><code>.item()</code></h6>
+<p>TBD</p>
+</li>
+<li><h6 id="-click-"><code>.click()</code></h6>
+<p>TBD</p>
+</li>
+<li><h6 id="-dblclick-"><code>.dblclick()</code></h6>
+<p>TBD</p>
+</li>
+<li><h6 id="-type-"><code>.type()</code></h6>
+<p>TBD</p>
+</li>
+</ul>
+<h5 id="logs-">logs()</h5>
+<ul>
+<li><h6 id="-clear-"><code>.clear()</code></h6>
+<p>TBD</p>
+</li>
+</ul>
+<h5 id="-set-">$set()</h5>
+<p>TBD</p>
+<h5 id="-dispose-">$dispose()</h5>
+<p>TBD</p>
+</div></article>
+</div>
+      </section>
+    </div>
+    <footer id="footer">
+      <section class="content legal">
+        &copy; 2013-2014 Hashspace is licensed under Apache 2.0 license. See our <a href="/license.html">licensing page</a>.
+      </section>
+    </footer>
+    <script type="text/javascript">
+      var links = document.links;
+
+      for (var i = 0, linksLength = links.length; i < linksLength; i++) {
+        if (links[i].hostname != window.location.hostname) {
+          links[i].target = '_blank';
+        }
+      }
+    </script>
+    
+    <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
+    <script type="text/javascript">
+      /*var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-29575860-5']);
+      _gaq.push(['_setDomainName', 'ariatemplates.com']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();*/
+    </script>
+
+  </body>
+</html>

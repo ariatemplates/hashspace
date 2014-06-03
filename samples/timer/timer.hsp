@@ -1,0 +1,24 @@
+var klass=require("hsp/klass");
+
+# template elapsedTime(timer)
+    Seconds Elapsed: {timer.secondsElapsed}
+# /template
+
+// klass is a little utility to create a JS object constructor 
+// from a simple JSON structure - main goals are to
+// to simplify prototypal inheritance and ease code reading
+var Timer=klass({
+    $constructor:function() {
+        this.secondsElapsed=0;
+        this._iid=setInterval(this.tick.bind(this),1000);
+    },
+    $dispose:function() {
+    	clearInterval(this._iid);
+    },
+    tick:function() {
+        this.secondsElapsed++;
+    }
+});
+
+// display the template in the #output div
+elapsedTime(new Timer()).render("output");

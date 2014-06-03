@@ -1,0 +1,79 @@
+var klass=require("hsp/klass");
+
+var CITIES={
+	"SFO":{city:"San Francisco",offset:-8},
+	"PAR":{city:"Paris",offset:+1},
+	"TYO":{city:"Tokyo",offset:+9}
+}
+
+var ClockController=klass({
+	attributes:{
+		"city":{type:"string",binding:"1-way",defaultValue:"PAR"}
+	},
+	$init:function() {
+		this.minuteMarkers=[]; // list of minute markers
+		for (var i=0;60>i;i++) {
+			this.minuteMarkers[i]={major:(i%5===0)};
+		}
+		this.onCityChange();
+		this._iid=setInterval(this.tick.bind(this),100);
+	},
+	$dispose:function() {
+		clearInterval(this._iid);
+	},
+	onCityChange:function() {
+		// dynamic city change: check city validity and refresh the display
+		if (!CITIES[this.city]) { 
+			// unsupported city
+			this.city="PAR"; // default
+		}
+		this.tick(); 
+	},
+	tick:function() {
+		var d=new Date();
+		var to=CITIES[this.city].offset;
+		var o=d.getTimezoneOffset()/60;
+		d=new Date(d.getTime()+ ((o+to)*3600000)); // date in the target city
+		this.hours = d.getHours();
+		this.minutes = d.getMinutes();
+		this.seconds = d.getSeconds();
+		this.milliseconds = d.getMilliseconds();
+		this.cityName = CITIES[this.city].city;
+	}
+});
+
+# template clock using c:ClockController
+	// example from http://www.ractivejs.org/examples/clock/
+	<div class="square">
+		<svg viewBox="0 0 100 100">
+		  <g transform="translate(50,50)">
+		    <circle class="clock-face" r="48"/>
+		    // minute markers 
+        	{foreach idx,m in c.minuteMarkers}
+        		// {foreach i in [1..60]} should be supported in a future version
+          		<line class="{'major':m.major,'minor':!m.major}" y1="{m.major?35:42}" 
+          		y2="45" transform="rotate({360*idx/c.minuteMarkers.length})"/>
+        	{/foreach}
+		    // hour hand
+	        <line class="hour" y1="2" y2="-20" transform="rotate({30*c.hours+c.minutes/2})"/>
+	        // minute hand
+        	<line class="minute" y1="4" y2="-30" transform="rotate({6*c.minutes+c.seconds/10})"/>
+        	// second hand
+        	<g transform="rotate({6*(c.seconds+c.milliseconds*0.001)})">
+	          <line class="second" y1="10" y2="-38"/>
+	          <line class="second-counterweight" y1="10" y2="2"/>
+	        </g>
+		  </g>
+		</svg>
+		<div class="city">{c.cityName}</div>
+	</div>
+# /template
+
+# template demo
+	<#clock city="SFO"/>
+	<#clock city="PAR"/>
+	<#clock city="TYO"/>
+# /template
+
+// display the template in the #output div
+demo().render("output");
