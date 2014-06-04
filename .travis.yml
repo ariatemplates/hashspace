@@ -6,6 +6,8 @@ env:
   global:
     - SAUCE_USERNAME=hashspace
     - SAUCE_ACCESS_KEY=9e47b05c-b1de-43ce-b9f0-dc64a3bc5f35
+    - BROWSER_PROVIDER_READY_FILE=/tmp/sauce-connect-ready
+    - LOGS_DIR=/tmp/logs
     - secure: bGENSGZguDwxsHJu9JyEggr0KhNd9l/RguvlS4zknMV32Hujtt60tsD9X9IKRIO96Fv4loDburOco38SdzezVzd6AS/wsxJsoqD//C2+BXJKzU4MsGXeqS5hx6r2CiTWCnDoIu2QvyK9qiO+Gu0VII76//3pa50m7EVYT79jVxM=
 
 before_install:
@@ -13,9 +15,13 @@ before_install:
  - npm install -g coveralls@2.8.0 &> install-coveralls.log
 
 before_script:
- - curl https://gist.githubusercontent.com/santiycr/5139565/raw/sauce_connect_setup.sh | bash
+ - mkdir -p $LOGS_DIR
+ - chmod -R 777 ./build/sauce/connect_start.sh
+ - ./build/sauce/connect_start.sh
  - export DISPLAY=:99.0
  - sh -e /etc/init.d/xvfb start
+ - chmod -R 777 ./build/sauce/connect_wait.sh
+ - ./build/sauce/connect_wait.sh
 
 script:
  - grunt ci
@@ -24,3 +30,7 @@ after_success:
  - cat test-results/*.info test-results/*/*/*.info | coveralls && echo "Successfully sent coverage to https://coveralls.io"
  - chmod -R 777 ./ci-release.sh
  - ./ci-release.sh
+
+after_script:
+  - chmod -R 777 ./build/sauce/connect_logs.sh
+  - ./build/sauce/connect_logs.sh
