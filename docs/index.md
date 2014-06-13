@@ -55,7 +55,7 @@ And because Hashspace uses a virtual DOM for its computations, these updates are
 We believe in standards and best practices, so we built Hashspace with these in mind so that your code stays as much forward-compatible as possible.
 
 The engine is compatible with [CommonJS dependency management](http://noder-js.ariatemplates.com) principles and the upcoming object.observe() implementation.
-Hashspace components (have a look at the [playground](/playground/) also bring forward the much anticipated web components and make them available to every supported browser today.
+Hashspace components (have a look at the [playground](/playground/)) also bring forward the much anticipated web components and make them available to every supported browser today.
 
 
 ## Robust
@@ -66,7 +66,9 @@ The people behind Hashspace have years of experience in framework design and bui
 
 [CONTENT_END]
 
+---
 
+#### Code Samples
 
-
+To illustrate all these points, we crafted both a dynamic live [playground](/playground/) and an implementation of the [TodoMVC](/todomvc/) application using Hashspace. You can read more information about the todoMVC project [here](http://todomvc.com/).
 

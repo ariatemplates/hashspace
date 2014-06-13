@@ -45,7 +45,7 @@ module.exports = function(grunt) {
                 if (src) {
                     src=(''+src).replace(/\\u0026/gi,"&").replace(/\\u002B/gi,"+").replace(/\\u003F/gi,"?");
                     // compile src
-                    var r=renderer.renderString(src);
+                    var r=renderer.renderString(src, "<inline compilation>");
                     if (r.serverErrors && r.serverErrors.length) {
                         res.send(500,r.serverErrors[0].description);
                     } else {
