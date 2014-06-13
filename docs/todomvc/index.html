@@ -18,27 +18,14 @@
 
 <html>
 <head>
-  <script src="http://noder-js.ariatemplates.com/dist/v1.3.1/noder.dev.min.js">
+  <script src="http://noder-js.ariatemplates.com/dist/v1.3.1/noder.min.js">
     {
       packaging: {
-        baseUrl: "/",
-        preprocessors: [{
-          pattern: /\.hsp$/,
-          module: "hsp/compiler/compile"
-        }, {
-          pattern: /^(?!hsp\/|libs\/).*\.js$/,
-          module: "hsp/transpiler/transpile"
-        }]
-      },
-      resolver: {
-        "default" : {
-          "uglify-js" : "/libs/uglify-js"
-        }
+        baseUrl: "/"
       }
     }
   </script>
   <script src="/dist/<%=version%>/hashspace-noder.min.js" type="text/javascript"></script>
-  <script src="/dist/<%=version%>/hashspace-noder-compiler.min.js" type="text/javascript"></script>
   <link href="todo.css" type="text/css" rel="stylesheet"/>
 </head>
 <body>
@@ -46,7 +33,7 @@
 <div id="todo"></div>
 
 <script type="noder">
-  var todos = require("/todomvc/todo.hsp").todos;
+  var todos = require("/todomvc/todo.hsp.js").todos;
   todos().render("todo");
 </script>
 

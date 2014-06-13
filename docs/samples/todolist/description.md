@@ -17,6 +17,6 @@ The compiled code can be viewed here: [samples/todolist/todolist.hsp][todolist.h
 
 [todolist.hsp]: /samples/todolist/todolist.hsp
 [react]: http://facebook.github.io/react/
-[todomvchsp]: /todomvc
+[todomvchsp]: /todomvc/
 [todomvc]: http://todomvc.com/
 [todomvcgh]: https://github.com/ariatemplates/hashspace/tree/master/docs/todomvc

@@ -35,7 +35,9 @@ module.exports = function(grunt) {
       ],
       DOCS_SAMPLES_GLOB = [ 'samples/**/*' ],
 
-      DOCS_TODOMVC_INDEX = 'todomvc/index.html';
+      DOCS_TODOMVC_INDEX          = 'todomvc/index.html',
+      DOCS_TODOMVC_HSP_GLOB       = ['todomvc/**/*.hsp'],
+      DOCS_TODOMVC_TRANSPILE_GLOB = ['todomvc/*.js'];
 
 
   var pathifyFromDocs = function(path) { return DOCS_PATH + path; };
@@ -66,6 +68,20 @@ module.exports = function(grunt) {
       ]
     }
   });
+
+
+  // Uglify TODOMVC
+  var uglifyConfig = grunt.config("uglify");
+  uglifyConfig.todomvc = {
+    files: [
+      {
+        expand: true,
+        src: [GH_PAGES_PATH + 'todomvc/**/*.hsp.js', GH_PAGES_PATH + 'todomvc/*.js']
+      }
+    ]
+  };
+
+  grunt.config("uglify", uglifyConfig);
 
 
   // Markadown Generation
@@ -144,6 +160,39 @@ module.exports = function(grunt) {
     }
   });
 
+  // TODOMVC precompilation
+  grunt.registerTask("docs:todo-compile", "Precompile all related files for TODOMVC example", function() {
+    var renderer  = require("../../hsp/compiler/renderer"),
+        tranpiler = require("../../hsp/transpiler");
+
+    // Precompiling hsp files
+    grunt.file.expand({ cwd: DOCS_PATH }, DOCS_TODOMVC_HSP_GLOB).forEach(function(file) {
+      grunt.file.copy(pathifyFromDocs(file),
+        GH_PAGES_PATH + file + ".js",
+        {
+          process: function(content) {
+            var compiled = renderer.renderString(content, "inline.js");
+            if (compiled.serverErrors && compiled.serverErrors.length) {
+              grunt.fail.fatal("Hashspace compilation " + compiled.serverErrors[0].description);
+              return false;
+            }
+            return compiled.code;
+          }
+        });
+    });
+
+    //Transpiling javascript files
+    grunt.file.expand({ cwd: DOCS_PATH }, DOCS_TODOMVC_TRANSPILE_GLOB).forEach(function(file) {
+      grunt.file.copy(pathifyFromDocs(file),
+        GH_PAGES_PATH + file,
+        {
+          process: function(content) {
+            var tranpiled = tranpiler.processString(content, "inline.js");
+            return tranpiled.code;
+          }
+        });
+    });
+  });
 
   // Playground Express Server
 
@@ -251,7 +300,7 @@ module.exports = function(grunt) {
 
   grunt.registerTask("docs:dynamic-version", "Bump new version everywhere needed", function() {
     // TodoMVC index.html
-    grunt.file.copy(DOCS_PATH + DOCS_TODOMVC_INDEX,
+    grunt.file.copy(pathifyFromDocs(DOCS_TODOMVC_INDEX),
       GH_PAGES_PATH + '/' + DOCS_TODOMVC_INDEX,
       {
         process: function(content, filepath) {
@@ -264,7 +313,7 @@ module.exports = function(grunt) {
   // Watching stuff...
 
   grunt.registerTask("docs:watch", "Watching any file where local website should be rebuild", function() {
-    var watchConfig      = grunt.config("watch");
+    var watchConfig = grunt.config("watch");
 
     grunt.log.subhead("Expanding original watch config...");
     watchConfig.docs_markdown = {
@@ -295,13 +344,19 @@ module.exports = function(grunt) {
 
   // Public tasks definition
 
+  grunt.registerTask("docs:todo-package", [
+    "docs:todo-compile",
+    "uglify:todomvc"
+  ]);
+
   grunt.registerTask("docs:prepare", [
     "docs:setup",
     "atpackager:uglify",
     "docs:copy-statics",
     "docs:dynamic-version",
     "less:docs",
-    "markdown:docs"
+    "markdown:docs",
+    "docs:todo-package"
   ]);
 
   grunt.registerTask("docs:playground", [
