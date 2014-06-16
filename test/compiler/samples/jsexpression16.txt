@@ -91,7 +91,7 @@
 ##### Syntax Tree:
 [
   {
-    "type": "template","name": "test","args": ["person"],"export": false,"startLine": 1,"endLine": 5,
+    "type": "template","name": "test","args": ["person"],"isExport": false,"startLine": 1,"endLine": 5,
     "content": [
       {
         "type": "element",

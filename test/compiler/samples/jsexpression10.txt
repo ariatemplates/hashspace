@@ -12,7 +12,7 @@
     "type": "template",
     "name": "hello",
     "args": [ "person", "foo", "bar" ],
-    "export": false,
+    "isExport": false,
     "startLine": 1,
     "endLine": 3,
     "content": [

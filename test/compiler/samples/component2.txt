@@ -35,7 +35,7 @@
       "path": ["foo","ComponentController"],
       "code": "foo.ComponentController"
     },
-    "export": false,
+    "isExport": false,
     "startLine": 2,
     "endLine": 4,
     "content": [

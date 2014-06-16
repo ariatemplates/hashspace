@@ -17,7 +17,7 @@
 
 [ 
   { type: 'plaintext', value: '\n'},
-  { type: 'template', name: 'hello4', export:true, args: [], content: [
+  { type: 'template', name: 'hello4', isExport:true, args: [], content: [
     { type: 'text', value: 'Hello World!' } 
   ]}
 ]

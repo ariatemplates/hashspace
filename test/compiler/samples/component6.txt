@@ -47,7 +47,7 @@
 ##### Syntax Tree:
 [
   {
-    "type": "template","name": "test","args": [],"export": false,"startLine": 1,"endLine": 7,
+    "type": "template","name": "test","args": [],"isExport": false,"startLine": 1,"endLine": 7,
     "content": [
       {
         "type": "component","closed": false,"ref": {"category": "objectref","path": ["panel"],"code": "panel"},

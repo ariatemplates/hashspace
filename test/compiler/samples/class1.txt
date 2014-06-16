@@ -55,7 +55,7 @@
 ##### Syntax Tree
 [
   {
-    "type": "template","name": "test","args": ["msg"],"export": false, "content": [
+    "type": "template","name": "test","args": ["msg"],"isExport": false, "content": [
       {
         "type": "element","name": "div","closed": false,"attributes": [
           {

@@ -45,7 +45,7 @@
 ##### Syntax Tree:
 [
   {
-    "type": "template","name": "test","args": ["person"],"export": false,"startLine": 1,"endLine": 3,
+    "type": "template","name": "test","args": ["person"],"isExport": false,"startLine": 1,"endLine": 3,
     "content": [
       {
         "type": "textblock",

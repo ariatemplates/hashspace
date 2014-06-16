@@ -72,7 +72,7 @@
     "type": "template",
     "name": "test",
     "args": ["value"],
-    "export": false,
+    "isExport": false,
     "content": [
       { "type": "if",
         "condition": {

@@ -47,7 +47,7 @@
     "args": [
       "name"
     ],
-    "export": false,
+    "isExport": false,
     "content": [
       {
         "type": "textblock",

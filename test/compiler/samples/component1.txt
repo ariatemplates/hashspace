@@ -50,7 +50,7 @@
     "type": "template",
     "name": "foo",
     "args": [],
-    "export": false,
+    "isExport": false,
     "content": [
       { "type": "text","value": "foo " },
       {

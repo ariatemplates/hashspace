@@ -62,7 +62,7 @@ exports["template"] = function (node, walker) {
     walker.templates[templateName] = templateCode;
 
     var exportString = '';
-    if (node.export === true) {
+    if (node.isExport === true) {
         exportString = ' =exports.' + templateName;
     }
 

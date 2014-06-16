@@ -60,7 +60,7 @@
     "type": "template",
     "name": "test",
     "args": ["x"],
-    "export": false,
+    "isExport": false,
     "startLine": 1,
     "endLine": 9,
     "content": [

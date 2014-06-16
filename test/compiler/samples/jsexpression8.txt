@@ -30,7 +30,7 @@
 ##### Syntax Tree:
 [
   {
-    "type": "template","name": "hello","args": ["person","property"],"export": false,"startLine": 1,"endLine": 3,
+    "type": "template","name": "hello","args": ["person","property"],"isExport": false,"startLine": 1,"endLine": 3,
     "content": [
       {
         "type": "textblock",
