@@ -1,6 +1,7 @@
 var YAML = require('js-yaml');
 var express = require('express');
-
+var path = require("path");
+var fs = require('fs');
 
 var app = express();
 var yamlheadsep = /(\s*?\-+\s*\n)/g;
@@ -84,7 +85,7 @@ module.exports = function(grunt) {
   grunt.config("uglify", uglifyConfig);
 
 
-  // Markadown Generation
+  // Markdown Generation
 
   function extractYamlHeader(src, context) {
     var splits = src.split(yamlheadsep), yamlheader, markdown = src;
@@ -194,8 +195,18 @@ module.exports = function(grunt) {
     });
   });
 
-  // Playground Express Server
+  function compileHashspace(req, res, suffix) {
+    var renderer  = require("../../hsp/compiler/renderer");
+    var content = fs.readFileSync(suffix + req.url, "utf8");
+    var r = renderer.renderString(content, req.url.substring(req.url.lastIndexOf("/") + 1));
+    if (r.serverErrors && r.serverErrors.length) {
+        res.send(500, r.serverErrors[0].description);
+    } else {
+        res.send(200, r.code);
+    }
+  }
 
+  // Playground Express Server
   grunt.registerTask("docs:playground-server", "Launch local version of documentation including playground", function() {
     grunt.config.requires('hspserver.port');
     grunt.config.requires('hspserver.base');
@@ -231,7 +242,24 @@ module.exports = function(grunt) {
     grunt.verbose.ok(runtimePath, 'polyfilled to be empty');
 
     // Proxying /test and /node_modules folders
+    app.use('/test', function(req, res, next) {
+        if (path.extname(req.url) === ".hsp") {
+            compileHashspace(req, res, "test");
+        }
+        else {
+            next();
+        }
+    });
     app.use('/test', express.static('./test'));
+    app.use('/docs', function(req, res, next) {
+        if (path.extname(req.url) === ".hsp") {
+            compileHashspace(req, res, "docs");
+        }
+        else {
+            next();
+        }
+    });
+    app.use('/docs', express.static('./docs'));
     app.use('/node_modules', express.static('./node_modules'));
 
     app.listen(port);
