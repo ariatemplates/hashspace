@@ -16315,7 +16315,7 @@
                         }
                     }
                 }
-                node.export = block.mod === "export";
+                node.isExport = block.mod === "export";
                 node.startLine = block.line;
                 node.endLine = block.endLine;
                 node.content = [];
@@ -17138,7 +17138,7 @@
             walker.resetGlobalRefs();
             walker.templates[templateName] = templateCode;
             var exportString = "";
-            if (node.export === true) {
+            if (node.isExport === true) {
                 exportString = " =exports." + templateName;
             }
             if (node.controller) {
