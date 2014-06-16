@@ -290,6 +290,9 @@ module.exports = function(grunt) {
     grunt.file.copy("tmp/uglify-js.js", GH_PAGES_PATH + 'libs/uglify-js.js');
     grunt.file.delete('tmp', { force: true });
 
+    grunt.file.copy("./node_modules/noder-js/dist/browser/noder.min.js", GH_PAGES_PATH + 'libs/noder.min.js');
+    grunt.file.copy("./node_modules/noder-js/dist/browser/noder.dev.min.js", GH_PAGES_PATH + 'libs/noder.dev.min.js');
+
     grunt.verbose.or.write("Copying images, css, javascript libs...");
     grunt.file.expand({ cwd: DOCS_PATH, filter: "isFile" }, DOCS_STATICS_GLOB).forEach(function(file) {
       grunt.file.copy(DOCS_PATH + file, GH_PAGES_PATH + file);
