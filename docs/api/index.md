@@ -1,7 +1,7 @@
 title: API Reference
 cssclass: api
 mappings:
-  CONTENT_BEGIN: <article class="columns"><div class="column">
+  CONTENT_BEGIN: <article class="columns"><div>
   CONTENT_END: </div></article>
   WIP: <div id="wip">Work in progress</div>
 ---
