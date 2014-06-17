@@ -7,15 +7,7 @@
 hashspace
 =========
 
-Hashspace is a client-side HTML template engine - currently under construction. Its purpose is to provide a powerful and light-weight way to create adanced web-pages containing application logic.
-
-The key targeted features are:
-
-- a simple and natural template syntax thanks to an offline compiler
-- bi-directional data-binding on any HTML element property (attributes and content)
-- light-weight (target: <20kb minified compressed for the runtime library)
-- support of sub-templates and widget libraries
-- support of advanced expressions
+Hashspace is a client-side HTML template engine. Its purpose is to provide a powerful and light-weight way to create adanced web-pages containing application logic. Please visit http://hashspace.ariatemplates.com/ for more information.
 
 Hashspace is composed of 2 main parts:
 
@@ -23,20 +15,7 @@ Hashspace is composed of 2 main parts:
 - a runtime library that interprets the compiled templates dynamically
 
 Please refer to the samples in the unit-tests suites in the `test/compiler` or `test/rt` folders for more details.
-The `docs/samples` folder also contains a pseudo-code implementation of what should be the [todomvc][todomvc] implementation once the minimum set of features are implemented.
-
-
-Currently only some parts of the runtime are developed:
-
-- json wrapper to set properties in a data object and automatically trigger notifications to observer objects
-- text nodes
-- data binding on properties
-- element nodes (e.g. div, span, section, h1...)
-- `{if}` statements
-- `{insert}` statements
-- `{foreach}` statements
-- array data-bindings (i.e. automatic refresh of foreach nodes when the foreach array is changed)
-
+The `docs/todomvc` folder also contains an implementation of the [todomvc][todomvc] application (still to be completed to match the full specifications).
 
 To run and update the samples in a live environment, first run `npm install` and then:
 
@@ -79,6 +58,13 @@ For the browser runtime tests:
 
 - run `grunt tddrt` - this will launch a local webserver and a watch task on your files
 - and access `http://localhost:8000/test/rt` to run the tests in your favorite browsers
+
+## Working on the playground
+
+To work on the playground the most simple option is to open 2 terminal windows:
+
+- one running `grunt docs:playground` to build the playground and launch the webserver
+- another one running `grunt docs:watch` to watch the file changes and copy the changed files to the hashspace-gh-pages folder that is referenced by the webserver launched in the first terminal
 
 [key_features_blog]: http://ariatemplates.com/blog/2012/11/key-features-for-client-side-templates/
 [todomvc]: http://addyosmani.github.com/todomvc/

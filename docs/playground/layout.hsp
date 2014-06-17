@@ -69,7 +69,13 @@ function hideNavHover(event, data) {
     {/if}
     <div class="{ data.navHover ? 'list-hover' : 'list'}">
       {foreach idx,sample in data.samples}
-        <div class="{'item', 'selected': data.sampleIndex === idx}" onclick="{playground.loadSample(idx)}">{sample.title}</div>
+        {if sample.category}
+          <div class="category">{sample.category}</div>
+        {else}
+          <div class="{'item', 'selected': data.sampleIndex === idx}" onclick="{playground.loadSample(idx)}">
+            {sample.title}
+          </div>
+        {/if}
       {/foreach}
     </div>
   </div>
