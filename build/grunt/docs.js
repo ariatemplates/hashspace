@@ -196,14 +196,20 @@ module.exports = function(grunt) {
   });
 
   function compileHashspace(req, res, suffix) {
-    var renderer  = require("../../hsp/compiler/renderer");
-    var content = fs.readFileSync(suffix + req.url, "utf8");
-    var r = renderer.renderString(content, req.url.substring(req.url.lastIndexOf("/") + 1));
-    if (r.serverErrors && r.serverErrors.length) {
-        res.send(500, r.serverErrors[0].description);
-    } else {
-        res.send(200, r.code);
-    }
+      fs.readFile(suffix + req.url, "utf8", function (err, content) {
+          if (err) {
+              res.send(500, err.message);
+          }
+          else {
+              var renderer  = require("../../hsp/compiler/renderer");
+              var r = renderer.renderString(content, req.url.substring(req.url.lastIndexOf("/") + 1));
+              if (r.serverErrors && r.serverErrors.length) {
+                  res.send(500, r.serverErrors[0].description);
+              } else {
+                  res.send(200, r.code);
+              }
+          }
+      });
   }
 
   // Playground Express Server
