@@ -140,20 +140,21 @@ var Playground = module.exports = klass({
     loadSample : function (idx) {
         var spl = samples[idx], self = this, d = this.data;
 
-        if (spl.description) {
-            jx.load("/samples/" + spl.folder + "/" + spl.description, function (error, data) {
-                if (!error) {
-                    var desc = document.getElementById("description");
-                    var h = md.toHTML(data); // 'Hello *World*! [#output] [#snippet 0]'
-                    h = h.replace(/\[\#output\]/i, '<div id="output" class="output"></div><div id="logs" class="logoutput"></div>');
-                    desc.innerHTML = h;
-                    if (!d.errors) {
-                        d.errors = [];
-                    }
-                    layout.errorList(d.errors).render("logs");
-                }
-            });
+        if (!spl.description) {
+            spl.description="description.md";
         }
+        jx.load("/samples/" + spl.folder + "/" + spl.description, function (error, data) {
+            if (!error) {
+                var desc = document.getElementById("description");
+                var h = md.toHTML(data); // 'Hello *World*! [#output] [#snippet 0]'
+                h = h.replace(/\[\#output\]/i, '<div id="output" class="output"></div><div id="logs" class="logoutput"></div>');
+                desc.innerHTML = h;
+                if (!d.errors) {
+                    d.errors = [];
+                }
+                layout.errorList(d.errors).render("logs");
+            }
+        });
 
         d.sampleIndex = idx;
         d.sampleTitle = spl.title;
