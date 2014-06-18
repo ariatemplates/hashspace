@@ -1,23 +1,22 @@
 module.exports = [{
             title : "Hello World",
             folder : "helloworld",
-            description : "description.md",
             files : [{
                         src : "hello.hsp",
                         main : true
                     }]
         }, {
-            title : "Dynamic update: timer example",
+            category:"Getting started",
+        }, {
+            title : "Data-binding: timer example",
             folder : "timer",
-            description : "description.md",
             files : [{
                         src : "timer.hsp",
                         main : true
                     }]
         }, {
-            title : "Simple event handler",
+            title : "Event handlers",
             folder : "clickhandler",
-            description : "description.md",
             files : [{
                         src : "clickhandler.hsp",
                         main : true
@@ -25,15 +24,15 @@ module.exports = [{
         }, {
             title : "Using conditions: if, else, etc.",
             folder : "conditions",
-            description : "description.md",
             files : [{
                         src : "conditions.hsp",
                         main : true
                     }]
         }, {
+            category:"Managing lists",
+        }, {
             title : "Simple list and contextual event handlers",
             folder : "simplelist",
-            description : "description.md",
             files : [{
                         src : "simplelist.hsp",
                         main : true
@@ -41,7 +40,6 @@ module.exports = [{
         }, {
             title : "Dynamic list update",
             folder : "listupdate",
-            description : "description.md",
             files : [{
                         src : "list.hsp",
                         main : true
@@ -49,15 +47,22 @@ module.exports = [{
         }, {
             title : "Dynamic data path: simple grid",
             folder : "dynpath",
-            description : "description.md",
             files : [{
                         src : "dynpath.hsp",
                         main : true
                     }]
         }, {
+            title : "Simple todo list",
+            folder : "todolist",
+            files : [{
+                        src : "todolist.hsp",
+                        main : true
+                    }]
+        }, {
+            category:"Advanced Statements",
+        }, {
             title : "Local variables with {let}",
             folder : "let",
-            description : "description.md",
             files : [{
                         src : "let.hsp",
                         main : true
@@ -65,7 +70,6 @@ module.exports = [{
         }, {
             title : "Modifiers: piped expressions",
             folder : "modifiers",
-            description : "description.md",
             files : [{
                         src : "modifiers.hsp",
                         main : true
@@ -73,7 +77,6 @@ module.exports = [{
         }, {
             title : "Traces, logs and debugging",
             folder : "logs",
-            description : "description.md",
             files : [{
                         src : "logs.hsp",
                         main : true
@@ -81,7 +84,6 @@ module.exports = [{
         }, {
             title : "CSS Class expressions",
             folder : "cssclass",
-            description : "description.md",
             files : [{
                         src : "cssclass.hsp",
                         main : true
@@ -89,7 +91,6 @@ module.exports = [{
         }, {
             title : "Sub-templates",
             folder : "subtemplates",
-            description : "description.md",
             files : [{
                         src : "subtemplates.hsp",
                         main : true
@@ -97,7 +98,6 @@ module.exports = [{
         }, {
             title : "Setting global references: the global object",
             folder : "global",
-            description : "description.md",
             files : [{
                         src : "global.hsp",
                         main : true
@@ -105,15 +105,15 @@ module.exports = [{
         }, {
             title : "Dynamic templates",
             folder : "dyntemplates",
-            description : "description.md",
             files : [{
                         src : "dyntemplates.hsp",
                         main : true
                     }]
         }, {
+            category:"Form elements",
+        }, {
             title : "Input fields with bi-directional bindings",
             folder : "inputsample",
-            description : "description.md",
             files : [{
                         src : "inputsample.hsp",
                         main : true
@@ -121,23 +121,22 @@ module.exports = [{
         }, {
             title : "Multi-line inputs: textarea elements",
             folder : "textarea",
-            description : "description.md",
             files : [{
                         src : "textarea.hsp",
                         main : true
                     }]
         }, {
-            title : "Simple todo list",
-            folder : "todolist",
-            description : "description.md",
+            category:"Components",
+        }, {
+            title : "Basic components: sub-templates",
+            folder : "subtemplates",
             files : [{
-                        src : "todolist.hsp",
+                        src : "subtemplates.hsp",
                         main : true
                     }]
         }, {
             title : "Simple component: Timer",
             folder : "component1",
-            description : "description.md",
             files : [{
                         src : "timer.hsp",
                         main : true
@@ -145,15 +144,13 @@ module.exports = [{
         }, {
             title : "SVG component: Clock",
             folder : "clock",
-            description : "description.md",
             files : [{
                         src : "clock.hsp",
                         main : true
                     }]
         }, {
-            title : "Component with bound properties: Number field",
+            title : "Binding attributes: Number field",
             folder : "component2",
-            description : "description.md",
             files : [{
                         src : "nbrfield.hsp",
                         main : true
@@ -161,15 +158,13 @@ module.exports = [{
         }, {
             title : "Component triggering events: Pagination",
             folder : "component3",
-            description : "description.md",
             files : [{
                         src : "pagination.hsp",
                         main : true
                     }]
         }, {
-            title : "Component with template attributes: Panel",
+            title : "Component with template properties: Panel",
             folder : "panel",
-            description : "description.md",
             files : [{
                         src : "panel.hsp",
                         main : true
@@ -177,7 +172,6 @@ module.exports = [{
         }, {
             title : "Component with sub-elements: List #1",
             folder : "list1",
-            description : "description.md",
             files : [{
                         src : "list.hsp",
                         main : true
@@ -185,7 +179,6 @@ module.exports = [{
         }, {
             title : "Component with sub-elements: List #2",
             folder : "list2",
-            description : "description.md",
             files : [{
                         src : "list.hsp",
                         main : true
@@ -193,7 +186,6 @@ module.exports = [{
         }, {
             title : "Component with sub-elements: Tabbar",
             folder : "tabbar",
-            description : "description.md",
             files : [{
                         src : "tabbar.hsp",
                         main : true
@@ -201,20 +193,19 @@ module.exports = [{
         }, {
             title : "Integrating 3rd party components: Chart.js",
             folder : "thirdpartycpts",
-            description : "description.md",
             files : [{
                         src : "chart.hsp",
                         main : true
                     }]
         }, {
+            category:"Mobile features",
+        },{
             title : "Gestures",
             folder : "gestures",
-            description : "description.md",
             files : [{
                         src : "gestures.hsp",
                         main : true
                     }]
         }
-        // TODO add component with events
 
 ];
