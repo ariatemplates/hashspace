@@ -31,6 +31,6 @@ after_success:
  - chmod -R 777 ./ci-release.sh
  - ./ci-release.sh
 
-after_script:
+after_failure:
   - chmod -R 777 ./build/sauce/connect_logs.sh
   - ./build/sauce/connect_logs.sh
