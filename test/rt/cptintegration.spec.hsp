@@ -41,25 +41,25 @@ var TestCtrl1=klass({
   }
 });
 
-# template test1 using c:TestCtrl1
+{template test1 using c:TestCtrl1}
   Hello
   <div class="foo">
     Blah
   </div>
   <div class="bar" title="hello"></div>
-# /template
+{/template}
 
-# template test2
+{template test2}
   <div class="bar" title="foo1"></div>
   <#test1/>
   <div class="bar" title="foo2"></div>
-# /template
+{/template}
 
-# template test3(d)
+{template test3(d)}
   {if d.ok}
     <#test1 value="{d.input}"/>
   {/if}
-# /template
+{/template}
 
 
 describe("External component integration", function () {

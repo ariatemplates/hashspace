@@ -1,9 +1,9 @@
 ##### Template:
-# template test(person)
+{template test(person)}
   <div title="{person.name+"!"|bar:1+2|foo}">
     hello
   </div>
-# /template
+{/template}
 
 ##### Parsed Tree:
 [

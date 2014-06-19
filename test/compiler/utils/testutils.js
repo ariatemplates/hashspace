@@ -190,8 +190,8 @@ function jsonContains (big, small, optKey) {
                 if (big && big.replace && small === big.replace(/\r/g, "")) {
                     return "";
                 }
-                return "Different value found for " + optKey + " : '" + escapeNewLines(small) + "' found insted of '"
-                        + escapeNewLines(big) + "'";
+                return "Different value found for " + optKey + " : '" + escapeNewLines(big) + "' found instead of '"
+                        + escapeNewLines(small) + "'";
             }
             return "";
         }

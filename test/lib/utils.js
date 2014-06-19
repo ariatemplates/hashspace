@@ -16,7 +16,7 @@ var codeGenerator = require("../../compiler/codeGenerator");
  */
 exports.parse = function (template) {
     try {
-        var parsedContent = parser.parse(["# template test()", template, "# /template"].join("\n"));
+        var parsedContent = parser.parse(["{template test()}", template, "{/template}"].join("\n"));
 
         // there's only one template
         return parseTree.create(parsedContent[0]);

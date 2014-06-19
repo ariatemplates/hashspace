@@ -4,10 +4,10 @@ function foo() {
     return x;
 }
 
-# template test(person)
+{template test(person)}
     <div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
         <span>Hello {person.name}!</span>
     </div>
-# /template
+{/template}
 
 ##### Errors:

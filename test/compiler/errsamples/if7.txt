@@ -1,10 +1,10 @@
 ##### Template:
-# template hello(person)
+{template hello(person)}
     blah
     {else if foo}
         blah
     {/if}
-# /template
+{/template}
 
 ##### Error:
 [

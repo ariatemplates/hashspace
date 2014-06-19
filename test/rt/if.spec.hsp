@@ -17,13 +17,13 @@
 var hsp=require("hsp/rt"),
     json=require("hsp/json");
 
-# template test1(person)
+{template test1(person)}
     {if (person.firstName)}
         Hello {person.firstName}
     {/if}
-# /template
+{/template}
 
-# template test2(person)
+{template test2(person)}
     {if person.firstName}
         <h2>Hello {person.firstName}</h2>
         {if (person.favouriteDish)}
@@ -34,34 +34,34 @@ var hsp=require("hsp/rt"),
             Hello {person.lastName}
         </div>
     {/if}
-# /template
+{/template}
 
-# template test3(person)
+{template test3(person)}
     Hello 
     {if person.firstName}
         {person.firstName}!
     {/if}
-# /template
+{/template}
 
-# template test4(person)
+{template test4(person)}
     Hello 
     // test literal as if parameter - even if it doesn't really make sense, should still be supported - e.g. for debugging purposes
     {if (true)}
         {person.firstName}!
     {/if}
-# /template
+{/template}
 
-# template test5(data)
+{template test5(data)}
   {if (data.value === "test" || data.value===false || data.value===null || data.value===123)} 
     Hello
   {/if}
-# /template
+{/template}
 
-# template test6
+{template test6}
   {if (!false)} 
     Hello
   {/if}
-# /template
+{/template}
 
 
 describe("If Node", function () {

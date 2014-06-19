@@ -1,7 +1,7 @@
 ##### Template:
-# template hello(person,property)
+{template hello(person,property)}
   {person[person.name].foo}
-# /template
+{/template}
 
 ##### Parsed Tree:
 "skip"

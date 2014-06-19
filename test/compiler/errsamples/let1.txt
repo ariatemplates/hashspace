@@ -1,12 +1,12 @@
 ##### Template:
-# template hello(person)
+{template hello(person)}
   // This is OK
   {let p=person}
   <div class="foo">
     This is KO
     {let p2=person}
   </div>
-# /template
+{/template}
 
 ##### Error:
 [

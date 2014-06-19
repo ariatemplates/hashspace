@@ -16,36 +16,36 @@
 var hsp=require("hsp/rt"),
     json=require("hsp/json");
 
-# template hello1()
+{template hello1()}
     Hello World!
-# /template
+{/template}
 
-# template hello2(person)
+{template hello2(person)}
     Hello {person.name}!
-# /template
+{/template}
 
-# template hello3(person)
+{template hello3(person)}
     Hello {person.firstName} {person.lastName}!
-# /template
+{/template}
 
 // same as hello3 but with unbound variable on the lastName
-# template hello4(person)
+{template hello4(person)}
     Hello {person.firstName} {:person.lastName}!
-# /template
+{/template}
 
 // same as hello3 but with a string parameter
-# template hello5(name)
+{template hello5(name)}
     Hello {name}!
-# /template
+{/template}
 
 var globalValue="foo";
-# template hello6()
+{template hello6()}
     {globalValue}
-# /template
+{/template}
 
-# template hello7(d)
+{template hello7(d)}
     {concat(d.firstName,d.lastName)}
-# /template
+{/template}
 
 function concat(x,y) {
     return x+"-"+y;
@@ -56,16 +56,16 @@ function compare(x,y) {
     return r;
 }
 
-# template hello8(d)
+{template hello8(d)}
     {if compare(d.firstName,d.lastName)}
         OK
     {/if}
-# /template
+{/template}
 
 var globalValueInt=0;
-# template hello9()
+{template hello9()}
     {globalValueInt}
-# /template
+{/template}
 
 
 describe("Text Nodes", function () {

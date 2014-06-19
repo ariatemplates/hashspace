@@ -1,11 +1,11 @@
 ##### Template:
-# template test(label, passengers)
+{template test(label, passengers)}
   <div>
     {foreach k,name in passengers.names}
       x
     {/foreach}
   </div>
-# /template
+{/template}
 
 ##### Parsed Tree
 

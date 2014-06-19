@@ -1,7 +1,7 @@
 ##### Template:
-# template test
+{template test}
     Hello<br>World</br>
-# /template
+{/template}
 
 ##### Errors:
 [

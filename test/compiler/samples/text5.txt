@@ -1,7 +1,7 @@
 ##### Template:
-# template hello(person)
+{template hello(person)}
 	<div>{person.name}</div>
-# /template
+{/template}
 
 ##### Parsed Tree:
 [

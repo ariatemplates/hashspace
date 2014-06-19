@@ -30,16 +30,16 @@ var Cpt1 = klass({
   }
 });
 
-# template cpt1 using c:Cpt1
+{template cpt1 using c:Cpt1}
   <input type="text" value="{c.value}"/>
-# /template
+{/template}
 
-# template test(d)
+{template test(d)}
   <#cpt1 value="{d.value}" max="{d.max}" defaultvalue="{d.defaultvalue}"/>
   <input type="text" value="{d.value}"/>
   <input type="text" value="{d.max}"/>
   <input type="text" value="{d.defaultvalue}"/>
-# /template
+{/template}
 
 var checks=[], lastInitValue=null, dataValue=null;
 var Cpt2 = klass({ 
@@ -60,17 +60,17 @@ var Cpt2 = klass({
   }
 });
 
-# template cpt2 using c:Cpt2
+{template cpt2 using c:Cpt2}
   <input type="text" value="{c.value}"/>
-# /template
+{/template}
 
-# template test2(d)
+{template test2(d)}
   <#cpt2 value="{d.value}" initvalue="10"/>
-# /template
+{/template}
 
-# template test3(d)
+{template test3(d)}
   <#cpt2 value="{d.value}" data="{d.data}"/>
-# /template
+{/template}
 
 var setFieldValue=function(field,value) {
   // helper function

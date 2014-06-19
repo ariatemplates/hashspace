@@ -14,7 +14,7 @@ var ListController = klass({
 });
 
 // simple list template
-# template list using lc:ListController
+{template list using lc:ListController}
   // content is the list of attribute sub-elements
   <div class="list {lc.class}">
     {if lc.head}
@@ -34,10 +34,10 @@ var ListController = klass({
         </ul>
     {/if}
   </div>
-# /template
+{/template}
 
 // test template
-# template test(d)
+{template test(d)}
   <#list head="Static list" class="listcpt">
     <@option>First {d.itemName}</@option>
     <@option>Second {d.itemName}</@option>
@@ -58,7 +58,7 @@ var ListController = klass({
       <@option>{idx+1}. {itm}</@option>
     {/foreach}
   </#list>
-# /template
+{/template}
 
 var count=0, model={
   itemName: "item",

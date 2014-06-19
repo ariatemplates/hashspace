@@ -1,8 +1,8 @@
 ##### Template:
-# template test(value)
+{template test(value)}
   {(value=="a")? value : (value===3)}
   {value==="W"? "World" : "You"}
-# /template
+{/template}
 
 ##### Parsed Tree
 

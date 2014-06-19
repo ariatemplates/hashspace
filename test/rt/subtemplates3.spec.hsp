@@ -25,11 +25,11 @@ var removeItem = function (items, index) {
    items.splice(index, 1);
 };
 
-# template displayItem(itms, idx)
+{template displayItem(itms, idx)}
     <li onclick="{removeItem(itms, 0)}">Remove #{idx}</li>
-# /template
+{/template}
 
-# template list(items)
+{template list(items)}
     <ul>
         {foreach index,curItem in items}
             {if true}
@@ -39,31 +39,31 @@ var removeItem = function (items, index) {
         {/foreach}
     </ul>
     <a onclick="{addItem(items)}">Add item</a>
-# /template
+{/template}
 
-# template item(value)
+{template item(value)}
     Value: {value}
-# /template
+{/template}
 
-# template test1(m)
+{template test1(m)}
     <div class="content">
         <#item value="{m.prop.value}"/>
     </div>
-# /template
+{/template}
 
-# template innerTemplate(data)
+{template innerTemplate(data)}
     {if data.checked}[x]{else}[ ]{/if} Checked
-# /template
+{/template}
 
-# template intermediateTemplate(data)
+{template intermediateTemplate(data)}
   <#innerTemplate data="{data}"/>
-# /template 
+{/template} 
 
-# template test2(data)
+{template test2(data)}
   <div class="content">
     <#data.template data="{data}"/>
   </div>
-# /template
+{/template}
 
 
 describe("Sub- and parent- template scope interactions", function () {

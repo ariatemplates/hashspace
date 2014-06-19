@@ -24,12 +24,12 @@ function changeValue (data,val) {
     $set(data.object,"value",val);
 }
 
-# template test1(data) 
+{template test1(data) }
     <input class="in1" type="text" value="{data.object.value}" />
     <input class="in2" type="text" value="{data.object.value}" />
-# /template
+{/template}
 
-# template header(document)
+{template header(document)}
   <div class="title"> 
       {if document && document.title}
         {document.title}
@@ -37,26 +37,26 @@ function changeValue (data,val) {
         Untitled document
       {/if}
   </div>
-# /template
+{/template}
 
-# template test2(data)
+{template test2(data)}
    <#header document="{data.document}" />
-# /template
+{/template}
 
 
-# template title(document)
+{template title(document)}
   {if document && document.title}
     {document.title}
   {else}
     No title
   {/if}
-# /template
+{/template}
 
-# template test3(data)
+{template test3(data)}
   <div class="content">
     <#title document="{data.document}" />
   </div>
-# /template
+{/template}
 
 describe("Expression Bindings", function () {
     var INPUT1=".in1", INPUT2=".in2";

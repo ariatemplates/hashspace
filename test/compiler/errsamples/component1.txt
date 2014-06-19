@@ -1,9 +1,9 @@
 ##### Template:
-# template test(person)
+{template test(person)}
     <#lib.panel title="Some text">
         foo bar
     </#lib.pan>
-# /template
+{/template}
 
 ##### Errors:
 [

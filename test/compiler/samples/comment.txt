@@ -1,16 +1,16 @@
 ##### Template:
-# template hello(world)
+{template hello(world)}
 	Hello // comment 1
 	World!
 	{if (world)} // comment 2
 	   <!-- another comment
 	   on multiple 
 	   lines 
-	   # /template
+	   {/template}
 	   -->
 	   ...
 	{/if}
-# /template
+{/template}
 
 ##### Parsed Tree
 
@@ -27,7 +27,7 @@
       {"type": "text","value": " "},
       {"type": "comment","value": " comment 2"},
       {"type": "text","value": " "},
-      {"type": "comment","value": " another comment\n\t   on multiple \n\t   lines \n\t   # /template\n\t   "},
+      {"type": "comment","value": " another comment\n\t   on multiple \n\t   lines \n\t   {/template}\n\t   "},
       {"type": "text","value": " ... "},
       {"type": "endif"}
     ]

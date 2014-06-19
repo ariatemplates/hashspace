@@ -20,7 +20,7 @@ var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester"),
     klass=require("hsp/klass");
 
-# template test1(label,names)
+{template test1(label,names)}
     {foreach (name in names)}
         <span class="name">
             {label} {name_key}: {name} ({:name.length} chars)
@@ -29,9 +29,9 @@ var hsp=require("hsp/rt"),
             Number of items: {:names.length}
         {/if}
     {/foreach}
-# /template
+{/template}
 
-# template test2(ds)
+{template test2(ds)}
     {foreach idx,person in ds.persons}
         Person #{idx}: {person.firstName} {person.lastName}
         {if (person_isfirst)}
@@ -41,15 +41,15 @@ var hsp=require("hsp/rt"),
             (last)
         {/if}
     {/foreach}
-# /template
+{/template}
 
-# template test3(things) 
+{template test3(things) }
     {foreach (oneThing in things)}
         {oneThing}
     {/foreach}
-# /template
+{/template}
 
-# template test4(things)
+{template test4(things)}
     {foreach oneThing in things}
         {if oneThing_isfirst}
             First
@@ -63,15 +63,15 @@ var hsp=require("hsp/rt"),
         {oneThing}
         <br/>
     {/foreach}
-# /template
+{/template}
 
-# template test5(persons) 
+{template test5(persons) }
     {foreach person in persons}
         {person.name}
     {/foreach}
-# /template
+{/template}
 
-# template test6(itemsList)
+{template test6(itemsList)}
     {foreach item in itemsList}
         {if item.edit}
             <input type="text" value="{item.value}">
@@ -79,19 +79,19 @@ var hsp=require("hsp/rt"),
             <span>{item.value}</span>
         {/if}
     {/foreach}
-# /template
+{/template}
 
 var items=[
     {value:"Iteam A"},
     {value:"Item B"}
 ];
-# template test7
+{template test7}
     {foreach item in items}
         <div class="itm">
             {item.value}
         </div>
     {/foreach}
-# /template
+{/template}
 
 var Sorter=klass({
     $constructor:function(property) {
@@ -121,7 +121,7 @@ var Sorter=klass({
     }
 });
 
-# template test8(d)
+{template test8(d)}
     <div class="section2">
         {let fnSorter=new Sorter("firstName")}
         <ol>
@@ -135,9 +135,9 @@ var Sorter=klass({
             Toggle sort order (current: {fnSorter.ascending? "ascending" : "descending"})
         </a>
     </div>
-# /template
+{/template}
 
-# template test9(d,ppName)
+{template test9(d,ppName)}
     <div class="section2">
         {let fnSorter=new Sorter("firstName")}
         <ol>
@@ -151,7 +151,7 @@ var Sorter=klass({
             Toggle sort order (current: {fnSorter.ascending? "ascending" : "descending"})
         </a>
     </div>
-# /template
+{/template}
 
 describe("ForEach Node", function () {
     function test1Count (arrayLength) {

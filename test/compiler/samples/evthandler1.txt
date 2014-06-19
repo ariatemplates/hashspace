@@ -1,9 +1,9 @@
 ##### Template:
-# template test(path, ctl, person)
+{template test(path, ctl, person)}
 	<img src="http://someting.com/{path}" onclick="{ctl.handleClick()}"/>
 	<img onclick="{ctl.handleClick(path, person.name, "literal arg", event)}"/>
 	<img onclick="{doClick('blah',event)}"/>
-# /template
+{/template}
 
 ##### Parsed Tree
 

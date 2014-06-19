@@ -20,26 +20,26 @@ var hsp=require("hsp/rt"),
     log=require("hsp/rt/log"),
     ht=require("hsp/utils/hashtester");
 
-# template test1(d)
+{template test1(d)}
     Some text
     <div class="foo">
         Blah
         {log d.value}
     </div>
-# /template
+{/template}
 
-# template test2(d)
+{template test2(d)}
     <div class="foo">
         ...
         {log d.value1, d.value2}
     </div>
-# /template
+{/template}
 
-# template test3(cities)
+{template test3(cities)}
     {foreach idx,city in cities}
         {log idx+":", scope}
     {/foreach}
-# /template
+{/template}
 
 describe("Log statement", function () {
   

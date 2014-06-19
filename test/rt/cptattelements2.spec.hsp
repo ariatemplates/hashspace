@@ -37,20 +37,20 @@ var ExpandCollapseController = klass({
     }
 });
 
-# template expandCollapse using c:ExpandCollapseController
+{template expandCollapse using c:ExpandCollapseController}
     {if c.visible}
         <a onclick="{c.hide()}">Hide</a><br/>
         <#c.body />
     {else}
         <a onclick="{c.show()}">Show</a><br/>
     {/if}
-# /template
+{/template}
 
-# template test(data)
+{template test(data)}
     <#expandCollapse>
         <span class="content">My content</span>
     </#expandCollapse>
-# /template
+{/template}
 
 
 var LINK="a";

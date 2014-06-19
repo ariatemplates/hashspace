@@ -1,4 +1,4 @@
-# template inputSample(data)
+{template inputSample(data)}
     <div class="info2">All the following inputs are synchronized:</div>
     <div class="section">
         Comment #1: <input type="text" value="{data.comment}"/><br/>
@@ -29,7 +29,7 @@
         <input type="{data.dtype}" value="{data.comment}" style="width:100px"/> -
         change type: <input type="text" value="{data.dtype}" style="width:100px"/>
     </div>
-# /template
+{/template}
 
 var d={comment:"edit me!", isChecked:false, selection:"B", dtype:"text"}
 

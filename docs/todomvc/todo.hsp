@@ -19,7 +19,7 @@ var TodoUICtrl=require("./todoctrl").TodoUICtrl;
 /**
  * Main TODO template
  */
-# export template todos using c:TodoUICtrl
+{export template todos using c:TodoUICtrl}
 	<section id="todoapp" onselectstart="return false;">
 		<header id="header">
 			<h1>todos</h1>
@@ -65,7 +65,7 @@ var TodoUICtrl=require("./todoctrl").TodoUICtrl;
 		</p>
 		<p>Should be soon part of <a href="http://todomvc.com">TodoMVC</a></p>
 	</footer>
-# /template
+{/template}
 
 
 /**
@@ -73,7 +73,7 @@ var TodoUICtrl=require("./todoctrl").TodoUICtrl;
  * @param todo the todo data model
  * @param c the general controller
  */
-# template todoItem(todo, c) 
+{template todoItem(todo, c)}
 	<li class="{'completed':todo.completed, 'editing':todo.editMode}">
 		{if todo.editMode}
 			<form onsubmit="{c.doneEditing(todo)}" class="editform">
@@ -88,7 +88,7 @@ var TodoUICtrl=require("./todoctrl").TodoUICtrl;
 			</div>
 		{/if}
 	</li>
-# /template
+{/template}
 
 
 /**
@@ -97,10 +97,10 @@ var TodoUICtrl=require("./todoctrl").TodoUICtrl;
  * @param {String} filter the corresponding filter code used in the data model - e.g. "all"
  * @param c the general controller
  */
-# template filterLink(label, filter, c)	
+{template filterLink(label, filter, c)}
 	<li>
 		<a onclick="{c.selectFilter(filter)}" title="{label}" class="{label} {'selected':c.filter===filter}">
 			{label}
 		</a>
 	</li>
-# /template
+{/template}

@@ -1,7 +1,7 @@
 ##### Template:
-# template hello(person)
+{template hello(person)}
     {foo[2].bar["hello"]]} Hello World!
-# /template
+{/template}
 
 ##### Errors:
 [

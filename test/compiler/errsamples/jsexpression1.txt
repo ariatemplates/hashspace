@@ -1,9 +1,9 @@
 ##### Template:
-# template test(value)
+{template test(value)}
     {if !(++value)}
         Hello
     {/if}
-# /template
+{/template}
 
 ##### Error:
 [

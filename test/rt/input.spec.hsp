@@ -18,7 +18,7 @@ var hsp=require("hsp/rt"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     json=require("hsp/json");
 
-# template inputSample(data)
+{template inputSample(data)}
     <div class="info section">All the following inputs are synchronized:</div>
     <div class="section">
         Comment #1: <input type="text" value="{data.comment}"/><br/>
@@ -41,18 +41,18 @@ var hsp=require("hsp/rt"),
         <label for="rb3">Select C</label> -
         Selection in model: <span class="textValue">{data.selection}</span>
     </div>
-# /template
+{/template}
 
-# template enterEmptiesFieldSample(object)
+{template enterEmptiesFieldSample(object)}
     <div class="info section">Please type a command and press enter.</div>
     <pre>{object.commandsHistory}</pre>
     <input type="text" value="{object.value}" onkeydown="{object.keydown(event)}" placeholder="Your command"><br>
     <input type="text" model="{object.value}" onkeydown="{object.keydown(event)}" placeholder="Your command"><br>
-# /template
+{/template}
 
-# template html5NumberInput(model)
+{template html5NumberInput(model)}
     <div><input type="number" model="{model.value}"/></div>
-# /template
+{/template}
 
 describe("Input Elements", function () {
     it("input model sync", function () {

@@ -1,5 +1,5 @@
 ##### Template:
-# template hello(person)
+{template hello(person)}
   <div class="foo">
     {let p=person} // OK
     <span>
@@ -15,7 +15,7 @@
     </span>
   </div>
   {let p=person} // KO
-# /template
+{/template}
 
 ##### Error:
 [

@@ -1,9 +1,9 @@
 ##### Template:
 
-# template test(d)
+{template test(d)}
   <input type="text" value="{d.value}"/>
   <#lib.nbrfield value="{d.value}" min="-10" max="10" onreset="{notifyReset(123)}"/>
-# /template
+{/template}
 
 ##### Parsed Tree:
 "skip"
