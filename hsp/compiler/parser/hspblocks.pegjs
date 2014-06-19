@@ -64,7 +64,7 @@ TemplateEnd "template end statement"
 
 TemplateContent "template content" // TODO: CSSClassExpression
   = _ blocks:(  TplTextBlock 
-                / CommentBlock / HTMLCommentBlock
+                / CommentBlock / MultiCommentBlock / HTMLCommentBlock
                 / IfBlock / ElseIfBlock / ElseBlock / EndIfBlock 
                 / ForeachBlock / EndForeachBlock
                 / HTMLElement / EndHTMLElement
@@ -88,7 +88,7 @@ TplTextChar "text character"
   / EOL &TemplateEnd {return ""}  // ignore last EOL
   / EOL _ {return " "}
   / "#" !(_ "\/template") {return "#"}
-  / "\/" !"/" {return "/"}
+  / "\/" c:[^/\*] {return "/"+c}
   / "\\/" {return "/"}
   / "\\//" {return "//"}
   / "\\<" {return "<"}
@@ -116,6 +116,10 @@ EndIfBlock
 
 CommentBlock
   = _ "\/\/" chars:[^\r\n]* &EOL
+  {return {type:"comment", value:chars.join('')}}
+
+MultiCommentBlock
+  = "/*" chars:((!"*/" c:.) {return c})* "*/"
   {return {type:"comment", value:chars.join('')}}
 
 HTMLCommentBlock

@@ -1,14 +1,16 @@
 ##### Template:
 # template hello(world)
-	Hello // comment 1
-	World!
+	Hel / lo // comment 1
+	World! /* this is a
+	multi line
+	comment */
 	{if (world)} // comment 2
 	   <!-- another comment
 	   on multiple 
 	   lines 
 	   # /template
 	   -->
-	   ...
+	   ... Escaping \/* works *\/
 	{/if}
 # /template
 
@@ -20,15 +22,17 @@
     "name": "hello",
     "args": ["world"],
     "content": [
-      {"type": "text","value": "Hello "},
+      {"type": "text","value": "Hel / lo "},
       {"type": "comment","value": " comment 1"},
       {"type": "text","value": " World! "},
+      {"type": "comment","value": " this is a\n\tmulti line\n\tcomment "},
+      {"type": "text","value": " "},
       {"type": "if", "condition": {type:"Variable", category:"jsexpression", name:"world"}},
       {"type": "text","value": " "},
       {"type": "comment","value": " comment 2"},
       {"type": "text","value": " "},
       {"type": "comment","value": " another comment\n\t   on multiple \n\t   lines \n\t   # /template\n\t   "},
-      {"type": "text","value": " ... "},
+      {"type": "text","value": " ... Escaping /* works */ "},
       {"type": "endif"}
     ]
   }
@@ -43,7 +47,7 @@
     "content": [
       {
         "type": "text",
-        "value": "Hello  World! "
+        "value": "Hel / lo  World!  "
       },
       {
         "type": "if",
@@ -54,13 +58,13 @@
           "path": [
             "world"
           ],
-          "line": 4,
+          "line": 6,
           "column": 6
         },
         "content1": [
           {
             "type": "text",
-            "value": "   ... "
+            "value": "   ... Escaping /* works */ "
           }
         ]
       }
@@ -70,8 +74,8 @@
 
 ##### Template Code
 hello=[
-  n.$text(0,["Hello  World!"]),
+  n.$text(0,["Hel / lo  World!"]),
   n.$if( {e1:[1,1,"world"]}, 1, [ 
-      n.$text(0,["   ... "])
+      n.$text(0,["   ... Escaping /* works */ "])
   ])
 ]
