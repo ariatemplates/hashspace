@@ -1,7 +1,7 @@
 ##### Template:
-# template test(value)
+{template test(value)}
   {value+2+"a"}
-# /template
+{/template}
 
 ##### Parsed Tree
 

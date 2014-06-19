@@ -1,7 +1,7 @@
 ##### Template:
-# template hello(foo)
+{template hello(foo)}
 	{foo[2].bar["hello"]} Hello
-# /template
+{/template}
 
 ##### Parsed Tree:
 "skip"

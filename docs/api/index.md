@@ -40,13 +40,13 @@ TBD
 
 #### Template definition
 
-Inside an `.hsp` file, you can define a template using `#template` statement. A single `.hsp` can define multiple templates.
+Inside an `.hsp` file, you can define a template using `{template}` statement. A single `.hsp` can define multiple templates.
 
 ```cs
-#template tplname(arg1, arg2)
+{template tplname(arg1, arg2)}
   //your template code goes here
   <div>Hello world</div>
-#/template
+{/template}
 ```
 
 A template has the following properties:
@@ -75,7 +75,7 @@ This statement is a block statement.
 Note that as a kind of alternative, in some cases a ternary expression can be used instead of the statement.
 
 ```cs
-# template example(context)
+{template example(context)}
   Number is:
   {if context.number < 0}
     negative
@@ -85,7 +85,7 @@ Note that as a kind of alternative, in some cases a ternary expression can be us
     null
   {/if}
   &nbsp;({context.number === 0 ? 'null' : context.number}).
-# /template
+{/template}
 ```
 
 ---
@@ -99,13 +99,13 @@ This statement is a block statement.
 Note that the statement creates its own local environment containing the reference to the current value and possibly the one to the current index.
 
 ```cs
-# template example(array)
+{template example(array)}
   <ul>
   {foreach index, value in array}
     <li onclick="{process(value)}">{index}: {value}</li>
   {/foreach}
   </ul>
-# /template
+{/template}
 ```
 
 ---
@@ -156,9 +156,9 @@ It will forward all the given parameters, and add its own metadata with the foll
 * `column`: the column number in which the statement appears on the line
 
 ```cs
-# template example()
+{template example()}
   {log scope}
-# /template
+{/template}
 ```
 
 ---
@@ -181,7 +181,7 @@ The scope of the created variable is the container block in which the statement 
 `{let}` statements __MUST__ appear at the beginning of the blocks in which they are used!
 
 ```hashspace
-# template example()
+{template example()}
   {let tpl = "Variable in template environment"}
 
   <div>
@@ -199,12 +199,12 @@ The scope of the created variable is the container block in which the statement 
   {foreach value in container}
     {let foreach_ = "Variable in foreach environment"}
   {/foreach}
-# /template
+{/template}
 ```
 
 ---
 
-#### Component template definitions `#template mycpt using ctrl:MyController`
+#### Component template definitions `{template mycpt using ctrl:MyController}`
 
 Defines a component, that is a template tied to a specific _class_ to be used as controller.
 
@@ -225,7 +225,7 @@ The above means mainly two important things:
 * parameters of the template (equivalent of element attributes) are __passed by name__, not by position
 * it not only instantiates the template but also renders it automatically in a DOM element inserted exactly where the statement is used
 
-There is also an additional subtlety regarding the passing of the parameters. As said, they are passed by name, so if you use `<tplref arg1="..." />` for a template defined like this `# template(whatever, arg1)`, `arg1` will be properly passed, wherever it is defined in the parameters list. However the actual subtlety resides in the __first__ parameter of the function: if it doesn't match any attribute name, it is not left `undefined` as one could think. Instead, it refers to an object built from the attribute/value pairs. In our little example, `whatever` would refer to an object like this: `{arg1: "..."}`. This is implicitely due to the internal way hashspace is managing components instantiation (components are discussed later in this documentation).
+There is also an additional subtlety regarding the passing of the parameters. As said, they are passed by name, so if you use `<tplref arg1="..." />` for a template defined like this `{template(whatever, arg1)}`, `arg1` will be properly passed, wherever it is defined in the parameters list. However the actual subtlety resides in the __first__ parameter of the function: if it doesn't match any attribute name, it is not left `undefined` as one could think. Instead, it refers to an object built from the attribute/value pairs. In our little example, `whatever` would refer to an object like this: `{arg1: "..."}`. This is implicitely due to the internal way hashspace is managing components instantiation (components are discussed later in this documentation).
 
 __Reference__:
 
@@ -338,9 +338,9 @@ This means that instead of giving a piece of JavaScript code to be executed in t
 Event handlers have a particularity though: in your function call, you can pass the `event` object to your handler function. This `event` object is implicitly available in the context of your expression, but it is not automatically passed, so you need to explicitly pass it if you want to have it available in your function.
 
 ```cs
-# template example()
+{template example()}
   <span onclick="{handler(event)}">Click me</span>
-# /template
+{/template}
 
 function handler(event) {
   // ...
@@ -517,14 +517,14 @@ Hashspace natively supports different types of attributes:
   ```
 
   ```cs
-  #template mycpt using ctrl:MyCpt
+  {template mycpt using ctrl:MyCpt}
     <header>
       <#ctrl.header />
     </header>
     <section>
       <#ctrl.body />
     </section>
-  #/template
+  {/template}
   ```
 
   In terms of usage, it would be done with several different syntaxes:
@@ -673,13 +673,13 @@ var Controller = klass({
   }
 });
 
-# template example using controller:Controller
+{template example using controller:Controller}
   <div>
     <span></span>
   </div>
   Ignored text
   <hr />
-# /template
+{/template}
 ```
 
 ---

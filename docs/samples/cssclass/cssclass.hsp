@@ -1,4 +1,4 @@
-# template message(msg)
+{template message(msg)}
     // onselectstart: prevent double-click selection on a elements
     <div onselectstart="return false"> 
         <a onclick="{toggleUrgency()}">Change Urgency</a> - 
@@ -11,7 +11,7 @@
             Class value: "{'msg', 'urgent':msg.urgency, msg.category}"
         </div>
     </div>
-# /template
+{/template}
 
 var msg={
     text:"Hello World",

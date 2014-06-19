@@ -19,35 +19,35 @@ function foo(arg1,arg2) {
     return arg1+arg2;
 }
 
-# template test1(d)
+{template test1(d)}
     <div class="content">Value: {d.person[d.pp]}</div>
-# /template
+{/template}
 
-# template test2(d)
+{template test2(d)}
     <div class="content">Value: {d.person[d.pp1+d.pp2]}</div>
-# /template
+{/template}
 
-# template test3(d)
+{template test3(d)}
     <div class="content">Value: {d.person[foo(d.pp1,d.pp2)].value}</div>
-# /template
+{/template}
 
-# template test4(d)
+{template test4(d)}
     <div class="content">Value: {d.person[d[d.prop]].value}</div>
-# /template
+{/template}
 
-# template test5(d)
+{template test5(d)}
     <div class="content" title="{d.person[d.pp1][d.pp2]}">...</div>
-# /template
+{/template}
 
-# template test6(d)
+{template test6(d)}
     <div class="content">
         {if d.person[d.pp+"Name"].value === d.condition}TRUE{else}FALSE{/if}
     </div>
-# /template
+{/template}
 
-# template test7(d)
+{template test7(d)}
     <input type="text" model="{d.person[d.pp]}">
-# /template
+{/template}
 
 describe("Dynamic path expressions", function () {
     var C=".content";

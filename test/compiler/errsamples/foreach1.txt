@@ -1,8 +1,8 @@
 ##### Template:
-# template test(things)
+{template test(things)}
   Foreach test:
   {foreach (thing inm things)} - {thing} - {/foreach}
-# /template
+{/template}
 
 ##### Errors:
 [

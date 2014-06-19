@@ -1,13 +1,13 @@
 var fireEvent = require("hsp/utils/eventgenerator").fireEvent,
     fireKeydownEventAdaptedForKeyNav = require("hsp/utils/eventgenerator").fireKeydownEventAdaptedForKeyNav;
 
-# template testEventGenerator(ctl)
+{template testEventGenerator(ctl)}
     <div onclick="{ctl.handleOtherClick()}"  onkeydown="{ctl.handleOtherKeyDown()}" style="display:none;">
         <div id="testZone" ionclick="{ctl.handleClick()}"  onkeydown="{ctl.handleKeyDown()}" >
         </div>
         <input id="testInput" type="text" onfocus="{ctl.handleFocus()}"/>
     </div>
-# /template
+{/template}
 
 describe("Event generator utils", function () {
     it("tests event generation", function () {

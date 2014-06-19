@@ -1,7 +1,7 @@
 ##### Template:
-# template test(person)
+{template test(person)}
     <img onclick="{123}"/>
-# /template
+{/template}
 
 ##### Errors:
 [

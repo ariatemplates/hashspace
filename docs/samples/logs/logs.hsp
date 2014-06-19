@@ -1,6 +1,6 @@
 var log=require("hsp/rt/log");
 
-# template test(cities, logs)
+{template test(cities, logs)}
   {log "top-level:",scope}
   <a onclick="{increaseList()}">Increase list</a> - 
   <a onclick="{decreaseList()}">Decrease list</a> - 
@@ -22,7 +22,7 @@ var log=require("hsp/rt/log");
       {/foreach}
     </ul>
   </div>
-# /template
+{/template}
 
 // register new logger
 var logs=[];

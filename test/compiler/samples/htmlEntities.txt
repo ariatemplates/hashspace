@@ -1,7 +1,7 @@
 ##### Template:
-# template test()
+{template test()}
 &amp;&times;
-# /template
+{/template}
 
 ##### Parsed Tree
 [

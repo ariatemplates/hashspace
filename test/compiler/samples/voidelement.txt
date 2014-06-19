@@ -1,5 +1,5 @@
 ##### Template:
-# template test
+{template test}
     Hello<br>World
     <area>
     <base>
@@ -15,7 +15,7 @@
     <source>
     <track>
     <wbr>
-# /template
+{/template}
 
 ##### Parsed Tree
 [

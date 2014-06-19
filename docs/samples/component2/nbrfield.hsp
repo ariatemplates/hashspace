@@ -70,23 +70,23 @@ function getNumber(s) {
 }
 
 // component template associated with the NbrField controller
-# export template nbrfield using c:NbrField
+{export template nbrfield using c:NbrField}
   <span class="nbrfield">
     <input type="text" model="{c.internalValue}" 
     class="{'nbrfield', 'error': !c.isValid}"/>
     <button onclick="{c.resetField()}">reset</button>
   </span>
-# /template
+{/template}
 
 // component usage
-# template test(d)
+{template test(d)}
   Component #1: <#nbrfield value="{d.value1}" min="-10" max="1000"/><br/>
   Value in the data model: <span class="textValue">{d.value1}</span> 
   (min:-10 / max:1000 / default:0)
   <hr/>
   Component #2: <#nbrfield value="{d.value2}"/><br/>
   Value in the data model: <span class="textValue">{d.value2}</span>
-# /template
+{/template}
 
 // display the template in the #output div
 test({value1:123}).render("output");

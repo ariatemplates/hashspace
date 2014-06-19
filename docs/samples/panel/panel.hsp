@@ -8,7 +8,7 @@ var PanelController = klass({
 });
 
 // sample panel template
-# template panel using c:PanelController
+{template panel using c:PanelController}
   <div class="panel">
     {if c.head}
       <div class="head"> <#c.head/> </div>
@@ -17,9 +17,9 @@ var PanelController = klass({
       <#c.body/>
     </div>
   </div>
-# /template
+{/template}
 
-# template test(m)
+{template test(m)}
   <#panel body="Panel A (headless): {m.text}"/>
 
   <#panel head="Panel B ({m.text}!)">
@@ -30,7 +30,7 @@ var PanelController = klass({
     <@head>Panel C: <a onclick="{update(10)}">Update model</a></@head>
     <@body>{m.text}! <a onclick="{update(100)}">Update model</a></@body>
   </#panel>
-# /template
+{/template}
 
 var model={text:"Hello World"}, count=0;
 

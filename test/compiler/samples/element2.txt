@@ -1,10 +1,10 @@
 ##### Template:
-# template test(person)
+{template test(person)}
 	<div title="Some text">
 		<b>Some text in <span class="test">bold</span></b>
 		<input type="text" value="{person.name}"/>
 	</div>
-# /template
+{/template}
 
 ##### Parsed Tree
 

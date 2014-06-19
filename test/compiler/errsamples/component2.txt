@@ -1,11 +1,11 @@
 ##### Template:
-# template test(person)
+{template test(person)}
     <#lib.panel title="Some text">
       <@lib.head>
         foo
       </@lib.head>
     </#lib.panel>
-# /template
+{/template}
 
 ##### Errors:
 [

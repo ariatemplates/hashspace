@@ -17,9 +17,9 @@
 var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 
-# template test1(data)
+{template test1(data)}
     <textarea rows="4" cols="40"  model="{data.text}"/>
-# /template
+{/template}
 
 // normalize carriage returns to avoic OS discrepancies
 function normalizeCR(s) {

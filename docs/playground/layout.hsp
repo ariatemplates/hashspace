@@ -1,7 +1,7 @@
 
 var splitter = require("./splitter.hsp");
 
-# export template mainLayout(data, playground)
+{export template mainLayout(data, playground)}
   <#sampleList data="{data}" playground="{playground}"/>
 
   <div class="{'hsp-sample', 'hsp-sample-full': data.navCollapsed}" onclick="{hideNavHover(event, data)}">
@@ -22,7 +22,7 @@ var splitter = require("./splitter.hsp");
       </div>
     </div>
   </div>
-# /template
+{/template}
 
 function splitterReleased(position, data, playground) {
   data.splitterPos = position + "px";
@@ -56,7 +56,7 @@ function hideNavHover(event, data) {
   }
 }
 
-# template sampleList(data, playground)
+{template sampleList(data, playground)}
   <div class="{'samples-list', 'samples-list-collapsed': data.navCollapsed}"
     onclick="{hideNavHover(event, data)}">
     <a href="" class="collapse" title="{data.navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}" onclick="{collapseNav(event, data, playground)}"><span class="icon"></span></a>
@@ -79,9 +79,9 @@ function hideNavHover(event, data) {
       {/foreach}
     </div>
   </div>
-# /template
+{/template}
 
-# export template errorList(errors)
+{export template errorList(errors)}
     {if errors && errors.length}
         <div class="errorlist">
             <ul>
@@ -104,4 +104,4 @@ function hideNavHover(event, data) {
             </ul>
         </div>
     {/if}
-# /template
+{/template}

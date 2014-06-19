@@ -1,9 +1,9 @@
 ##### Template:
-# template test(person)
+{template test(person)}
   {if person.name|acceptEmpty}
     hello
   {/if}
-# /template
+{/template}
 
 ##### Parsed Tree:
 "skip"

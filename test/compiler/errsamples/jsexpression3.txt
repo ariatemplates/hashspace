@@ -1,7 +1,7 @@
 ##### Template:
-# template test(person)
+{template test(person)}
   {person.name|foo:}
-# /template
+{/template}
 
 ##### Error:
 [

@@ -16,63 +16,63 @@
 
 var ht=require("hsp/utils/hashtester");
 
-# template test1(c)
+{template test1(c)}
     <div class="content">
         Before -
         <#c.tpl/> 
         - After
     </div>
-# /template
+{/template}
 
-# template contentA
+{template contentA}
     This is contentA 
-# /template
+{/template}
 
-# template contentB
+{template contentB}
     This is contentB 
-# /template
+{/template}
 
-# template contentC
+{template contentC}
     This is contentC 
-# /template
+{/template}
 
-# template test2(c)
+{template test2(c)}
     <div class="content">
         Before -
         <#c.a.b.tpl/> 
         - After
     </div>
-# /template
+{/template}
 
-# template test3(c)
+{template test3(c)}
     <div class="content">
         Before -
         <#c.tpl msg="{c.txt}"/> 
         - After
     </div>
-# /template
+{/template}
 
-# template contentA2(msg)
+{template contentA2(msg)}
     contentA2: {msg} 
-# /template
+{/template}
 
-# template contentB2(msg)
+{template contentB2(msg)}
     contentB2: {msg} 
-# /template
+{/template}
 
 var ctxt={
     tpl:contentA2,
     msg:"hello"
 }
-# template test4(ctxt)
+{template test4(ctxt)}
     <div class="content">
         Before -
         <#ctxt.tpl msg="{ctxt.msg}"/> 
         - After
     </div>
-# /template
+{/template}
 
-# template test5(c)
+{template test5(c)}
     {let x=c.a}
     <div class="content">
         {let y=x.b}
@@ -80,7 +80,7 @@ var ctxt={
         <#y.tpl/> 
         - After
     </div>
-# /template
+{/template}
 
 describe("Dynamic template insertion", function () {
     it("validates dynamic insertion with no template argument", function() {

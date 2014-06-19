@@ -1,8 +1,8 @@
 ##### Template:
-# template hello(person)
+{template hello(person)}
     {if person.isAdult}
         Hello
-# /template
+{/template}
 
 ##### Error:
 [

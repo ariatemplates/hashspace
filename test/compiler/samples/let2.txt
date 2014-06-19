@@ -1,10 +1,10 @@
 ##### Template:
-# template test(value)
+{template test(value)}
   <div class="foo">
     // Some comment
     {let aVarName = value.nbr, anotherName = blah}
   </div>
-# /template
+{/template}
 
 ##### Parsed Tree
 "skip"

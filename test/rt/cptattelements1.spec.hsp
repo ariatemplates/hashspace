@@ -27,7 +27,7 @@ PanelController = klass({
 });
 
 // sample panel template
-# template panel using c:PanelController
+{template panel using c:PanelController}
   <div class="panel">
     {if c.head}
       <div class="head">
@@ -41,64 +41,64 @@ PanelController = klass({
       <div class="footer">TODO</div>
     {/if}
   </div>
-# /template
+{/template}
 
-# template test1(m)
+{template test1(m)}
   Sample panel:
   <#panel>
     <@body>
       {m.text}!
     </@body>
   </#panel>
-# /template
+{/template}
 
-# template test2()
+{template test2()}
   Sample panel:
   <#panel body="Hello World!"/>
-# /template
+{/template}
 
-# template test3(m)
+{template test3(m)}
   Sample panel:
   <#panel body="{m.text}!"/>
-# /template
+{/template}
 
-# template test4(m)
+{template test4(m)}
   Sample panel:
   <#panel>{m.text}!</#panel>
-# /template
+{/template}
 
-# template test5(m)
+{template test5(m)}
   Sample panel:
   <#m.panel><@body>{m.text}!</@body></#m.panel>
-# /template
+{/template}
 
-# template test6(m)
+{template test6(m)}
   Sample panel:
   <#m.panel>{m.text}!!!</#m.panel>
-# /template
+{/template}
 
-# template test7(m)
+{template test7(m)}
   Sample panel:
   <#m.panel>
   {if true}{m.text}!{/if} <hr/> {m.text} <a>Update model</a>
   </#m.panel>
-# /template
+{/template}
 
-# template test8(m)
+{template test8(m)}
   Sample panel:
   <#m.panel>
     {if true}{m.text}!{/if}
     <@body>foo <a>Update model</a> </@body>
   </#m.panel>
-# /template
+{/template}
 
-# template panel2 using c:PanelController
+{template panel2 using c:PanelController}
   <div class="panel">
     <div class="body">
       Body content: <#c.body/>
     </div>
   </div>
-# /template
+{/template}
 
 var TestCtl=klass({
       attributes:{
@@ -106,15 +106,15 @@ var TestCtl=klass({
     }
 })
 
-# template item using c:TestCtl
+{template item using c:TestCtl}
     Value: {c.value}
-# /template
+{/template}
 
-# template test7(m)
+{template test7(m)}
   <div class="content">
     <#item value="{m.prop.value}"/>
   </div>
-# /template
+{/template}
 
 var HEAD=".panel .head";
 var BODY=".panel .body";

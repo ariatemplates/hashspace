@@ -1,9 +1,9 @@
 ##### Template:
-# template test(person)
+{template test(person)}
     foo
     {content("First Name", person.firstName}
     bar
-# /template
+{/template}
 
 ##### Errors:
 [

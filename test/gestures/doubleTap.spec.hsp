@@ -20,11 +20,11 @@
 var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
 
-# template test1(ctl)
+{template test1(ctl)}
     <div title="test1" ondoubletap="{ctl.handleEvent(event)}" ondoubletapstart="{ctl.handleEvent(event)}" ondoubletapcancel="{ctl.handleEvent(event)}">
         Hello!
     </div>
-# /template
+{/template}
 
 describe("DoubleTap gesture", function () {
 

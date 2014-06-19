@@ -5,9 +5,9 @@
 In hashspace, compiling means transforming a template from the specific syntax into a javascript string.
 For example, this template
 ```
-# template hello(person)
+{template hello(person)}
     Hello {person.name}!
-# /template
+{/template}
 ```
 becomes `n.$text({e1:[1,2,"person","name"]},["Hello ",1,"!"])`
 
@@ -21,9 +21,9 @@ The compilation is in fact a 3 steps process:
 ### Sample ###
 Initial template:
 ```
-# template hello(person)
+{template hello(person)}
     Hello {person.name}!
-# /template
+{/template}
 ```
 
 Parser output:
