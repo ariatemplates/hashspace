@@ -1,4 +1,4 @@
-# template gestures(msgList)
+{template gestures(msgList)}
     <div class="touchboard" style="height:200px; background: #27AAFC;text-align:center;" 
     	ontap="{addMsg(event)}" ontapstart="{addMsg(event)}" ontapcancel="{addMsg(event)}"
         onlongpress="{addMsg(event)}" onlongpressstart="{addMsg(event)}" onlongpresscancel="{addMsg(event)}"
@@ -15,7 +15,7 @@
     		<div>{msg}</div>
     	{/foreach}
     </div>
-# /template
+{/template}
 
 var eventLog = [];
 

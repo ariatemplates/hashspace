@@ -1,4 +1,4 @@
-# template grid(data)
+{template grid(data)}
     <div> 
         {foreach idx in data.rows}
             <div>
@@ -16,7 +16,7 @@
     <a onclick="{update()}">Update columns B&C</a>
     &nbsp;-&nbsp;
     <a onclick="{swapC()}">Show/Hide columns C</a>
-# /template
+{/template}
 
 // create dummy data
 var list=[], count=5;

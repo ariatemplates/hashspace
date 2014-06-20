@@ -54,11 +54,11 @@ Simply require the template file, and specify the <code>div</code> reference to 
 <p>TBD</p>
 <h2 id="template-statements">Template statements</h2>
 <h4 id="template-definition">Template definition</h4>
-<p>Inside an <code>.hsp</code> file, you can define a template using <code>#template</code> statement. A single <code>.hsp</code> can define multiple templates.</p>
-<pre><code class="lang-cs"><span class="preprocessor">#template tplname(arg1, arg2)</span>
+<p>Inside an <code>.hsp</code> file, you can define a template using <code>{template}</code> statement. A single <code>.hsp</code> can define multiple templates.</p>
+<pre><code class="lang-cs">{template tplname(arg1, arg2)}
   <span class="comment">//your template code goes here</span>
   &lt;div&gt;Hello world&lt;/div&gt;
-<span class="preprocessor">#/template</span></code></pre>
+{/template}</code></pre>
 <p>A template has the following properties:</p>
 <ul>
 <li><strong>a name</strong>: the name of the local reference to the template</li>
@@ -74,7 +74,7 @@ Simply require the template file, and specify the <code>div</code> reference to 
 <p>You can define conditional parts of a template using the <code>{if}/{else if}/{else}</code> statements.</p>
 <p>This statement is a block statement.</p>
 <p>Note that as a kind of alternative, in some cases a ternary expression can be used instead of the statement.</p>
-<pre><code class="lang-cs"><span class="preprocessor"># template example(context)</span>
+<pre><code class="lang-cs">{template example(context)}
   Number <span class="keyword">is</span>:
   {<span class="keyword">if</span> context.number &lt; <span class="number">0</span>}
     negative
@@ -84,19 +84,19 @@ Simply require the template file, and specify the <code>div</code> reference to 
     <span class="keyword">null</span>
   {/<span class="keyword">if</span>}
   &amp;nbsp;({context.number === <span class="number">0</span> ? <span class="string">'null'</span> : context.number}).
-<span class="preprocessor"># /template</span></code></pre>
+{/template}</code></pre>
 <hr>
 <h4 id="loops-foreach-">Loops <code>{foreach}</code></h4>
 <p>Use the <code>{foreach value in array}</code> or <code>{foreach index, value in array}</code> expression to iterate over an array.</p>
 <p>This statement is a block statement.</p>
 <p>Note that the statement creates its own local environment containing the reference to the current value and possibly the one to the current index.</p>
-<pre><code class="lang-cs"><span class="preprocessor"># template example(array)</span>
+<pre><code class="lang-cs">{template example(array)}
   &lt;ul&gt;
   {<span class="keyword">foreach</span> index, <span class="keyword">value</span> <span class="keyword">in</span> array}
     &lt;li onclick=<span class="string">"{process(value)}"</span>&gt;{index}: {<span class="keyword">value</span>}&lt;/li&gt;
   {/<span class="keyword">foreach</span>}
   &lt;/ul&gt;
-<span class="preprocessor"># /template</span></code></pre>
+{/template}</code></pre>
 <hr>
 <h4 id="html-elements-div-class-div-">html elements <code>&lt;div class=&quot;&quot;&gt;...&lt;/div&gt;</code></h4>
 <p>Templates contain enhanced HTML elements.</p>
@@ -125,9 +125,9 @@ Simply require the template file, and specify the <code>div</code> reference to 
 <li><code>line</code>: the line number in which the statement appears in the file</li>
 <li><code>column</code>: the column number in which the statement appears on the line</li>
 </ul>
-<pre><code class="lang-cs"><span class="preprocessor"># template example()</span>
+<pre><code class="lang-cs">{template example()}
   {log scope}
-<span class="preprocessor"># /template</span></code></pre>
+{/template}</code></pre>
 <hr>
 <h4 id="scoped-variables-let-myvar-1-2-3-">Scoped variables <code>{let myvar = [1, 2, 3]}</code></h4>
 <p>Creates local variables in the current environment.</p>
@@ -141,7 +141,7 @@ Simply require the template file, and specify the <code>div</code> reference to 
 <li><code>{foreach}</code> block</li>
 </ul>
 <p><code>{let}</code> statements <strong>MUST</strong> appear at the beginning of the blocks in which they are used!</p>
-<pre><code class="lang-hashspace"><span class="preprocessor"># template example()</span>
+<pre><code class="lang-hashspace">{template example()}
   {<span class="keyword">let</span> tpl = <span class="string">"Variable in template environment"</span>}
 
   &lt;div&gt;
@@ -159,9 +159,9 @@ Simply require the template file, and specify the <code>div</code> reference to 
   {<span class="keyword">foreach</span> <span class="keyword">value</span> <span class="keyword">in</span> container}
     {<span class="keyword">let</span> foreach_ = <span class="string">"Variable in foreach environment"</span>}
   {/<span class="keyword">foreach</span>}
-<span class="preprocessor"># /template</span></code></pre>
+{/template}</code></pre>
 <hr>
-<h4 id="component-template-definitions-template-mycpt-using-ctrl-mycontroller-">Component template definitions <code>#template mycpt using ctrl:MyController</code></h4>
+<h4 id="component-template-definitions-template-mycpt-using-ctrl-mycontroller-">Component template definitions <code>{template mycpt using ctrl:MyController}</code></h4>
 <p>Defines a component, that is a template tied to a specific <em>class</em> to be used as controller.</p>
 <p>A template is considered as a component as soon as it uses the <code>using</code> keyword. The latter defines which class to use to build an instance of the controller, and under which name this instance will be referred inside the template.</p>
 <p>Controllers are just a specific kind of class whose features are focused on interaction with templates. More information on what controllers really are and how they work is available in a <a href="#interfaces">dedicated section</a> in this documentation.</p>
@@ -174,7 +174,7 @@ Simply require the template file, and specify the <code>div</code> reference to 
 <li>parameters of the template (equivalent of element attributes) are <strong>passed by name</strong>, not by position</li>
 <li>it not only instantiates the template but also renders it automatically in a DOM element inserted exactly where the statement is used</li>
 </ul>
-<p>There is also an additional subtlety regarding the passing of the parameters. As said, they are passed by name, so if you use <code>&lt;tplref arg1=&quot;...&quot; /&gt;</code> for a template defined like this <code># template(whatever, arg1)</code>, <code>arg1</code> will be properly passed, wherever it is defined in the parameters list. However the actual subtlety resides in the <strong>first</strong> parameter of the function: if it doesn&#39;t match any attribute name, it is not left <code>undefined</code> as one could think. Instead, it refers to an object built from the attribute/value pairs. In our little example, <code>whatever</code> would refer to an object like this: <code>{arg1: &quot;...&quot;}</code>. This is implicitely due to the internal way hashspace is managing components instantiation (components are discussed later in this documentation).</p>
+<p>There is also an additional subtlety regarding the passing of the parameters. As said, they are passed by name, so if you use <code>&lt;tplref arg1=&quot;...&quot; /&gt;</code> for a template defined like this <code>{template(whatever, arg1)}</code>, <code>arg1</code> will be properly passed, wherever it is defined in the parameters list. However the actual subtlety resides in the <strong>first</strong> parameter of the function: if it doesn&#39;t match any attribute name, it is not left <code>undefined</code> as one could think. Instead, it refers to an object built from the attribute/value pairs. In our little example, <code>whatever</code> would refer to an object like this: <code>{arg1: &quot;...&quot;}</code>. This is implicitely due to the internal way hashspace is managing components instantiation (components are discussed later in this documentation).</p>
 <p><strong>Reference</strong>:</p>
 <p>Note also that the statement is not expecting a simple template name, it takes a reference to it. The syntax limits it to be a simple reference access (which means that it can&#39;t be returned by a function call, that the ternary operator can&#39;t be used, etc.)</p>
 <p><strong>Using a template as a container</strong>:</p>
@@ -233,9 +233,9 @@ Please refer to their specific <a href="#elements">section</a> for more informat
 <p>Event handler attributes of HTML elements accept function expressions.</p>
 <p>This means that instead of giving a piece of JavaScript code to be executed in the global environment, you can use the standard call mechanisms, in the environment of the current module (file).</p>
 <p>Event handlers have a particularity though: in your function call, you can pass the <code>event</code> object to your handler function. This <code>event</code> object is implicitly available in the context of your expression, but it is not automatically passed, so you need to explicitly pass it if you want to have it available in your function.</p>
-<pre><code class="lang-cs"><span class="preprocessor"># template example()</span>
+<pre><code class="lang-cs">{template example()}
   &lt;span onclick=<span class="string">"{handler(event)}"</span>&gt;Click me&lt;/span&gt;
-<span class="preprocessor"># /template</span>
+{/template}
 
 function handler(<span class="keyword">event</span>) {
   <span class="comment">// ...</span>
@@ -350,14 +350,14 @@ function handler(<span class="keyword">event</span>) {
     body: { type: <span class="string">"template"</span>, defaultcontent: <span class="literal">true</span> }
   }
 });</code></pre>
-<pre><code class="lang-cs"><span class="preprocessor">#template mycpt using ctrl:MyCpt</span>
+<pre><code class="lang-cs">{template mycpt <span class="keyword">using</span> ctrl:MyCpt}
   &lt;header&gt;
     &lt;<span class="preprocessor">#ctrl.header /&gt;</span>
   &lt;/header&gt;
   &lt;section&gt;
     &lt;<span class="preprocessor">#ctrl.body /&gt;</span>
   &lt;/section&gt;
-<span class="preprocessor">#/template</span></code></pre>
+{/template}</code></pre>
 <p>In terms of usage, it would be done with several different syntaxes:</p>
 <pre><code class="lang-html"><span class="comment">&lt;!-- First one, with header as an attribute, and body as the default content --&gt;</span>
 <span class="tag">&lt;<span class="title">div</span>&gt;</span>
@@ -452,13 +452,13 @@ function handler(<span class="keyword">event</span>) {
   }
 });
 
-<span class="preprocessor"># template example using controller:Controller</span>
+{template example <span class="keyword">using</span> controller:Controller}
   &lt;div&gt;
     &lt;span&gt;&lt;/span&gt;
   &lt;/div&gt;
   Ignored text
   &lt;hr /&gt;
-<span class="preprocessor"># /template</span></code></pre>
+{/template}</code></pre>
 <hr>
 <h5 id="on-lt-attribute-gt-change-newvalue-oldvalue-">on&lt;Attribute&gt;Change(newValue, oldValue)</h5>
 <p>User methods whose names follow a specific pattern, used to react to change events triggered by attributes.</p>

@@ -37,7 +37,7 @@ var Sorter=klass({
     }
 })
 
-# template sample(d)
+{template sample(d)}
     <div class="section2">
         Message in capital letters:
         <span class="textvalue">{d.msg|changeCase:"upper"}</span><br/>
@@ -58,7 +58,7 @@ var Sorter=klass({
             Toggle sort order (current: {fnSorter.ascending? "ascending" : "descending"})
         </a>
     </div>
-# /template
+{/template}
 
 var data={
     msg:"Hello Simpsons!",

@@ -1,10 +1,9 @@
-
 // edit me!
-# template hello(name)
+{template hello(name)}
     <div class="msg">
         Hello {name}!
     </div>
-# /template
+{/template}
 
 // display the template in the #output div
 hello("World").render("output");

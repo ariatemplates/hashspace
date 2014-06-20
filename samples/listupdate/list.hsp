@@ -1,4 +1,4 @@
-# template list(persons)
+{template list(persons)}
     // onselectstart: prevent double-click selection on a elements
     <div onselectstart="return false"> 
         <div class="msg">
@@ -19,7 +19,7 @@
     <div class="msg">
         Number of people in the list: {persons.length}
     </div>
-# /template
+{/template}
 
 var persons=[
 	{firstName:"Homer",lastName:"Simpsons"},
