@@ -52,6 +52,13 @@ function endText(a) {
     <div class="content">{d.sub.fn(d.msg1,d.msg2)}</div>
 {/template}
 
+function InvalidModifier() {}
+
+{template test7(d)}
+    {let modifier=new InvalidModifier()}
+    <div class="content">{d.msg|modifier}</div>
+{/template}
+
 describe("Function expressions", function () {
     var C=".content";
 
@@ -243,6 +250,19 @@ describe("Function expressions", function () {
         h.$set(d.sub,"separator","+");
 
         expect(h(C).text()).to.equal("[hello+world]");        
+
+        h.$dispose();
+    });
+
+    it("validates error in case of invalid object modifier", function() {
+        var h=ht.newTestContext(), d={
+            msg:"hello"
+        };
+        test7(d).render(h.container);
+
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs()[0].message).to.equal("[function expression] Object is not a function or has no apply() method: modifier");
+        h.logs.clear();
 
         h.$dispose();
     });
