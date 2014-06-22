@@ -118,6 +118,9 @@ var Sorter=klass({
     },
     toggleOrder:function() {
         this.ascending=!this.ascending;
+    },
+    apply:function(array) {
+        return this.sort(array);
     }
 });
 
@@ -149,6 +152,22 @@ var Sorter=klass({
         </ol>
         <a class="toggle" onclick="{fnSorter.toggleOrder()}">
             Toggle sort order (current: {fnSorter.ascending? "ascending" : "descending"})
+        </a>
+    </div>
+{/template}
+
+{template test10(d)}
+    <div class="section2">
+        {let nameSort=new Sorter("firstName")}
+        <ol>
+            {foreach p in d.persons|nameSort}
+                <li>
+                    {p.firstName} {p.lastName}
+                </li>
+            {/foreach}
+        </ol>
+        <a class="toggle" onclick="{nameSort.toggleOrder()}">
+            Toggle sort order (current: {nameSort.ascending? "ascending" : "descending"})
         </a>
     </div>
 {/template}
@@ -695,6 +714,62 @@ describe("ForEach Node", function () {
 
         h.$dispose();
     });
+
+    
+    it("validates collection sorting through pipe expression (2)", function() {
+        var h=ht.newTestContext();
+        var data={
+            msg:"Hello Simpsons!",
+            persons:[
+                {firstName:"Homer",lastName:"Simpsons"},
+                {firstName:"Marge",lastName:"Simpsons"},
+                {firstName:"Bart"},
+                {firstName:"Lisa"},
+                {firstName:"Maggy"}
+            ]
+        };
+        // this test uses the apply() method of a sorter object in a pipe expression
+        test10(data).render(h.container);
+
+        expect(h("li").length).to.equal(5);
+
+        expect(h("li").item(0).text()).to.equal("Bart");
+        expect(h("li").item(1).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Lisa");
+        expect(h("li").item(3).text()).to.equal("Maggy");
+        expect(h("li").item(4).text()).to.equal("Marge Simpsons");
+
+        // toggle display
+        h("a.toggle").click();
+
+        expect(h("li").item(4).text()).to.equal("Bart");
+        expect(h("li").item(3).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Lisa");
+        expect(h("li").item(1).text()).to.equal("Maggy");
+        expect(h("li").item(0).text()).to.equal("Marge Simpsons");
+
+        // toggle back
+        h("a.toggle").click();
+
+        expect(h("li").item(0).text()).to.equal("Bart");
+        expect(h("li").item(1).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Lisa");
+        expect(h("li").item(3).text()).to.equal("Maggy");
+        expect(h("li").item(4).text()).to.equal("Marge Simpsons");
+
+        // modify collection
+        data.persons.splice(1,0,{firstName:"Kevin"});
+        h.refresh();
+
+        expect(h("li").length).to.equal(6);
+        expect(h("li").item(0).text()).to.equal("Bart");
+        expect(h("li").item(1).text()).to.equal("Homer Simpsons");
+        expect(h("li").item(2).text()).to.equal("Kevin");
+        expect(h("li").item(3).text()).to.equal("Lisa");
+
+        h.$dispose();
+    });
+
 
 
     it("validates collection sorting through pipe expression and dynamic data reference", function() {
