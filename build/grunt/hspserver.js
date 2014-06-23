@@ -3,8 +3,6 @@ var app = express();
 var server = require('http').createServer(app);
 var path = require("path");
 
-var renderer = require("../../hsp/compiler/renderer");
-
 module.exports = function(grunt) {
     grunt.registerTask('hspserver', 'Start a web server to server compiled templates on the fly', function () {
         grunt.config.requires('hspserver.port');
@@ -26,6 +24,8 @@ module.exports = function(grunt) {
         if (grunt.option('verbose')) {
             app.use(express.logger());
         }
+
+        var renderer = require("../../hsp/compiler/renderer");
 
         // Serve compiled templates through the view engine
         app.engine(ext, renderer.renderFile);
