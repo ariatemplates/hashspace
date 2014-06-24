@@ -1,6 +1,7 @@
 build
 docs
 hashspace-gh-pages
+tests-result
 .idea
 sauce_connect.log
 .gitattributes
