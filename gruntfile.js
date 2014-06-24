@@ -83,7 +83,8 @@ module.exports = function (grunt) {
           'SL_Chrome': {
             base: 'SauceLabs',
             browserName: 'chrome',
-            platform: 'Linux'
+            platform: 'Linux',
+            version: '35'
           },
           'SL_Firefox': {
             base: 'SauceLabs',
@@ -193,7 +194,7 @@ module.exports = function (grunt) {
         singleRun: true,
         browserNoActivityTimeout: 0,
         captureTimeout: 0,
-        browsers: ['SL_Chrome', 'SL_IE_8', 'SL_IE_9', 'SL_Safari_7'],
+        browsers: ['SL_Chrome', 'SL_IE_8', 'SL_IE_9', 'SL_Safari_7', 'SL_Android_4.3'],
         reporters: process.env.TRAVIS_PULL_REQUEST !== 'false' ? ['dots'] : ['dots', 'saucelabs']
       },
       ci2: {
@@ -205,7 +206,7 @@ module.exports = function (grunt) {
         singleRun: true,
         browserNoActivityTimeout: 0,
         captureTimeout: 0,
-        browsers: ['SL_iOS_7', 'SL_Firefox', 'SL_Android_4.3', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6'],
+        browsers: ['SL_iOS_7', 'SL_Firefox', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6'],
         reporters: process.env.TRAVIS_PULL_REQUEST !== 'false' ? ['dots'] : ['dots', 'saucelabs']
       },
       sauce: {
