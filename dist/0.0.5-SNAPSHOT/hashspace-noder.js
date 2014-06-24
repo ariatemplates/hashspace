@@ -1294,7 +1294,7 @@
      * Get the value associated to the expression in a given scope
      */
             getValue: function(vscope, eh, defvalue) {
-                var res = this.executeCb({}, eh, vscope);
+                var res = this.executeCb(null, eh, vscope);
                 return res === undefined || res === null ? defvalue : res;
             },
             /**
@@ -1310,15 +1310,15 @@
                     return log.error("[function expression] Invalid reference: " + info);
                 } else {
                     fn = v.fn;
-                    if (!fn || fn.constructor !== Function) {
+                    if (!fn || !fn.apply || fn.apply.constructor !== Function) {
                         info = this.path ? this.path.join(".") : "";
-                        return log.error("[function expression] Object is not a function: " + info);
+                        return log.error("[function expression] Object is not a function or has no apply() method: " + info);
                     }
                 }
                 // process argument list
                 var cbargs = [];
                 var evt1 = vscope["event"];
-                vscope["event"] = evt;
+                vscope["event"] = evt ? evt : {};
                 var args = this.args;
                 if (args) {
                     for (var i = 0, sz = args.length; sz > i; i += 2) {
@@ -1337,7 +1337,13 @@
                 } else {
                     vscope["event"] = evt1;
                 }
-                return fn.apply(v.scope, cbargs);
+                if (fn.constructor === Function) {
+                    // if the function call corresponds to an event handler, the function context is the current hashspace scope
+                    return fn.apply(v.scope, cbargs);
+                } else {
+                    // fn is an object with the apply() method
+                    return fn.apply.apply(fn, cbargs);
+                }
             },
             /**
      * Return the list of [object,property] pairs that have to be observed null should be returned if nothing should be
@@ -1348,8 +1354,17 @@
                 // call the parent method for the method root
                 var r = DataRefExpr.getObservablePairs.call(this, eh, vscope);
                 // add a new pair to observe the object corresponding to the 'this' context of the function
-                if (this.bound && r && r.length > 1) {
-                    r.push([ r[r.length - 1][0], null ]);
+                if (this.bound && r && r.length >= 1) {
+                    var sz = r.length, lastRefOwner = r[sz - 1][0], lastRef = lastRefOwner[r[sz - 1][1]];
+                    if (lastRef.constructor === Function) {
+                        // lastRef is a function - so we observe all properties of its context
+                        if (sz > 1) {
+                            r.push([ lastRefOwner, null ]);
+                        }
+                    } else {
+                        // lastRef is an object with an apply method - so we observe all properties of this object
+                        r.push([ lastRef, null ]);
+                    }
                 }
                 return r;
             }

@@ -14,7 +14,7 @@ var Sorter=klass({
         this.ascending=true;
         this.pp=property;
     },
-    sort:function(array) {
+    apply:function(array) {
         // copy array
         var arr=[], pp=this.pp, ascending=this.ascending;
         for (var i=0,sz=array.length;sz>i;i++) {
@@ -45,17 +45,17 @@ var Sorter=klass({
         <span class="textvalue">{d.msg|changeCase:"lower"}</span>
     </div>
     <div class="section2">
-        {let fnSorter=new Sorter("firstName")}
+        {let sortByName=new Sorter("firstName")}
         Sorted list:
         <ol>
-            {foreach p in d.persons|fnSorter.sort}
+            {foreach p in d.persons|sortByName}
                 <li>
                     {p.firstName} {p.lastName}
                 </li>
             {/foreach}
         </ol>
-        <a onclick="{fnSorter.toggleOrder()}">
-            Toggle sort order (current: {fnSorter.ascending? "ascending" : "descending"})
+        <a onclick="{sortByName.toggleOrder()}">
+            Toggle sort order (current: {sortByName.ascending? "ascending" : "descending"})
         </a>
     </div>
 {/template}
