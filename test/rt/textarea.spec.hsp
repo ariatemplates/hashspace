@@ -21,7 +21,7 @@ var hsp=require("hsp/rt"),
     <textarea rows="4" cols="40"  model="{data.text}"/>
 {/template}
 
-// normalize carriage returns to avoic OS discrepancies
+// normalize carriage returns to avoid OS discrepancies
 function normalizeCR(s) {
     return s.replace(/\r\n|[\r\n]/gi,"\n");
 }
