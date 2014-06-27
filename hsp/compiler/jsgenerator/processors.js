@@ -66,12 +66,18 @@ exports["template"] = function (node, walker) {
         exportString = ' =exports.' + templateName;
     }
 
+    var hspRef='require("hsp/rt")';
+    if (walker.mode.isGlobal) {
+        hspRef=walker.globalRef; // default: "hsp"
+        exportString=''; // export should be ignored if commonJS is not used
+    }
+
     if (node.controller) {
         var path = node.controller.path;
-        return ['var ', templateName, exportString, ' = require("hsp/rt").template({ctl:[', path[0], ',', walker.each(path, argAsString),
+        return ['var ', templateName, exportString, ' = ',hspRef,'.template({ctl:[', path[0], ',', walker.each(path, argAsString),
                 '],ref:"', node.controller.ref, '"}, function(n){', CRLF, globalsStatementString, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
     } else {
-        return ['var ', templateName, exportString, ' = require("hsp/rt").template([', walker.each(node.args, argAsString),
+        return ['var ', templateName, exportString, ' = ',hspRef,'.template([', walker.each(node.args, argAsString),
                 '], function(n){', CRLF, globalsStatementString, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
     }
 };
