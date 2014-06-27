@@ -101,14 +101,6 @@ describe('Block Parser: ', function () {
         }));
     }
 
-    it('a space between # and template should be optional', function(){
-      var r = compiler.compile([
-        '{template nospaces()}',
-        '{/template}'
-      ].join('\n'), "without_spaces");
-      assert.equal(r.errors.length, 0, "no compilation error");
-    });
-
     it('should allow whitespaces before {template}', function(){
       var r = compiler.compile(
         '\n   {template spacesBefore()}\n' +
@@ -120,12 +112,10 @@ describe('Block Parser: ', function () {
         var r = compiler.compile(
             '\n   { export  template spacesBefore()}\n' +
                 ' {/template}', "spacesBefore");
-        console.log(r.errors);
         assert.equal(r.errors.length, 0, "no compilation error");
     });
 
     it('should fail with a clear err message if a mandatory argument is not provided', function(){
-
         assert.throws(function() {
             compiler.compile('');
         }, /The template content to compile is mandatory./);
@@ -135,7 +125,7 @@ describe('Block Parser: ', function () {
         }, /The template "path" argument is mandatory./);
     });
 
-    it('validates full compiled template', function () {
+    it('validates full compiled template in commonJS mode', function () {
         var sample = ut.getSampleContent("template1");
         var r = compiler.compile(sample.template, "template1");
 
@@ -164,7 +154,56 @@ describe('Block Parser: ', function () {
         assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "", "line map comparison");
     });
 
-    it('validates full compiled template with export', function () {
+    it('validates full compiled template in global variable mode', function () {
+        var sample = ut.getSampleContent("template1");
+        var r = compiler.compile(sample.template, "template1", {mode:"global"});
+
+        var s = [jsgenerator.HEADER,
+            'var x="text1";',
+            'function func() {var x="text2"};',
+            '',
+            'var hello1 = hsp.template([], function(n){',
+            '  return [n.$text(0,["Hello World!"])];',
+            '});',
+            '',
+            '// comment', 'function func2(z) {return z;}',
+            '',
+            'var hello1bis = hsp.template(["arg1","arg2"], function(n){',
+            '  return [n.$text(0,["Hello Again!"])];',
+            '});',
+            'var z;'].join("\n");
+
+        assert.equal(r.errors.length, 0, "no compilation error");
+        assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
+
+        var lm = [0, 6, 7, 8, 9, 9, 9, 14, 15, 16, 17, 18, 18, 18, 18, 23];
+        assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "", "line map comparison");
+    });
+
+    it('validates full compiled template in global variable mode with a different globalRef', function () {
+        var sample = ut.getSampleContent("template1");
+        var r = compiler.compile(sample.template, "template1", {mode:"global", globalRef:"foo"});
+
+        var s = [jsgenerator.HEADER,
+            'var x="text1";',
+            'function func() {var x="text2"};',
+            '',
+            'var hello1 = foo.template([], function(n){',
+            '  return [n.$text(0,["Hello World!"])];',
+            '});',
+            '',
+            '// comment', 'function func2(z) {return z;}',
+            '',
+            'var hello1bis = foo.template(["arg1","arg2"], function(n){',
+            '  return [n.$text(0,["Hello Again!"])];',
+            '});',
+            'var z;'].join("\n");
+
+        assert.equal(r.errors.length, 0, "no compilation error");
+        assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
+    });
+
+    it('validates full compiled template with export in commonJS mode', function () {
         var sample = ut.getSampleContent("template2");
         var r = compiler.compile(sample.template, "template2");
 
@@ -174,18 +213,33 @@ describe('Block Parser: ', function () {
                 '  return [n.$text(0,["Hello World!"])];', '}));'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
-        // console.log(s.length) // 587
-        // console.log(r.code.length) // 591
-        // assert.equal(r.code,s,"template generated code"); // strange issue with non visible characters
         assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
+    });
+
+    it('validates full compiled template with export in global variable mode', function () {
+        var sample = ut.getSampleContent("template2");
+        var r = compiler.compile(sample.template, "template2", {mode:"global"});
+
+        var s = [jsgenerator.HEADER, '',
+                'var hello4 = hsp.template([], function(n){',
+                '  return [n.$text(0,["Hello World!"])];', '});'].join("\n");
+
+        assert.equal(r.errors.length, 0, "no compilation error");
+        assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
+    });
+
+    it('should raise an error when an invalid mode is used', function () {
+        var sample = ut.getSampleContent("template2");
+        var r = compiler.compile(sample.template, "template2", {mode:"xyz"});
+        assert.equal(r.errors.length, 1, "compilation error");
+        assert.equal(r.errors[0].description, 'Invalid compilation mode option: xyz', "compilation error message");
     });
 
     it('validates full compiled template with component', function () {
         var sample = ut.getSampleContent("component2");
         var r = compiler.compile(sample.template, "component2");
 
-        var s = [
-                jsgenerator.HEADER,
+        var s = [jsgenerator.HEADER,
                 '',
                 'var mycomponent = require("hsp/rt").template({ctl:[foo,"foo","ComponentController"],ref:"c"}, function(n){',
                 '  return [n.$text(0,["some text..."])];', '});'].join("\n");

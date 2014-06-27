@@ -11,8 +11,10 @@ var TemplateWalker = klass({
      * Constructor.
      * @param {String} fileName the name of the file being compiled.
      * @param {String} dirPath the directory path.
+     * @param {String} mode the type of module system the code shold comply with: either "commonJS" or "global"
+     * @param {String} globalRef the name of the runtime global reference when the "global" mode is used (default: "hsp")
      */
-    $constructor : function (fileName, dirPath) {
+    $constructor : function (fileName, dirPath, mode, globalRef) {
         this.fileName = fileName;
         this.dirPath = dirPath;
         this.templates = {}; // used by processors to store intermediate values in order to ease testing
@@ -20,6 +22,15 @@ var TemplateWalker = klass({
         this.errors = [];
         this.resetGlobalRefs();
         this.resetScope();
+        this.mode={};
+        if (mode==="global") {
+            this.mode.isGlobal=true;
+        } else if (mode==="commonJS" || mode===undefined) {
+            this.mode.isCommonJS=true;
+        } else {
+            this.logError("Invalid compilation mode option: "+mode);
+        }
+        this.globalRef=globalRef? globalRef : "hsp";
     },
 
     /**
