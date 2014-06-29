@@ -22,7 +22,8 @@ var klass = require("./klass"),
     $RootNode = $root.$RootNode,
     $CptNode = $root.$CptNode,
     $CptAttElement = $root.$CptAttElement,
-    cptwrapper = require("./rt/cptwrapper");
+    cptwrapper = require("./rt/cptwrapper"),
+    colutils = require("./rt/colutils");
 
 
 var NodeGenerator = klass({
@@ -91,6 +92,7 @@ var refreshTimeout = function () {
 };
 
 var global=exports.global={};
+colutils.setGlobal(global);
 
 /**
  * Return the global reference corresponding to a given name
