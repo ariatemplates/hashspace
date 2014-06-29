@@ -45,6 +45,13 @@ module.exports = [{
                         main : true
                     }]
         }, {
+            title : "List ordering: orderBy and Sorter",
+            folder : "listsorting",
+            files : [{
+                        src : "list.hsp",
+                        main : true
+                    }]
+        }, {
             title : "Dynamic data path: simple grid",
             folder : "dynpath",
             files : [{
