@@ -1,5 +1,5 @@
 {template list(persons)}
-    // onselectstart: prevent double-click selection on a elements
+    // onselectstart: prevents double-click selection on elements
     <div onselectstart="return false"> 
         <div class="msg">
         	<a onclick="{addElement()}">Add element</a> - 

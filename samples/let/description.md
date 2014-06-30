@@ -2,7 +2,7 @@ This example shows how to create local variables through the **{let}** statement
 
 [#output]
 
-As you can imagene `{let}` allows to create one or multiple local variables in the scope of a container block.
+As you can imagine `{let}` allows to create one or multiple local variables in the scope of a container block.
 
 The `{let}` statements can be used in the following blocks:
 

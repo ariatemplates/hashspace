@@ -6,7 +6,7 @@ This example is also borrowed from [react framework][react] documentation and sh
 Here the argument passed to the template is a small controller object that exposes:
 
 + the todo list data model - composed for this example of a simple list, and of a property to store the todo item that is being created
-+ the action that can be peformed on this data model - in this case the *addItem* method.
++ the action that can be performed on this data model - in this case the *addItem* method.
 
 Using a controller object offers the possibility to support multiple instances of the same template in the same page - of course on condition that the template doesn't use fixed html ids.
 

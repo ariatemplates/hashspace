@@ -89,13 +89,6 @@ module.exports = [{
                         main : true
                     }]
         }, {
-            title : "Sub-templates",
-            folder : "subtemplates",
-            files : [{
-                        src : "subtemplates.hsp",
-                        main : true
-                    }]
-        }, {
             title : "Setting global references: the global object",
             folder : "global",
             files : [{

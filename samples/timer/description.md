@@ -3,9 +3,9 @@ This example originally demonstrated in the [react framework][react] documentati
 
 [#output]
 
-To implement data-binding **hashspace reprocesses JavaScript** to introduce a partial polyfill to [Object.observe][objobserve] and detect changes that occur to JavaScript objects. Hashspace actually uses a transpiler to encapsulate assignments with an internal **$set()** method that performs the assignment and notifies the potential observers. You can see the result by looking for the *timer.hsp* file in your JavaScript debugger.
+To implement data-binding **Hashspace reprocesses JavaScript** to introduce a partial polyfill to [Object.observe][objobserve] and detect changes that occur to JavaScript objects. Hashspace actually uses a transpiler to encapsulate assignments with an internal **$set()** method that performs the assignment and notifies the potential observers. You can see the result by looking for the *timer.hsp* file in your JavaScript debugger.
 
-In the mid-term the *$set()* utility will become obsolete once the [Object.observe][objobserve] feature is implemented by all web-browsers - and hashspace will rely on the browser's Object.observe implementation.
+In the mid-term the *$set()* utility will become obsolete once the [Object.observe][objobserve] feature is implemented by all web-browsers - and Hashspace will rely on the browser's Object.observe implementation.
 
 The $set function has the following signature:
 	
@@ -13,7 +13,7 @@ The $set function has the following signature:
 
 (This will perform:  `object_or_array[propertyName_or_index] = value;`)
 
-You can also note the **klass** utility that is used to create the **Timer** constructor. This utility is used internally by hashspace to simplify JavaScript Object-Oriented notation and manage prototype-based inheritance.
+You can also note the **klass** utility that is used to create the **Timer** constructor. This utility is used internally by Hashspace to simplify JavaScript Object-Oriented notation and manage prototype-based inheritance.
 
 [react]: http://facebook.github.io/react/
 [objobserve]: http://updates.html5rocks.com/2012/11/Respond-to-change-with-Object-observe
