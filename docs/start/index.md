@@ -1,5 +1,5 @@
 title: Getting started
-cssclass: api
+cssclass: api-shared getting-started
 mappings:
   CONTENT_BEGIN: <article class="columns"><div>
   CONTENT_END: </div></article>
@@ -70,12 +70,12 @@ To run your Hashspace application, you have two options:
   - have a dedicated build & deploy script, or
   - configure a file watcher which runs the compilation whenever some `.hsp` or `.js` file changes on disk
 
+## On-the-fly (in-browser) compilation
+
 **Note that applications using in-browser compilation will be significantly less performant
 than the ones using precompiled templates. Use the in-browser compilation only to get
 started and for rapid prototyping.
 Once you're familiar with Hashspace, you should switch to the precompilation workflow.**
-
-## On-the-fly (in-browser) compilation
 
 We need to include the following in the page:
 

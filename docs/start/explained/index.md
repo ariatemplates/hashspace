@@ -1,5 +1,5 @@
 title: Getting started
-cssclass: api
+cssclass: api-shared getting-started
 mappings:
   CONTENT_BEGIN: <article class="columns"><div>
   CONTENT_END: </div></article>

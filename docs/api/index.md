@@ -1,5 +1,5 @@
 title: API Reference
-cssclass: api
+cssclass: api-shared api
 mappings:
   CONTENT_BEGIN: <article class="columns"><div>
   CONTENT_END: </div></article>
