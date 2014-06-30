@@ -1,5 +1,5 @@
 
-This example shows a simple component that allows to enter a numeric value. The value entered by the user will be considered as valid if it can be interpreted as a number, and if it is included withing the *min* and *max* boundaries. When the value is incorrect, the field background is set to orange. The component also shows a button next to the field in order to let the user reset the value to a predetermined value.
+This example shows a simple component that allows entering a numeric value. The value entered by the user will be considered as valid if it can be interpreted as a number, and if it is included within the *min* and *max* boundaries. When the value is incorrect, the field background is set to orange. The component also shows a button next to the field in order to let the user reset the value to a predetermined value.
 
 [#output]
 
