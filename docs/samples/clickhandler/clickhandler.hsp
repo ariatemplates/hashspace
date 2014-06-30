@@ -12,7 +12,7 @@ function changeMessage() {
     switch(count%3) {
         case 0:
             msg.isWarning = false;
-            msg.text = "Click me to discover hashspace event hanlders";
+            msg.text = "Click me to discover hashspace event handlers";
             break;
         case 1:
             msg.text = "Well done - you called the event handler and updated the data model in a row!";

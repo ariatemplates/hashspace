@@ -12,7 +12,7 @@ As you can see, the list update is automatically managed by the data-binding eng
 - [unshift]: to insert new elements at the beginning of an array
 - [reverse]: to reverse the array element order
 - [sort]: to sort array elements according to a sort function
-- splice2: which behaves as [splice] but that takes an array of items as 3rd argument - on the contrary to splice() that requires items to be passed as independent arguments (cf. example). Note: this method is not part of ECMAScript, but is automatically added to the Array prototype by hashspace.
+- splice2: which behaves as [splice] but that takes an array of items as 3rd argument - on the contrary to splice() that requires items to be passed as independent arguments (cf. example). Note: this method is not part of ECMAScript, but is automatically added to the Array prototype by Hashspace.
 
 Technically those methods have been overridden on the Array object prototype so that the binding engine can detect the changes and automatically trigger template updates. 
 

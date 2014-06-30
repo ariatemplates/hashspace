@@ -2,7 +2,7 @@ This example shows how modifiers can be used to adapt the value of an expression
 
 [#output]
 
-Hashspace acually supports two types of modifiers:
+Hashspace actually supports two types of modifiers:
 
  - either **simple functions** that take the value to be modified as first argument and return the new value. Those values could be of any JavaScript type, e.g. Strings or Arrays *- cf. changeCase function in the code sample*
  - or **JavaScript objects** that expose transformation functions. As objects can hold state, this provides a simple way to change and expose internal modifier properties without overloading the main controller with this logic. If the transformation method is called **apply** on such objects, then it can be omitted in the pipe expression to keep the syntax more readable *- cf. Sorter example in the code sample*.
@@ -10,4 +10,4 @@ Hashspace acually supports two types of modifiers:
 Notes:
 
   - Modifiers must always return a copy of the values passed as argument. Otherwise modifiers would modify the reference array and create side effects on other expressions bound to the same data.
-  - As hashspace uses the pipe sign for modifiers, the JavaScript **bitwise or** operator (that also uses the pipe sign) is not supported in hashspace expressions.
+  - As Hashspace uses the pipe character for modifiers, the JavaScript **bitwise or** operator (that also uses the pipe sign) is not supported in Hashspace expressions.
