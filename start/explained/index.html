@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Getting started - Hashspace</title>
+    <link href="/images/favicon.ico" type="image/ico" rel="shortcut icon"/>
+    <link rel="stylesheet" href="/css/all.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/site.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/highlightjs/default-7.2.min.css" type="text/css"/>
+    <script src="/libs/highlightjs/highlight-7.2.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js" type="text/javascript" charset="utf-8"></script>
+    <![endif]-->
+    
+
+  </head>
+  <body class="api-shared getting-started">
+    <header id="header">
+      <div class="logo">
+        <h1><a href="/">
+          
+          <img src="/images/logo-page.png" alt="Hashspace"/>
+          
+        </a></h1>
+      </div>
+      <nav>
+        <a class="link-getting-started" href="/start/">Getting started</a>
+        <a class="link-api" href="/api/">API</a>
+        <a class="link-playground" href="/playground/">Playground</a>
+        <a href="http://github.com/ariatemplates/hashspace">Github</a>
+        <a class="download button green" target="_blank" href="https://github.com/ariatemplates/hashspace/releases">Download</a>
+      </nav>
+    </header>
+    <div class="content-wrapper">
+      <section class="content">
+        <div class="wrapper"><article class="columns"><div>
+<h1 id="getting-started-with-hashspace-explained">Getting started with Hashspace: explained</h1>
+<p>To get started with Hashspace, you have two options: either compile the Hashspace files (<code>*.hsp</code>)
+to JavaScript on the server side (during build time), or compile them dynamically in the browser
+(useful for debugging and rapid prototyping).</p>
+<p>The examples on this page assume that you have <a href="http://nodejs.org">Node</a> platform installed on your machine,
+though this is not necessary for in-browser template interpretation.</p>
+<h2 id="on-the-fly-in-browser-compilation">On-the-fly (in-browser) compilation</h2>
+<p>Let&#39;s first have a look with on-the-fly compilation. This is a good option if you&#39;re just starting
+development and care more about developer&#39;s productivity than page load performance.</p>
+<p>If you want to have on-the-fly in-browser compilation, you may go with Hashspace + NoderJS duo.</p>
+<p>First, let&#39;s create a simple HSP file and a controller:</p>
+<h4 id="-hello-hsp-"><code>hello.hsp</code></h4>
+<pre><code class="lang-`">var HelloCtrl = require("./HelloCtrl");
+
+{template Hello using ctrl:HelloCtrl}
+   <span class="tag">&lt;<span class="title">p</span>&gt;</span>Hello, {ctrl.name}!<span class="tag">&lt;/<span class="title">p</span>&gt;</span>
+
+   <span class="tag">&lt;<span class="title">input</span> <span class="attribute">model</span>=<span class="value">"{ctrl.name}"</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">button</span> <span class="attribute">onclick</span>=<span class="value">"{ctrl.clear()}"</span>&gt;</span>Clear<span class="tag">&lt;/<span class="title">button</span>&gt;</span>
+{/template}
+
+module.exports = Hello;</code></pre>
+<h4 id="-helloctrl-js-"><code>HelloCtrl.js</code></h4>
+<pre><code><span class="keyword">var</span> klass = <span class="keyword">require</span>(<span class="string">"hsp/klass"</span>);
+
+<span class="keyword">var</span> HelloCtrl = klass({
+    <span class="comment">// declaring "name" attribute so that we can pass it</span>
+    <span class="comment">// when instantiating a template via `Hello({name:"World"})`</span>
+    attributes: {
+        <span class="string">"name"</span> : { type : <span class="string">"string"</span> }
+    },
+    clear : <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        <span class="keyword">this</span>.name = <span class="string">""</span>;
+    }
+});
+
+module.exports = HelloCtrl;</code></pre>
+<p>Now we need an HTML file that will take care of rendering the template.</p>
+<ul>
+<li><p>First (1), we need to load noderJS -- the CommonJS loader necessary for loading our
+modules -- and tell it via the configuration parameter that whenever it encounters an HTTP request for:</p>
+<ul>
+<li><p><code>*.hsp</code> file, then the downloaded file should be
+additionally <strong>compiled in the browser</strong> by an appropriate compiler module
+(see <code>preprocessors</code> config) to the pure JavaScript code that the browser understands.</p>
+</li>
+<li><p><code>*.js</code> file, then the downloaded file should be <strong>rewritten with Hashspace transpiler</strong>:
+all occurrences of code like <code>foo.bar = 42</code> will be rewritten to <code>$set(foo, &quot;bar&quot;, 42)</code>,
+so that Hashspace automatic data bindings work correctly (actually, this step is not
+needed -- but otherwise you&#39;d have to remember to use <code>$set</code> yourself in all JS code,
+which can be tedious and error-prone).</p>
+</li>
+</ul>
+</li>
+<li><p>Then, we need to load Hashspace runtime and the mentioned Hashspace in-browser compiler (2).</p>
+</li>
+<li><p>Next, we need an HTML element in which our template will be rendered. In (3), we&#39;re creating
+a <code>&lt;div id=&quot;output&quot; /&gt;</code>.</p>
+</li>
+<li><p>Finally (4), we&#39;re ready to start our application: create a <code>&lt;script type=&quot;application/x-noder&quot;&gt;</code> that will
+be executed via noderJS, which fetches and evaluates the <code>hello.hsp</code> template. The HSP file exports
+a <code>Hello</code> template, which we then instantiate and call its <code>render</code> method which renders its HTML output
+in an HTML element with given id (<code>output</code> in this example).</p>
+</li>
+</ul>
+<h4 id="-index-htm-using-source-hsp-files-"><code>index.htm</code> (using source HSP files)</h4>
+<pre><code><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;<span class="title">html</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">head</span>&gt;</span>
+    <span class="comment">&lt;!-- 1: load noderJS with appropriate config --&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://noder-js.ariatemplates.com/dist/v1.5.0/noder.dev.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript">
+    {
+      packaging: {
+        preprocessors: [{
+          pattern: <span class="regexp">/\.hsp$/</span>,
+          module: <span class="string">"hsp/compiler/compile"</span>
+        }, {
+          pattern: <span class="regexp">/\.js$/</span>,
+          module: <span class="string">"hsp/transpiler/transpile"</span>
+        }]
+      }
+    }
+    </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+
+    <span class="comment">&lt;!-- 2: load Hashspace and Hashspace compiler --&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://hashspace.ariatemplates.com/dist/0.0.4/hashspace-noder.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://hashspace.ariatemplates.com/dist/0.0.4/hashspace-noder-compiler.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+
+    <span class="comment">&lt;!-- 4: ready to load our HSP file! --&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"application/x-noder"</span>&gt;</span><span class="javascript">
+        <span class="keyword">var</span> Hello = require(<span class="string">'hello.hsp'</span>);
+        Hello({name:<span class="string">"World"</span>}).render(<span class="string">"output"</span>);
+    </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">body</span>&gt;</span>
+    <span class="comment">&lt;!-- 3: the output element --&gt;</span>
+    <span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"output"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></code></pre>
+<p>Now to see the effects of our effort, we just need to start an HTTP server
+(since in most modern browsers, <code>XMLHttpRequest</code>s from <code>file://</code> protocol are disabled for security reasons).</p>
+<p>For instance, we may use a simple zero-configuration <code>http-server</code> module from npm.</p>
+<ul>
+<li><code>$ npm install -g http-server</code></li>
+<li><code>$ cd /path/to/my/app</code></li>
+<li><code>$ http-server</code></li>
+<li>navigate to <code>http://localhost:8080/index.htm</code> in a browser.</li>
+</ul>
+<h2 id="server-side-compilation">Server-side compilation</h2>
+<p>When your application is getting mature, it&#39;s better to precompile Hashspace templates
+at build time, so that the web browser has less work to do and, in turn, renders them faster.</p>
+<p>We&#39;ll consider the two sample files presented earlier. We&#39;ll just slightly tweak the HTML file,
+and introduce compiler &amp; transpiler scripts.</p>
+<p>To get the possibility to use the compiler and transpiler, we need to install Hashspace:</p>
+<ul>
+<li><code>$ npm install hashspace</code></li>
+</ul>
+<p>If you prefer bare-metal solutions, you may use essentially the following one-liners
+of NodeJS code to transform a piece of Hashspace to JavaScript:</p>
+<pre><code><span class="keyword">var</span> compiledHS = <span class="keyword">require</span>(<span class="string">'hashspace'</span>).compiler.compile(inputHSCode, inputHSFileName).code;</code></pre>
+<pre><code><span class="keyword">var</span> transpiledJS = <span class="keyword">require</span>(<span class="string">'hashspace/hsp/transpiler/transpile'</span>)(inputJSCode, inputJSFileName);</code></pre>
+<p>In a more real-world example we would read files from disk and output the transformed ones
+to disk as well, in a separate directory. We could do this with the following NodeJS program:</p>
+<h4 id="-compile-js-"><code>compile.js</code></h4>
+<pre><code>var fs = require('fs');
+var hscompiler = require('hashspace').compiler;
+
+var cfg = <span class="tuple">{
+    input<span class="variable">File</span> : <span class="string">"src/hello.hsp"</span>,
+    output<span class="variable">File</span> : <span class="string">"out/hello.hsp.js"</span>
+}</span>;
+
+var file<span class="variable">Contents</span> = fs.read<span class="variable">FileSync</span>(cfg.input<span class="variable">File</span>, <span class="string">"utf-8"</span>);
+var output = hscompiler.compile(file<span class="variable">Contents</span>, cfg.input<span class="variable">File</span>);
+<span class="function"><span class="title">if</span> <span class="params">(!fs.<span class="function_name">existsSync</span>(<span class="string">"out"</span>))</span> {
+    <span class="title">fs</span>.<span class="title">mkdirSync</span><span class="params">(<span class="string">"out"</span>)</span>;
+}
+<span class="title">fs</span>.<span class="title">writeFileSync</span><span class="params">(cfg.output<span class="variable">File</span>, output.code)</span>;</code></pre>
+<p>A similar program to transpile JS to <code>$set</code>-syntax:</p>
+<h4 id="-transpile-js-"><code>transpile.js</code></h4>
+<pre><code>var fs = require('fs');
+var transpile = require('hashspace/hsp/transpiler/transpile');
+
+var cfg = <span class="tuple">{
+    input<span class="variable">File</span> : <span class="string">"src/HelloCtrl.js"</span>,
+    output<span class="variable">File</span> : <span class="string">"out/HelloCtrl.js"</span>
+}</span>;
+
+var file<span class="variable">Contents</span> = fs.read<span class="variable">FileSync</span>(cfg.input<span class="variable">File</span>, <span class="string">"utf-8"</span>);
+var output = transpile(file<span class="variable">Contents</span>, cfg.input<span class="variable">File</span>);
+<span class="function"><span class="title">if</span> <span class="params">(!fs.<span class="function_name">existsSync</span>(<span class="string">"out"</span>))</span> {
+    <span class="title">fs</span>.<span class="title">mkdirSync</span><span class="params">(<span class="string">"out"</span>)</span>;
+}
+<span class="title">fs</span>.<span class="title">writeFileSync</span><span class="params">(cfg.output<span class="variable">File</span>, output)</span>;</code></pre>
+<p>Running the following command will now produce the output files:</p>
+<ul>
+<li><code>$ node compile</code></li>
+<li><code>$ node transpile</code></li>
+</ul>
+<p>Two remarks:</p>
+<ul>
+<li>We named the output HSP file with <code>.js</code> extension since it&#39;s a valid JS file, though actually
+we may name it whatever we like, e.g. just keep the <code>.hsp</code> extension.</li>
+<li>Of course those are a simple examples compiling one hardcoded file at a time. In your script you&#39;d
+have to traverse a set of input files yourself, or use existing tools (read further).</li>
+</ul>
+<p>Finally, we need a proper <code>index.htm</code> file. However this time we don&#39;t need to include a compiler script
+nor to set-up NoderJS&#39;s preprocessors. Apart from that, we need to, obviously, require a compiled file.</p>
+<h4 id="-index-htm-using-compiled-hsp-files-"><code>index.htm</code> (using compiled HSP files)</h4>
+<pre><code><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;<span class="title">html</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">head</span>&gt;</span>
+    <span class="comment">&lt;!-- 1: load noderJS --&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://noder-js.ariatemplates.com/dist/v1.5.0/noder.dev.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+
+    <span class="comment">&lt;!-- 2: load Hashspace --&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://hashspace.ariatemplates.com/dist/0.0.4/hashspace-noder.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+
+    <span class="comment">&lt;!-- 4: ready to load our compiled HSP file! --&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"application/x-noder"</span>&gt;</span><span class="javascript">
+        <span class="keyword">var</span> Hello = require(<span class="string">'out/hello.hsp.js'</span>);
+        Hello({name:<span class="string">"World"</span>}).render(<span class="string">"output"</span>);
+    </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">body</span>&gt;</span>
+    <span class="comment">&lt;!-- 3: the output element --&gt;</span>
+    <span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"output"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></code></pre>
+<p>As suggested earlier, we can now</p>
+<ul>
+<li>run <code>$ http-server</code></li>
+<li>and navigate to <code>http://localhost:8080/index.htm</code> in a browser to see the output.</li>
+</ul>
+<h3 id="gulpjs-packages">GulpJS packages</h3>
+<p>If you&#39;re using <a href="http://gulpjs.com/">gulpjs</a>, you may use dedicated tasks for compiling Hashspace files.
+You can have a look at a
+<a href="https://github.com/PK1A/hsp-hello-gulp">sample Hashspace Hello World application with Gulp setup</a>
+which makes use of <code>gulp-hsp-compiler</code> and <code>gulp-hsp-transpiler</code> npm packages.</p>
+<h2 id="appendix-where-to-get-hashspace-and-noderjs-builds">Appendix: where to get Hashspace and noderJS builds</h2>
+<p>In the above examples, we&#39;ve used certain released versions of Hashspace and noder.
+You can see the available versions under the following URLs:</p>
+<ul>
+<li><a href="https://github.com/ariatemplates/hashspace/tree/gh-pages/dist/">Hashspace releases</a></li>
+<li><a href="https://github.com/ariatemplates/noder-js/tree/gh-pages/dist/">noderJS releases</a></li>
+</ul>
+<p>If you want to use the latest improvements in not-yet-released code, you may use SNAPSHOT versions.</p>
+</div>
+      </section>
+    </div>
+    <footer id="footer">
+      <section class="content legal">
+        &copy; 2013-2014 Hashspace is licensed under Apache 2.0 license. See our <a href="/license.html">licensing page</a>.
+      </section>
+    </footer>
+    <script type="text/javascript">
+      var links = document.links;
+
+      for (var i = 0, linksLength = links.length; i < linksLength; i++) {
+        if (links[i].hostname != window.location.hostname) {
+          links[i].target = '_blank';
+        }
+      }
+    </script>
+    
+    <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
+    <script type="text/javascript">
+      /*var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-29575860-5']);
+      _gaq.push(['_setDomainName', 'ariatemplates.com']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();*/
+    </script>
+
+  </body>
+</html>

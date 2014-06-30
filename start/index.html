@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Getting started - Hashspace</title>
+    <link href="/images/favicon.ico" type="image/ico" rel="shortcut icon"/>
+    <link rel="stylesheet" href="/css/all.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/site.css" type="text/css"/>
+    <link rel="stylesheet" href="/css/highlightjs/default-7.2.min.css" type="text/css"/>
+    <script src="/libs/highlightjs/highlight-7.2.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js" type="text/javascript" charset="utf-8"></script>
+    <![endif]-->
+    
+
+  </head>
+  <body class="api-shared getting-started">
+    <header id="header">
+      <div class="logo">
+        <h1><a href="/">
+          
+          <img src="/images/logo-page.png" alt="Hashspace"/>
+          
+        </a></h1>
+      </div>
+      <nav>
+        <a class="link-getting-started" href="/start/">Getting started</a>
+        <a class="link-api" href="/api/">API</a>
+        <a class="link-playground" href="/playground/">Playground</a>
+        <a href="http://github.com/ariatemplates/hashspace">Github</a>
+        <a class="download button green" target="_blank" href="https://github.com/ariatemplates/hashspace/releases">Download</a>
+      </nav>
+    </header>
+    <div class="content-wrapper">
+      <section class="content">
+        <div class="wrapper"><article class="columns"><div>
+<h1 id="getting-started-with-hashspace">Getting started with Hashspace</h1>
+<p>This is a quick start guide for creating a Hello World application with Hashspace.
+It should take no more than 10-15 minutes to get through it.
+If you want to get more explanations, head to <a href="./explained">Getting Started Explained</a> page.</p>
+<p>The examples later on this page assume that you have <a href="http://nodejs.org">Node</a> platform (v0.10.x)
+installed on your machine, though this is not necessary for in-browser template interpretation.</p>
+<h2 id="first-template-and-controller">First template and controller</h2>
+<p>First, let&#39;s create a simple Hashspace template <code>Hello</code> and a controller:</p>
+<h4 id="-src-hello-hsp-"><code>/src/hello.hsp</code></h4>
+<pre><code class="lang-`">var HelloCtrl = require("./HelloCtrl");
+
+{template Hello using ctrl:HelloCtrl}
+   <span class="tag">&lt;<span class="title">p</span>&gt;</span>Hello, {ctrl.name}!<span class="tag">&lt;/<span class="title">p</span>&gt;</span>
+
+   <span class="tag">&lt;<span class="title">input</span> <span class="attribute">model</span>=<span class="value">"{ctrl.name}"</span>&gt;</span>
+   <span class="tag">&lt;<span class="title">button</span> <span class="attribute">onclick</span>=<span class="value">"{ctrl.clear()}"</span>&gt;</span>Clear<span class="tag">&lt;/<span class="title">button</span>&gt;</span>
+{/template}
+
+module.exports = Hello;</code></pre>
+<h4 id="-src-helloctrl-js-"><code>/src/HelloCtrl.js</code></h4>
+<pre><code><span class="keyword">var</span> klass = <span class="keyword">require</span>(<span class="string">"hsp/klass"</span>);
+
+<span class="keyword">var</span> HelloCtrl = klass({
+    attributes: {
+        <span class="string">"name"</span> : { type : <span class="string">"string"</span> }
+    },
+    clear : <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+        <span class="keyword">this</span>.name = <span class="string">""</span>;
+    }
+});
+
+module.exports = HelloCtrl;</code></pre>
+<p>Now we need an HTML file (let&#39;s call it <code>index.htm</code>) that will take care of
+instantiating and rendering the template. The contents of this file will differ
+depending on which workflow we use - we&#39;ll cover that shortly.</p>
+<p>At this point, it&#39;s also important to note that <strong>Hashspace projects should be served
+from HTTP server</strong> and not through the <code>file://</code> protocol. See the
+<a href="#appendix-running-an-http-server">appendix</a> at the end of this document
+for more information.</p>
+<h2 id="precompilation-vs-on-the-fly-compilation">Precompilation vs on-the-fly compilation</h2>
+<p>To run your Hashspace application, you have two options:</p>
+<ul>
+<li>have your files compiled dynamically in the browser, or</li>
+<li>set up your dev environment to precompile the Hashspace and JavaScript files before they reach the browser, e.g.<ul>
+<li>have a dedicated build &amp; deploy script, or</li>
+<li>configure a file watcher which runs the compilation whenever some <code>.hsp</code> or <code>.js</code> file changes on disk</li>
+</ul>
+</li>
+</ul>
+<h2 id="on-the-fly-in-browser-compilation">On-the-fly (in-browser) compilation</h2>
+<p><strong>Note that applications using in-browser compilation will be significantly less performant
+than the ones using precompiled templates. Use the in-browser compilation only to get
+started and for rapid prototyping.
+Once you&#39;re familiar with Hashspace, you should switch to the precompilation workflow.</strong></p>
+<p>We need to include the following in the page:</p>
+<ul>
+<li>Hashspace runtime</li>
+<li>Hashspace compiler</li>
+<li>appropriate settings for our CommonJS module loader to precompile templates before executing them</li>
+</ul>
+<h4 id="-index-htm-using-source-hsp-files-"><code>/index.htm</code> (using source HSP files)</h4>
+<pre><code><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;<span class="title">html</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">head</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://noder-js.ariatemplates.com/dist/v1.5.0/noder.dev.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript">
+    {
+      packaging: {
+        preprocessors: [{
+          pattern: <span class="regexp">/\.hsp$/</span>,
+          module: <span class="string">"hsp/compiler/compile"</span>
+        }, {
+          pattern: <span class="regexp">/\.js$/</span>,
+          module: <span class="string">"hsp/transpiler/transpile"</span>
+        }]
+      }
+    }
+    </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://hashspace.ariatemplates.com/dist/0.0.4/hashspace-noder.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://hashspace.ariatemplates.com/dist/0.0.4/hashspace-noder-compiler.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"application/x-noder"</span>&gt;</span><span class="javascript">
+        <span class="keyword">var</span> Hello = require(<span class="string">'src/hello.hsp'</span>);
+        Hello({name:<span class="string">"World"</span>}).render(<span class="string">"output"</span>);
+    </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">body</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"output"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></code></pre>
+<p>Now we can start our server, go to <a href="http://localhost:8080/index.htm">http://localhost:8080/index.htm</a> and see our app up and running!</p>
+<p>You can also see live demo below as a <a href="http://plnkr.co/edit/ccFBySeRB2Yme2pHOHih">plunk</a> (click &quot;preview&quot;):</p>
+<div class="snippet">
+<iframe src="http://embed.plnkr.co/ccFBySeRB2Yme2pHOHih/hello.hsp" style="height:250px; width:100%;">
+</iframe>
+</div>
+
+<h2 id="-server-side-precompilation">&quot;Server-side&quot; precompilation</h2>
+<p>The recommended workflow is to have your templates precompiled before they reach the web browser,
+so that they are rendered faster. For development, you may set up a file watch task
+which performs the compilation any time your input files change. You may also make it a deploy-time task.</p>
+<p>How do we get our templates precompiled? The easiest way is to set up <a href="http://gulpjs.com/">gulpjs</a>
+script to do it for us.
+The following script reads <code>.js</code> and <code>.hsp</code> files from <code>src</code> folder and creates their
+precompiled equivalents in <code>dist</code> folder.</p>
+<h4 id="-gulpfile-js-"><code>/gulpfile.js</code></h4>
+<pre><code>var gulp = require(<span class="comment">'gulp');</span>
+var hsp = require(<span class="comment">'gulp-hashspace');</span>
+
+gulp.task(<span class="comment">'default', function() {</span>
+    gulp.src(<span class="comment">'src/**/*.hsp')</span>
+        .pipe(hsp.compile())
+        .pipe(gulp.dest(<span class="comment">'dist'));</span>
+
+    gulp.src(<span class="comment">'src/**/*.js')</span>
+        .pipe(hsp.transpile())
+        .pipe(gulp.dest(<span class="comment">'dist'));</span>
+});</code></pre>
+<p>Let&#39;s install <code>gulp</code>, <code>gulp-hashspace</code> (this can take a minute or two) and run the script:</p>
+<ul>
+<li><code>$ npm install -g gulp</code></li>
+<li><code>$ npm install gulp gulp-hashspace</code></li>
+<li><code>$ gulp</code></li>
+</ul>
+<p>Now we can tweak <code>index.htm</code> to take advantage of the precompiled HSP and JS files:
+we can remove the compiler script and preprocessing config, and naturally we should
+change the require path to use <code>dist</code> folder:</p>
+<h4 id="-index-htm-using-precompiled-hsp-files-"><code>/index.htm</code> (using precompiled HSP files)</h4>
+<pre><code><span class="doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="tag">&lt;<span class="title">html</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">head</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://noder-js.ariatemplates.com/dist/v1.5.0/noder.dev.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://hashspace.ariatemplates.com/dist/0.0.4/hashspace-noder.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">type</span>=<span class="value">"application/x-noder"</span>&gt;</span><span class="javascript">
+        <span class="keyword">var</span> Hello = require(<span class="string">'dist/hello.hsp'</span>);
+        Hello({name:<span class="string">"World"</span>}).render(<span class="string">"output"</span>);
+    </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">body</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"output"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></code></pre>
+<p>We&#39;re now ready to start the server, go to <a href="http://localhost:8080/index.htm">http://localhost:8080/index.htm</a> and see our app up and running!</p>
+<p>For a more elaborate example, you can have a look at
+<a href="https://github.com/PK1A/hsp-hello-gulp">sample Hashspace Hello World application with Gulp setup</a>
+which, among others, additionally sets up file watching to recompile the files just when they change.</p>
+<h2 id="further-reading">Further reading</h2>
+<p>If you want:</p>
+<ul>
+<li>more explanations on module loading &amp; precompilation,</li>
+<li>to know how to craft the precompilation yourself (without using gulp),</li>
+</ul>
+<p>head to <a href="./explained">Getting Started Explained</a> article.</p>
+<h2 id="appendix-running-an-http-server">Appendix: Running an HTTP server</h2>
+<p>It&#39;s important to note that Hashspace&#39;s module loader uses <code>XMLHttpRequest</code> for fetching dependencies,
+and since in most modern browsers, <code>XMLHttpRequest</code>s from <code>file://</code> protocol are disabled for security reasons,
+<strong>it&#39;s best to serve your application through an HTTP server</strong> even for local development.</p>
+<ul>
+<li>If you have a server installed on your machine (e.g. Apache), you may create
+your project in its DocumentRoot folder.</li>
+<li>If you have Python or NodeJS installed, you may start a static HTTP server, serving
+files from current directory on port 8080, as follows:<ul>
+<li>Python 2:<ul>
+<li><code>$ cd /path/to/my/app</code></li>
+<li><code>$ python -m SimpleHTTPServer 8080</code></li>
+</ul>
+</li>
+<li>Python 3:<ul>
+<li><code>$ cd /path/to/my/app</code></li>
+<li><code>$ python -m http.server 8080</code></li>
+</ul>
+</li>
+<li>NodeJS:<ul>
+<li><code>$ npm install -g http-server</code></li>
+<li><code>$ cd /path/to/my/app</code></li>
+<li><code>$ http-server -p 8080</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Then you should be able to navigate to <code>http://localhost:8080/</code> in a browser
+and see your files.</p>
+<h2 id="appendix-where-to-get-hashspace-and-noderjs-builds">Appendix: where to get Hashspace and noderJS builds</h2>
+<p>In the above examples, we&#39;ve used certain released versions of Hashspace and noderJS.
+You can see the available versions under the following URLs:</p>
+<ul>
+<li><a href="https://github.com/ariatemplates/hashspace/tree/gh-pages/dist/">Hashspace releases</a></li>
+<li><a href="https://github.com/ariatemplates/noder-js/tree/gh-pages/dist/">noderJS releases</a></li>
+</ul>
+<p>If you want to use the latest improvements in not-yet-released code, you may use SNAPSHOT versions.</p>
+</div>
+      </section>
+    </div>
+    <footer id="footer">
+      <section class="content legal">
+        &copy; 2013-2014 Hashspace is licensed under Apache 2.0 license. See our <a href="/license.html">licensing page</a>.
+      </section>
+    </footer>
+    <script type="text/javascript">
+      var links = document.links;
+
+      for (var i = 0, linksLength = links.length; i < linksLength; i++) {
+        if (links[i].hostname != window.location.hostname) {
+          links[i].target = '_blank';
+        }
+      }
+    </script>
+    
+    <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
+    <script type="text/javascript">
+      /*var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-29575860-5']);
+      _gaq.push(['_setDomainName', 'ariatemplates.com']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();*/
+    </script>
+
+  </body>
+</html>
