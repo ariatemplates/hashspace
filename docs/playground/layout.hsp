@@ -1,102 +1,107 @@
-
 var splitter = require("./splitter.hsp");
 
 {export template mainLayout(data, playground)}
-  <#sampleList data="{data}" playground="{playground}"/>
+    <#sampleList data="{data}" playground="{playground}"/>
 
-  <div class="{'hsp-sample', 'hsp-sample-full': data.navCollapsed}" onclick="{hideNavHover(event, data)}">
-    <!--div class="actions">
-      <a href="" title="Toggle code panel"><span class="icon icon-code icon-active"></span></a>
-      <a href="" title="Toggle description panel"><span class="icon icon-preview icon-active"></span></a>
-    </div-->
-    <h4 class="title">{data.sampleTitle}</h4>
-    <div class="editor" style="width: {data.splitterPos}">
-      <div id="editor"></div>
+    <div class="{'hsp-sample', 'hsp-sample-full': data.navCollapsed}" onclick="{hideNavHover(event, data)}">
+        <!--div class="actions">
+            <a href="" title="Toggle code panel"><span class="icon icon-code icon-active"></span></a>
+            <a href="" title="Toggle description panel"><span class="icon icon-preview icon-active"></span></a>
+        </div-->
+        <h4 class="title">{data.sampleTitle}</h4>
+
+        <div class="editor" style="width: {data.splitterPos}">
+            <div id="editor"></div>
+        </div>
+
+        <#splitter type="horizontal" size="3" onrelease="{splitterReleased(event.position, data, playground)}"/>
+
+        <div class="description" style="left: {data.splitterPos}">
+            <div>
+                <h4>Description</h4>
+                // TODO remove this fixed id
+                <div id="description"></div>
+            </div>
+        </div>
     </div>
-    <#splitter type="horizontal" size="3" onrelease="{splitterReleased(event.position, data, playground)}"/>
-    <div class="description" style="left: {data.splitterPos}">
-      <div>
-        <h4>Description</h4>
-        // TODO remove this fixed id
-        <div id="description"></div>
-      </div>
-    </div>
-  </div>
 {/template}
 
 function splitterReleased(position, data, playground) {
-  data.splitterPos = position + "px";
-  editorResize(playground);
+    data.splitterPos = position + "px";
+    editorResize(playground);
 }
 
 function editorResize(playground, delay) {
-  // Pseudo nextTick when delay = 0
-  delay = delay || 0;
-  setTimeout(function() {
-    playground.editor.resize(true);
-  }, delay);
+    // Pseudo nextTick when delay = 0
+    delay = delay || 0;
+    setTimeout(function() {
+        playground.editor.resize(true);
+    }, delay);
 }
 
 function collapseNav(event, data, playground) {
-  data.navCollapsed = !data.navCollapsed;
-  data.navHover = false;
-  editorResize(playground, 218);
-  event.preventDefault();
+    data.navCollapsed = !data.navCollapsed;
+    data.navHover = false;
+    editorResize(playground, 218);
+    event.preventDefault();
 }
 
 function showListHover(event, data) {
-  data.navHover = !data.navHover;
-  event.preventDefault();
-  event.stopPropagation();
+    data.navHover = !data.navHover;
+    event.preventDefault();
+    event.stopPropagation();
 }
 
 function hideNavHover(event, data) {
-  if (data.navHover) {
-    data.navHover = false;
-  }
+    if (data.navHover) {
+        data.navHover = false;
+    }
 }
 
 {template sampleList(data, playground)}
-  <div class="{'samples-list', 'samples-list-collapsed': data.navCollapsed}"
-    onclick="{hideNavHover(event, data)}">
-    <a href="" class="collapse" title="{data.navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}" onclick="{collapseNav(event, data, playground)}"><span class="icon"></span></a>
-    {if data.navCollapsed}
-      <a href="" class="showlist action" title="See samples list" onclick="{showListHover(event, data)}"><span class="icon"></span></a>
-      <!--a href="" class="action" title="Toggle code panel"><span class="icon icon-code icon-active"></span></a>
-      <a href="" class="action" title="Toggle description panel"><span class="icon icon-preview icon-active"></span></a-->
-    {else}
-      <h4>Samples</h4>
-    {/if}
-    <div class="{ data.navHover ? 'list-hover' : 'list'}">
-      {foreach idx,sample in data.samples}
-        {if sample.category}
-          <div class="category">{sample.category}</div>
+    <div class="{'samples-list', 'samples-list-collapsed': data.navCollapsed}"
+        onclick="{hideNavHover(event, data)}">
+
+        <a href="" class="collapse" title="{data.navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}" onclick="{collapseNav(event, data, playground)}"><span class="icon"></span></a>
+
+        {if data.navCollapsed}
+            <a href="" class="showlist action" title="See samples list" onclick="{showListHover(event, data)}"><span class="icon"></span></a>
+            <!--a href="" class="action" title="Toggle code panel"><span class="icon icon-code icon-active"></span></a>
+            <a href="" class="action" title="Toggle description panel"><span class="icon icon-preview icon-active"></span></a-->
         {else}
-          <div class="{'item', 'selected': data.sampleIndex === idx}" onclick="{playground.loadSample(idx)}">
-            {sample.title}
-          </div>
+            <h4>Samples</h4>
         {/if}
-      {/foreach}
+
+        <div class="{ data.navHover ? 'list-hover' : 'list'}">
+            {foreach index, sample in data.samples}
+                {if sample.category}
+                    <div class="category">{sample.category}</div>
+                {else}
+                    <div class="{'item', 'selected': data.sampleIndex === index}" onclick="{playground.loadSample(index)}">
+                        {sample.title}
+                    </div>
+                {/if}
+            {/foreach}
+        </div>
     </div>
-  </div>
 {/template}
 
 {export template errorList(errors)}
     {if errors && errors.length}
         <div class="errorlist">
             <ul>
-                {foreach err in errors}
+                {foreach error in errors}
                 <li>
-                    <div class="{err.type}"> {err.message} </div>
-                    {if err.line || err.file}
+                    <div class="{error.type}"> {error.message} </div>
+                    {if error.line || error.file}
                         <div class="ctxt">
-                            [{err.file}]
-                            {if err.line}line: {err.line}, column: {err.column}{/if}
+                            [{error.file}]
+                            {if error.line}line: {error.line}, column: {error.column}{/if}
                         </div>
                     {/if}
-                    {if err.code}
+                    {if error.code}
                         <div class="code">
-                            >> code: <span class="codetext">{err.code}</span>
+                            >> code: <span class="codetext">{error.code}</span>
                         </div>
                     {/if}
                 </li>
