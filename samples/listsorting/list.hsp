@@ -1,0 +1,39 @@
+{template list(persons)}
+    <div onselectstart="return false"> 
+        <div class="msg">
+            <span class="info">
+                List sorted with the orderBy() function:
+            </span>
+            <ol>
+                {foreach p in persons|orderBy:"name"}
+                    <li>{p.name}</li>
+                {/foreach}
+            </ol>
+        </div>
+        <hr/>
+        <div class="msg">
+            {let nameSorter=new Sorter({property:"name",states:"ADN"})}
+            <span class="info">
+                List sorted with a Sorter object (current state: {nameSorter.state})
+            </span>
+            <ol>
+                {foreach p in persons|nameSorter}
+                    <li>{p.name}</li>
+                {/foreach}
+            </ol>
+            <a onclick="{nameSorter.nextState()}">Change sort order</a>
+        </div>
+    </div>
+{/template}
+
+var people = [
+    {name:"Homer", age:38},
+    {name:"Marge", age:38},
+    {name:"Bart", age:10},
+    {name:"Lisa", age:8},
+    {name:"Maggie", age:1}
+];
+
+// display the template in the #output div
+list(people).render("output");
+
