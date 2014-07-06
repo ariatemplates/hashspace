@@ -37,7 +37,7 @@ var ATTRIBUTE_TYPES = {
         }
     },
     "boolean" : {
-        defaultValue : true,
+        defaultValue : false,
         convert : function (v, attcfg) {
             return v === true || v === 1 || v === '1' || v === 'true';
         }
