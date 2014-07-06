@@ -154,7 +154,17 @@ var TypedCtl=klass({
     attstring:{type:"string",defaultValue:123},
     attbool:{type:"boolean",defaultValue:false}
   }
-})
+});
+
+var HelloCtrl = klass({
+    attributes: {
+        "inputChecked" : { type : "boolean" /*, defaultValue: false*/}
+    }
+});
+
+{template test3 using ctrl:HelloCtrl}
+   <input type="checkbox" model="{ctrl.inputChecked}">
+{/template}
 
 describe("Component Nodes", function () {
   var ELEMENT_NODE=1;
@@ -348,6 +358,17 @@ it("tests a component inside another template", function() {
     test(d).render(h.container);
 
     expect(d.value).to.equal(84);
+    h.$dispose();
+  });
+
+  it("validates default boolean attribute value is false", function() {
+    var h=ht.newTestContext();
+    test3().render(h.container);
+
+    expect(h("input").attribute("checked")).to.equal(false);
+    h("input").click();
+    expect(h("input").attribute("checked")).to.equal(true);
+    h.$dispose();
   });
 
 });
