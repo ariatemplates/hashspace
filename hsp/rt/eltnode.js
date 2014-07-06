@@ -216,7 +216,7 @@ var EltNode = klass({
         if (this.isInput && this.inputModelExpIdx) {
             var exp = this.eh.getExpr(this.inputModelExpIdx);
             if (exp.setValue) {
-                if (et==="input" || et==="keyup" || et==="click" || et==="focus") {
+                if (et==="input" || et==="keyup" || et==="click" || et==="focus" || et==="change") {
                     // push the field value to the data model
                     // note: when the input event is properly implemented we don't need to listen to keyup
                     // but IE8 and IE9 don't implement it completely - thus the need for keyup

@@ -17,7 +17,8 @@
 var hsp=require("hsp/rt"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     json=require("hsp/json"),
-    ht=require("hsp/utils/hashtester");
+    ht=require("hsp/utils/hashtester"),
+    klass=require("hsp/klass");
 
 
 {template test1(person)}
@@ -51,6 +52,25 @@ var globalObject={value:"foo"};
     </div>
 {/template}
 
+var TestCtl6=klass({
+    attributes: {
+        "selected" : { type : "boolean", defaultValue: false}
+    },
+    $init:function() {
+        this.counter=0;
+        this.processChange();
+    },
+    processChange : function () {
+        this.counter++;
+        this.label = (this.selected ? "checked" : "unchecked") + "(" + this.counter +")";
+    }
+});
+
+{template test6 using c:TestCtl6}
+    // test onchange cross browser consitency
+    <input type="checkbox" model="{c.selected}" onchange="{c.processChange()}">
+    <span class="label">{c.label}</span>
+{/template}
 
 describe("Element Nodes", function () {
     var ELEMENT_NODE=1;
@@ -174,6 +194,26 @@ describe("Element Nodes", function () {
         expect(globalObject.value).to.equal("Marge");
         
         n.$dispose();
+    });
+
+    it("validates checkbox onchange behavior",function() {
+        var h=ht.newTestContext();
+        test6().render(h.container);
+
+        expect(h("input").attribute("checked")).to.equal(false);
+        expect(h(".label").text()).to.equal("unchecked(1)");
+
+        h("input").click();
+
+        expect(h("input").attribute("checked")).to.equal(true);
+        expect(h(".label").text()).to.equal("checked(2)");
+
+        h("input").click();
+
+        expect(h("input").attribute("checked")).to.equal(false);
+        expect(h(".label").text()).to.equal("unchecked(3)");
+
+        h.$dispose();
     });
 
 });
