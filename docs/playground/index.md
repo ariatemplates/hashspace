@@ -5,6 +5,7 @@ headerscripts: |
 footerscripts: |
     <script src="/libs/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="/libs/Chart.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/libs/director.min.js"></script>
     <script src="/libs/noder.dev.min.js">
         {
             packaging: {
@@ -31,6 +32,9 @@ footerscripts: |
 
         var playground = new Playground("main");
         playground.showSample(0);
+        Router({
+                ':key': playground.loadSample.bind(playground)
+        }).init();
     </script>
 ---
 

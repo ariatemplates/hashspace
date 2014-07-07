@@ -77,8 +77,8 @@ function hideNavHover(event, data) {
                 {if sample.category}
                     <div class="category">{sample.category}</div>
                 {else}
-                    <div class="{'item', 'selected': data.sampleIndex === index}" onclick="{playground.loadSample(index)}">
-                        {sample.title}
+                    <div class="{'item', 'selected': data.sampleIndex === index}">
+                        <a href="{'#' + sample.folder}">{sample.title}</a>
                     </div>
                 {/if}
             {/foreach}

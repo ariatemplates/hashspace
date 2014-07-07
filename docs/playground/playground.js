@@ -15,6 +15,14 @@ var samples = require("../samples/samples");
 
 
 
+var samplesMap = {}; // a map of the samples, using their containing folders as keys
+for (var index = 0, length = samples.length; index < length; index++) {
+    var sample = samples[index];
+
+    sample.index = index;
+    samplesMap[sample.folder] = sample;
+}
+
 var count = 0; // number of playgrounds that have been created
 var playgrounds = {}; // collection of playground instances
 
@@ -150,7 +158,12 @@ var Playground = module.exports = klass({
     },
 
     loadSample : function (index) {
-        var sample = samples[index];
+        var sample;
+        if (typeof index === 'number') {
+            sample = samples[index];
+        } else {
+            sample = samplesMap[index];
+        }
         var self = this;
         var data = this.data;
 
@@ -178,7 +191,7 @@ var Playground = module.exports = klass({
             }
         });
 
-        data.sampleIndex = index;
+        data.sampleIndex = sample.index;
         data.sampleTitle = sample.title;
         data.files = sample.files;
 
