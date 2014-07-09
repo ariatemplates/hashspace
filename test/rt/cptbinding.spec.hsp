@@ -85,12 +85,12 @@ describe("Component attributes binding", function () {
     var d={value:2,max:100,defaultvalue:42};
     var n=test(d);
 
-    expect(n.node.childNodes.length).to.equal(4);
-    var cptInput=n.node.childNodes[0];
+    expect(n.node.childNodes.length).to.equal(6); // 4+2comments
+    var cptInput=n.node.childNodes[1];
     var c=n.childNodes[0].controller;
-    var valueInput=n.node.childNodes[1];
-    var maxInput=n.node.childNodes[2];
-    var defaultInput=n.node.childNodes[3];
+    var valueInput=n.node.childNodes[3];
+    var maxInput=n.node.childNodes[4];
+    var defaultInput=n.node.childNodes[5];
     
     expect(cptInput.value).to.equal("2");
     expect(valueInput.value).to.equal("2");
@@ -143,8 +143,8 @@ describe("Component attributes binding", function () {
     var n=test2(d);
     checks=[];
 
-    expect(n.node.childNodes.length).to.equal(1);
-    var cptInput=n.node.childNodes[0];
+    expect(n.node.childNodes.length).to.equal(3); // 1+2comments
+    var cptInput=n.node.childNodes[1];
 
     setFieldValue(cptInput,"b");
     expect(checks.length).to.equal(1);

@@ -359,17 +359,29 @@ var $CptNode = klass({
         }
     },
 
-    $dispose:function() {
-        this.cleanObjectProperties();
+    /**
+     * Default dispose method
+     * @param {Boolean} localPropOnly if true only local properties will be deleted (optional)
+     *        must be used when a new instance is created to adapt to a path change
+     */
+    $dispose:function(localPropOnly) {
+        this.cleanObjectProperties(localPropOnly);
     },
 
-    cleanObjectProperties : function () {
+    /**
+     * Removes object properties - helper for $dispose methods
+     * @param {Boolean} localPropOnly if true only local properties will be deleted (optional)
+     *        must be used when a new instance is created to adapt to a path change
+     */
+    cleanObjectProperties : function (localPropOnly) {
         this.removePathObservers();
         if (this._scopeChgeCb) {
             json.unobserve(this.vscope, this._scopeChgeCb);
             this._scopeChgeCb = null;
         }
-        $RootNode.$dispose.call(this);
+        if (localPropOnly!==true) {
+            $RootNode.$dispose.call(this);
+        }
         this.exps = null;
         this.controller = null;
         this.ctlAttributes = null;
@@ -386,45 +398,77 @@ var $CptNode = klass({
      * process function)
      * @return {TNode} the new node instance
      */
-    createNodeInstance : function (parent) {
-      var ni=null, vscope=parent.vscope, tp=this.tplPath;
+    createNodeInstance : function (parent,node1,node2) {
+        var ni=null;
 
-      // determine the type of this component: 
-      // - either a template - e.g. <#mytemplate foo="bar"/> 
-      //   -> instance will extend $CptTemplate
-      // - a component with controller - e.g. <#mycpt foo="bar"/>
-      //   -> instance will extend $CptComponent
-      // - or a attribute element insertion - e.g. <#c.body/>
-      //   -> instance will extend $CptAttInsert
+        // get the object referenced by the cpt path
+        var p = this.getPathData(this.tplPath, parent.vscope), po=p.pathObject;
 
-      // get the object referenced by the cpt path
-      var obj = getObject(tp, vscope);
+        // if object is a function this is a template or a component insertion
+        if (po) {
+            ni=this.createCptInstance(p.cptType, parent);
+            ni.node1=node1;
+            ni.node2=node2;
 
-      // if object is a function this is a template or a component insertion
-      if (obj && typeof(obj) === 'function') {
-        this.template=obj;
-
-        if (obj.controllerConstructor) {
-          // template uses a controller
-          ni=this.createCptInstance("$CptComponent",parent);
-        } else {
-          ni=this.createCptInstance("$CptTemplate",parent);
+            if (p.cptType==="$CptAttInsert") {
+                // this cpt is used to an insert another component passed as attribute 
+                ni.initCpt(po);
+            } else {
+                // we are in a template or component cpt
+                this.template=p.pathObject;
+                ni.initCpt({template:po,ctlConstuctor:po.controllerConstructor});
+            }
         }
-        ni.initCpt({template:obj,ctlConstuctor:obj.controllerConstructor});
-      } else if (obj) {
-        if (obj.isCptAttElement) {
-          // insert attribute component 
-          ni=this.createCptInstance("$CptAttInsert",parent);
-          ni.initCpt(obj);
-        }
-      }
 
-      if (!ni) {
-          log.error(this.info+" Invalid component reference");
-          // create an element to avoid generating other errors
-          ni=this.createCptInstance("$CptAttInsert",parent);
-      }
-      return ni;
+        if (!ni) {
+            log.error(this.info+" Invalid component reference");
+            // create an element to avoid generating other errors
+            ni=this.createCptInstance("$CptAttInsert",parent);
+        }
+        
+        return ni;
+    },
+
+    /**
+     * Calculates the object referenced by the path and the component type
+     * @return {Object} object with the following properties:
+     *        pathObject: {Object} the object referenced by the path
+     *        cptType: {String} one of the following option: "$CptComponent", 
+     *                 "$CptTemplate", "$CptAttInsert" or "InvalidComponent"
+     */
+    getPathData:function(path, vscope) {
+        // determine the type of this component: 
+        // - either a template - e.g. <#mytemplate foo="bar"/> 
+        //   -> instance will extend $CptTemplate
+        // - a component with controller - e.g. <#mycpt foo="bar"/>
+        //   -> instance will extend $CptComponent
+        // - or a attribute element insertion - e.g. <#c.body/>
+        //   -> instance will extend $CptAttInsert
+
+        var o = getObject(path, vscope), r={cptType:"InvalidComponent"};
+        if (o) {
+            r.pathObject=o;
+            if (typeof(o) === 'function') {
+                if (o.controllerConstructor) {
+                    r.cptType="$CptComponent";
+                } else {
+                    r.cptType="$CptTemplate";
+                }
+            } else if (o.isCptAttElement) {
+                r.cptType="$CptAttInsert";
+            }
+        }
+        return r;
+    },
+
+    /**
+     * Remove all child node instances bewteen node1 and node2
+     */
+    removeChildInstances:function() {
+        if (!this.isDOMempty) {
+          this.removeChildNodeInstances(this.node1,this.node2);
+          this.isDOMempty = true;
+        }
     },
 
     /**
@@ -434,23 +478,15 @@ var $CptNode = klass({
      * @param cptType {string} one of the following: $CptAttInsert / $CptAttElement / $CptComponent / $CptTemplate
      */
     createCptInstance:function(cptType,parent) {
-        if (!this.cptTypes) {
-            this.cptTypes={};
-        }
-        var ct=this.cptTypes[cptType];
-        if (!ct) {
-            // build the new type
-            var proto1=CPT_TYPES[cptType];
-            var proto2 = klass.createObject(this);
-            for (var k in proto1) {
-                if (proto1.hasOwnProperty(k)) {
-                    proto2[k]=proto1[k];
-                }
+        // build the new type
+        var proto1=CPT_TYPES[cptType];
+        var ct = klass.createObject(this);
+        for (var k in proto1) {
+            if (proto1.hasOwnProperty(k)) {
+                ct[k]=proto1[k];
             }
-
-            ct=proto2;
-            this.cptTypes[cptType]=ct;
         }
+        this.cptType=cptType;
 
         // create node instance
         var ni=klass.createObject(ct);
@@ -468,11 +504,14 @@ var $CptNode = klass({
      * in the parent node
      */
     createCommentBoundaries:function(comment) {
-        var nd=this.node;
-        this.node1 = doc.createComment("# "+comment+" "+this.pathInfo);
-        this.node2 = doc.createComment("# /"+comment+" "+this.pathInfo);
-        nd.appendChild(this.node1);
-        nd.appendChild(this.node2);
+        // only create nodes if they don't already exist (cf. reprocessNodeInstance)
+        if (!this.node1 && !this.node2) {
+            var nd=this.node;
+            this.node1 = doc.createComment("# "+comment+" "+this.pathInfo);
+            this.node2 = doc.createComment("# /"+comment+" "+this.pathInfo);
+            nd.appendChild(this.node1);
+            nd.appendChild(this.node2);
+        }
     },
     
     /**
@@ -501,10 +540,47 @@ var $CptNode = klass({
     },
 
     /**
+     * Calculates if the current node instance must be replaced by another one
+     * if component path changed
+     * @return {Object} the new component instance or null if instance doesn't change
+     */
+    reprocessNodeInstance:function() {
+        var p = this.getPathData(this.tplPath, this.parent.vscope);
+        if (p.cptType === "InvalidComponent"|| p.cptType===this.cptType) {
+            // component is not valid or nature hasn't changed
+            return null;
+        }
+
+        // component nature has changed
+        var parent=this.parent,
+            ni=this.createNodeInstance(parent,this.node1,this.node2),
+            cn = parent.childNodes;
+
+        // replace current node with ni in the parent collection
+        if (ni && cn) {
+            for (var i = 0, sz = cn.length; sz > i; i++) {
+                if (cn[i]===this) {
+                    cn[i]=ni;
+                    // dispose current object
+                    this.$dispose(true);
+                    return ni;
+                }
+            }
+        }
+        return null;
+    },
+
+    /**
      * Refresh the sub-template arguments and the child nodes, if needed
      */
     refresh : function () {
         if (this.adirty) {
+            var newNode=this.reprocessNodeInstance();
+            if (newNode) {
+                // component type has changed so current node is obsolete and has been disposed
+                newNode.refresh();
+                return;
+            }
             // one of the component attribute has been changed - we need to propagate the change
             // to the template controller
 
@@ -523,6 +599,7 @@ var $CptNode = klass({
             }
 
             if (tplChanged) {
+                // check if component nature changed from template to component or opposite
                 this.template=tpl;
                 this.createChildNodeInstances();
             } else {

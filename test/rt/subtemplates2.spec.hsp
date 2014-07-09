@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-var ht=require("hsp/utils/hashtester");
+var ht=require("hsp/utils/hashtester"),
+    klass=require("hsp/klass");
 
 {template test1(c)}
     <div class="content">
@@ -58,6 +59,17 @@ var ht=require("hsp/utils/hashtester");
 
 {template contentB2(msg)}
     contentB2: {msg} 
+{/template}
+
+var C2Controller=klass({
+    attributes:{
+        "msg":{type:"string",defaultValue:"no msg",binding:"1-way"},
+        "foo":{type:"string",defaultValue:"foo"}
+    }
+});
+
+{template contentC2 using c:C2Controller}
+    contentC2: {c.msg} {c.foo} 
 {/template}
 
 var ctxt={
@@ -195,6 +207,61 @@ describe("Dynamic template insertion", function () {
 
         expect(h.logs().length).to.equal(0);
         expect(h(".content").text()).to.equal("Before - This is contentC - After");
+
+        h.$dispose();
+    });
+
+    it("validates dynamic insertion with switch between template and component - template first", function() {
+        var h=ht.newTestContext(), c={tpl:contentA,msg:"hello"};
+        test4(c).render(h.container);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - This is contentA - After");
+
+        // change template to component
+        h.$set(c,"tpl",contentC2);
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentC2: hello foo - After");
+        h.$set(c,"msg","hello2");
+        expect(h(".content").text()).to.equal("Before - contentC2: hello2 foo - After");
+
+        // change component to template
+        h.$set(c,"tpl",contentB2);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentB2: hello2 - After");
+        h.$set(c,"msg","hello");
+        expect(h(".content").text()).to.equal("Before - contentB2: hello - After");
+
+        // change again
+        h.$set(c,"tpl",contentC2);
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentC2: hello foo - After");
+
+        h.$dispose();
+    });
+
+    it("validates dynamic insertion with switch between template and component - component first", function() {
+        var h=ht.newTestContext(), c={tpl:contentC2,msg:"hello"};
+        test4(c).render(h.container);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentC2: hello foo - After");
+        h.$set(c,"msg","hello2");
+        expect(h(".content").text()).to.equal("Before - contentC2: hello2 foo - After");
+
+        // change component to template
+        h.$set(c,"tpl",contentB2);
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentB2: hello2 - After");
+        h.$set(c,"msg","hello3");
+        expect(h(".content").text()).to.equal("Before - contentB2: hello3 - After");
+
+        // change template to component
+        h.$set(c,"tpl",contentC2);
+
+        expect(h.logs().length).to.equal(0);
+        expect(h(".content").text()).to.equal("Before - contentC2: hello3 foo - After");
 
         h.$dispose();
     });

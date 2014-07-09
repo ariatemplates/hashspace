@@ -40,9 +40,11 @@ module.exports.$CptAttInsert = {
 
   /**
    * Safely cut all dependencies before object is deleted
+   * @param {Boolean} localPropOnly if true only local properties will be deleted (optional)
+   *        must be used when a new instance is created to adapt to a path change
    */
-  $dispose:function() {
+  $dispose:function(localPropOnly) {
     this.cptAllElt=null;
-    this.cleanObjectProperties();
+    this.cleanObjectProperties(localPropOnly);
   }
 };

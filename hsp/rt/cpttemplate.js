@@ -14,15 +14,10 @@ module.exports.$CptTemplate = {
    *     e.g. {template:obj,ctlConstuctor:obj.controllerConstructor}
    */
   initCpt:function(arg) {
-    // determine if template path can change dynamically
-    var isDynamicTpl=this.createPathObservers();
-
-    if (isDynamicTpl) {
-      this.createCommentBoundaries("template");
-      this.createChildNodeInstances();
-    } else {
-      arg.template.call(this, this.getTemplateArguments());
-    }
+    // create path observers and comment boundaries
+    this.createPathObservers();
+    this.createCommentBoundaries("template");
+    this.createChildNodeInstances();
 
     // the component is a template without any controller
     // so we have to observe the template root scope to be able to propagate changes to the parent scope
@@ -35,10 +30,7 @@ module.exports.$CptTemplate = {
    * that node1 and node2 exist
    */
   createChildNodeInstances : function () {
-      if (!this.isDOMempty) {
-          this.removeChildNodeInstances(this.node1,this.node2);
-          this.isDOMempty = true;
-      }
+      this.removeChildInstances();
 
       if (this.template) {
         var args = this.getTemplateArguments();
@@ -58,9 +50,11 @@ module.exports.$CptTemplate = {
 
   /**
    * Safely cut all dependencies before object is deleted
+   * @param {Boolean} localPropOnly if true only local properties will be deleted (optional)
+   *        must be used when a new instance is created to adapt to a path change
    */
-  $dispose:function() {
-    this.cleanObjectProperties();
+  $dispose:function(localPropOnly) {
+    this.cleanObjectProperties(localPropOnly);
   },
 
   /**

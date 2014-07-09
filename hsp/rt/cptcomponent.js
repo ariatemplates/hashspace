@@ -35,15 +35,9 @@ exports.$CptComponent = {
 
     if (this.template) {
       // this component is associated to a template
-      var needCommentNodes=(this.createPathObservers() || this.ctlConstuctor.$refresh);
-
-      if (needCommentNodes) {
-        this.createCommentBoundaries("cpt");
-        this.createChildNodeInstances();
-      } else {
-        // WARNING: this changes the original vscope to the template vscope
-        this.template.call(this, this.getTemplateArguments(), this.getCptArguments());
-      }
+      this.createPathObservers();
+      this.createCommentBoundaries("cpt");
+      this.createChildNodeInstances();
 
       // $init child components
       this.initChildComponents();
@@ -120,10 +114,7 @@ exports.$CptComponent = {
    * that node1 and node2 exist
    */
   createChildNodeInstances : function () {
-      if (!this.isDOMempty) {
-          this.removeChildNodeInstances(this.node1,this.node2);
-          this.isDOMempty = true;
-      }
+      this.removeChildInstances();
 
       if (this.template) {
         // temporarily assign a new node to get the content in a doc fragment
@@ -143,15 +134,17 @@ exports.$CptComponent = {
 
   /**
    * Safely cut all dependencies before object is deleted
+   * @param {Boolean} localPropOnly if true only local properties will be deleted (optional)
+   *        must be used when a new instance is created to adapt to a path change
    */
-  $dispose:function() {
+  $dispose:function(localPropOnly) {
     if (this.ctlWrapper) {
       this.ctlWrapper.$dispose();
       this.ctlWrapper=null;
       this.controller=null;
     }
     this.ctlAttributes=null;
-    this.cleanObjectProperties();
+    this.cleanObjectProperties(localPropOnly);
     this.ctlConstuctor=null;
     var tpa=this.tplAttributes;
     if (tpa) {
@@ -453,9 +446,13 @@ exports.$CptComponent = {
 
           this.edirty=false;
       }
+      // warning: the following refresh may change the component type and
+      // as such ctlWrapper could become null if new component is a template
       $CptNode.refresh.call(this);
-      // refresh cpt through $refresh if need be
-      this.ctlWrapper.refresh();
+      if (this.ctlWrapper) {
+        // refresh cpt through $refresh if need be
+        this.ctlWrapper.refresh();
+      }
   },
 
   /**
