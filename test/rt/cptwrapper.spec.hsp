@@ -273,8 +273,8 @@ it("tests a component inside another template", function() {
     var n=test(d);
 
     var textInput=n.node.firstChild;
-    var cptInput=n.node.childNodes[1];
-    var cptButton=n.node.childNodes[2];
+    var cptInput=n.node.childNodes[2];
+    var cptButton=n.node.childNodes[3];
     expect(textInput.value).to.equal('42');
     expect(cptInput.value).to.equal('42');
 
@@ -317,7 +317,7 @@ it("tests a component inside another template", function() {
     var d={value:'42'};
     var n=test(d);
 
-    var cptButton=n.node.childNodes[2];
+    var cptButton=n.node.childNodes[3];
 
     fireEvent("click",cptButton);
     hsp.refresh();
@@ -334,7 +334,7 @@ it("tests a component inside another template", function() {
     isBrCbEmpty=false;
     var d={value:'42'};
     var n=test2(d);
-    var cptButton=n.node.childNodes[2];
+    var cptButton=n.node.childNodes[3];
 
     fireEvent("click",cptButton);
     hsp.refresh();
