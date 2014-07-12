@@ -16,7 +16,7 @@
 ##### Template Code
 test=[
   n.$foreach (
-    {e1:[2,1,_items]},
+    {e1:[2,1,_items,"items"]},
     "itm_key",
     "itm",
     0,

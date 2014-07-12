@@ -19,7 +19,7 @@ test=[
       n.$text(0,[" "]),
       n.let({
         e1:[6,function(a0) {return new a0();},2],
-        e2:[2,1,_Foo],
+        e2:[2,1,_Foo,"Foo"],
         e3:[6,function(a0) {return new a0();},4],
         e4:[1,2,"foo","Bar"]
       },['aVarName',1,'anotherName',3])

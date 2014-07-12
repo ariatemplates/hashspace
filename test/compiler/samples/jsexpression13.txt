@@ -89,7 +89,7 @@
 ##### Template Code
 test=[
   n.$text({
-    e1:[4,1,_orderBy,1,2,0,"firstName"],
+    e1:[4,1,_orderBy,"orderBy",1,2,0,"firstName"],
     e2:[1,2,"person","list"]
   },["",1])
 ]

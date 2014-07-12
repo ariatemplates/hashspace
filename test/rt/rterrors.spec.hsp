@@ -1,0 +1,79 @@
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var ht=require("hsp/utils/hashtester");
+
+
+describe("Runtime errors", function () {
+    var h;
+
+    beforeEach(function () {
+         h=ht.newTestContext();
+     });
+
+    afterEach(function () {
+        h.$dispose();
+    });
+
+    it("should raise an error when global references are used for 2-way binding 1", function() {
+        {template test()}
+            <input type="text" value="{foo}"/>
+        {/template}
+
+        test().render(h.container);
+        h("input").type("bar");
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs(0).message).to.equal("Reference cannot be resolved for 2-way data-binding: foo");
+        h.logs.clear();
+    });
+
+    it("should raise an error when global references are used for 2-way binding 2", function() {
+        {template test()}
+            <input type="text" value="{foo.bar}"/>
+        {/template}
+
+        test().render(h.container);
+        h("input").type("bar");
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs(0).message).to.equal("Reference cannot be resolved for 2-way data-binding: foo.bar");
+        h.logs.clear();
+    });
+
+    it("should raise an error when global references are used for 2-way binding 3", function() {
+        var foo={};
+
+        {template test()}
+            <input type="text" value="{foo.bar.blah}"/>
+        {/template}
+
+        test().render(h.container);
+        h("input").type("bar");
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs(0).message).to.equal("Reference cannot be resolved for 2-way data-binding: foo.bar.blah");
+        h.logs.clear();
+    });
+
+    it("should raise an error when an invalid callback is used", function() {
+        {template test()}
+            <a onclick="{foo()}">click me</a>
+        {/template}
+
+        test().render(h.container);
+        h("a").click();
+        expect(h.logs().length).to.equal(1);
+        expect(h.logs(0).message).to.equal("Invalid function reference in expression: foo()");
+        h.logs.clear();
+    });
+});

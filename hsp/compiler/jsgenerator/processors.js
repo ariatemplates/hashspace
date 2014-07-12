@@ -388,6 +388,11 @@ function formatExpression (expression, firstIndex, walker) {
 
             var generatedPath = [], pathItem;
             generatedPath.push(rootRef);
+            if (exprType === 2 || exprType === 4) {
+                // literal references that don't actually need the root path name
+                // but we still put it in the expression to support better runtime error descriptions 
+                generatedPath.push('"' + path[0].slice(1) + '"');
+            }
             for (var i = 1; i < pathLength; i++) {
                 pathItem = path[i];
                 if ((typeof pathItem) === "string") {

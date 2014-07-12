@@ -1,0 +1,126 @@
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var ht=require("hsp/utils/hashtester");
+
+
+describe("Expression code generation", function () {
+    var h;
+
+    beforeEach(function () {
+         h=ht.newTestContext();
+     });
+
+    afterEach(function () {
+        h.$dispose();
+    });
+
+    it("validates LiteralExpr", function() {
+        {template test()}
+            {123}{"hello"}{false}
+        {/template}
+
+        var exps=test().childNodes[0].eh.exps;
+        expect(exps["e1"].toCode()).to.equal("123");
+        expect(exps["e2"].toCode()).to.equal("\"hello\"");
+        expect(exps["e3"].toCode()).to.equal("false");
+    });
+
+    it("validates DataRefExpr with variables in scope", function() {
+        {template test(msg,person)}
+            {msg}{person.name}
+        {/template}
+
+        var exps=test("hello",{name:"Bart"}).childNodes[0].eh.exps;
+        expect(exps["e1"].toCode()).to.equal("msg");
+        expect(exps["e2"].toCode()).to.equal("person.name");
+    });
+
+    it("validates DataRefExpr with variables out of scope", function() {
+        {template test()}
+            {msg}{person.name}
+        {/template}
+
+        var exps=test().childNodes[0].eh.exps;
+        expect(exps["e1"].toCode()).to.equal("msg");
+        expect(exps["e2"].toCode()).to.equal("person.name");
+    });
+
+    it("validates FuncRefExpr with variables in scope", function() {
+        {template test(foo,person)}
+            {foo()}{foo.bar(123+"hello",person.name,"blah")}
+        {/template}
+
+        var exps=test().childNodes[0].eh.exps;
+        expect(exps["e1"].toCode()).to.equal("foo()");
+        expect(exps["e2"].toCode()).to.equal("foo.bar(123 + \"hello\",person.name,\"blah\")");
+        expect(h.logs().length).to.equal(2);
+        expect(h.logs(0).message).to.equal("Invalid function reference in expression: foo()");
+        expect(h.logs(1).message).to.equal("Invalid function reference in expression: foo.bar(123 + \"hello\",person.name,\"blah\")");
+        h.logs.clear();
+    });
+
+    it("validates FuncRefExpr with variables out of scope", function() {
+        {template test()}
+            {foo()}{foo.bar(123+"hello",person.name,"blah")}
+        {/template}
+
+        var exps=test().childNodes[0].eh.exps;
+        expect(exps["e1"].toCode()).to.equal("foo()");
+        expect(exps["e2"].toCode()).to.equal("foo.bar(123 + \"hello\",person.name,\"blah\")");
+        expect(h.logs().length).to.equal(2);
+        expect(h.logs(0).message).to.equal("Invalid function reference in expression: foo()");
+        expect(h.logs(1).message).to.equal("Invalid function reference in expression: foo.bar(123 + \"hello\",person.name,\"blah\")");
+        h.logs.clear();
+    });
+
+    it("validates FuncExpr", function() {
+        {template test(person)}
+            {123 + 345 * 2}{person.name + 123 * "hello"}
+        {/template}
+
+        var exps=test().childNodes[0].eh.exps;
+        expect(exps["e1"].toCode()).to.equal("123 + (345 * 2)");
+        expect(exps["e2"].toCode()).to.equal("person.name + (123 * \"hello\")");
+    });
+
+    it("validates DynRefExpr 1", function() {
+        {template test(person)}
+            {person["name"]}{person.foo[1+2].blah}
+        {/template}
+
+        var exps=test().childNodes[0].eh.exps;
+        expect(exps["e1"].toCode()).to.equal("person.name");
+        expect(exps["e2"].toCode()).to.equal("person.foo[1 + 2].blah");
+    });
+
+    it("validates DynRefExpr 2", function() {
+        {template test(person)}
+            {person[person.key][12]}
+        {/template}
+
+        var exps=test().childNodes[0].eh.exps;
+        expect(exps["e1"].toCode()).to.equal("person[person.key][12]");
+    });
+
+    it("validates DynRefExpr 3", function() {
+        {template test(person)}
+            {person.foo[1+person.idx*person.age][123].blah["hello"]}
+        {/template}
+
+        var exps=test().childNodes[0].eh.exps;
+        expect(exps["e1"].toCode()).to.equal("person.foo[1 + (person.idx * person.age)][123].blah.hello");
+    });
+});

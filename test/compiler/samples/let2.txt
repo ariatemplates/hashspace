@@ -23,7 +23,7 @@ test=[
       n.$text(0,[" "]),
       n.let({
         e1:[1,2,"value","nbr"],
-        e2:[2,1,_blah]
+        e2:[2,1,_blah,"blah"]
       },['aVarName',1,'anotherName',2]
       )
     ],

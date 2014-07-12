@@ -110,7 +110,7 @@ test=[
             {"click":1}
     ),
     n.elt(	"img", 
-            {e1:[4,1,_doClick,0,"blah",1,2],e2:[0,1,"event"]},
+            {e1:[4,1,_doClick,"doClick",0,"blah",1,2],e2:[0,1,"event"]},
             0,
             {"click":1}
     )
