@@ -17,7 +17,57 @@
 var hsp = require("../rt"),
     klass = require("../klass"),
     log = require("./log"),
-    ExpHandler = require("./exphandler");
+    ExpHandler = require("./exphandler"),
+    doc = require("./document");
+
+var ELEMENT_NODE=1; // type of a DOM Element node
+
+/**
+ * Recursively clone an element for a querySelector query
+ * Only node elements and selector-compatible attributes are cloned
+ * @param {DOMElement} elt the element to clone
+ * @param {DOMEleemnt} parent the parent element to which the cloned element will be appended
+ * @param {Array} nodeCol an array of all the node created (each node will register in the array 
+ *    and store its index through the data-idx attribute)
+ */
+function cloneEltForSelector(elt,parent,nodeCol) {
+    if (elt.nodeType!==ELEMENT_NODE) {
+        return;
+    }
+    var tn=elt.tagName, nd, id, idx=nodeCol.length, cls=elt.className;
+    if (tn==="INPUT") {
+        // special creation mode as IE doesn't support dynamic type and name change
+        var div = doc.createElement('div'), nodeType=elt.type, nodeName=elt.name, id=elt.id;
+        div.innerHTML = '<' + tn
+            + (id? ' id="' + id + '"' : '')
+            + (nodeType?' type="' + nodeType + '"' : '')
+            + (nodeName?' name="' + nodeName + '"' : '')
+            + ' >';
+
+        nd = div.childNodes[0];
+    } else {
+        // node is not an input
+        nd = doc.createElement(tn);
+        id=elt.id;
+        if (id) {
+            nd.id=elt.id;
+        }
+    }
+    if (cls) {
+        nd.className=cls;
+    }
+    // register in the node collection
+    nd.dataIdx=idx;
+    nodeCol[idx]=elt;
+    var cn=elt.childNodes;
+    if (cn) {
+        // recursively clone child nodes
+        for (var i=0;cn.length>i;i++) {
+            cloneEltForSelector(cn[i],nd,nodeCol);
+        }
+    }
+    parent.appendChild(nd);
+}
 
 /**
  * Template node - base class of all nodes
@@ -331,34 +381,44 @@ var TNode = klass({
 
     /**
      * Helper function to get the nth DOM child node of type ELEMENT_NODE
-     * @param {Integer} index the position of the element (e.g. 0 for the first element)
+     * @param {String|Integer} idxOrSelector either CSS selector or index of the position of the root element (e.g. 0 for the first element)
      * @retrun {DOMElementNode}
      */
-    getElementNode:function(index) {
-        if (this.node) {
-            var cn=this.node.childNodes, nd, idx=-1;
-            var n1=this.node1, n2=this.node2; // for TNode using comments to delimit their content
-            if (!n2) {
-                n2=null;
-            }
-            var process=(n1)? false : true;
-            for (var i=0;cn.length>i;i++) {
-                nd=cn[i];
-                if (process) {
-                    if (nd===n2) {
-                        break;
-                    }
-                    if (nd.nodeType===1) {
-                        // 1 = ELEMENT_NODE
-                        idx++;
-                        if (idx===index) {
-                            return nd;
-                        }
-                    }
-                } else if (nd===n1) {
-                    process=true;
+    getElementNode:function(idxOrSelector) {
+        if (!this.node) {
+            return null;
+        }
+        var isSelector=typeof(idxOrSelector)==="string";
+        var cn=this.node.childNodes, nd, idx=-1;
+        var n1=this.node1, n2=this.node2; // for TNode using comments to delimit their content
+        if (!n2) {
+            n2=null;
+        }
+        var process=(n1)? false : true;
+        for (var i=0;cn.length>i;i++) {
+            nd=cn[i];
+            if (process) {
+                if (nd===n2) {
+                    break;
                 }
-                
+                if (nd.nodeType===ELEMENT_NODE) {
+                    idx++;
+
+                    if (isSelector) {
+                        // clone element to peform a querySelector query
+                        var df=doc.createDocumentFragment(), ncol=[];
+                        cloneEltForSelector(nd,df,ncol);
+                        var n=df.querySelector(idxOrSelector);
+                        if (n) {
+                            return ncol[n.dataIdx];
+                        }
+                    } else if (idx===idxOrSelector) {
+                        // argument is an integer and we look for the nth element
+                        return nd;
+                    }
+                }
+            } else if (nd===n1) {
+                process=true;
             }
         }
         return null;

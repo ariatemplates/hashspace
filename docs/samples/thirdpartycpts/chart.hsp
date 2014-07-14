@@ -23,7 +23,7 @@ var ChartCpt=klass({
   },
   $refresh:function() {
     if (!this.chart) {
-      var canvas=this.$getElement(0);
+      var canvas=this.$getElement("canvas");
       this.chart=new Chart(canvas.getContext("2d"));
     }
     if (this.type==="bar") {

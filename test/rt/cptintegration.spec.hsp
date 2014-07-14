@@ -23,9 +23,6 @@ var TestCtrl1=klass({
   attributes:{
     "value":{type:"string",binding:"2-way"}
   },
-  $init:function() {
-
-  },
   onValueChange:function(newValue,oldValue) {
     var div=this.$getElement(1);
     if (div) {
@@ -61,47 +58,114 @@ var TestCtrl1=klass({
   {/if}
 {/template}
 
+var QSelectorCtrl=klass({
+  attributes:{
+    "qselector":{type:"string"}
+  },
+  $refresh:function() {
+    var elt=this.$getElement(this.qselector);
+    if (elt) {
+      elt.title="$refresh";
+    }
+  }
+});
+
+{template qsel using c:QSelectorCtrl}
+  <div class="divA">
+    <div class="divA1 bar" title="A1">A1</div>
+    <div class="divA2">
+      <div class="divA21" id="blah">A21</div>
+    </div>
+  </div>
+  <div class="divB">
+    <div class="divB1">B1</div>
+    <div class="divB2">
+      <input id="foo" type="text"/>
+    </div>
+  </div>
+{/template}
+
+{template test4(selector)}
+  <div>
+    <#qsel qselector="{selector}"/>
+  </div>
+{/template}
 
 describe("External component integration", function () {
-    beforeEach(function() {
+    var h;
+
+    beforeEach(function () {
+        h=ht.newTestContext();
         msg='';
         refreshCount=0;
     });
+
+    afterEach(function () {
+        h.$dispose();
+    });
+
   
     it("validates $getElement() method through direct template call", function() {
-        var h=ht.newTestContext(), d={value:"hello"};
-        
+        var d={value:"hello"};
+
         test1(d).render(h.container);
         expect(msg).to.equal("hello");
         expect(refreshCount).to.equal(1);
-
-        h.$dispose();
     });
 
     it("validates $getElement() method through component call", function() {
-        var h=ht.newTestContext();
-        
         test2().render(h.container);
         expect(msg).to.equal("hello");
         expect(refreshCount).to.equal(1);
-
-        h.$dispose();
     });
 
+    it("validates $getElement() with selector 1", function() {
+        test4(".divA > .divA1").render(h.container);
+        expect(h(".divA > .divA1").attribute("title")).to.equal("$refresh");
+    });
+
+    it("validates $getElement() with selector 2", function() {
+        test4(".divB1").render(h.container);
+        expect(h(".divB1").attribute("title")).to.equal("$refresh");
+    });
+
+    it("validates $getElement() with selector 3", function() {
+        test4("#foo").render(h.container);
+        expect(h("#foo").attribute("title")).to.equal("$refresh");
+    });
+
+    it("validates $getElement() with selector 4", function() {
+        test4(".divB").render(h.container);
+        expect(h(".divB").attribute("title")).to.equal("$refresh");
+    });
+
+    it("validates $getElement() with selector 5", function() {
+        test4("input[type=text]").render(h.container);
+        expect(h("input[type=text]").attribute("title")).to.equal("$refresh");
+    });
+
+    it("validates $getElement() with selector 6", function() {
+        test4(".bar").render(h.container);
+        expect(h(".bar").attribute("title")).to.equal("$refresh");
+    });
+
+    it("validates $getElement() with selector 7", function() {
+        test4("#blah").render(h.container);
+        expect(h("#blah").attribute("title")).to.equal("$refresh");
+    });
+    
     it("validates $refresh() call when attribute changes", function() {
-        var h=ht.newTestContext(), dm={ok:true,input:"foo"};
+        var dm={ok:true,input:"foo"};
         
         test3(dm).render(h.container);
 
         h.$set(dm,"input","bar");
         expect(refreshCount).to.equal(2);
         expect(h('.bar').attribute('title')).to.equal("bar");
-
-        h.$dispose();
     });
 
     it("validates $refresh() call in {if} statements", function() {
-        var h=ht.newTestContext(), dm={ok:false,input:"foo"};
+        var dm={ok:false,input:"foo"};
         
         test3(dm).render(h.container);
 
@@ -114,9 +178,7 @@ describe("External component integration", function () {
         expect(refreshCount).to.equal(1);
 
         h.$set(dm,"ok",true);
-        expect(refreshCount).to.equal(2);     
-
-        h.$dispose();
+        expect(refreshCount).to.equal(2);
     });
 
 });
