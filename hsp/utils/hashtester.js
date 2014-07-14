@@ -65,7 +65,7 @@ var SelectionWrapper=klass({
 
         if (elt.tagName==="INPUT" && elt.type.toLowerCase()==="checkbox") {
             var ua = window.navigator ? window.navigator.userAgent.toLowerCase() : "";
-            if (!ua.match(/firefox/ig)) {
+            if (!ua.match(/(firefox)|(msie\s+9)/ig)) {
                 // we have to raise an 'onchange' before 'onclick' on browsers different from firefox
                 var originalChecked=elt.checked;
                 elt.checked=!originalChecked;
