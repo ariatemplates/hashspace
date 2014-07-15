@@ -1,24 +1,39 @@
-
 // Playground controller
 
-var hsp = require("hsp/rt"),
-    klass = require("hsp/klass"),
-    log = require("hsp/rt/log"),
-    layout = require("./layout.hsp"),
-    samples = require("../samples/samples"),
-    jx = require("/libs/jx"),
-    md = require("/libs/markdown"),
-    compile = require("hsp/compiler/compile");
+var jx = require("/libs/jx");
+var markdown = require("/libs/markdown");
+
+var hsp = require("hsp/rt");
+var compile = require("hsp/compiler/compile");
+var klass = require("hsp/klass");
+var log = require("hsp/rt/log");
+
+var layout = require("./layout.hsp");
+var samples = require("../samples/samples");
+
+
+
+
+
+var samplesMap = {}; // a map of the samples, using their containing folders as keys
+for (var index = 0, length = samples.length; index < length; index++) {
+    var sample = samples[index];
+
+    sample.index = index;
+    samplesMap[sample.folder] = sample;
+}
 
 var count = 0; // number of playgrounds that have been created
 var playgrounds = {}; // collection of playground instances
+
+
 
 var Playground = module.exports = klass({
     containerId : "",
 
     /**
      * Class constructor
-     * @param {String} containerId the id of the html element where the playground should be displayed
+     * @param {String} containerId the id of the HTML element where the playground should be displayed
      */
     $constructor : function (containerId) {
         count++;
@@ -27,19 +42,19 @@ var Playground = module.exports = klass({
 
         this.containerId = containerId;
         this.data = {
-            errors:[],
+            errors : [],
             sampleIndex : -1,
             sampleTitle : "",
             files : [],
             samples : samples,
-            navCollapsed: false,
-            navHover: false,
-            splitterPos: "50%"
+            navCollapsed : false,
+            navHover : false,
+            splitterPos : "50%"
         };
     },
 
     $dispose : function () {
-        // deregister from main collection
+        // unregister from main collection
         playgrounds['p' + this.idx] = null;
     },
 
@@ -53,6 +68,7 @@ var Playground = module.exports = klass({
             editor.setReadOnly(false);
             editor.setTheme("ace/theme/crimson_editor");
             // other themes tomorrow: ok tomorrow_night_blue
+
             var session = editor.getSession();
             session.setMode("ace/mode/javascript");
 
@@ -66,7 +82,8 @@ var Playground = module.exports = klass({
                     self.changeTimeout = null;
                 }
                 // only one file for now
-                var d = self.data, fileName = d.samples[d.sampleIndex].files[0].src;
+                var data = self.data;
+                var fileName = data.samples[data.sampleIndex].files[0].src;
                 self.changeTimeout = setTimeout(function () {
                     // the value is evaluated once the socket replies with a compiled template
                     self.changeTimeout = null;
@@ -79,29 +96,32 @@ var Playground = module.exports = klass({
     /**
      * static method called
      */
-    notifyScriptError : function (playgroundIdx, errorDescription, fileName) {
-        var err = {
+    notifyScriptError : function (playgroundIndex, errorDescription, fileName) {
+        var error = {
             message : '' + errorDescription,
             type: 'error'
         };
-        playgrounds['p' + playgroundIdx].log(err);
+        playgrounds['p' + playgroundIndex].log(error);
     },
 
     /**
      * Compile and update the code associated to one of the sample files
      */
     compileAndUpdate : function (fileName, newCode) {
-        // alert(fileName+" : "+newCode);
+        // alert(fileName + " : " + newCode);
         var self = this;
 
         var callback = function (error, code) {
             if (error) {
                 console.warn("[compileAndUpdate] " + error.text + " (" + error.status + ")");
             } else {
-                var d = self.data, spl = samples[d.sampleIndex], moduleName = "samples/" + spl.folder + "/" + fileName;
+                var data = self.data;
+                var sample = samples[data.sampleIndex];
+                var moduleName = "samples/" + sample.folder + "/" + fileName;
+
                 try {
                     // reset errors
-                    d.errors.splice(0,d.errors.length);
+                    data.errors.splice(0, data.errors.length);
 
                     log.removeAllLoggers();
                     log.addLogger(self.log.bind(self));
@@ -112,11 +132,11 @@ var Playground = module.exports = klass({
                     }
 
                     noder.execute(code, moduleName).then(function () {
-                    }, function (ex) {
-                        self.notifyScriptError(self.idx, ex, fileName);
+                    }, function (exception) {
+                        self.notifyScriptError(self.idx, exception, fileName);
                     }).end();
-                } catch (ex) {
-                    console.warn("[compileAndUpdate] " + ex.message + " (line:" + ex.line + ", column:" + ex.column
+                } catch (exception) {
+                    console.warn("[compileAndUpdate] " + exception.message + " (line:" + exception.line + ", column:" + exception.column
                             + ")");
                 }
             }
@@ -128,46 +148,62 @@ var Playground = module.exports = klass({
 
     /**
      * Show a particular sample
-     * @param {Integer} sampleIdx the index of the sample in the sample collection
+     * @param {Integer} index the index of the sample in the sample collection
      */
-    showSample : function (sampleIdx) {
+    showSample : function (index) {
         // load layout template
         layout.mainLayout(this.data, this).render(this.containerId);
         this.initEditor();
-        this.loadSample(sampleIdx);
+        this.loadSample(index);
     },
 
-    loadSample : function (idx) {
-        var spl = samples[idx], self = this, d = this.data;
-
-        if (!spl.description) {
-            spl.description="description.md";
+    loadSample : function (index) {
+        var sample;
+        if (typeof index === 'number') {
+            sample = samples[index];
+        } else {
+            sample = samplesMap[index];
         }
-        jx.load("/samples/" + spl.folder + "/" + spl.description, function (error, data) {
+        var self = this;
+        var data = this.data;
+
+        if (!sample.description) {
+            sample.description = "description.md";
+        }
+
+        jx.load("/samples/" + sample.folder + "/" + sample.description, function (error, data) {
             if (!error) {
-                var desc = document.getElementById("description");
-                var h = md.toHTML(data); // 'Hello *World*! [#output] [#snippet 0]'
-                h = h.replace(/\[\#output\]/i, '<div id="output" class="output"></div><div id="logs" class="logoutput"></div>');
-                desc.innerHTML = h;
-                if (!d.errors) {
-                    d.errors = [];
+                var descriptionElement = document.getElementById("description");
+
+                var descriptionContent = markdown.toHTML(data); // 'Hello *World*! [#output] [#snippet 0]'
+                descriptionContent = descriptionContent.replace(
+                    /\[\#output\]/i,
+                    '<div id="output" class="output"></div><div id="logs" class="logoutput"></div>'
+                );
+
+                descriptionElement.innerHTML = descriptionContent;
+
+                if (!data.errors) {
+                    data.errors = [];
                 }
-                layout.errorList(d.errors).render("logs");
+
+                layout.errorList(data.errors).render("logs");
             }
         });
 
-        d.sampleIndex = idx;
-        d.sampleTitle = spl.title;
-        d.files = spl.files;
-        jx.load("/samples/" + spl.folder + "/" + spl.files[0].src, function (error, data) {
+        data.sampleIndex = sample.index;
+        data.sampleTitle = sample.title;
+        data.files = sample.files;
+
+        jx.load("/samples/" + sample.folder + "/" + sample.files[0].src, function (error, data) {
             if (!error) {
                 self.editor.setValue(data, -1);
             }
         });
     },
 
-    log : function (msg) {
-        this.data.errors.push(msg);
+    log : function (message) {
+        this.data.errors.push(message);
         return false;
     }
 });

@@ -57,31 +57,36 @@
     
       <script src="/libs/ace.js" type="text/javascript" charset="utf-8"></script>
 <script src="/libs/Chart.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/libs/director.min.js"></script>
 <script src="/libs/noder.dev.min.js">
-  {
-    packaging: {
-      baseUrl: "/",
-      preprocessors: [{
-        pattern: /\.hsp$/,
-        module: "hsp/compiler/compile"
-      }, {
-        pattern: /^(?!hsp\/|libs\/).*\.js$/,
-        module: "hsp/transpiler/transpile"
-      }]
-    },
-    resolver: {
-      "default" : {
-        "uglify-js" : "/libs/uglify-js"
-      }
+    {
+        packaging: {
+            baseUrl: "/",
+            preprocessors: [{
+                pattern: /\.hsp$/,
+                module: "hsp/compiler/compile"
+            }, {
+                pattern: /^(?!hsp\/|libs\/).*\.js$/,
+                module: "hsp/transpiler/transpile"
+            }]
+        },
+        resolver: {
+            "default" : {
+                "uglify-js" : "/libs/uglify-js"
+            }
+        }
     }
-  }
 </script>
 <script src="/dist/0.0.5-SNAPSHOT/hashspace-noder.min.js" type="text/javascript"></script>
 <script src="/dist/0.0.5-SNAPSHOT/hashspace-noder-compiler.min.js" type="text/javascript"></script>
 <script type="noder">
-  var Playground = require("/playground/playground");
-  var pg = new Playground("main");
-  pg.showSample(0);
+    var Playground = require("/playground/playground");
+
+    var playground = new Playground("main");
+    playground.showSample(0);
+    Router({
+            ':key': playground.loadSample.bind(playground)
+    }).init();
 </script>
     
     <script type="text/javascript">hljs.initHighlightingOnLoad();</script>
