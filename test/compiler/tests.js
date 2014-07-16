@@ -117,8 +117,8 @@ describe('Block Parser: ', function () {
 
     it('should fail with a clear err message if a mandatory argument is not provided', function(){
         assert.throws(function() {
-            compiler.compile('');
-        }, /The template content to compile is mandatory./);
+            compiler.compile('', '/foo/bar.js');
+        }, /The template "\/foo\/bar.js" is empty but content to compile is mandatory./);
 
         assert.throws(function() {
             compiler.compile('{template foo()}\n{/template}');
