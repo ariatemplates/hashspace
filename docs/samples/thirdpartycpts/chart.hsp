@@ -37,7 +37,7 @@ var ChartCpt=klass({
 });
 
 {template chart using c:ChartCpt}
-  <canvas width="{c.width}" height="{c.height}"></canvas> 
+  <canvas width="{c.width}" height="{c.height}"></canvas>
 {/template}
 
 {template test(data)}
@@ -55,5 +55,13 @@ var ChartCpt=klass({
   </div>
 {/template}
 
-// display the template in the #output div
-test({type:"line",ds:"d1"}).render("output");
+
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: test,
+    data: [{
+      type:"line",
+      ds:"d1"
+    }]
+};

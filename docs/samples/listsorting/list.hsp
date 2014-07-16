@@ -1,5 +1,5 @@
 {template list(persons)}
-    <div onselectstart="return false"> 
+    <div onselectstart="return false">
         <div class="msg">
             <span class="info">
                 List sorted with the orderBy() function:
@@ -34,6 +34,9 @@ var people = [
     {name:"Maggie", age:1}
 ];
 
-// display the template in the #output div
-list(people).render("output");
-
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: list,
+    data: [people]
+};

@@ -25,4 +25,9 @@ function changeText(d) {
     d.text=msg.join("\n");
 }
 
-sample(d).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: sample,
+    data: [d]
+};

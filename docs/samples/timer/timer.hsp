@@ -4,7 +4,7 @@ var klass=require("hsp/klass");
     Seconds Elapsed: {timer.secondsElapsed}
 {/template}
 
-// klass is a little utility to create a JS object constructor 
+// klass is a little utility to create a JS object constructor
 // from a simple JSON structure - main goals are to
 // to simplify prototypal inheritance and ease code reading
 var Timer=klass({
@@ -20,5 +20,11 @@ var Timer=klass({
     }
 });
 
-// display the template in the #output div
-elapsedTime(new Timer()).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: elapsedTime,
+    data: function() {
+        return [new Timer()];
+    }
+};

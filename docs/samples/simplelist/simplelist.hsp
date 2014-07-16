@@ -2,7 +2,7 @@
     <div class="msg">Click on a person to see more details:</div>
     <ul>
     {foreach p in d.people}
-        <li class="{'details':p.showdetails, 'special':p.name==='Bart'}" 
+        <li class="{'details':p.showdetails, 'special':p.name==='Bart'}"
             onclick="{toggleDetails(p)}">
             {p.name}
             {if p.showdetails}: {p.age} years old{/if}
@@ -28,6 +28,9 @@ var d={
     ]
 }
 
-// display the template in the #output div
-people(d).render("output");
-
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: people,
+    data: [d]
+};

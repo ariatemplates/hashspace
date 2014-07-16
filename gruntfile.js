@@ -218,10 +218,10 @@ module.exports = function (grunt) {
       }
     },
     jscs: {
-        src: ['hsp/**/*.js', 'docs/**/*.js', '!docs/**/*.js'],
-        options: {
-            config: '.jscs.json'
-        }
+      src: ['hsp/**/*.js', 'docs/**/*.js', '!docs/**/*.js'],
+      options: {
+        config: '.jscs.json'
+      }
     },
     hspserver: {
       port: 8000,
@@ -281,72 +281,75 @@ module.exports = function (grunt) {
       }
     },
     peg:{
-        grammar: {
-            src: "hsp/compiler/parser/hspblocks.pegjs",
-            dest: "hsp/compiler/parser/hspblocks.peg.js",
-            options:{
-                cache:true,
-                trackLineAndColumn : true
-            }
+      grammar: {
+        src: "hsp/compiler/parser/hspblocks.pegjs",
+        dest: "hsp/compiler/parser/hspblocks.peg.js",
+        options:{
+          cache:true,
+          trackLineAndColumn : true
         }
+      }
     },
     atpackager : {
-            options : {
-                sourceDirectories : ['.'],
-                sourceFiles : ['hsp/**/*.js'],
-                outputDirectory : 'dist/',
-                visitors : [{
-                            type : "ImportSourceFile",
-                            cfg : {
-                                sourceFile : "tmp/uglify-js.js",
-                                targetLogicalPath : "uglify-js.js"
-                            }
-                        }, {
-                            type : "ImportSourceFile",
-                            cfg : {
-                                sourceFile : require.resolve("acorn/acorn"),
-                                targetLogicalPath : "acorn/acorn.js"
-                            }
-                        }, "NoderDependencies", {
-                            type : "CheckDependencies",
-                            cfg : {
-                                noCircularDependencies : false
-                            }
-                        }]
+      options : {
+        sourceDirectories : ['.'],
+        sourceFiles : ['hsp/**/*.js'],
+        outputDirectory : 'dist/',
+        visitors : [{
+          type : "ImportSourceFile",
+          cfg : {
+            sourceFile : "tmp/uglify-js.js",
+            targetLogicalPath : "uglify-js.js"
+          }
+        }, {
+          type : "ImportSourceFile",
+          cfg : {
+            sourceFile : require.resolve("acorn/acorn"),
+            targetLogicalPath : "acorn/acorn.js"
+          }
+        },
+        "NoderDependencies", {
+          type : "CheckDependencies",
+          cfg : {
+            noCircularDependencies : false
+          }
+        }]
+      },
 
-            },
-            uglify : {
-                options : {
-                    sourceDirectories : ["node_modules/uglify-js/lib"],
-                    sourceFiles : [],
-                    outputDirectory : 'tmp',
-                    visitors : ["NoderExportVars"],
-                    packages : [{
-                        builder : "Concat",
-                        name : 'uglify-js.js',
-                        files : ["utils.js", "ast.js", "parse.js", "transform.js", "scope.js", "output.js",
-                                "compress.js"]
-                    }]
-                }
-            },
-            runtime : {
-                options : {
-                    defaultBuilder : {
-                        type : "NoderPackage",
-                        cfg : {
-                            outputFileWrapper : "(function(define){$CONTENT$;})(noder.define);"
-                        }
-                    },
-                    packages : [{
-                                name : "hashspace-noder.js",
-                                files : ['hsp/*.js', 'hsp/rt/*.js', 'hsp/gestures/*.js']
-                            }, {
-                                name : "hashspace-noder-compiler.js",
-                                files : ['hsp/compiler/compile.js','hsp/transpiler/transpile.js']
-                            }]
-                }
-            }
+      uglify : {
+        options : {
+          sourceDirectories : ["node_modules/uglify-js/lib"],
+          sourceFiles : [],
+          outputDirectory : 'tmp',
+          visitors : ["NoderExportVars"],
+          packages : [{
+            builder : "Concat",
+            name : 'uglify-js.js',
+            files : [
+              "utils.js", "ast.js", "parse.js", "transform.js", "scope.js", "output.js",
+              "compress.js" ]
+          }]
         }
+      },
+
+      runtime : {
+        options : {
+          defaultBuilder : {
+            type : "NoderPackage",
+            cfg : {
+              outputFileWrapper : "(function(define){$CONTENT$;})(noder.define);"
+            }
+          },
+          packages : [{
+            name : "hashspace-noder.js",
+            files : ['hsp/*.js', 'hsp/rt/*.js', 'hsp/gestures/*.js']
+          }, {
+            name : "hashspace-noder-compiler.js",
+            files : ['hsp/compiler/compile.js','hsp/transpiler/transpile.js']
+          }]
+        }
+      }
+    }
   });
 
   // Automatically load all the grunt tasks

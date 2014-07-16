@@ -1,19 +1,12 @@
 // Playground controller
 
-var jx = require("/libs/jx");
-var markdown = require("/libs/markdown");
-
 var hsp = require("hsp/rt");
-var compile = require("hsp/compiler/compile");
 var klass = require("hsp/klass");
 var log = require("hsp/rt/log");
+var compile;
 
-var layout = require("./layout.hsp");
+var layout = require("./layout.hsp.js");
 var samples = require("../samples/samples");
-
-
-
-
 
 var samplesMap = {}; // a map of the samples, using their containing folders as keys
 for (var index = 0, length = samples.length; index < length; index++) {
@@ -26,8 +19,6 @@ for (var index = 0, length = samples.length; index < length; index++) {
 var count = 0; // number of playgrounds that have been created
 var playgrounds = {}; // collection of playground instances
 
-
-
 var Playground = module.exports = klass({
     containerId : "",
 
@@ -35,22 +26,30 @@ var Playground = module.exports = klass({
      * Class constructor
      * @param {String} containerId the id of the HTML element where the playground should be displayed
      */
-    $constructor : function (containerId) {
+    $constructor : function (containerId, devMode) {
         count++;
         this.idx = count;
         playgrounds['p' + this.idx] = this; // register in the global list - cf. notifyScriptError
 
         this.containerId = containerId;
+        this.devMode = devMode;
         this.data = {
             errors : [],
             sampleIndex : -1,
             sampleTitle : "",
-            files : [],
             samples : samples,
             navCollapsed : false,
             navHover : false,
             splitterPos : "50%"
         };
+
+
+        if (!devMode) {
+            var compiler = document.createElement("script");
+            compiler.type = "text/javascript";
+            compiler.src = "/dist/" + window.hashspace_version + "/hashspace-noder-compiler.min.js";
+            document.querySelector("head").appendChild(compiler);
+        }
     },
 
     $dispose : function () {
@@ -81,20 +80,36 @@ var Playground = module.exports = klass({
                     clearTimeout(self.changeTimeout);
                     self.changeTimeout = null;
                 }
-                // only one file for now
+
                 var data = self.data;
-                var fileName = data.samples[data.sampleIndex].files[0].src;
+                var sample = data.samples[data.sampleIndex];
+                var fileName = sample.files[0].src;
+
                 self.changeTimeout = setTimeout(function () {
-                    // the value is evaluated once the socket replies with a compiled template
                     self.changeTimeout = null;
-                    self.compileAndUpdate(fileName, self.editor.getValue());
-                }, 200);
+                    if (sample.changed) {
+                        self.compileAndUpdate(fileName, self.editor.getValue());
+                    } else {
+                        sample.changed = true;
+                        self.executeSampleTpl(sample);
+                    }
+                }, 100);
             });
         }
     },
 
+    executeSampleTpl: function(sample) {
+        var template = sample.sample.template,
+            data = sample.sample.data || [];
+        if (typeof data === 'function') {
+            data = data.call(sample.sample);
+        }
+        template.apply(sample.sample, data).render("output");
+    },
+
     /**
-     * static method called
+     * Notify the playground about compilation errors
+     * @static
      */
     notifyScriptError : function (playgroundIndex, errorDescription, fileName) {
         var error = {
@@ -108,7 +123,6 @@ var Playground = module.exports = klass({
      * Compile and update the code associated to one of the sample files
      */
     compileAndUpdate : function (fileName, newCode) {
-        // alert(fileName + " : " + newCode);
         var self = this;
 
         var callback = function (error, code) {
@@ -131,24 +145,32 @@ var Playground = module.exports = klass({
                         require.cache[moduleName] = null;
                     }
 
-                    noder.execute(code, moduleName).then(function () {
+                    // reexecute the module
+                    noder.execute(code, moduleName).then(function (sampleExports) {
+                        var spl = data.samples[data.sampleIndex];
+                        spl.sample = sampleExports;
+                        self.executeSampleTpl(spl);
                     }, function (exception) {
                         self.notifyScriptError(self.idx, exception, fileName);
                     }).end();
                 } catch (exception) {
-                    console.warn("[compileAndUpdate] " + exception.message + " (line:" + exception.line + ", column:" + exception.column
-                            + ")");
+                    console.warn("[compileAndUpdate] " + exception.message + " (line:" + exception.line +
+                                 ", column:" + exception.column + ")");
                 }
             }
         };
+
+        if (!compile) {
+            compile = module.require("hsp/compiler/compile");
+        }
 
         var compiledCode = compile(newCode, fileName);
         callback(null, compiledCode);
     },
 
     /**
-     * Show a particular sample
-     * @param {Integer} index the index of the sample in the sample collection
+     * Initialize the playground layout, and load a sample
+     * @param {Integer|String} index the index of the sample in the sample collection, or its name (folder based)
      */
     showSample : function (index) {
         // load layout template
@@ -157,49 +179,24 @@ var Playground = module.exports = klass({
         this.loadSample(index);
     },
 
+    /**
+     * Show a particular sample
+     * @param {Integer|String} index the index of the sample in the sample collection, or its name (folder based)
+     */
     loadSample : function (index) {
-        var sample;
-        if (typeof index === 'number') {
-            sample = samples[index];
-        } else {
-            sample = samplesMap[index];
-        }
-        var self = this;
-        var data = this.data;
+        var sample = (typeof index === 'number') ? samples[index] : samplesMap[index];
 
-        if (!sample.description) {
-            sample.description = "description.md";
-        }
+        if (this.data.sampleIndex === sample.index) return;
 
-        jx.load("/samples/" + sample.folder + "/" + sample.description, function (error, data) {
-            if (!error) {
-                var descriptionElement = document.getElementById("description");
+        console.log("loading", index);
+        sample.changed = sample.changed || false;
 
-                var descriptionContent = markdown.toHTML(data); // 'Hello *World*! [#output] [#snippet 0]'
-                descriptionContent = descriptionContent.replace(
-                    /\[\#output\]/i,
-                    '<div id="output" class="output"></div><div id="logs" class="logoutput"></div>'
-                );
+        this.data.errors = [];
+        layout.errorList(this.data.errors).render("logs");
 
-                descriptionElement.innerHTML = descriptionContent;
-
-                if (!data.errors) {
-                    data.errors = [];
-                }
-
-                layout.errorList(data.errors).render("logs");
-            }
-        });
-
-        data.sampleIndex = sample.index;
-        data.sampleTitle = sample.title;
-        data.files = sample.files;
-
-        jx.load("/samples/" + sample.folder + "/" + sample.files[0].src, function (error, data) {
-            if (!error) {
-                self.editor.setValue(data, -1);
-            }
-        });
+        this.data.sampleIndex = sample.index;
+        this.data.sampleTitle = sample.title;
+        this.editor.setValue(sample.files[0].text, -1);
     },
 
     log : function (message) {

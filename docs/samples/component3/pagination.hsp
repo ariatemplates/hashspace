@@ -1,5 +1,5 @@
 var klass=require("hsp/klass");
-    
+
 function calculateNoOfPages(collectionSize, pageSize) {
     return Math.ceil(collectionSize / pageSize);
 }
@@ -7,7 +7,7 @@ function calculateNoOfPages(collectionSize, pageSize) {
 function rebuildPagesModel(noOfPages) {
     var pages = [];
     for (var i=0; i<noOfPages; i++) {
-        pages.push(i);    
+        pages.push(i);
     }
     return pages;
 }
@@ -15,7 +15,7 @@ function rebuildPagesModel(noOfPages) {
 function rebuildInternalModel(ctl) {
    ctl.noOfPages = calculateNoOfPages(ctl.collectionsize, ctl.pagesize);
    ctl.pages = rebuildPagesModel(ctl.noOfPages);
-   ctl.selectPage(ctl.activepage); 
+   ctl.selectPage(ctl.activepage);
 }
 
 var Pagination=klass({
@@ -26,7 +26,7 @@ var Pagination=klass({
       "onpageselect":{type:"callback"}
     },
     $init:function() {
-       rebuildInternalModel(this); 
+       rebuildInternalModel(this);
     },
     selectPage: function(newPageNo) {
         newPageNo = Math.min(Math.max(0, newPageNo), this.noOfPages-1);
@@ -35,11 +35,11 @@ var Pagination=klass({
           this.onpageselect({pageNumber:this.activepage});
         }
     },
-    onCollectionsizeChange: function() {       
-        rebuildInternalModel(this); 
+    onCollectionsizeChange: function() {
+        rebuildInternalModel(this);
     },
     onPagesizeChange: function() {
-       rebuildInternalModel(this); 
+       rebuildInternalModel(this);
     }
 });
 
@@ -52,13 +52,13 @@ var Pagination=klass({
             <li class="{'active':page==p.activepage}">
                 <a onclick="{p.selectPage(page)}">{page + 1}</a>
             </li>
-        {/foreach}        
+        {/foreach}
         <li class="{'disabled':p.activepage>=p.noOfPages-1}">
             <a onclick="{p.selectPage(p.activepage+1)}">Next</a>
         </li>
     </ul>
 {/template}
- 
+
 {template paginationTest(model)}
   <div class="section3">
     <label class="fieldlabel">Active page: </label><input type="number"  model="{model.active}"/><br/>
@@ -66,7 +66,7 @@ var Pagination=klass({
     <label class="fieldlabel">Page size: </label><input type="number"  model="{model.pageSize}"/><br/>
     Last page selection  <i> - from event</i>: <span class="textValue">{model.lastSelectedPage}</span>
   </div>
-  <#pagination activepage="{model.active}" collectionsize="{model.collectionSize}" 
+  <#pagination activepage="{model.active}" collectionsize="{model.collectionSize}"
     pagesize="{model.pageSize}" onpageselect="{updateSelection(event.pageNumber)}"/>
 
 {/template}
@@ -82,5 +82,9 @@ function updateSelection(newPageNumber) {
   model.lastSelectedPage = newPageNumber;
 }
 
-// display the test template in the #output div
-paginationTest(model).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: paginationTest,
+    data: [model]
+};

@@ -13,13 +13,12 @@ var Timer=klass({
       clearInterval(this._iid);
     },
     tick:function() {
-      console.log("tick");
       this.secondsElapsed++;
     }
 });
 
 {template timer using t:Timer}
-    Elapsed time: {t.secondsElapsed}s 
+    Elapsed time: {t.secondsElapsed}s
 {/template}
 
 {template test}
@@ -28,5 +27,9 @@ var Timer=klass({
   <#timer initvalue="10"/>
 {/template}
 
-// display the test template in the #output div
-test().render("output");
+
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: test
+};
