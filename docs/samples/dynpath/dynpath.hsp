@@ -1,9 +1,9 @@
 {template grid(data)}
-    <div> 
+    <div>
         {foreach idx in data.rows}
             <div>
                 {foreach name in data.columns}
-                    {if name==="c"} 
+                    {if name==="c"}
                         <input class="cell" type="text" model="{data.items[idx][name]}">
                     {/if}
                     <div class="cell" title="Ref: {idx}/{name}">
@@ -51,6 +51,9 @@ function swapC() {
     }
 }
 
-// display the template in the #output div
-grid(model).render("output");
-
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: grid,
+    data: [model]
+};

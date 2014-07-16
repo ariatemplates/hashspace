@@ -1,8 +1,8 @@
 {template message(msg)}
     // onselectstart: prevent double-click selection on a elements
-    <div onselectstart="return false"> 
-        <a onclick="{toggleUrgency()}">Change Urgency</a> - 
-        <a onclick="{setCategory('personal')}">Set "Personal"</a> - 
+    <div onselectstart="return false">
+        <a onclick="{toggleUrgency()}">Change Urgency</a> -
+        <a onclick="{setCategory('personal')}">Set "Personal"</a> -
         <a onclick="{setCategory('professional')}">Set "Professional"</a>
         <div class="{'msg', 'urgent':msg.urgency, msg.category}">
             Message: {msg.text}
@@ -26,5 +26,9 @@ function setCategory(cat) {
     msg.category = cat;
 }
 
-// display the template in the #output div
-message(msg).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: message,
+    data: [msg]
+};

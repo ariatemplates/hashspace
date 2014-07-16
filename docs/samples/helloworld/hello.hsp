@@ -5,5 +5,9 @@
     </div>
 {/template}
 
-// display the template in the #output div
-hello("World").render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+  template: hello,
+  data: ["World"]
+};

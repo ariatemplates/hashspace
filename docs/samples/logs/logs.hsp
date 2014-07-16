@@ -2,8 +2,8 @@ var log=require("hsp/rt/log");
 
 {template test(cities, logs)}
   {log "top-level:",scope}
-  <a onclick="{increaseList()}">Increase list</a> - 
-  <a onclick="{decreaseList()}">Decrease list</a> - 
+  <a onclick="{increaseList()}">Increase list</a> -
+  <a onclick="{decreaseList()}">Decrease list</a> -
   <a onclick="{clearLogs()}">Clear logs</a>
   <ul>
     {foreach idx,city in cities}
@@ -50,5 +50,9 @@ function clearLogs() {
   logs.splice(0,logs.length);
 }
 
-// render template in the #output div
-test(cities,logs).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: test,
+    data: [cities, logs]
+};

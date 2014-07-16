@@ -1,5 +1,5 @@
 var klass=require("hsp/klass");
-  
+
 // simple list controller
 var ListController = klass({
   attributes: {
@@ -20,7 +20,7 @@ var ListController = klass({
     {if lc.head}
       <div class="head"><#lc.head/></div>
     {/if}
-    {if !lc.content} 
+    {if !lc.content}
         <span class="nodata">Empty list</span>
     {else}
         <ul class="">
@@ -45,10 +45,10 @@ var ListController = klass({
 
   <#list class="listcpt">
     <@head>
-      Dynamic list: 
-      <a onclick="{toggle()}">Toggle favourite</a> - 
-      <a onclick="{empty()}">Empty</a> - 
-      <a onclick="{update()}">Update list</a> 
+      Dynamic list:
+      <a onclick="{toggle()}">Toggle favourite</a> -
+      <a onclick="{empty()}">Empty</a> -
+      <a onclick="{update()}">Update list</a>
     </@head>
     {if d.preferredOption}
       <@option>{d.preferredOption} (!)</@option>
@@ -81,5 +81,9 @@ function update() {
   }
 }
 
-// display the test template in the #output div
-test(model).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: test,
+    data: [model]
+};

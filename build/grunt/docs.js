@@ -22,6 +22,7 @@ module.exports = function(grunt) {
   var DOCS_PATH = "./docs/";
 
   var DOCS_MD_GLOB = [ '**/*.md', '!samples/**/*.md' ],
+      DOCS_MD_SAMPlES = [ 'samples/**/*.md' ],
       DOCS_STATICS_GLOB = [
         'css/**',
         'images/*',
@@ -49,9 +50,10 @@ module.exports = function(grunt) {
       WATCH_PLAYGROUND_GLOB = DOCS_PLAYGROUND_GLOB.map(pathifyFromDocs);
 
 
-
-  // Less compilation
-
+  /* ------------------
+   *  Less compilation
+   * ------------------
+   */
   grunt.config.set('less', {
     "docs": {
       options: {
@@ -71,9 +73,12 @@ module.exports = function(grunt) {
   });
 
 
-  // Uglify TODOMVC
+  /* ----------------
+   *  Uglify Playground + Samples + TODOMVC
+   * ----------------
+   */
   var uglifyConfig = grunt.config("uglify");
-  uglifyConfig.todomvc = {
+  uglifyConfig["todomvc"] = {
     files: [
       {
         expand: true,
@@ -82,11 +87,21 @@ module.exports = function(grunt) {
     ]
   };
 
+  uglifyConfig["playground"] = {
+    files: [
+      {
+        expand: true,
+        src: [ GH_PAGES_PATH + 'playground/*-all.js' ]
+      }
+    ]
+  };
+
   grunt.config("uglify", uglifyConfig);
 
-
-  // Markdown Generation
-
+  /* ----------------------
+   *  Markadown Generation
+   * ----------------------
+   */
   function extractYamlHeader(src, context) {
     var splits = src.split(yamlheadsep), yamlheader, markdown = src;
     // we might have a yaml markdown header
@@ -158,10 +173,33 @@ module.exports = function(grunt) {
           highlight: "manual"
         }
       }
+    },
+    "samples": {
+      files: [
+        {
+          expand: true,
+          cwd: DOCS_PATH,
+          src: DOCS_MD_SAMPlES,
+          dest: GH_PAGES_PATH,
+          ext: '.html'
+        }
+      ],
+      options: {
+        template: DOCS_PATH + '_layouts/sample_desc.html',
+        postCompile: function(markdown, context) {
+          return markdown.replace("<p>[#output]</p>", "[#output]");
+        },
+        markdownOptions: {
+          gfm: true
+        }
+      }
     }
   });
 
-  // TODOMVC precompilation
+  /* ------------------------
+   *  TODOMVC precompilation
+   * ------------------------
+   */
   grunt.registerTask("docs:todo-compile", "Precompile all related files for TODOMVC example", function() {
     var renderer  = require("../../hsp/compiler/renderer"),
         tranpiler = require("../../hsp/transpiler");
@@ -212,7 +250,10 @@ module.exports = function(grunt) {
       });
   }
 
-  // Playground Express Server
+  /* ---------------------------
+   *  Playground Express Server
+   * ---------------------------
+   */
   grunt.registerTask("docs:playground-server", "Launch local version of documentation including playground", function() {
     grunt.config.requires('hspserver.port');
     grunt.config.requires('hspserver.base');
@@ -276,17 +317,76 @@ module.exports = function(grunt) {
   });
 
 
-  // Building all needed files for the playground
+  /* ----------------------------------------------
+   *  Building all needed files for the playground
+   * ----------------------------------------------
+   */
+
+  // updating atpackager config to package the playground
+  var atpackagerConfig = grunt.config('atpackager');
+  atpackagerConfig["docs-playground"] = {
+    options: {
+      sourceDirectories : [
+        GH_PAGES_PATH
+      ],
+      outputDirectory : GH_PAGES_PATH + 'playground/',
+      visitors: [],
+      defaultBuilder : {
+        type : "NoderPackage",
+        cfg : {
+          outputFileWrapper : "(function(define){$CONTENT$;})(noder.define);"
+        }
+      },
+      packages : [{
+        name : "playground-samples-all.js",
+        files : [ 'samples/**/*.js']
+      }, {
+        name : "playground-all.js",
+        files : [ 'playground/**/*.js']
+      }]
+    }
+  };
+  grunt.config('atpackager', atpackagerConfig);
+
+  grunt.registerTask("docs:samples-list-build", "Build a json file containing the samples list", function() {
+    // Merging those markdown content into `samples/samples.js`
+    var samplesList = require('../../docs/samples/samples'), samplesListString;
+
+    grunt.file.expand({ cwd: DOCS_PATH, filter: "isDirectory" }, ['samples/*']).forEach(function(sample) {
+      var name = sample.split("/").pop(),
+          item = (samplesList.filter(function(s) { return s.folder === name; }) || [])[0],
+          hsp, html, desc, hsptext;
+
+      if (item) {
+        hsp = sample + "/" + item.files[0].src;
+        html = sample + "/description.html";
+        desc = grunt.file.read(GH_PAGES_PATH + html);
+        hsptext = grunt.file.read(DOCS_PATH + hsp);
+
+        item.description = desc;
+        item.files[0].text = hsptext;
+        item.sample = "require('/"+hsp+".js')";
+      }
+    });
+
+    samplesListString = JSON.stringify(samplesList, null, 2);
+    samplesListString = samplesListString.replace(/"(require\('.*'\))"/gi, "$1");
+    grunt.file.write(GH_PAGES_PATH + "samples/samples.js", "module.exports = " + samplesListString + ";");
+  });
 
   grunt.registerTask("docs:playground-build", "Build a static playground version", function() {
+    var renderer  = require("../../hsp/compiler/renderer"),
+        tranpiler = require("../../hsp/transpiler");
 
     grunt.log.subhead("Building playground and samples files");
+
     // We copy the Playground files
-    grunt.verbose.or.write("Copying playground file...");
+    grunt.verbose.or.write("Copying playground files...");
     grunt.file.expand({ cwd: DOCS_PATH, filter: "isFile" }, DOCS_PLAYGROUND_GLOB).forEach(function(file) {
       grunt.file.copy(DOCS_PATH + file, GH_PAGES_PATH + file);
     });
     grunt.verbose.or.ok();
+
 
     // We copy the Samples files
     grunt.verbose.or.write("Copying samples file...");
@@ -295,11 +395,42 @@ module.exports = function(grunt) {
     });
     grunt.verbose.or.ok();
 
+    grunt.verbose.or.write("Compiling playground & samples hsp files...");
+    grunt.file.expand({ cwd: DOCS_PATH }, ['playground/**/*.hsp', 'samples/**/*.hsp']).forEach(function(file) {
+      grunt.file.copy(pathifyFromDocs(file),
+        GH_PAGES_PATH + file + ".js",
+        {
+          process: function(content) {
+            var compiled = renderer.renderString(content, "inline.js");
+            if (compiled.serverErrors && compiled.serverErrors.length) {
+              grunt.fail.fatal("Hashspace compilation " + compiled.serverErrors[0].description);
+              return false;
+            }
+            return compiled.code;
+          }
+        });
+    });
+    grunt.file.expand({ cwd: DOCS_PATH }, ['playground/**/*.js']).forEach(function(file) {
+      grunt.file.copy(pathifyFromDocs(file),
+        GH_PAGES_PATH + file,
+        {
+          process: function(content) {
+            var tranpiled = tranpiler.processString(content, "inline.js");
+            return tranpiled.code;
+          }
+        });
+    });
+    grunt.verbose.or.ok();
+
+    grunt.task.run(["markdown:samples", "docs:samples-list-build", "atpackager:docs-playground", "uglify:playground"]);
+
   });
 
 
-  // Preparing the build
-
+  /* ---------------------
+   *  Preparing the build
+   * ---------------------
+   */
   grunt.registerTask("docs:setup", "Verify that everything is fine before we start", function() {
     if (!grunt.file.exists(GH_PAGES_PATH)) {
       grunt.verbose.or.write(GH_PAGES_PATH + " does not exist, let's create it...");
@@ -317,8 +448,10 @@ module.exports = function(grunt) {
   });
 
 
-  // Copying static files
-
+  /* ----------------------
+   *  Copying static files
+   * ----------------------
+   */
   grunt.registerTask("docs:copy-statics", "Copy static files", function() {
     // Moving previously built uglify.js to /libs
     grunt.file.copy("tmp/uglify-js.js", GH_PAGES_PATH + 'libs/uglify-js.js');
@@ -347,8 +480,10 @@ module.exports = function(grunt) {
   });
 
 
-  // Watching stuff...
-
+  /* -------------------
+   *  Watching stuff...
+   * -------------------
+   */
   grunt.registerTask("docs:watch", "Watching any file where local website should be rebuild", function() {
     var watchConfig = grunt.config("watch");
 
@@ -379,8 +514,10 @@ module.exports = function(grunt) {
 
 
 
-  // Public tasks definition
-
+  /* -------------------------
+   *  Public tasks definition
+   * -------------------------
+   */
   grunt.registerTask("docs:todo-package", [
     "docs:todo-compile",
     "uglify:todomvc"
@@ -397,6 +534,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask("docs:playground", [
+    "package",
     "docs:prepare",
     "docs:playground-build",
     "docs:playground-server"

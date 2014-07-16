@@ -207,5 +207,4 @@ module.exports = [{
                         main : true
                     }]
         }
-
 ];

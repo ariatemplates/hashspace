@@ -1,5 +1,5 @@
 {template gestures(msgList)}
-    <div class="touchboard" style="height:200px; background: #27AAFC;text-align:center;" 
+    <div class="touchboard" style="height:200px; background: #27AAFC;text-align:center;"
     	ontap="{addMsg(event)}" ontapstart="{addMsg(event)}" ontapcancel="{addMsg(event)}"
         onlongpress="{addMsg(event)}" onlongpressstart="{addMsg(event)}" onlongpresscancel="{addMsg(event)}"
         onsingletap="{addMsg(event)}" onsingletapstart="{addMsg(event)}" onsingletapcancel="{addMsg(event)}"
@@ -28,5 +28,9 @@ function clearMsg() {
 
 }
 
-// display the template in the #output div
-gestures(eventLog).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: gestures,
+    data: [eventLog]
+};

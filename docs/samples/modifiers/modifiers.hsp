@@ -5,7 +5,7 @@ function changeCase(s,arg) {
         return (""+s).toUpperCase();
     } else if (arg==="lower") {
         return (""+s).toLowerCase();
-    } 
+    }
     return s;
 }
 
@@ -71,4 +71,10 @@ var data={
     ]
 };
 
-sample(data).render("output");
+
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: sample,
+    data: [data]
+};

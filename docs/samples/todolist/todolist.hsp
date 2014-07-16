@@ -34,5 +34,10 @@ var TodoCtl=klass({
     }
 });
 
-// display the template in the #output div
-todolist(new TodoCtl()).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+var ctrl = new TodoCtl();
+module.exports = {
+    template: todolist,
+    data: [ctrl]
+};
