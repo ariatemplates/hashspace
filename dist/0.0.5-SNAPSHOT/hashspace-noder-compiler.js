@@ -26939,11 +26939,11 @@
  */
         exports.compile = function(template, path, options) {
             options = options || {};
-            if (!template) {
-                throw new Error("The template content to compile is mandatory.");
-            }
             if (!path) {
                 throw new Error('The template "path" argument is mandatory.');
+            }
+            if (!template) {
+                throw new Error('The template "' + path + '" is empty but content to compile is mandatory.');
             }
             // Parsing might throw an exception
             var res;
