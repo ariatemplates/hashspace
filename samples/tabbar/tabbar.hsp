@@ -89,5 +89,8 @@ var TabBarCtrl = klass({
   </label>
 {/template}
 
-
-test().render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: test
+};

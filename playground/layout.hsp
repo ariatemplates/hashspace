@@ -1,4 +1,46 @@
-var splitter = require("./splitter.hsp");
+var splitter = require("./splitter.hsp.js");
+
+var Class = require("hsp/klass");
+
+var DescriptionCtrl = Class({
+    attributes: {
+        sample: { type: "object", binding: "1-way" }
+    },
+    $init: function() {
+        this.onSampleChange();
+    },
+    $refresh: function() {
+        if (!this.sample) return;
+        var root = this.$getElement(0), before, after;
+        if (root) {
+            before = root.querySelector(".before");
+            after = root.querySelector(".after");
+            before.innerHTML = this.before;
+            after.innerHTML = this.after;
+        }
+    },
+
+    onSampleChange: function() {
+        if (!this.sample) return;
+        var parts = this.sample.description.split("[#output]");
+        this.before = parts[0];
+        this.after = parts[1];
+    }
+});
+
+{template desc using ctrl:DescriptionCtrl}
+    <div id="description">
+        {if ctrl.sample}
+            <div class="before"></div>
+        {/if}
+        <div id="output" class="output"></div>
+        <div id="logs" class="logoutput"></div>
+        {if ctrl.sample}
+            <div class="after"></div>
+        {/if}
+    </div>
+{/template}
+
 
 {export template mainLayout(data, playground)}
     <#sampleList data="{data}" playground="{playground}"/>
@@ -19,8 +61,7 @@ var splitter = require("./splitter.hsp");
         <div class="description" style="left: {data.splitterPos}">
             <div>
                 <h4>Description</h4>
-                // TODO remove this fixed id
-                <div id="description"></div>
+                <#desc sample="{data.samples[data.sampleIndex]}" />
             </div>
         </div>
     </div>

@@ -1,0 +1,11 @@
+<p>This example shows a simple component that allows entering a numeric value. The value entered by the user will be considered as valid if it can be interpreted as a number, and if it is included within the <em>min</em> and <em>max</em> boundaries. When the value is incorrect, the field background is set to orange. The component also shows a button next to the field in order to let the user reset the value to a predetermined value.</p>
+[#output]
+<p>This component exposes 4 public attributes and 2 internal values (<em>internalValue</em> and <em>isValid</em>) to the component template. Of course, only the attributes are accessible to the component&#39;s host template. The main point of this example is to show how internal properties can be synchronized with public attributes - for instance:</p>
+<ul>
+<li>when the <em>internalValue</em> changes, its value should be propagated to the value attribute only if it is considered valid</li>
+<li>the <em>value</em> attribute should be propagated to the field only if valid</li>
+<li>the <em>isValid</em> property has to change depending on the <em>internalValue</em> and on the attribute values, etc.</li>
+</ul>
+<p>To manage these internal constraints the controller can implement onXxxChange() methods that will be automatically called when properties or bound attributes are updated</p>
+<p>It is important to note that <strong>change handlers are not called when changes are performed by the controller itself</strong> - i.e. <strong>if a controller property is changed in a change handler, the change handler of the corresponding property will not be called</strong>. This allows avoiding infinite loops and strange side effects.</p>
+

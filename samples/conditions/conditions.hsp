@@ -12,18 +12,18 @@ var klass=require("hsp/klass");
 	    	(Number is less than zero)
 	    {/if}
 	    <br/>
-	    Condition using ternary operator: Number is 
-	    <span class="textvalue"> 
-	    	{nt.number>0? "strictly positive" : "negative or null"} 
+	    Condition using ternary operator: Number is
+	    <span class="textvalue">
+	    	{nt.number>0? "strictly positive" : "negative or null"}
     	</span>
 	</div>
     <div class="section2">
-	    <a onclick="{nt.increment(1)}">Increment Number</a> - 
+	    <a onclick="{nt.increment(1)}">Increment Number</a> -
 	    <a onclick="{nt.increment(-1)}">Decrement Number</a>
     </div>
 {/template}
 
-// klass is a little utility to create a JS object constructor 
+// klass is a little utility to create a JS object constructor
 // from a simple JSON structure - main goals are to
 // to simplify prototypal inheritance and ease code reading
 var NumberTester=klass({
@@ -35,5 +35,11 @@ var NumberTester=klass({
     }
 });
 
-// display the template in the #output div
-test(new NumberTester()).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: test,
+    data: function() {
+        return [new NumberTester()];
+    }
+};

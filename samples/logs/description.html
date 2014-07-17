@@ -1,0 +1,22 @@
+<p>This example shows how to trace data that are used in a template. It also shows how to retrieve the logs to manage errors at application level, instead of displaying errors in the browser console.</p>
+[#output]
+<p>As you can see logs can be generated from a template through the <strong>{log}</strong> statement. It supports multiple arguments that are automatically concatenated as one string. The first level of object properties and array items are automatically displayed, so that all objects accessible at a template position can be discovered through <strong>{log scope}</strong></p>
+<p>The <strong>{log}</strong> statement will automatically create a new log when one of the log argument changes.</p>
+<p>On the JavaScript side, Hashspace offers a specific <strong>log</strong> library - cf. <em>require(&quot;hsp/rt/log&quot;)</em>. This library offers simple logging features that allows to log messages to the same place as the <strong>{log}</strong> statement. The log data can then be retrieved by registering a logger function through <strong>log.addLogger()</strong>. This function will receive structured log messages that can be handled at application level. The main methods of the <strong>log</strong> library are the following:</p>
+<ul>
+<li><em>log(obj1 [, obj2, ..., objN, metaData])</em> : to log debug data</li>
+<li><em>log.info(obj1 [, obj2, ..., objN, metaData])</em> : to log informative data</li>
+<li><em>log.warning(obj1 [, obj2, ..., objN, metaData])</em> : to log warning information</li>
+<li><em>log.error(obj1 [, obj2, ..., objN, metaData])</em> : to log errors</li>
+</ul>
+<p>All these methods accept an optional &#39;last&#39; argument used to pass contextual information. This argument is a JSON structure that must have a valid <strong>type</strong> attribute (that is either &quot;info&quot;, &quot;error&quot;, &quot;warning&quot; or &quot;debug&quot;). The following other properties could be added as well:</p>
+<ul>
+<li><em>id</em>: {String|Number} Unique message identifier</li>
+<li><em>message</em>: {String} The default message - in English (will be automatically set from the msg argument)</li>
+<li><em>file</em>: {String} File name associated to the message </li>
+<li><em>dir</em>: {String} Directory path corresponding to the file</li>
+<li><em>code</em>: {String} Some piece of code associated to the message</li>
+<li><em>line</em>: {Number} Line number associated to the message (e.g. for errors)</li>
+<li><em>column</em>: {Number} Column number associated to the message (e.g. for errors) </li>
+</ul>
+

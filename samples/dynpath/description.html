@@ -1,0 +1,12 @@
+<p>This example shows how dynamic data path can be used through the <code>[expression]</code> notation:</p>
+[#output]
+<p>As you could expect the &#39;square bracket&#39; JavaScript notation is supported to access some data in a dynamic way. In practice <strong>square brackets can contain any expressions</strong>, including function calls and arithmetic expressions - e.g.:</p>
+<ul>
+<li>{d.person[d.pp]}</li>
+<li>{d.person[d.pp1+d.pp2]}</li>
+<li>{d.person[d[d.prop]].value}</li>
+<li>{d.person[d.pp1][d.pp2]}</li>
+<li>etc.</li>
+</ul>
+<p>As you can see as well <strong>square bracket expressions also support double data-binding</strong> on input fiels - cf. column C</p>
+

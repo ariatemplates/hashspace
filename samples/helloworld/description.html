@@ -1,0 +1,17 @@
+<p>Here is one of the simplest example that can be written with Hashspace</p>
+[#output]
+<h4 id="how-does-it-work-">How does it work?</h4>
+<p>Actually it is quite simple: Hashspace uses an offline compiler to <strong>transform templates into JavaScript functions</strong> that have the same name and arguments as the template definition.</p>
+<p>Then calling the template function generates a <strong>template node</strong> that can be inserted in the DOM through its <strong>render()</strong> method.</p>
+<p>As templates are functions, it means that the same template can be used to generate multiple fragments of the same DOM - usually with different arguments, of course.</p>
+<p>As Hashspace currently relies on a <a href="http://www.commonjs.org/">commonJS</a> dependency manager, it also means that templates can be easily exported to be used from other files (cf. <em>sub-template</em> example).</p>
+<p>To be able to execute the sample code you can read on the left, the playground needs to know which template function
+has to be executed, and what data to be injected.</p>
+<p>Hence this code at the bottom:</p>
+<pre><code class="lang-javascript">module.exports = {
+  template: hello, <span class="comment">// javascript reference to the template function</span>
+  data: [ <span class="string">"World"</span> ] <span class="comment">// the data to be injected</span>
+}</code></pre>
+<p>Each sample will declare this export object to be compatible with the playground application.</p>
+<p><em>NB: In future releases, Hashspace should provide compilation options to generate code independent from commonJS so that any module system can be used</em></p>
+

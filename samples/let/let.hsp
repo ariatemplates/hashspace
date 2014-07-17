@@ -5,7 +5,7 @@
     Part 1.1: <span class="textValue">{p11.msg}</span><br/>
   </div>
   <div>
-    Part 2.1: <span class="textValue">{m21}</span> - 
+    Part 2.1: <span class="textValue">{m21}</span> -
     {if !p11}
       p11 is of course not visible in the 2nd element scope
     {/if}
@@ -29,5 +29,9 @@ function updateModel() {
   model.part2.part21.msg = "(2.1 update: "+count+")";
 }
 
-// render template in the #output div
-test(model).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: test,
+    data: [model]
+};

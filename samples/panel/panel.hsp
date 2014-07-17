@@ -1,8 +1,8 @@
 var klass=require("hsp/klass");
-    
-var PanelController = klass({ 
+
+var PanelController = klass({
   attributes: {
-    "head":{type:"template"}, 
+    "head":{type:"template"},
     "body":{type:"template",defaultContent:true}
   }
 });
@@ -39,5 +39,9 @@ function update(incr) {
   model.text = "Hello World ("+count+")";
 }
 
-// display the test template in the #output div
-test(model).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: test,
+    data: [model]
+};

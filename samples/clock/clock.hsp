@@ -23,11 +23,11 @@ var ClockController=klass({
 	},
 	onCityChange:function() {
 		// dynamic city change: check city validity and refresh the display
-		if (!CITIES[this.city]) { 
+		if (!CITIES[this.city]) {
 			// unsupported city
 			this.city="PAR"; // default
 		}
-		this.tick(); 
+		this.tick();
 	},
 	tick:function() {
 		var d=new Date();
@@ -48,10 +48,10 @@ var ClockController=klass({
 		<svg viewBox="0 0 100 100">
 		  <g transform="translate(50,50)">
 		    <circle class="clock-face" r="48"/>
-		    // minute markers 
+		    // minute markers
         	{foreach idx,m in c.minuteMarkers}
         		// {foreach i in [1..60]} should be supported in a future version
-          		<line class="{'major':m.major,'minor':!m.major}" y1="{m.major?35:42}" 
+          		<line class="{'major':m.major,'minor':!m.major}" y1="{m.major?35:42}"
           		y2="45" transform="rotate({360*idx/c.minuteMarkers.length})"/>
         	{/foreach}
 		    // hour hand
@@ -75,5 +75,8 @@ var ClockController=klass({
 	<#clock city="TYO"/>
 {/template}
 
-// display the template in the #output div
-demo().render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: demo
+};

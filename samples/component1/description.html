@@ -1,0 +1,12 @@
+<p>This example shows how custom components can be developed with Hashspace. Unlike classic templates, component templates define their own controller that can expose attributes that will be automatically bound to the component attributes used in the caller template. </p>
+<p>In this example, we create a simple timer component that counts elapsed seconds. It supports a single optional attribute to set the init timer value.</p>
+[#output]
+<p>The differences with the non-componentized timer sample are that:</p>
+<ul>
+<li>the <em>timer</em> template doesn&#39;t use function arguments, but declares its controller through the <strong>using [name]:[controller]</strong> syntax</li>
+<li>the controller instance (in this case <em>Timer</em>) is automatically created when the component is used - this is why the two <em>timer</em> instances show different values</li>
+<li><strong>the controller <em>init</em> function is automatically called once all attributes have been created and initialized</strong> with the values provided by the component host. The <em>init</em> method allows then to create and initialize internal properties that will be exposed to the template only. It is important to note that attributes will be automatically created and don&#39;t need to be created in the controller&#39;s constructor (empty in this example).</li>
+<li>the controller public attributes (here <em>initvalue</em>) have to be declared through the an <strong>attributes</strong> collection attached to the controller prototype</li>
+<li>when an attribute is set by an external object (e.g. the host or the component template), the <strong>on[AttributeName]Change</strong> method is called if the attribute binding is declared as <em>1-way</em> or <em>2-way</em>. This allows synchronization of internal properties bound to public attributes - but we don&#39;t need this possibility in this example.</li>
+</ul>
+

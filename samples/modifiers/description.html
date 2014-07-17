@@ -1,0 +1,13 @@
+<p>This example shows how modifiers can be used to adapt the value of an expression to the desired display. Modifiers are functions that take as first argument the value of the expression to be adapted and that return the new value. They can also take other arguments that should be separated with colons - e.g. <code>{some.expression|modifier1:arg2:arg3|modifier2}</code></p>
+[#output]
+<p>Hashspace actually supports two types of modifiers:</p>
+<ul>
+<li>either <strong>simple functions</strong> that take the value to be modified as first argument and return the new value. Those values could be of any JavaScript type, e.g. Strings or Arrays <em>- cf. changeCase function in the code sample</em></li>
+<li>or <strong>JavaScript objects</strong> that expose transformation functions. As objects can hold state, this provides a simple way to change and expose internal modifier properties without overloading the main controller with this logic. If the transformation method is called <strong>apply</strong> on such objects, then it can be omitted in the pipe expression to keep the syntax more readable <em>- cf. Sorter example in the code sample</em>.</li>
+</ul>
+<p>Notes:</p>
+<ul>
+<li>Modifiers must always return a copy of the values passed as argument. Otherwise modifiers would modify the reference array and create side effects on other expressions bound to the same data.</li>
+<li>As Hashspace uses the pipe character for modifiers, the JavaScript <strong>bitwise or</strong> operator (that also uses the pipe sign) is not supported in Hashspace expressions.</li>
+</ul>
+

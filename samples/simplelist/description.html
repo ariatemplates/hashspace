@@ -1,0 +1,10 @@
+<p>This example shows how to populate a list with a <em>foreach</em> statement and how to implement different displays for each list item. In this particular example this is illustrated with: </p>
+<ul>
+<li>a specific css class for some items - in this case, the <em>special</em> css class is set when the person name is <em>Bart</em>, and the <em>details</em> class is set when the item is clicked.</li>
+<li>different information per item - here the <em>$showdetails</em> boolean property is set when an item is clicked, which activates the age display</li>
+</ul>
+[#output]
+<p>This example also shows that event handlers can get contextual parameters - such as the person argument in the <em>toggleDetails</em> function - which greatly simplifies event handler callbacks. Similarly, it is possible to pass the event object to the event handler by using the <em>event</em> keyword as one of the callback arguments (note that the event can be passed at any argument position). In this example it would look like this:</p>
+<p><code>onclick=&quot;{toggleDetails(p,event)}&quot;</code>  </p>
+<p>Last but not least, the event handler can stop the default behaviour by returning <em>false</em> - this behaviour is shown in the todo list example.</p>
+

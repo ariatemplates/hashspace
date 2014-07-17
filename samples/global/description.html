@@ -1,0 +1,6 @@
+<p>This sample shows how templates, components or any JavaScript object can be defined in the <code>global</code> Hashspace scope so that they can be used anywhere without being defined in the local scope.</p>
+[#output]
+<p>In this sample, the <em>item</em> template is defined as <em>label</em> in the global scope - and is used through this reference in the <em>test</em> template. The same thing applies for the <em>ln</em> variable.</p>
+<p>In a general manner, the <code>global</code> scope should be used to reference components, templates or general functions that are expected to be used in many places and that should not be systematically redefined or <em>required</em> in the local file scope.</p>
+<p><strong>Note:</strong> variables defined in the <code>global</code> Hashspace scope are of course considered global. As such <strong>no data-binding</strong> will be performed on their reference.</p>
+

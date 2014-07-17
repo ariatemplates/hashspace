@@ -1,0 +1,8 @@
+<p>This example shows how a simple tab component can be implemented:</p>
+[#output]
+<p>A few things can be noted here:</p>
+<ul>
+<li>the <em>$init()</em> methods of the <em>tab</em> controllers are called after the <em>init()</em> of the tabbar - as such the <em>selected</em> property of a tab may be already set before the tab is initialized.</li>
+<li>the selected tab can be referenced as a controller property - cf <em>selectedTab</em> and then directly referenced in the tabbar template: <code>&lt;#ctrl.selectedTab.body/&gt;</code></li>
+</ul>
+

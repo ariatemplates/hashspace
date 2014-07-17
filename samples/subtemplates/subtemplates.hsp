@@ -33,5 +33,10 @@ var persons=[
     {firstName:"Maggy"}
 ]
 
-// display the template in the #output div
-personList(persons).render("output");
+
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: personList,
+    data: [persons]
+};

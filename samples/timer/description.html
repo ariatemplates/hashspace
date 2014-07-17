@@ -1,0 +1,9 @@
+<p>This example originally demonstrated in the <a href="http://facebook.github.io/react/">react framework</a> documentation shows a simple example of data-binding. The timer object is updated every second, and the elapsed time is automatically updated in the DOM element managed by the template.</p>
+[#output]
+<p>To implement data-binding <strong>Hashspace reprocesses JavaScript</strong> to introduce a partial polyfill to <a href="http://updates.html5rocks.com/2012/11/Respond-to-change-with-Object-observe">Object.observe</a> and detect changes that occur to JavaScript objects. Hashspace actually uses a transpiler to encapsulate assignments with an internal <strong>$set()</strong> method that performs the assignment and notifies the potential observers. You can see the result by looking for the <em>timer.hsp</em> file in your JavaScript debugger.</p>
+<p>In the mid-term the <em>$set()</em> utility will become obsolete once the <a href="http://updates.html5rocks.com/2012/11/Respond-to-change-with-Object-observe">Object.observe</a> feature is implemented by all web-browsers - and Hashspace will rely on the browser&#39;s Object.observe implementation.</p>
+<p>The $set function has the following signature:</p>
+<pre><code>$<span class="operator"><span class="keyword">set</span>(object_or_array, propertyName_or_index, <span class="keyword">value</span>);</span></code></pre>
+<p>(This will perform:  <code>object_or_array[propertyName_or_index] = value;</code>)</p>
+<p>You can also note the <strong>klass</strong> utility that is used to create the <strong>Timer</strong> constructor. This utility is used internally by Hashspace to simplify JavaScript Object-Oriented notation and manage prototype-based inheritance.</p>
+

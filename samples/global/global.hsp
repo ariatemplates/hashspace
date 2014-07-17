@@ -19,5 +19,12 @@ hsp.global.ln={personDetails:"Person details"};
     </div>
 {/template}
 
-// render template in the #output div
-test({firstName:"Homer",lastName:"Simpson"}).render("output");
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: test,
+    data: [{
+        firstName:"Homer",
+        lastName:"Simpson"
+    }]
+};

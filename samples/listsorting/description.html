@@ -1,0 +1,22 @@
+<p>This example shows how lists can be ordered:</p>
+[#output]
+<p>Hashspace actually proposes two built-in methods to manage sorting:</p>
+<ul>
+<li>for simple cases, sorting can be handled with the <strong>orderBy</strong> method that accepts 2 arguments:<ul>
+<li>first an expression describing the type of sort should be performed. This expression can be either a string that should correspond to an item property name, or a function that will be used to sort. The signature of the sort function should be the same as the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort">Array.sort()</a> argument.</li>
+<li>second a boolean telling if the sort ordered should be reversed (default: false) </li>
+</ul>
+</li>
+<li>for advanced cases, sorting can be done with a <strong>Sorter</strong> instance that can handle a sort state, and proposes simple methods to dynamically change the sorting state. The Sorter constructor accepts the following <em>options</em> through a configuration object:<ul>
+<li><strong>property</strong>: a property name corresponding to the item property to sort</li>
+<li><strong>sortFunction</strong>: a function to use to sort the collection passed to apply()
+Note: either property or sortfunction must be provided - they will be internally passed as expression 
+to the orderBy() function. If both are provided sortFunction is used and property is ignored.</li>
+<li><strong>states</strong>: a string representing the possible sorting states. This string must be composed of the following letters:
+<strong>&quot;A&quot;</strong> for ascending sort, <strong>&quot;D&quot;</strong> for descending sort and <strong>&quot;N&quot;</strong> for no sort (i.e. keep original order). As such using &quot;NAD&quot; (default) means that first sort order will be None, then Ascending, then Descending. Then the sort order can be changed through the nextState() or setState() methods </li>
+</ul>
+</li>
+</ul>
+<p><em>Note 1:</em> orderBy and Sorter are defined in the hashspace global collection and are available in all templates.</p>
+<p><em>Note 2:</em> Sorter exposes an apply() method that is automatically called when used in a pipe expression - this is why it doesn&#39;t need to be explicitely called in the sample template.</p>
+

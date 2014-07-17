@@ -1,0 +1,10 @@
+<p>This example demonstrates how a component can define and use <em>template</em> attributes - that is attribute that can contain HTML, template control statements or sub-components.</p>
+[#output]
+<p>To support <em>template</em> attribute(s) the template controller simply needs to declare an attribute with the type <strong>template</strong>. If there is only one attribute of this type, then the component content will be automatically associated to this attribute (e.g. <em>body</em> in the second panel). However, if there are multiple <em>template</em> attributes, the default attribute must be identified with the <strong>defaultContent</strong> flag.</p>
+<p>In this example you can also see that template attributes can be used in different manners:</p>
+<ul>
+<li>as standard text attributes if HTML content is not required (cf. 1st panel of the <em>test</em> template)</li>
+<li>as default content (2nd panel)</li>
+<li>or as explicit sub-attribute nodes (cf. <strong>&lt;@head&gt;</strong> and <strong>&lt;@body&gt;</strong> in the 3rd panel)</li>
+</ul>
+

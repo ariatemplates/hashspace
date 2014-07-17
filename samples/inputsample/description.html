@@ -1,0 +1,7 @@
+<p>Hashspace automatically listens to the main change events of its input elements (<em>click</em>, <em>focus</em> and <em>keyup</em>) in order to transparently synchronize the input values with the data referenced through the value expression.</p>
+<p>The following example shows the same value referenced by two several text fields and a read-only span:</p>
+[#output]
+<p>You can note that <em>radio</em> inputs have to use a <strong>model</strong> attribute in order to bind their selection to the data-model. All radio buttons referencing the same model property will automatically belong the same group - and they don&#39;t need to have the same <em>name</em> attribute as in classical HTML forms.</p>
+<p>For the sake of consistency the <strong>model</strong> attribute can also be used on all input types, even if the <em>value</em> attribute can be used as well, as shown in the previous example.</p>
+<p><strong>Note:</strong> When users type in an input field, <strong>Hashspace synchronizes the data model on the input event</strong> (except in IE8/9 for which keyup is used). As a consequence, applications that need to validate (and potentially change) user inputs should listen to this <strong>keyup</strong> event, and not to the <em>keydown</em> event as text fields are not updated yet at this stage.</p>
+
