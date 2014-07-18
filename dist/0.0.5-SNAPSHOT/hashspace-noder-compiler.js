@@ -17133,7 +17133,8 @@
                 // only called in case of error
                 var block = blocks[index];
                 var msg = "Invalid HTML element syntax";
-                if (block.code && block.code.match(/^<\/?\@/gi)) {
+                if (block.code && block.code.match(/^<\/?@/)) {
+                    //when it starts with <@ or </@
                     msg = "Invalid component attribute syntax";
                 }
                 this._logError(msg, block);
