@@ -21,46 +21,34 @@ var json = require("../../hsp/json");
 
 describe("Transpiler", function () {
 
-    function runJsCode (code) {
-        return vm.runInNewContext(code, {
-            require : function (requiredFile) {
-                assert.equal(requiredFile, "hsp/$set");
-                return $set;
-            }
-        });
-    }
+    var testFunction = function (a) {
+        a.a = 1;
+        a.a += 1;
+        a.b = ++a.a;
+        a.c = a.a++;
+        a.d = 10;
+        a.e = --a.d;
+        a.f = a.d--;
+        a.d -= 10;
+        a.g = "ok";
+        a.h = a.g == "ok" ? "ok" : "ko";
+        delete a.g;
+        a.i = 2;
+        a.i *= 4;
+        a.i /= 2;
+        a.i %= 3;
+        a.i <<= 4;
+        a.i &= 16;
+        a.i >>= 2;
+        a.i >>>= 2;
+        a.i = -1;
+        a.i ^= 1;
+        a.i |= 1;
+        a.j = a.k = 7;
+        (a.l = {}).m = 12;
+    };
 
-    it("tests processed code", function () {
-        var mySourceFunction = function (a) {
-            a.a = 1;
-            a.a += 1;
-            a.b = ++a.a;
-            a.c = a.a++;
-            a.d = 10;
-            a.e = --a.d;
-            a.f = a.d--;
-            a.d -= 10;
-            a.g = "ok";
-            a.h = a.g == "ok" ? "ok" : "ko";
-            delete a.g;
-            a.i = 2;
-            a.i *= 4;
-            a.i /= 2;
-            a.i %= 3;
-            a.i <<= 4;
-            a.i &= 16;
-            a.i >>= 2;
-            a.i >>>= 2;
-            a.i = -1;
-            a.i ^= 1;
-            a.i |= 1;
-            a.j = a.k = 7;
-            (a.l = {}).m = 12;
-        };
-        var result = processString("(" + mySourceFunction.toString() + ")");
-        assert.equal(result.changed, true);
-        var myProcessedFunction = runJsCode(result.code);
-
+    var checkTranspiledTestFunction = function (transpiledTestFunction) {
         var a1 = {};
         var a2 = {};
         var expectedChgList = [{
@@ -213,10 +201,52 @@ describe("Transpiler", function () {
             assert.deepEqual(chg, item);
         };
         json.observe(a1, observer);
-        myProcessedFunction(a1);
-        mySourceFunction(a2);
+        transpiledTestFunction(a1);
+        testFunction(a2);
         json.unobserve(a1, observer);
         assert.deepEqual(a1, a2);
         assert.equal(expectedChgList.length, 0);
+    };
+
+    function runJSCodeCommonJS (code) {
+        return vm.runInNewContext(code, {
+            require : function (requiredFile) {
+                assert.equal(requiredFile, "hsp/$set");
+                return $set;
+            }
+        });
+    }
+
+    it("tests default mode", function () {
+        var result = processString("(" + testFunction.toString() + ")");
+        assert.equal(result.changed, true);
+        var transpiledTestFunction = runJSCodeCommonJS(result.code);
+        checkTranspiledTestFunction(transpiledTestFunction);
     });
+
+    it("tests commonJS mode with setVarName", function () {
+        var result = processString("var myFunction = " + testFunction.toString()
+                + "; ([myFunction, mySetLocalVariable])", null, {
+            mode : "commonJS",
+            setVarName : "mySetLocalVariable"
+        });
+        assert.equal(result.changed, true);
+        var array = runJSCodeCommonJS(result.code);
+        var transpiledTestFunction = array[0];
+        checkTranspiledTestFunction(transpiledTestFunction);
+        assert.equal(array[1], $set);
+    });
+
+    it("tests global mode with setVarName", function () {
+        var result = processString("(" + testFunction.toString() + ")", null, {
+            mode : "global",
+            setVarName : "mySetGlobalVariable"
+        });
+        assert.equal(result.changed, true);
+        var transpiledTestFunction = vm.runInNewContext(result.code, {
+            mySetGlobalVariable : $set
+        });
+        checkTranspiledTestFunction(transpiledTestFunction);
+    });
+
 });
