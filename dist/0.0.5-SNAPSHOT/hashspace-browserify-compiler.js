@@ -18937,6 +18937,14 @@ module.exports = function (ast, options) {
     options = options || {};
     var UglifyJS = options["uglify-js"] || require("uglify-js");
 
+    var mode = options.mode || "commonJS";
+    if (mode !== "global" && mode !== "commonJS") {
+        throw new Error("Invalid compilation mode option: " + mode);
+    }
+
+    var isCommonJS = mode === "commonJS";
+    var setVarName = options.setVarName || "$set";
+
     function getPropertyName (propAccess) {
         if (propAccess instanceof UglifyJS.AST_Dot) {
             return new UglifyJS.AST_String({
@@ -18949,7 +18957,7 @@ module.exports = function (ast, options) {
 
     function createCallRuntimeMethod (method, args, originalNode) {
         var $setRef = new UglifyJS.AST_SymbolRef({
-            name : "$set"
+            name : setVarName
         });
         var res = new UglifyJS.AST_Call({
             expression : method == "$set" ? $setRef : new UglifyJS.AST_Dot({
@@ -18959,7 +18967,7 @@ module.exports = function (ast, options) {
             args : args
         });
         res.formatInfo = {
-            before : (method == "$set" ? method : "$set." + method) + "(",
+            before : (method == "$set" ? setVarName : setVarName + "." + method) + "(",
             middle : args,
             after : ")",
             originalStartPos : originalNode.start.pos,
@@ -18972,7 +18980,7 @@ module.exports = function (ast, options) {
         var res = new UglifyJS.AST_Var({
             definitions : [new UglifyJS.AST_VarDef({
                 name : new UglifyJS.AST_SymbolVar({
-                    name : "$set"
+                    name : setVarName
                 }),
                 value : new UglifyJS.AST_Call({
                     expression : new UglifyJS.AST_SymbolRef({
@@ -19041,7 +19049,7 @@ module.exports = function (ast, options) {
             changed = true;
             node = replacer(node, aDotB);
         }
-        if (changed && node instanceof UglifyJS.AST_Toplevel) {
+        if (changed && node instanceof UglifyJS.AST_Toplevel && isCommonJS) {
             node.body.unshift(createRequire());
         }
         return node;
