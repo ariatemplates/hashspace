@@ -125,6 +125,13 @@ describe('Block Parser: ', function () {
         }, /The template "path" argument is mandatory./);
     });
 
+    it('should correctly compile templates with HTML elements containing -', function () {
+        var r =compiler.compile('{template x()}\n' +
+            '<x-div></x-div>\n' +
+            '{/template}', 'x.js');
+        assert.equal(r.errors.length, 0);
+    });
+
     it('validates full compiled template in commonJS mode', function () {
         var sample = ut.getSampleContent("template1");
         var r = compiler.compile(sample.template, "template1");
