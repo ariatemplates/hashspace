@@ -11,8 +11,8 @@ env:
     - secure: bGENSGZguDwxsHJu9JyEggr0KhNd9l/RguvlS4zknMV32Hujtt60tsD9X9IKRIO96Fv4loDburOco38SdzezVzd6AS/wsxJsoqD//C2+BXJKzU4MsGXeqS5hx6r2CiTWCnDoIu2QvyK9qiO+Gu0VII76//3pa50m7EVYT79jVxM=
 
 before_install:
- - npm install --quiet -g grunt-cli
- - npm install -g coveralls@2.8.0 &> install-coveralls.log
+ - travis_retry npm install --quiet -g grunt-cli
+ - travis_retry npm install -g coveralls@2.8.0 &> install-coveralls.log
 
 before_script:
  - mkdir -p $LOGS_DIR
@@ -24,7 +24,7 @@ before_script:
  - ./build/sauce/connect_wait.sh
 
 script:
- - grunt ci
+ - travis_retry grunt ci
 
 after_success:
  - cat test-results/*.info test-results/*/*/*.info | coveralls && echo "Successfully sent coverage to https://coveralls.io"
