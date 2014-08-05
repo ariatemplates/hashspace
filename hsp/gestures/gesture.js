@@ -12,7 +12,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 
@@ -25,18 +24,18 @@ var Gesture = klass({
     /**
      * Constructor.
      */
-    $constructor : function (target, evthandler) {
+    $constructor : function (nodeInstance, callback) {
         /**
          * Reference to the target
          * @type HTMLElement
          */
-        this.target = target;
+        this.target = nodeInstance.node;
 
         /**
          * Reference to the event handler
-         * @type HTMLElement
+         * @type Function
          */
-        this.evthandler = evthandler;
+        this.callback = callback;
 
         /**
          * Event map uses ./touchEvent for touch event detection.
@@ -70,7 +69,9 @@ var Gesture = klass({
     },
 
     $dispose: function() {
-        this._disconnectTouchEvents();
+        if (this.callbackMap) {
+            this._disconnectTouchEvents();
+        }
         this.callbackMap = null;
     },
 
@@ -331,7 +332,7 @@ var Gesture = klass({
         extraData.currentX = position[0].x;
         extraData.currentY = position[0].y;
         fakeEvent.detail = extraData;
-        this.evthandler.handleEvent(fakeEvent);
+        this.callback(fakeEvent);
         event.cancelBubble = fakeEvent.hasStopPropagation;
         event.returnValue = !fakeEvent.hasPreventDefault;
         return event.returnValue;

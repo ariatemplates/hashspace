@@ -1,3 +1,4 @@
+var hsp = require("../rt");
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -126,4 +127,4 @@ var LongPress = klass({
 
 });
 
-module.exports.LongPress = LongPress;
+hsp.registerCustomAttributes(["onlongpress", "onlongpressstart", "onlongpresscancel"], LongPress);

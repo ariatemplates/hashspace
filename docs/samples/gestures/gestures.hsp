@@ -1,3 +1,5 @@
+require('hsp/gestures/index');
+
 {template gestures(msgList)}
     <div class="touchboard" style="height:200px; background: #27AAFC;text-align:center;"
     	ontap="{addMsg(event)}" ontapstart="{addMsg(event)}" ontapcancel="{addMsg(event)}"

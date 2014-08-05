@@ -1,3 +1,4 @@
+var hsp = require("../rt");
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -158,4 +159,4 @@ var DoubleTap = klass({
 
 });
 
-module.exports.DoubleTap = DoubleTap;
+hsp.registerCustomAttributes(["ondoubletap", "ondoubletapstart", "ondoubletapcancel"], DoubleTap);

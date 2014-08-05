@@ -20,7 +20,6 @@ var browser = require("./browser");
 var doc = require("./document");
 var TNode = require("./tnode").TNode;
 var hsp = require("../rt");
-var gestures = require("../gestures/gestures");
 var log = require("./log");
 
 var booleanAttributes = {
@@ -72,7 +71,6 @@ var EltNode = klass({
         if (children && children !== 0) {
             this.children = children;
         }
-        this.gesturesEventHandlers = null;
         this.needSubScope = (needSubScope===1);
         this._lastValue = null;
     },
@@ -94,9 +92,18 @@ var EltNode = klass({
                 }
             }
         }
-        if (this.gesturesEventHandlers) {
-            this.gesturesEventHandlers.$dispose();
-            this.gesturesEventHandlers = null;
+        if (this._customAttributesHandlers) {
+            for (var key in this._customAttributesHandlers) {
+                var customHandlers = this._customAttributesHandlers[key];
+                for (var i = 0; i < customHandlers.length; i++) {
+                    if (customHandlers[i].instance.$dispose) {
+                        customHandlers[i].instance.$dispose();
+                    }
+                    delete customHandlers[i];
+                }
+            }
+            this._customAttributesHandlers = null;
+            this._customAttributesValues = null;
         }
         this._attachEventFn = null;
         TNode.$dispose.call(this);
@@ -109,6 +116,10 @@ var EltNode = klass({
         this.TYPE = this.tag; // for debugging purposes
         var nodeType = null, nodeName = null;
         var nd, docFragment;
+        //Holds the list of custonm attributes handlers instantiated for the current EltNode instance
+        this._customAttributesHandlers = {};
+        //Holds the values of the custonm attributes of the current EltNode instance
+        this._customAttributesValues = {};
 
         if (this.tag === "svg") {
             if (browser.supportsSvg()) {
@@ -153,7 +164,16 @@ var EltNode = klass({
             }
         }
         this.node = nd;
-        this.refreshAttributes();
+        this.refreshAttributes(true);
+        //The eltNode is made adirty if it contains custom attributes. This way they can be refreshed with the full instance tree built.
+        for (var item in this._customAttributesHandlers) {
+            if(this._customAttributesHandlers.hasOwnProperty(item)) {
+                this.adirty = true;
+                break;
+            }
+        }
+
+            
 
         // attach event listener
         var evh = this.evtHandlers, hnd;
@@ -172,11 +192,16 @@ var EltNode = klass({
             if (evh) {
                 for (var i = 0, sz = evh.length; sz > i; i++) {
                     hnd = evh[i];
-                    if (gestures.isGesture(hnd.evtType)) {
-                        if (this.gesturesEventHandlers == null) {
-                            this.gesturesEventHandlers = new gestures.Gestures();
+                    var fullEvtType = "on" + hnd.evtType;
+                    //Adds custom event handlers (e.g. ontap)
+                    var customHandlers = hsp.getCustomAttributes(fullEvtType);
+                    if (customHandlers && customHandlers.length > 0) {
+                        for (var j = 0; j < customHandlers.length; j++) {
+                            var handler = this._createCustomAttributeHandler(fullEvtType, customHandlers[j], this.handleEvent.bind(this));
+                            if (handler.instance.setValue) {
+                                handler.instance.setValue(fullEvtType, fullEvtType);
+                            }
                         }
-                        this.gesturesEventHandlers.startGesture(hnd.evtType, nd, this);
                     } else {
                         evts[hnd.evtType] = true;
                         if (addEL) {
@@ -266,9 +291,61 @@ var EltNode = klass({
     },
 
     /**
-     * Refresh the node attributes (even if adirty is false)
+     * After init process.
      */
-    refreshAttributes : function () {
+    afterInit : function () {
+        TNode.afterInit.call(this);
+        if (this.adirty) {
+            this.refreshAttributes();
+            this.adirty = false;
+        }
+    },
+
+    /**
+     * Creates a custom attribute handler.
+     * @param {String} name the name of the custom attributes.
+     * @param {Object} customHandler the handler retrieved from the global repository.
+     * @param {Function} callback the callback function passed to the handler instance.
+     * @return {Object} the full handler created.
+     */
+    _createCustomAttributeHandler: function (name, customHandler, callback) {
+        var entry = null;
+        if (typeof this._customAttributesHandlers[name] == "undefined") {
+            this._customAttributesHandlers[name] = [];
+        }
+        //Check if the handler has not yet been instantiated for any of the attributes of the group
+        var alreadyInstantiated = false;
+        for (var i = 0; i < customHandler.names.length; i++) {
+            var nameToCheck = customHandler.names[i];
+            if (this._customAttributesHandlers[nameToCheck]) {
+                for (var k = 0; k < this._customAttributesHandlers[nameToCheck].length; k++) {
+                    if (customHandler.handler == this._customAttributesHandlers[nameToCheck][k].klass) {
+                        entry = this._customAttributesHandlers[nameToCheck][k];
+                        alreadyInstantiated = true;
+                        break;
+                    }
+                }
+            }
+        }
+        //Instantiates the handler and associate it to all attributes of the group
+        if (!alreadyInstantiated) {
+            entry = {klass: customHandler.handler, instance: new customHandler.handler(this, callback), handledOnce: false};
+            for (var l = 0; l < customHandler.names.length; l++) {
+                if (typeof this._customAttributesHandlers[customHandler.names[l]] == "undefined") {
+                    this._customAttributesHandlers[customHandler.names[l]] = [];
+                }
+                this._customAttributesHandlers[customHandler.names[l]].push(entry);
+                this._customAttributesValues[customHandler.names[l]] = null;
+            }
+        }
+        return entry;
+    },
+
+    /**
+     * Refresh the node attributes (even if adirty is false)
+     * @param {Boolean} isEltCreation a flag indicating if it is the initial attributes refresh
+     */
+    refreshAttributes : function (isEltCreation) {
         var nd = this.node, atts = this.atts, att, eh = this.eh, vs = this.vscope, nm, modelRefs = null;
         if (atts) {
             for (var i = 0, sz = this.atts.length; sz > i; i++) {
@@ -282,6 +359,30 @@ var EltNode = klass({
                     }
                 }
                 nm = att.name;
+                if (isEltCreation) {
+                    //Adds custom attribute handlers (e.g. dropdown)
+                    var customHandlers = hsp.getCustomAttributes(nm);
+                    if (customHandlers && customHandlers.length > 0) {
+                        for (var j = 0; j < customHandlers.length; j++) {
+                            this._createCustomAttributeHandler(nm, customHandlers[j]);
+                        }
+                    }
+                }
+                else {
+                    //During custom attribute refresh, execute setValue() on the handler only if the value of the attribute has changed.
+                    var customHandlers = this._customAttributesHandlers[nm];
+                    for (var j = 0; customHandlers && j < customHandlers.length; j++) {
+                        var customHandler = customHandlers[j];
+                        var newValue = att.getValue(eh, vs, null);
+                        if (!customHandler.handledOnce || this._customAttributesValues[nm] !== newValue) {
+                            if (customHandler.instance.setValue) {
+                                customHandler.instance.setValue(nm, newValue);
+                            }
+                            this._customAttributesValues[nm] = newValue;
+                            customHandler.handledOnce = true;
+                        }
+                    }
+                }
                 if (nm === "model") {
                     // this is an hashspace extension attribute
                     continue;

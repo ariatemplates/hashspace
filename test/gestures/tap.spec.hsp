@@ -17,11 +17,15 @@
  * Taken from Aria Templates: https://github.com/ariatemplates/ariatemplates/blob/master/test/aria/touch/gestures/Tap.js
  */
 
+require("hsp/gestures");
 var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
 
 {template test1(ctl)}
     <div title="test1" ontap="{ctl.handleTap(event)}" ontapstart="{ctl.handleTap(event)}" ontapcancel="{ctl.handleTap(event)}">
+        Hello!
+    </div>
+    <div title="test2" ontap="{ctl.handleTap(event)}" ontapstart="{ctl.handleTap(event)}" ontapcancel="{ctl.handleTap(event)}">
         Hello!
     </div>
 {/template}
@@ -116,6 +120,31 @@ describe("Tap gesture", function () {
             clientY : 5
         });
         fireEvent(touchEventMap.touchend, n.node.firstChild, {
+            clientX : 5,
+            clientY : 5
+        });
+        validate(expected, result);
+        n.$dispose();
+    });
+
+    it("tests a valid tap on the second element: touchstart, touchmove with distance <= 10, touchend", function () {
+        var expected =  ["tapstart", "tap"];
+        var result = [];
+        var ctl = {
+            handleTap : function (evt) {
+                result.push(evt.type);
+            }
+        };
+        var n = test1(ctl);
+        fireEvent(touchEventMap.touchstart, n.node.childNodes[1], {
+            clientX : 0,
+            clientY : 0
+        });
+        fireEvent(touchEventMap.touchmove, n.node.childNodes[1], {
+            clientX : 5,
+            clientY : 5
+        });
+        fireEvent(touchEventMap.touchend, n.node.childNodes[1], {
             clientX : 5,
             clientY : 5
         });

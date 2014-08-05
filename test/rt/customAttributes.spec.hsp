@@ -1,0 +1,231 @@
+var hsp = require("hsp/rt");
+var klass = klass=require("hsp/klass");
+
+{template test1()}
+    <div style="height: 20px" verybigdiv>
+        <span>Test</span>
+    </div>
+{/template}
+
+{template test2()}
+    <div style="height: 20px" customheightdiv="50">
+        <span>Test</span>
+    </div>
+{/template}
+
+{template test3(ctl)}
+    <div style="height: 20px" customheightdiv="{ctl.myHeight}" class="{'active': ctl.isActive}">
+        <span>Test</span>
+    </div>
+{/template}
+
+{template test4()}
+    <div style="height: 20px" customheightdiv="50" verybigdiv>
+        <span>Test</span>
+    </div>
+{/template}
+
+{template test5()}
+    <div style="height: 20px" verybigchild>
+        <span>Test</span>
+    </div>
+{/template}
+
+{template test6()}
+    <div></div>
+    <div style="height: 20px" verybigsiblings>
+        <span>Test</span>
+    </div>
+    <div></div>
+{/template}
+
+{template test7()}
+    <div>
+        <div>
+            <span>
+                <#test1/>
+            </span>
+        </div>
+    </div>
+{/template}
+
+{template test8()}
+    <div style="height: 20px" customone="50" customtwo>
+        <span>Test</span>
+    </div>
+{/template}
+
+describe("Custom attributes", function () {
+
+    var status = null;
+    var handleAttributeCount = 0;
+    beforeEach(function() {
+        status = "Dirty";
+    });
+
+    var customHandler = klass({
+        $constructor: function(nodeInstance) {
+            this.node = nodeInstance.node;
+        },
+        setValue : function(name, value) {
+            if (name == "verybigdiv") {
+                expect(value).to.equal("verybigdiv");
+                this.node.style.height = "100px";
+            }
+            else if (name == "customheightdiv") {
+                this.node.style.height = value + "px";
+            }
+            handleAttributeCount++;
+        }
+    });
+
+    var customHandler2 = function (nodeInstance, callback) {
+        this.node = nodeInstance.node;
+    };
+    customHandler2.prototype.setValue = function (name, value) {
+        if (name == "verybigdiv") {
+            expect(value).to.equal("verybigdiv");
+            this.node.style.height = "90px";
+        }
+    };
+    customHandler2.prototype.$dispose = function () {
+        status = "Clean";
+    };
+
+    var customHandler3 = klass({
+        $constructor: function(nodeInstance) {
+            this.node = nodeInstance.node;
+        },
+        setValue : function(name, value) {
+            expect(value).to.equal("verybigchild");
+            expect(this.node.childNodes.length).to.equal(1);
+            this.node.firstChild.style.height = "100px";
+        }
+    });
+
+    var customHandler4 = klass({
+        $constructor: function(nodeInstance) {
+            this.node = nodeInstance.node;
+        },
+        setValue : function(name, value) {
+            expect(value).to.equal("verybigsiblings");
+            this.node.nextSibling.style.height = "100px";
+            this.node.previousSibling.style.height = "100px";
+        }
+    });
+
+    var handlerCreationCount = 0;
+    var groupHandler = klass({
+        $constructor: function(nodeInstance) {
+            this.node = nodeInstance.node;
+            handlerCreationCount++;
+        },
+        setValue : function(name, value) {
+            if (name == "customone") {
+                this.node.style.height = value + "px";
+            }
+            if (name == "customtwo") {
+                this.node.style.width = "100px";
+            }
+        }
+    });
+
+    hsp.registerCustomAttributes("verybigdiv", customHandler, 2);
+    hsp.registerCustomAttributes("customheightdiv", customHandler);
+    hsp.registerCustomAttributes("verybigchild", customHandler3);
+    hsp.registerCustomAttributes("verybigsiblings", customHandler4);
+    hsp.registerCustomAttributes(["customone", "customtwo"], groupHandler);
+
+    it("tests a simple custom attribute", function () {
+        var n = test1();
+        expect(n.node.firstChild.style.height).to.equal("100px");
+        n.$dispose();
+        expect(status).to.equal("Dirty");
+    });
+
+    it("tests a custom attribute with static value", function () {
+        var n = test2();
+        expect(n.node.firstChild.style.height).to.equal("50px");
+        n.$dispose();
+        expect(status).to.equal("Dirty");
+    });
+
+    it("tests a custom attribute with dynamic value", function () {
+        var ctl = {
+            myHeight: 25
+        };
+        var n = test3(ctl);
+        expect(n.node.firstChild.style.height).to.equal("25px");
+        $set(ctl, "myHeight", 90);
+        hsp.refresh();
+        expect(n.node.firstChild.style.height).to.equal("90px");
+        n.$dispose();
+        expect(status).to.equal("Dirty");
+    });
+
+    it("tests a custom attribute accessing children", function () {
+        var n = test5();
+        expect(n.node.firstChild.firstChild.style.height).to.equal("100px");
+        n.$dispose();
+        expect(status).to.equal("Dirty");
+    });
+
+    it("tests a custom attribute accessing sibblings", function () {
+        var n = test6();
+        expect(n.node.firstChild.style.height).to.equal("100px");
+        expect(n.node.lastChild.style.height).to.equal("100px");
+        n.$dispose();
+        expect(status).to.equal("Dirty");
+    });
+
+    it("tests a custom attribute in subtemplate", function () {
+        handleAttributeCount = 0;
+        var n = test7();
+        expect(n.node.querySelector("div[verybigdiv]").style.height).to.equal("100px");
+        expect(handleAttributeCount).to.equal(1);
+        n.$dispose();
+        expect(status).to.equal("Dirty");
+    });
+
+    it("tests other attribute changes do not trigger handling", function () {
+        handleAttributeCount = 0;
+        var ctl = {
+            isActive: false,
+            myHeight: 25
+        };
+        var n = test3(ctl);
+        expect(n.node.firstChild.className).to.equal("");
+        expect(handleAttributeCount).to.equal(1);
+        $set(ctl, "isActive", true);
+        hsp.refresh();
+        expect(n.node.firstChild.className).to.equal("active");
+        expect(handleAttributeCount).to.equal(1);
+        n.$dispose();
+        expect(status).to.equal("Dirty");
+    });
+
+    it("tests several custom attributes on same node", function () {
+        var n = test4();
+        expect(n.node.firstChild.style.height).to.equal("100px");
+        n.$dispose();
+        expect(status).to.equal("Dirty");
+    });
+
+    it("tests a simple custom attribute with several handlers", function () {
+        hsp.registerCustomAttributes("verybigdiv", customHandler2, 1);
+        var n = test1();
+        expect(n.node.firstChild.style.height).to.equal("90px");
+        n.$dispose();
+        expect(status).to.equal("Clean");
+    });
+
+    it("tests a group of attributes", function () {
+        handlerCreationCount = 0;
+        var n = test8();
+        expect(handlerCreationCount).to.equal(1);
+        expect(n.node.firstChild.style.height).to.equal("50px");
+        expect(n.node.firstChild.style.width).to.equal("100px");
+        n.$dispose();
+        expect(status).to.equal("Dirty");
+    });
+});
