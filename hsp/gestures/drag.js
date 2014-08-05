@@ -1,3 +1,4 @@
+var hsp = require("../rt");
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -112,4 +113,4 @@ var Drag = klass({
 
 });
 
-module.exports.Drag = Drag;
+hsp.registerCustomAttributes(["ondrag", "ondragstart", "ondragmove", "ondragcancel"], Drag);

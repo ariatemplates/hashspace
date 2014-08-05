@@ -17,6 +17,7 @@
  * Taken from Aria Templates: https://github.com/ariatemplates/ariatemplates/blob/master/test/aria/touch/gestures/SingleTap.js
  */
 
+require("hsp/gestures/singleTap");
 var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
 

@@ -1,3 +1,4 @@
+var hsp = require("../rt");
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -92,4 +93,4 @@ var Tap = klass({
 
 });
 
-module.exports.Tap = Tap;
+hsp.registerCustomAttributes(["ontap", "ontapstart", "ontapcancel"], Tap);

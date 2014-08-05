@@ -114,6 +114,7 @@ var $RootNode = klass({
         }
         this.childNodes = ch;
         this.argNames = argnames;
+        this.afterInit();
     },
 
     $dispose : function () {

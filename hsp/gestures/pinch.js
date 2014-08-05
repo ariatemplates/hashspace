@@ -1,3 +1,4 @@
+var hsp = require("../rt");
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -179,4 +180,4 @@ var Pinch = klass({
 
 });
 
-module.exports.Pinch = Pinch;
+hsp.registerCustomAttributes(["onpinch", "onpinchstart", "onpinchmove", "onpinchcancel"], Pinch);

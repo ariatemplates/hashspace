@@ -19,6 +19,7 @@ footerscripts: |
         }
     </script>
     <script src="/dist/<%=version%>/hashspace-noder.min.js" type="text/javascript"></script>
+    <script src="/dist/<%=version%>/hashspace-noder-gestures.min.js" type="text/javascript"></script>
     <script src="/playground/playground-samples-all.js" type="text/javascript"></script>
     <script src="/playground/playground-all.js" type="text/javascript"></script>
     <script type="noder">

@@ -226,3 +226,61 @@ function createShortcut (tagName, tagConstructor) {
         return new tagConstructor(a1, a2, a3, a4, a5, a6);
     };
 }
+
+/**
+ * Global registry for custom attributes
+ */
+
+/**
+ * The registry as an Array, e.g:
+ * [{names: ["ontap", "ontapstart", "ontapcancel"], handler: Tap, priority: 0},
+ *  {names: ["dropdown"], handler: CustomDropDown, priority: -2},
+ *  {names: ["dropdown"], handler: OtherDropDown, priority: 2}]
+ */
+var customAttributesRegistry = [];
+/**
+ * Registers a set of custom attributes with a matching handler.
+ * @param {Array|String} names the name of the attributes.
+ * @param {Object} handler the attribute handler function, which can implement:
+ *  - $constructor(nodeInstance, callback): used to create the handler instance.
+ *  - setValue(name, value): called each time the attribute value changed, including when the initial value is set.
+ *  - $dispose(): used to dispose the handler instance.
+ *  It is instanciated on each element node with one of the custom attributes.
+ *  WARNING: when $constructor is executed, the node instance tree is not fully built, so links with other nodes (parent, children, siblinngs) must be done in setValue.
+ * @param {Integer} priority the priority of the handler, default value is 0, the higher the more priority (i.e. higher executed first).
+ */
+exports.registerCustomAttributes = function (names, handler, priority) {
+    var customAttributes = names;
+    if (names.constructor !== Array) {
+        customAttributes = [names];
+    }
+    if (customAttributes && customAttributes.length > 0 && handler) {
+        var prio = priority || 0;
+        var entry = {
+            names: customAttributes,
+            handler: handler,
+            priority: prio
+        };
+        customAttributesRegistry.push(entry);
+    }
+};
+
+function _handlerSorter(a, b) {
+    return b.priority - a.priority;
+}
+/**
+ * Returns the list of custom attributes.
+ * @param {String} name the name of the attribute
+ * @return {Array} the list
+ * 
+ */
+exports.getCustomAttributes = function(name) {
+    var results = [];
+    for (var i = 0; i < customAttributesRegistry.length; i++) {
+        var entry = customAttributesRegistry[i];
+        if (entry.names.indexOf(name) > -1) {
+            results.push(entry);
+        }
+    }
+    return results.sort(_handlerSorter);
+};

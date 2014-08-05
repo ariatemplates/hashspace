@@ -1,6 +1,7 @@
 /node_modules
 /dist
 /sauce_connect.log
+/npm-debug.log
 /sc.log
 /test-results
 /tmp

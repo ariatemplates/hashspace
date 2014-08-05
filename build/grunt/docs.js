@@ -262,7 +262,8 @@ module.exports = function(grunt) {
         hspRoot         = grunt.config('hspserver.base')+"/hsp",
         emptyJsResponse = function(req, res) { res.set('Content-Type', 'application/x-javascript'); return res.send(""); },
         compilerPath    = '/dist/' + VERSION + '/hashspace-noder-compiler.min.js',
-        runtimePath     = '/dist/' + VERSION + '/hashspace-noder.min.js';
+        runtimePath     = '/dist/' + VERSION + '/hashspace-noder.min.js',
+        gesturesPath    = '/dist/' + VERSION + '/hashspace-noder-gestures.min.js';
 
     grunt.log.subhead('Local website setup');
     grunt.log.writeln('Starting local documentation web server...');
@@ -287,6 +288,8 @@ module.exports = function(grunt) {
     grunt.verbose.ok(compilerPath, 'polyfilled to be empty');
     app.get(runtimePath, emptyJsResponse);
     grunt.verbose.ok(runtimePath, 'polyfilled to be empty');
+    app.get(gesturesPath, emptyJsResponse);
+    grunt.verbose.ok(gesturesPath, 'polyfilled to be empty');
 
     // Proxying /test and /node_modules folders
     app.use('/test', function(req, res, next) {

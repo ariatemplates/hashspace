@@ -1,3 +1,4 @@
+var hsp = require("../rt");
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -155,4 +156,4 @@ var Swipe = klass({
 
 });
 
-module.exports.Swipe = Swipe;
+hsp.registerCustomAttributes(["onswipe", "onswipestart", "onswipemove", "onswipecancel"], Swipe);

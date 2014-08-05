@@ -248,11 +248,6 @@ module.exports = function (grunt) {
               cwd: "hsp/rt",
               src: ['*.js'],
               dest: 'hsp/rt'
-            },
-            {
-              cwd: "hsp/gestures",
-              src: ['*.js'],
-              dest: 'hsp/gestures'
             }
           ]
         }
@@ -268,6 +263,18 @@ module.exports = function (grunt) {
             }
           ]
         }
+      },
+      gestures: {
+        files: [{dest: 'dist/hashspace-browserify-gestures.js', src: ['hsp/rt.js']}],
+        options: {
+          aliasMappings: [
+            {
+              cwd: "hsp/gestures",
+              src: ['*.js'],
+              dest: 'hsp/gestures'
+            }
+          ]
+        }
       }
     },
     uglify: {
@@ -275,8 +282,10 @@ module.exports = function (grunt) {
         files: [
           {dest: 'dist/hashspace-browserify.min.js', src: ['dist/hashspace-browserify.js']},
           {dest: 'dist/hashspace-browserify-compiler.min.js', src: ['dist/hashspace-browserify-compiler.js']},
+          {dest: 'dist/hashspace-browserify-gestures.min.js', src: ['dist/hashspace-browserify-gestures.js']},
           {dest: 'dist/hashspace-noder.min.js', src: ['dist/hashspace-noder.js']},
-          {dest: 'dist/hashspace-noder-compiler.min.js', src: ['dist/hashspace-noder-compiler.js']}
+          {dest: 'dist/hashspace-noder-compiler.min.js', src: ['dist/hashspace-noder-compiler.js']},
+          {dest: 'dist/hashspace-noder-gestures.min.js', src: ['dist/hashspace-noder-gestures.js']}
         ]
       }
     },
@@ -342,10 +351,13 @@ module.exports = function (grunt) {
           },
           packages : [{
             name : "hashspace-noder.js",
-            files : ['hsp/*.js', 'hsp/rt/*.js', 'hsp/gestures/*.js']
+            files : ['hsp/*.js', 'hsp/rt/*.js']
           }, {
             name : "hashspace-noder-compiler.js",
             files : ['hsp/compiler/compile.js','hsp/transpiler/transpile.js']
+          }, {
+            name : "hashspace-noder-gestures.js",
+            files : ['hsp/gestures/*.js']
           }]
         }
       }
