@@ -229,3 +229,18 @@ You can see the available versions under the following URLs:
 - [noderJS releases](https://github.com/ariatemplates/noder-js/tree/gh-pages/dist/)
 
 If you want to use the latest improvements in not-yet-released code, you may use SNAPSHOT versions.
+
+### HTTPS considerations
+
+We've used the following code to include noderJS and Hashspace from the CDN:
+
+    <script src="http://noder-js.ariatemplates.com/dist/v1.5.0/noder.dev.js" type="text/javascript"></script>
+    <script src="http://hashspace.ariatemplates.com/dist/0.0.4/hashspace-noder.js" type="text/javascript"></script>
+
+However if you serve your page over HTTPS, those scripts will fail to load due to mixed content error (since those are HTTP URLs). If you need to load those files over HTTPS, you might use the following equivalents:
+
+
+    <script src="//ariatemplates.github.io/noder-js/dist/v1.5.0/noder.dev.js" type="text/javascript"></script>
+    <script src="//ariatemplates.github.io/hashspace/dist/0.0.4/hashspace-noder.js" type="text/javascript"></script>
+
+Under the hood, those are the same files served from Github's `gh-pages` branch. Leading `//` in the URL means: use the same protocol for dependencies as the one of the viewed page (HTTP or HTTPS).
