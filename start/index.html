@@ -223,6 +223,14 @@ You can see the available versions under the following URLs:</p>
 <li><a href="https://github.com/ariatemplates/noder-js/tree/gh-pages/dist/">noderJS releases</a></li>
 </ul>
 <p>If you want to use the latest improvements in not-yet-released code, you may use SNAPSHOT versions.</p>
+<h3 id="https-considerations">HTTPS considerations</h3>
+<p>We&#39;ve used the following code to include noderJS and Hashspace from the CDN:</p>
+<pre><code><span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://noder-js.ariatemplates.com/dist/v1.5.0/noder.dev.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://hashspace.ariatemplates.com/dist/0.0.4/hashspace-noder.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></code></pre>
+<p>However if you serve your page over HTTPS, those scripts will fail to load due to mixed content error (since those are HTTP URLs). If you need to load those files over HTTPS, you might use the following equivalents:</p>
+<pre><code><span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"//ariatemplates.github.io/noder-js/dist/v1.5.0/noder.dev.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+<span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"//ariatemplates.github.io/hashspace/dist/0.0.4/hashspace-noder.js"</span> <span class="attribute">type</span>=<span class="value">"text/javascript"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span></code></pre>
+<p>Under the hood, those are the same files served from Github&#39;s <code>gh-pages</code> branch. Leading <code>//</code> in the URL means: use the same protocol for dependencies as the one of the viewed page (HTTP or HTTPS).</p>
 </div>
       </section>
     </div>

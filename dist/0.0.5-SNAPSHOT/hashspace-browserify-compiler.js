@@ -23592,6 +23592,10 @@ define(function (require, exports, module) {
    * @param aPath The path or URL to be made relative to aRoot.
    */
   function relative(aRoot, aPath) {
+    if (aRoot === "") {
+      aRoot = ".";
+    }
+
     aRoot = aRoot.replace(/\/$/, '');
 
     // XXX: It is possible to remove this block, and the tests still pass!
