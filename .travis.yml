@@ -30,6 +30,8 @@ after_success:
  - cat test-results/*.info test-results/*/*/*.info | coveralls && echo "Successfully sent coverage to https://coveralls.io"
  - chmod -R 777 ./ci-release.sh
  - ./ci-release.sh
+ - chmod -R 777 ./build/size/size.sh
+ - ./build/size/size.sh dist/!(*.min.js)
 
 after_failure:
   - chmod -R 777 ./build/sauce/connect_logs.sh
