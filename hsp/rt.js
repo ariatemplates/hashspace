@@ -196,38 +196,6 @@ exports.template = function (arg, contentFunction) {
 };
 
 /**
- * Collection of the node types supported by the NodeGenerator This collection is attached to the Nodegenerator
- * constructor through a nodes property
- */
-var nodes = {};
-
-var nodeList = [
-    "$text", require("./rt/$text"),
-    "$if", require("./rt/$if"),
-    "$foreach", require("./rt/$foreach"),
-    "elt", require("./rt/eltnode"),
-    "cpt", $CptNode,
-    "catt", $CptAttElement,
-    "log", require("./rt/$log"),
-    "let", require("./rt/$let")
-];
-
-for (var i = 0, sz = nodeList.length; sz > i; i += 2) {
-    createShortcut(nodeList[i], nodeList[i + 1]);
-}
-nodes.g=getGlobalRef;
-
-/**
- * Create shortcut functions on the nodes collection to simplify the template functions e.g. nodes.$text=function(exps,
- * textcfg) {return new $TextNode(exps, textcfg);}
- */
-function createShortcut (tagName, tagConstructor) {
-    nodes[tagName] = function (a1, a2, a3, a4, a5, a6) {
-        return new tagConstructor(a1, a2, a3, a4, a5, a6);
-    };
-}
-
-/**
  * Global registry for custom attributes
  */
 
@@ -284,3 +252,36 @@ exports.getCustomAttributes = function(name) {
     }
     return results.sort(_handlerSorter);
 };
+
+/**
+ * WARNING: to be executed last!
+ * Collection of the node types supported by the NodeGenerator This collection is attached to the Nodegenerator
+ * constructor through a nodes property
+ */
+var nodes = {};
+
+var nodeList = [
+    "$text", require("./rt/$text"),
+    "$if", require("./rt/$if"),
+    "$foreach", require("./rt/$foreach"),
+    "elt", require("./rt/eltnode"),
+    "cpt", $CptNode,
+    "catt", $CptAttElement,
+    "log", require("./rt/$log"),
+    "let", require("./rt/$let")
+];
+
+for (var i = 0, sz = nodeList.length; sz > i; i += 2) {
+    createShortcut(nodeList[i], nodeList[i + 1]);
+}
+nodes.g=getGlobalRef;
+
+/**
+ * Create shortcut functions on the nodes collection to simplify the template functions e.g. nodes.$text=function(exps,
+ * textcfg) {return new $TextNode(exps, textcfg);}
+ */
+function createShortcut (tagName, tagConstructor) {
+    nodes[tagName] = function (a1, a2, a3, a4, a5, a6) {
+        return new tagConstructor(a1, a2, a3, a4, a5, a6);
+    };
+}
