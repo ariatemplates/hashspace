@@ -224,13 +224,13 @@ var TNode = klass({
     },
 
     /**
-     * After init process, started at the end of the init() of $root, once the node instance tree is full created.
+     * After node creation process, started at the end of the init() or refresh() of $root, once the node instance tree is full created.
      */
-    afterInit : function () {
+    afterNodeCreation : function () {
         var cn = this.childNodes;
         if (cn) {
             for (var i = 0, sz = cn.length; sz > i; i++) {
-                cn[i].afterInit();
+                cn[i].afterNodeCreation();
             }
         }
     },

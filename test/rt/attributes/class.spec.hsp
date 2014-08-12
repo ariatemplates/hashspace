@@ -1,0 +1,69 @@
+var hsp = require("hsp/rt");
+var $set = require('hsp/$set');
+
+{template test1(model)}
+    <div class="test"></div>
+    <div class="{'active': model.isActive}"></div>
+    <div class="{'base', 'active': model.isActive}"></div>
+    <div class="{model.list}"></div>
+    <div class="base {model.more}"></div>
+{/template}
+
+describe("Class attribute", function () {
+
+    it("tests various class definitions", function () {
+        var model = {
+            isActive: true,
+            more: "bar",
+            list: "foo bar"
+        };
+        var n = test1(model);
+        expect(n.node.childNodes[0].className).to.equal("test");
+        expect(n.node.childNodes[1].className).to.equal("active");
+        expect(n.node.childNodes[2].className).to.equal("base active");
+        expect(n.node.childNodes[3].className).to.equal("foo bar");
+        expect(n.node.childNodes[4].className).to.equal("base bar");
+        $set(model, "isActive", false);
+        $set(model, "list", "foz baz");
+        $set(model, "more", "foo");
+        hsp.refresh();
+        expect(n.node.childNodes[0].className).to.equal("test");
+        expect(n.node.childNodes[1].className).to.equal("");
+        expect(n.node.childNodes[2].className).to.equal("base");
+        expect(n.node.childNodes[3].className).to.equal("foz baz");
+        expect(n.node.childNodes[4].className).to.equal("base foo");
+        n.$dispose();
+    });
+
+    it("tests that extra classes are not impacted after refresh", function () {
+        var model = {
+            isActive: true,
+            more: "bar",
+            list: "foo bar"
+        };
+        var n = test1(model);
+        expect(n.node.childNodes[0].className).to.equal("test");
+        expect(n.node.childNodes[1].className).to.equal("active");
+        expect(n.node.childNodes[2].className).to.equal("base active");
+        expect(n.node.childNodes[3].className).to.equal("foo bar");
+        expect(n.node.childNodes[4].className).to.equal("base bar");
+        n.node.childNodes[2].className = "extra " + n.node.childNodes[2].className + " extras";
+        n.node.childNodes[3].className = "extra " + n.node.childNodes[3].className + " extras";
+        n.node.childNodes[4].className = "extra " + n.node.childNodes[4].className + " extras";
+        $set(model, "isActive", false);
+        $set(model, "list", "foz baz");
+        $set(model, "more", "foo");
+        hsp.refresh();
+        expect(n.node.childNodes[0].className).to.equal("test");
+        expect(n.node.childNodes[1].className).to.equal("");
+        expect(n.node.childNodes[2].className).to.equal("base extra extras");
+        expect(n.node.childNodes[3].className).to.equal("foz baz extra extras");
+        expect(n.node.childNodes[4].className).to.equal("base foo extra extras");
+        $set(model, "isActive", true);
+        hsp.refresh();
+        expect(n.node.childNodes[0].className).to.equal("test");
+        expect(n.node.childNodes[1].className).to.equal("active");
+        expect(n.node.childNodes[2].className).to.equal("base active extra extras");
+        n.$dispose();
+    });
+});

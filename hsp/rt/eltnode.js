@@ -22,6 +22,10 @@ var TNode = require("./tnode").TNode;
 var hsp = require("../rt");
 var log = require("./log");
 
+//Loads internal custom attributes
+var ClassHandler = require('./attributes/class');
+hsp.registerCustomAttributes("class", ClassHandler);
+
 var booleanAttributes = {
     async: true,
     autofocus: true,
@@ -291,10 +295,10 @@ var EltNode = klass({
     },
 
     /**
-     * After init process.
+     * After node creation process (i.e. after init or after refresh)
      */
-    afterInit : function () {
-        TNode.afterInit.call(this);
+    afterNodeCreation : function () {
+        TNode.afterNodeCreation.call(this);
         if (this.adirty) {
             this.refreshAttributes();
             this.adirty = false;
@@ -392,12 +396,8 @@ var EltNode = klass({
                     //http://www.w3.org/html/wg/drafts/html/master/infrastructure.html#boolean-attributes
                     nd[nm] = att.getValue(eh, vs, "");
                 } else if (nm === "class") {
-                    // issue on IE8 with the class attribute?
-                    if (this.nodeNS) {
-                        nd.setAttribute("class", att.getValue(eh, vs, ""));
-                    } else {
-                        nd.className = att.getValue(eh, vs, "");
-                    }
+                    //this is a custom attribute
+                    continue;
 
                 } else if (nm === "value") {
                     // value attribute must be changed directly as the node attribute is only used for the default value
