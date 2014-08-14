@@ -358,11 +358,10 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('atpackager');
   require('atpackager').loadNpmPlugin('noder-js');
 
-  grunt.registerTask('prepublish', ['package']);
   grunt.registerTask('package', ['peg', 'browserify', 'atpackager:uglify','atpackager:runtime','uglify']);
   grunt.registerTask('mocha', ['peg', 'inittests', 'mochaTest', 'finalizetests']);
   grunt.registerTask('test', ['checkStyle', 'jscs', 'mocha', 'karma:unit']);
-  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci1', 'karma:ci2', 'karma:coverage']);
+  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci1', 'karma:ci2', 'package', 'karma:coverage']);
   grunt.registerTask('release', ['docs:release']);
   grunt.registerTask('tddrt', ['hspserver','watch']);
   grunt.registerTask('default', ['docs:playground']);
