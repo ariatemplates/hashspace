@@ -265,7 +265,7 @@ module.exports = function (grunt) {
         }
       },
       gestures: {
-        files: [{dest: 'dist/hashspace-browserify-gestures.js', src: ['hsp/rt.js']}],
+        files: [{dest: 'dist/hashspace-browserify-gestures.js', src: ['hsp/gestures/index.js']}],
         options: {
           aliasMappings: [
             {

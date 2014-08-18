@@ -114,7 +114,6 @@ var $RootNode = klass({
         }
         this.childNodes = ch;
         this.argNames = argnames;
-        this.afterNodeCreation();
     },
 
     $dispose : function () {
@@ -618,7 +617,6 @@ var $CptNode = klass({
             this.adirty = false;
         }
         TNode.refresh.call(this);
-        this.afterNodeCreation();
     },
 
     /**
