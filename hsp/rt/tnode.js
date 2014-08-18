@@ -224,18 +224,6 @@ var TNode = klass({
     },
 
     /**
-     * After node creation process, started at the end of the init() or refresh() of $root, once the node instance tree is full created.
-     */
-    afterNodeCreation : function () {
-        var cn = this.childNodes;
-        if (cn) {
-            for (var i = 0, sz = cn.length; sz > i; i++) {
-                cn[i].afterNodeCreation();
-            }
-        }
-    },
-
-    /**
      * Abstract function that should be implemented by sub-classes
      */
     createNode : function () {},

@@ -1,6 +1,5 @@
-
 /*
- * Copyright 2012 Amadeus s.a.s.
+ * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,7 +15,8 @@
 
 var hsp=require("hsp/rt"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
-    json=require("hsp/json");
+    json=require("hsp/json"),
+    ht=require("hsp/utils/hashtester");
 
 {template inputSample(data)}
     <div class="info section">All the following inputs are synchronized:</div>
@@ -232,5 +232,34 @@ describe("Input Elements", function () {
 
     it("should not fail on HTML5 input elements in browsers that dont support them", function() {
         var n = html5NumberInput({value: 5});
+    });
+});
+
+{template test1(data)}
+    <textarea rows="4" cols="40"  model="{data.text}"/>
+{/template}
+
+// normalize carriage returns to avoid OS discrepancies
+function normalizeCR(s) {
+    return s.replace(/\r\n|[\r\n]/gi,"\n");
+}
+
+describe("Textarea Elements", function () {
+    it("validates model synchronization", function () {
+        var h=ht.newTestContext();
+        var model={text:"line 1\nline2"};
+
+        test1(model).render(h.container);
+        expect(normalizeCR(h("textarea").value())).to.equal("line 1\nline2");
+
+        // change value from the DOM
+        h("textarea").type("AAA\nBBB\nCCC");
+        expect(normalizeCR(model.text)).to.equal("AAA\nBBB\nCCC"); 
+
+        // change value from the model
+        h.$set(model,"text","Hello\nWorld!");
+        expect(normalizeCR(h("textarea").value())).to.equal("Hello\nWorld!");
+
+        h.$dispose();
     });
 });

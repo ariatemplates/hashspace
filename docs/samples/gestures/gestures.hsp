@@ -1,4 +1,4 @@
-require('hsp/gestures/index');
+require('hsp/gestures/index').register();
 
 {template gestures(msgList)}
     <div class="touchboard" style="height:200px; background: #27AAFC;text-align:center;"

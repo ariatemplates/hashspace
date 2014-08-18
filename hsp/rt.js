@@ -211,13 +211,16 @@ var customAttributesRegistry = [];
  * @param {Array|String} names the name of the attributes.
  * @param {Object} handler the attribute handler function, which can implement:
  *  - $constructor(nodeInstance, callback): used to create the handler instance.
- *  - setValue(name, value): called each time the attribute value changed, including when the initial value is set.
- *  - $dispose(): used to dispose the handler instance.
+ *  - $setValue(name, value): called each time the attribute value changed, including when the initial value is set.
+ *  - $onAttributesRefresh(): called at the end of the attributes'refresh process, i.e. once all attributes have their new value.
+ *  - $handleEvent(event): called when an event for which the custom attribute registered for is fired.
+ *  - $dispose(): used to dispose the handler instance. 
  *  It is instanciated on each element node with one of the custom attributes.
  *  WARNING: when $constructor is executed, the node instance tree is not fully built, so links with other nodes (parent, children, siblinngs) must be done in setValue.
  * @param {Integer} priority the priority of the handler, default value is 0, the higher the more priority (i.e. higher executed first).
+ * @param {Array} tags the list of tags on which the handler will apply, undefined means all.
  */
-exports.registerCustomAttributes = function (names, handler, priority) {
+exports.registerCustomAttributes = function (names, handler, priority, tags) {
     var customAttributes = names;
     if (names.constructor !== Array) {
         customAttributes = [names];
@@ -227,7 +230,8 @@ exports.registerCustomAttributes = function (names, handler, priority) {
         var entry = {
             names: customAttributes,
             handler: handler,
-            priority: prio
+            priority: prio,
+            tags: tags
         };
         customAttributesRegistry.push(entry);
     }
@@ -237,16 +241,16 @@ function _handlerSorter(a, b) {
     return b.priority - a.priority;
 }
 /**
- * Returns the list of custom attributes.
+ * Returns the list of custom attributes for an element of type tag.
  * @param {String} name the name of the attribute
+ * @param {String} tag the element's tag
  * @return {Array} the list
- * 
  */
-exports.getCustomAttributes = function(name) {
+exports.getCustomAttributeHandlers = function(name, tag) {
     var results = [];
     for (var i = 0; i < customAttributesRegistry.length; i++) {
         var entry = customAttributesRegistry[i];
-        if (entry.names.indexOf(name) > -1) {
+        if (entry.names.indexOf(name) > -1 && (typeof entry.tags === "undefined" || entry.tags.indexOf(tag) > -1)) {
             results.push(entry);
         }
     }
