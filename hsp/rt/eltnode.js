@@ -300,7 +300,7 @@ var EltNode = klass({
 
                 } else if (nm === "value") {
                     // value attribute must be changed directly as the node attribute is only used for the default value
-                    if (!this.isInput || nd.type === "radio") {
+                    if (!this.isInput || nd.type === "radio" || nd.type === "button") {
                         nd.value = att.getValue(eh, vs, "");
                     }
                 } else {
