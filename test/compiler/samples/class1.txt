@@ -84,7 +84,7 @@
 
 
 ##### Template Code
-test=[
+test=[__s,
     n.elt(  "div", 
             {e1:[6,function(a0) {return (((a0 === "1"))? ''+"warning":'');},2],e2:[1,2,"msg","urgent"]},
             {"class":["",1]},

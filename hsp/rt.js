@@ -43,9 +43,11 @@ var NodeGenerator = klass({
      * @param {Object} ctlWrapper the controller observer - if any
      * @param {Map} ctlInitAtts the init value of the controller attributes (optional) - e.g.
      * {value:'123',mandatory:true}
+     * @param {Object} rootscope the parent root scope object containing the reference to
+     * the global objects accessible from the template file scope
      */
-    process : function (tplctxt, scopevars, ctlWrapper, ctlInitArgs) {
-        var vs = {}, nm, argNames = []; // array of argument names
+    process : function (tplctxt, scopevars, ctlWrapper, ctlInitArgs, rootscope) {
+        var vs = rootscope ? Object.create(rootscope) : {}, nm, argNames = []; // array of argument names
         if (scopevars) {
             for (var i = 0, sz = scopevars.length; sz > i; i += 2) {
                 nm = scopevars[i];
@@ -160,10 +162,12 @@ exports.template = function (arg, contentFunction) {
     }
 
     var f = function () {
-        var cw = null, cptInitArgs = null;
+        var cw = null, cptInitArgs = null, fileScope;
         if (!ng.nodedefs) {
             try {
-                ng.nodedefs = contentFunction(nodes);
+                var r = contentFunction(nodes);
+                fileScope = r.shift();
+                ng.nodedefs = r;
             } catch (ex) {
                 // TODO: add template and file name in error description
                 if (ex.constructor === ReferenceError) {
@@ -184,7 +188,7 @@ exports.template = function (arg, contentFunction) {
         if (arguments.length > 0) {
             cptInitArgs = arguments[0];
         }
-        return ng.process(this, args, cw, cptInitArgs);
+        return ng.process(this, args, cw, cptInitArgs, fileScope);
     };
     f.isTemplate = true;
     f.controllerConstructor = Ctl;

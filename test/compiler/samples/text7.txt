@@ -11,6 +11,6 @@ var person = {name : "World"};
 "skip"
 
 ##### Template Code
-hello=[
+hello=[__s,
   n.$text({e1:[2,2,_person,"name"]},["Hello ",1,"!"])
 ]

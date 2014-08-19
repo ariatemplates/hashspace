@@ -99,7 +99,7 @@
 
 
 ##### Template Code
-test=[
+test=[__s,
   n.$text(0,["Hello "]),
   n.log({e1:[5,"here"],e2:[1,1,"person"],e3:[1,1,"scope"]},[1,2,3],'log1','',3,3),
   n.$text(0,["World"])

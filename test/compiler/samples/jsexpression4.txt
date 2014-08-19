@@ -12,6 +12,6 @@
 "skip"
 
 ##### Template Code
-test=[
+test=[__s,
   n.$text({e1:[6,function(a0) {return ((a0=="a")+2);},2], e2:[1,1,"value"]}, ["",1])
 ]

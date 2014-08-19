@@ -111,11 +111,11 @@ InvalidBlock
   {return {type:"invalidblock", code:chars.join(''), line:line, column:column}}
 
 IfBlock "if statement"
-  = "{" _ "if " _ expr:HPipeExpression _ "}" EOS?
+  = "{" _ "if " _ expr:CoreExpText _ "}" EOS?
   {return {type:"if", condition:expr, line:line, column:column}}
 
 ElseIfBlock "elseif statement" 
-  = "{" _ "else " _ "if" _ expr:HPipeExpression _ "}" EOS?
+  = "{" _ "else " _ "if" _ expr:CoreExpText _ "}" EOS?
   {return {type:"elseif", condition:expr, line:line, column:column}}
 
 ElseBlock
@@ -295,6 +295,22 @@ ExpressionBlock
     r.column=column;
     return r;
   }
+
+CoreExpText // valid or invalid expression text - the goal here is to parse out
+            // an expression that will be processed by a Pratt's parser later on.
+            // In those rules we are interested in capturing both valid and
+            // invalid expression as the validation will be done by the Pratt's parser.
+  = c:(  c1:[^{}]+ {return c1.join('')}
+       / c2:("{" CoreExpText? "}") {return c2.join('')}
+       / c3:("{" CoreExpText? ) {return c3.join('')}
+     )+ {
+        return {
+            "category": "jsexptext",
+            "value": c.join(''),
+            "line": line,
+            "column": column
+        };
+     }
 
 HExpression
   =   HExpressionCssClassElt 

@@ -12,7 +12,7 @@
 "skip"
 
 ##### Template Code
-filterLink=[
+filterLink=[__s,
     n.elt("a",
         {   e1:[3,2,"ctl","selectFilter",1,2],
             e2:[1,1,"filterCode"],

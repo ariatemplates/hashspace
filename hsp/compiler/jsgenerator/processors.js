@@ -1,3 +1,6 @@
+var exParser = require('../../expressions/parser');
+var exIdentifiers = require('../../expressions/identifiers');
+
 /**
  * Escapes new lines characters in a string.
  * @param {String} text the input string.
@@ -39,21 +42,24 @@ exports["template"] = function (node, walker) {
     }
 
     //Generates the code of the template's content
-    var templateCode = ["[", walker.walk(node.content, module.exports).join(","), "]"].join("");
+    var templateCode = ['[', ['__s'].concat(walker.walk(node.content, module.exports)).join(","), ']'].join("");
     var globals = walker._globals;
 
     //Generates globals validation statement - e.g. var _c;try {_c=c} catch(e) {};
     var globalsStatement = [], globalsLength = globals.length;
+    var scopeStatements = [], scopeStr;
     if (globalsLength) {
         var gnm;
         globalsStatement = ["  var _" + globals.join(',_') + ";"];
         for (var i=0; i < globalsLength; i++) {
             gnm=globals[i];
             globalsStatement.push( "try {_" + gnm + "=", gnm ,"} catch(e) {_" + gnm + "=n.g('", gnm ,"')};");
+            scopeStatements.push(gnm + " : typeof " + gnm + " === 'undefined' ? undefined : " + gnm);
         }
         globalsStatement.push(CRLF);
     }
     var globalsStatementString = globalsStatement.join("");
+    scopeStr = "  var __s = {" + scopeStatements.join(", ") + "};" + CRLF;
 
     //Resets template scope and global list
     walker.resetScope();
@@ -68,17 +74,17 @@ exports["template"] = function (node, walker) {
 
     var hspRef='require("hsp/rt")';
     if (walker.mode.isGlobal) {
-        hspRef=walker.globalRef; // default: "hsp"
-        exportString=''; // export should be ignored if commonJS is not used
+        hspRef = walker.globalRef; // default: "hsp"
+        exportString = ''; // export should be ignored if commonJS is not used
     }
 
     if (node.controller) {
         var path = node.controller.path;
         return ['var ', templateName, exportString, ' = ',hspRef,'.template({ctl:[', path[0], ',', walker.each(path, argAsString),
-                '],ref:"', node.controller.ref, '"}, function(n){', CRLF, globalsStatementString, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
+                '],ref:"', node.controller.ref, '"}, function(n){', CRLF, globalsStatementString, scopeStr, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
     } else {
         return ['var ', templateName, exportString, ' = ',hspRef,'.template([', walker.each(node.args, argAsString),
-                '], function(n){', CRLF, globalsStatementString, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
+                '], function(n){', CRLF, globalsStatementString, scopeStr, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
     }
 };
 
@@ -480,6 +486,19 @@ function formatExpression (expression, firstIndex, walker) {
         codefragments.splice(0, 0, code0);
         code = codefragments.join(',');
         nextIndex = index;
+    } else if (category === 'jsexptext') {
+        //compile the expression to detect errors and parse-out identifiers
+        try {
+            exIdentifiers(exParser(expression.value)).forEach(function(ident){
+                walker.addGlobalRef(ident);
+            });
+            code = ['e', exprIndex, ':[9,"',
+                ('' + expression.value).replace(/"/g, "\\\"").replace(/\\\\"/g, "\\\""),
+                '"]'].join('');
+        } catch (err) {
+            walker.logError("Invalid expression: '" + expression.value + "'", expression);
+        }
+        nextIndex++;
     } else {
         walker.logError("Unsupported expression: " + category, expression);
     }

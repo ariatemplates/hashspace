@@ -23,6 +23,6 @@
 ]
 
 ##### Template Code 1
-hello4=[
+hello4=[__s,
   n.$text(0, ["Hello World!"])
 ]

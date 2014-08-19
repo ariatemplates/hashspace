@@ -70,7 +70,7 @@
 
 
 ##### Template Code:
-test=[
+test=[__s,
   n.cpt([_panel,"panel"],0,0,0,[
     n.cpt([_body,"body"],0,{"class":"foo"},0,[
       n.$text(0,["Hello World! "])

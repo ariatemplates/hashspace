@@ -63,7 +63,7 @@
 ]
 
 ##### Template Code
-test=[
+test=[__s,
   n.$text(0,["Foreach test:  "]),
   n.$foreach({e1: [1, 1, "things"]}, "thing_key", "thing", 0 , 1, [
     n.$text({e1: [1, 1, "thing"]}, [" - ", 1, " - "])

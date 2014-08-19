@@ -83,7 +83,7 @@
 ]
 
 ##### Template Code
-test=[
+test=[__s,
   n.$text({
     e1:[4,1,_orderBy,1,2,0,"firstName"],
     e2:[1,2,"person","list"]

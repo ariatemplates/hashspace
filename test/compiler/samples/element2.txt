@@ -63,7 +63,7 @@
 ]
 
 ##### Template Code
-test=[
+test=[__s,
 	n.elt(	"div", 
 			0,
 			{"title":"Some text"},

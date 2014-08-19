@@ -11,7 +11,7 @@
 "skip"
 
 ##### Template Code
-test=[
+test=[__s,
   n.$text(0,["Advanced log: "]),
   n.log({
       e1:[6,function(a0) {return (3 + (4 * a0));},2],

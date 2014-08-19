@@ -10,7 +10,7 @@
 "skip"
 
 ##### Template Code
-hello=[
+hello=[__s,
     n.$text({
         e1:[6,function(a0,a1,a2,a3) {return (a2 + a3);},2,3,4,5],
         e2:[1,1,"person"],

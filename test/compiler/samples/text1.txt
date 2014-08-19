@@ -53,6 +53,6 @@
 ]
 
 ##### Template Code
-hello=[
+hello=[__s,
   n.$text({e1:[1,2,"person","name"]},["Hello ",1,"!"])
 ]

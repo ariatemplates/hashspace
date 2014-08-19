@@ -69,7 +69,7 @@ if (!Function.prototype.bind) {
     };
 }
 
-//Object.create
+// Object.create
 if (typeof Object.create != 'function') {
     (function () {
         var F = function () {};

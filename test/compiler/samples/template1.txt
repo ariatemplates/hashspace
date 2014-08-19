@@ -41,11 +41,11 @@ var z;
 ]
 
 ##### Template Code 1
-hello1=[
+hello1=[__s,
   n.$text(0, ["Hello World!"])
 ]
 
 ##### Template Code 2
-hello1bis=[
+hello1bis=[__s,
   n.$text(0, ["Hello Again!"])
 ]

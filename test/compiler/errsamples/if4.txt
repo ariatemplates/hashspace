@@ -10,9 +10,8 @@
 ##### Error:
 [
   {
-    "description": "Invalid expression",
+    "description": "Invalid expression: 'person.isMinor/'",
     "line": 4,
-    "column": 5,
-    "code": "else if person.isMinor/"
+    "column": 14
   }
 ]

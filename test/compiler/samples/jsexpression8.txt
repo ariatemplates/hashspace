@@ -64,7 +64,7 @@
 ]
 
 ##### Template Code
-hello=[
+hello=[__s,
   n.$text({
     e1:[7,2,function(i,a0,a1) {return [a0,a1][i];},2,3],
     e2:[1,1,"person"],

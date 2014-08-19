@@ -81,7 +81,7 @@
 ]
     
 ##### Template Code
-test=[
+test=[__s,
   n.let({
     e1:[6,function(a0) {return (a0 + 3);},2],
     e2:[1,2,"value","nbr"]

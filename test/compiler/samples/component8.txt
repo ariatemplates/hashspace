@@ -10,6 +10,6 @@
 "skip"
 
 ##### Template Code:
-test=[
+test=[__s,
   n.cpt([null,"c","tpl"],0,0,0)
 ]

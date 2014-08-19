@@ -98,7 +98,7 @@
 ]
 
 ##### Template code
-test=[
+test=[__s,
     n.elt(	"img", 
             {e1:[1,1,"path"],e2:[3,2,"ctl","handleClick"]} ,
             {"src":["http://someting.com/",1]},

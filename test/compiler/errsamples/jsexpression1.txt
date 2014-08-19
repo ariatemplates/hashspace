@@ -8,9 +8,8 @@
 ##### Error:
 [
   {
-    "description": "Unary operator ++ is not allowed",
+    "description": "Invalid expression: '!(++value)'",
     "line": 2,
-    "column": 9,
-    "code": "!(++(a0))"
+    "column": 9
   }
 ]

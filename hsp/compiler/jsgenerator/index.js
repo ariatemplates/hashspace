@@ -159,7 +159,7 @@ function _generateLineMap (res, file) {
         }
     }
 
-    var nbrOfLinesInCompiledTemplate = 5;
+    var nbrOfLinesInCompiledTemplate = 6;
     var lineMap = [], pos = HEADER_SZ, template;
     var pos1 = -1; // position of the next template start
     var pos2 = -1; // position of the next template end

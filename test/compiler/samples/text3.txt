@@ -62,6 +62,6 @@
 ]
 
 ##### Template Code
-hello=[
+hello=[__s,
   n.$text({e1:[1,2,"person","firstName"],e2:[1,2,"person","lastName"]}, ["Hello ",1,"",2])
 ]

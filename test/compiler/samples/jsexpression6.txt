@@ -76,7 +76,7 @@
 
 
 ##### Template Code
-test=[
+test=[__s,
   n.$text({
     e1:[4,1,_content1],
     e2:[4,1,_content2,0,"First Name",1,3],

@@ -8,14 +8,8 @@
 ##### Error:
 [
   {
-    "description": "Invalid expression",
+    "description": "Invalid expression: '(person.isAdult'",
     "line": 2,
-    "column": 5,
-    "code": "if (person.isAdult"
-  },
-  {
-    "description": "{/if} statement does not match any {if} block",
-    "line": 4,
-    "column": 5
+    "column": 9
   }
 ]

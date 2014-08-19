@@ -14,7 +14,7 @@
 "skip"
 
 ##### Template Code
-test=[
+test=[__s,
   n.$foreach (
     {e1:[2,1,_items]},
     "itm_key",

@@ -12,6 +12,6 @@
 "skip"
 
 ##### Template Code
-test=[
+test=[__s,
     n.$text({e1:[4,1,_content1]},["",1])
 ]

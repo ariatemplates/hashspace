@@ -45,7 +45,7 @@
 ]
 
 ##### Template Code:
-mycomponent=[
+mycomponent=[__s,
   n.$text(0,["some text..."])
 ]
 

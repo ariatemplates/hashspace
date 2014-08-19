@@ -10,6 +10,6 @@
 "skip"
 
 ##### Template Code
-hello=[
+hello=[__s,
   n.$text({e1:[1,4,"foo",2,"bar","hello"]},["",1," Hello "])
 ]

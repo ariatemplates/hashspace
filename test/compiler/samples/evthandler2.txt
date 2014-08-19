@@ -10,7 +10,7 @@
 "skip"
 
 ##### Template code
-test=[
+test=[__s,
     n.elt(	"img", 
             {e1:[4,1,_doClick,0,1]},
             0,

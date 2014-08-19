@@ -13,7 +13,7 @@
 "skip"
 
 ##### Template Code
-test=[
+test=[__s,
   n.$text({ e1:[6,function(a0) {return ((a0=="a")? a0 : (a0===3));},2], 
             e2:[1,1,"value"],
             e3:[6,function(a0) {return ((a0==="W")? "World" : "You");},4],

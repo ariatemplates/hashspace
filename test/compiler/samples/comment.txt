@@ -23,7 +23,7 @@
       {"type": "text","value": "Hello "},
       {"type": "comment","value": " comment 1"},
       {"type": "text","value": " World! "},
-      {"type": "if", "condition": {type:"Variable", category:"jsexpression", name:"world"}},
+      {"type": "if", "condition": {category:"jsexptext", value:"(world)"}},
       {"type": "text","value": " "},
       {"type": "comment","value": " comment 2"},
       {"type": "text","value": " "},
@@ -48,12 +48,8 @@
       {
         "type": "if",
         "condition": {
-          "type": "expression",
-          "category": "objectref",
-          "bound": true,
-          "path": [
-            "world"
-          ],
+          "category": "jsexptext",
+          "value": "(world)",
           "line": 4,
           "column": 6
         },
@@ -69,9 +65,9 @@
 ]
 
 ##### Template Code
-hello=[
+hello=[__s,
   n.$text(0,["Hello  World!"]),
-  n.$if( {e1:[1,1,"world"]}, 1, [ 
+  n.$if( {e1:[9,"(world)"]}, 1, [
       n.$text(0,["   ... "])
   ])
 ]

@@ -117,7 +117,7 @@ var $IfNode = klass({
         var condition = false;
         if (this.eh)
             condition = this.eh.getValue(this.condexpidx, this.vscope, false);
-        return condition ? true : false; // cast to a boolean to be able to compare new and old confition values
+        return condition ? true : false; // cast to a boolean to be able to compare new and old condition values
     },
 
     /**

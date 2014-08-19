@@ -15,7 +15,11 @@
 
 var klass = require("../klass"),
     log = require("./log"),
-    json = require("../json");
+    json = require("../json"),
+    exparser = require("../expressions/parser"),
+    exidentifiers = require("../expressions/identifiers"),
+    exobservable = require("../expressions/observable"),
+    exmanipulator = require("../expressions/manipulator");
 
 var ExpHandler = klass({
     /**
@@ -34,6 +38,7 @@ var ExpHandler = klass({
      * 5: literal value - e.g. {e1:[5,"some value"]}
      * 6: function expression - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}
      * 7: dynamic data reference - e.g. {e1:[7,2,function(i,a0,a1) {return [a0,a1][i];},2,3]}
+     * 9: raw expression to be processed by the pratt parser - e.g. {e1:[9,"foo.bar.baz()"}
      * @param {Boolean} observeTarget if true the targeted data objects will be also observed (e.g. foreach collections) - default:false
      */
     $constructor : function (edef,observeTarget) {
@@ -60,6 +65,8 @@ var ExpHandler = klass({
                     exp = new FuncExpr(v, this);
                 } else if (etype === 7) {
                     exp = new DynRefExpr(v, this);
+                } else if (etype === 9) {
+                    exp = new PrattExpr(v, this);
                 } else {
                     log.warning("Unsupported expression type: " + etype);
                 }
@@ -120,6 +127,35 @@ var ExpHandler = klass({
 });
 
 module.exports = ExpHandler;
+
+var PrattExpr = klass({
+    /**
+     * Class constructor
+     * @param {Array} desc the expression descriptor - e.g. [9,"foo+bar.baz()"]
+     */
+    $constructor : function (desc) {
+        this.exptext = desc[1];
+        this.ast = exparser(desc[1]);
+        this.bound = exidentifiers(this.ast).length > 0;
+        this.manipulator = exmanipulator(desc[1], this.ast);
+    },
+
+    getValue : function (vscope, eh, defvalue) {
+        return this.manipulator.getValue(vscope,defvalue);
+    },
+
+    setValue : function (vscope, value) {
+        if (this.manipulator.isAssignable) {
+            this.manipulator.setValue(vscope, value);
+        } else {
+            log.warning(this.exptext + " can't be updated - please use object references");
+        }
+    },
+
+    getObservablePairs : function (eh, vscope) {
+        return exobservable(this.ast, vscope);
+    }
+});
 
 /**
  * Little class representing literal expressions 5: literal value - e.g. {e1:[5,"some value"]}

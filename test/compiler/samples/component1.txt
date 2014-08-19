@@ -74,7 +74,7 @@
 ]
 
 ##### Template Code:
-foo=[
+foo=[__s,
   n.$text(0,["foo "]),
   n.cpt([_mylib,"mylib","mycpt"],0,{"att1":"foo","att2":"bar"},0),
   n.$text(0,["bar"])

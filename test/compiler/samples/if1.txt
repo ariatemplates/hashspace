@@ -22,17 +22,13 @@
     "content": [
       {"type": "text","value": "Hello  "},
       {"type": "if", "condition": {
-        "type": "Variable",
-        "category": "jsexpression",
-        "name": "value1"
       }},
       {"type": "text","value": " World "},
       {"type": "endif"},
       {"type": "text","value": " "},
       {"type": "if", "condition": {
-        "type": "Variable",
-        "category": "jsexpression",
-        "name": "value2"
+        "category": "jsexptext",
+        "value": "value2"
       }},
       {"type": "text","value": "A "},
       {"type": "else"},
@@ -52,14 +48,14 @@
     "content": [
       {"type": "text","value": "Hello  "},
       {"type": "if",
-        "condition": {"category": "objectref", "path": ["value1"]},
+        "condition": {category: 'jsexptext', value: "value1"},
         "content1": [
           {"type": "text", "value": " World "}
         ]
       },
       {"type": "text","value": " "},
       {"type": "if",
-        "condition": {"category": "objectref", "path": ["value2"]},
+        "condition": {category: 'jsexptext', value: "value2"},
         "content1": [
           {"type": "text", "value": "A "}
         ],
@@ -73,13 +69,13 @@
 
 
 ##### Template Code
-test=[
+test=[__s,
   n.$text(0,["Hello  "]),
-  n.$if( {e1:[1,1,"value1"]}, 1, [ 
+  n.$if( {e1:[9,"value1"]}, 1, [
       n.$text(0,[" World "])
   ]),
   n.$text(0,[" "]),
-  n.$if( {e1:[1,1,"value2"]}, 1, [ 
+  n.$if( {e1:[9,"value2"]}, 1, [
       n.$text(0,["A "])
   ],[
       n.$text(0,["B "])

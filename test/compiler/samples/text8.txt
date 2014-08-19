@@ -12,6 +12,5 @@ var nullValue = "null";
 "skip"
 
 ##### Template Code
-main=[
-    n.$text({e1:[2,1,_nullValue]},["before-",1,"-after"])
-]
+main=[__s,
+ n.$text({e1:[2,1,_nullValue]},["before-",1,"-after"])]

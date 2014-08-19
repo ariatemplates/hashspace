@@ -10,8 +10,6 @@ describe('Template compilation errors: ', function () {
         var sample = ut.getErrorSampleContent(this.name);
         var r = compiler.compile(sample.template, this.name, true, true);
 
-        // console.log(JSON.stringify(r.syntaxTree ,null," "));
-
         if (sample.errors) {
             assert.equal(ut.jsonContains(r.errors, sample.errors, "errorList"), "", "parsed tree comparison");
         } else {
@@ -58,15 +56,13 @@ describe('Template compilation errors: ', function () {
     it('tests mixed errors in template and JS script 3', function () {
         var sample = ut.getErrorSampleContent("mixed3");
         var r = compiler.compile(sample.template, "mixed3");
-
-        assert.equal(r.errors[0].line, 8, "error line 8");
+        assert.equal(r.errors[0].line, 8);
     });
 
     it('tests mixed errors in template and JS script 4', function () {
         var sample = ut.getErrorSampleContent("mixed4");
         var r = compiler.compile(sample.template, "mixed4");
-
-        assert.equal(r.errors[0].line, 13, "error line 13");
+        assert.equal(r.errors[0].line, 13);
     });
 
 });

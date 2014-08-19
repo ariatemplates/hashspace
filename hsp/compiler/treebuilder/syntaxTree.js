@@ -408,9 +408,13 @@ var SyntaxTree = klass({
     __if : function (index, blocks, out) {
         //creates the if node
         var node = new Node("if"), block = blocks[index], lastValidIndex = index;
-        var condition = new HExpression(block.condition, this);
-        node.condition = condition.getSyntaxTree();
-        node.condition.bound = true;
+        node.condition = {
+            "category": block.condition.category,
+            "value": block.condition.value,
+            "line": block.condition.line,
+            "column": block.condition.column
+        };
+        node.condition.bound = true; //TODO: what does it mean?
         node.content1 = [];
         out.push(node);
 

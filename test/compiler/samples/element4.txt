@@ -10,7 +10,7 @@
 "skip"
 
 ##### Template Code
-test=[
+test=[__s,
   n.elt(  "input", 
           0,
           {"type":"text","autocomplete":null},

@@ -46,7 +46,7 @@
 ]
 
 ##### Template Code
-hello=[
+hello=[__s,
   n.elt(  "div", 
       0,
       0,

@@ -14,16 +14,16 @@
     "name": "test",
     "args": [],
     "content": [
-      {"type": "if", "condition": {"category": "boolean", "value": true}},
+      {"type": "if", "condition": {"category": "jsexptext", "value": "true"}},
       {"type": "text","value": " Boolean "},
       {"type": "endif"},
-      {"type": "if", "condition": {"category": "number", "value": 123.4}},
+      {"type": "if", "condition": {"category": "jsexptext", "value": "123.4"}},
       {"type": "text","value": " Number "},
       {"type": "endif"},
-      {"type": "if", "condition": {"category": "string", "value": "ok"}},
+      {"type": "if", "condition": {"category": "jsexptext", "value": "('ok')"}},
       {"type": "text","value": " String1 "},
       {"type": "endif"},
-      {"type": "if", "condition": {"category": "string", "value": "o\"k"}},
+      {"type": "if", "condition": {"category": "jsexptext", "value": '"o\\"k"'}},
       {"type": "text","value": " String2 "},
       {"type": "endif"}
     ]
@@ -39,25 +39,25 @@
     "args": [],
     "content": [
       {"type": "if",
-        "condition": {"category": "boolean", "value": true},
+        "condition": {"category": "jsexptext", "value": "true"},
         "content1": [
           {"type": "text", "value": " Boolean "}
         ]
       },
       {"type": "if",
-        "condition": {"category": "number", "value": 123.4},
+        "condition": {"category": "jsexptext", "value": "123.4"},
         "content1": [
           {"type": "text", "value": " Number "}
         ]
       },
       {"type": "if",
-        "condition": {"category": "string", "value": "ok"},
+        "condition": {"category": "jsexptext", "value": "('ok')"},
         "content1": [
           {"type": "text", "value": " String1 "}
         ]
       },
       {"type": "if",
-        "condition": {"category": "string", "value": "o\"k"},
+        "condition": {"category": "jsexptext", "value": '"o\\"k"'},
         "content1": [
           {"type": "text", "value": " String2 "}
         ]
@@ -67,17 +67,17 @@
 ]
 
 ##### Template Code
-test=[
-  n.$if( {e1:[5,true]}, 1, [ 
+test=[__s,
+  n.$if( {e1:[9,"true"]}, 1, [
     n.$text(0,[" Boolean "])
   ]),
-  n.$if( {e1:[5,123.4]}, 1, [ 
+  n.$if( {e1:[9,"123.4"]}, 1, [
     n.$text(0,[" Number "])
   ]),
-  n.$if( {e1:[5,"ok"]}, 1, [ 
+  n.$if( {e1:[9,"('ok')"]}, 1, [
     n.$text(0,[" String1 "])
   ]),
-  n.$if( {e1:[5,"o\"k"]}, 1, [ 
+  n.$if( {e1:[9,"\"o\"k\""]}, 1, [
     n.$text(0,[" String2 "])
   ])
 ]

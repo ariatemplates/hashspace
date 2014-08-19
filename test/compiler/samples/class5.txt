@@ -19,7 +19,7 @@
 "skip"
 
 ##### Template Code
-test=[
+test=[__s,
     n.elt(
         "div",
         {e1:[6,function(a0) {return ["one",((a0)? ''+"two":'')].join(' ');},2],e2:[1,2,"msg","isTrue"]},

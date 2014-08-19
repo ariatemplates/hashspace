@@ -31,7 +31,7 @@
           "column": 22
         }
       },
-      {"type": "if", "condition": {type: "Variable", "category": "jsexpression", "name": "name_isfirst"}},
+      {"type": "if", "condition": {"category": "jsexptext", "value": "name_isfirst"}},
       {"type": "text","value": "<< "},
       {"type": "endif"},
       {"type": "expression", "category": "jsexpression", expType:"Variable", name:"label", bound:false},
@@ -40,7 +40,7 @@
       {"type": "text", "value": ": "},
       {"type": "expression", "category": "jsexpression", expType:"Variable", name:"name", bound:true},
       {"type": "text", "value": " "},
-      {"type": "if", "condition": {type:"Variable", "category": "jsexpression", "name": "name_islast"}},
+      {"type": "if", "condition": {"category": "jsexptext", "value": "name_islast"}},
       {"type": "text","value": ">> "},
       {"type": "endif"},
       {"type": "endforeach"}
@@ -67,7 +67,7 @@
         },
         content:[
           {"type": "if",
-            "condition": {"category": "objectref", "path": ["name_isfirst"]},
+            "condition": {"category": "jsexptext", "value": "name_isfirst"},
             "content1": [
               {"type": "text", "value": "<< "}
             ]
@@ -81,7 +81,7 @@
             {"type": "text", "value": " "}
           ]},
           {"type": "if",
-            "condition": {"category": "objectref", "path": ["name_islast"]},
+            "condition": {"category": "jsexptext", "value": "name_islast"},
             "content1": [
               {"type": "text", "value": ">> "}
             ]
@@ -93,13 +93,13 @@
 ]
 
 ##### Template Code
-test=[
+test=[__s,
   n.$foreach({e1: [1,2,"passengers","names"]}, "k", "name", 0 , 1, [
-    n.$if( {e1:[1,1,"name_isfirst"]}, 1, [ 
+    n.$if( {e1:[9,"name_isfirst"]}, 1, [
         n.$text(0,["<< "])
     ]),
     n.$text({e1:[0,1,"label"],e2:[1,1,"k"],e3:[1,1,"name"]} ,["",1," ",2,": ",3," "]),
-    n.$if( {e1:[1,1,"name_islast"]}, 1, [ 
+    n.$if( {e1:[9,"name_islast"]}, 1, [
         n.$text(0,[">> "])
     ])
   ])

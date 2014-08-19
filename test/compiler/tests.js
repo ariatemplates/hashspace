@@ -57,6 +57,7 @@ describe('Block Parser: ', function () {
             includeSyntaxTree: true,
             bypassJSvalidation: true
         });
+
         skip = (sample.syntaxTree && sample.syntaxTree === "skip");
         if (!skip) {
             if (sample.syntaxTree) {
@@ -92,7 +93,7 @@ describe('Block Parser: ', function () {
     };
 
     var samples = ut.getSampleNames(__dirname + "/samples");
-    //samples=["let4"];
+    //samples=["if3"];
 
     for (var i = 0, sz = samples.length; sz > i; i++) {
         // create one test for each sample
@@ -141,13 +142,15 @@ describe('Block Parser: ', function () {
             'function func() {var x="text2"};',
             '',
             'var hello1 = require("hsp/rt").template([], function(n){',
-            '  return [n.$text(0,["Hello World!"])];',
+            '  var __s = {};',
+            '  return [__s,n.$text(0,["Hello World!"])];',
             '});',
             '',
             '// comment', 'function func2(z) {return z;}',
             '',
             'var hello1bis = require("hsp/rt").template(["arg1","arg2"], function(n){',
-            '  return [n.$text(0,["Hello Again!"])];',
+            '  var __s = {};',
+            '  return [__s,n.$text(0,["Hello Again!"])];',
             '});',
             'var z;'].join("\n");
 
@@ -157,7 +160,7 @@ describe('Block Parser: ', function () {
         // assert.equal(r.code,s,"template generated code"); // strange issue with non visible characters
         assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
 
-        var lm = [0, 6, 7, 8, 9, 9, 9, 14, 15, 16, 17, 18, 18, 18, 18, 23];
+        var lm = [0, 6, 7, 8, 9, 9, 9, 15, 16, 17, 18, 19, 19, 19, 19, 25];
         assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "", "line map comparison");
     });
 
@@ -170,20 +173,22 @@ describe('Block Parser: ', function () {
             'function func() {var x="text2"};',
             '',
             'var hello1 = hsp.template([], function(n){',
-            '  return [n.$text(0,["Hello World!"])];',
+            '  var __s = {};',
+            '  return [__s, n.$text(0,["Hello World!"])];',
             '});',
             '',
             '// comment', 'function func2(z) {return z;}',
             '',
             'var hello1bis = hsp.template(["arg1","arg2"], function(n){',
-            '  return [n.$text(0,["Hello Again!"])];',
+            '  var __s = {};',
+            '  return [__s, n.$text(0,["Hello Again!"])];',
             '});',
             'var z;'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
         assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
 
-        var lm = [0, 6, 7, 8, 9, 9, 9, 14, 15, 16, 17, 18, 18, 18, 18, 23];
+        var lm = [0, 6, 7, 8, 9, 9, 9, 15, 16, 17, 18, 19, 19, 19, 19, 25];
         assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "", "line map comparison");
     });
 
@@ -196,13 +201,15 @@ describe('Block Parser: ', function () {
             'function func() {var x="text2"};',
             '',
             'var hello1 = foo.template([], function(n){',
-            '  return [n.$text(0,["Hello World!"])];',
+            '  var __s = {};',
+            '  return [__s, n.$text(0,["Hello World!"])];',
             '});',
             '',
             '// comment', 'function func2(z) {return z;}',
             '',
             'var hello1bis = foo.template(["arg1","arg2"], function(n){',
-            '  return [n.$text(0,["Hello Again!"])];',
+            '  var __s = {};',
+            '  return [__s,n.$text(0,["Hello Again!"])];',
             '});',
             'var z;'].join("\n");
 
@@ -217,7 +224,8 @@ describe('Block Parser: ', function () {
         var s = ['var $set=require("hsp/$set"); ',
                 jsgenerator.HEADER, '',
                 'var hello4 = $set(exports, "hello4", require("hsp/rt").template([], function(n){',
-                '  return [n.$text(0,["Hello World!"])];', '}));'].join("\n");
+                '  var __s = {};',
+                '  return [__s, n.$text(0,["Hello World!"])];', '}));'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
         assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
@@ -229,7 +237,8 @@ describe('Block Parser: ', function () {
 
         var s = [jsgenerator.HEADER, '',
                 'var hello4 = hsp.template([], function(n){',
-                '  return [n.$text(0,["Hello World!"])];', '});'].join("\n");
+                '  var __s = {};',
+                '  return [__s, n.$text(0,["Hello World!"])];', '});'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
         assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
@@ -247,9 +256,10 @@ describe('Block Parser: ', function () {
         var r = compiler.compile(sample.template, "component2");
 
         var s = [jsgenerator.HEADER,
-                '',
-                'var mycomponent = require("hsp/rt").template({ctl:[foo,"foo","ComponentController"],ref:"c"}, function(n){',
-                '  return [n.$text(0,["some text..."])];', '});'].join("\n");
+            '',
+            'var mycomponent = require("hsp/rt").template({ctl:[foo,"foo","ComponentController"],ref:"c"}, function(n){',
+            '  var __s = {};',
+            '  return [__s, n.$text(0,["some text..."])];', '});'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
         assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code for components");
@@ -264,7 +274,8 @@ describe('Block Parser: ', function () {
                 '',
                 'var test = require("hsp/rt").template([], function(n){',
                 '  var _body,_panel;try {_body=body} catch(e) {_body=n.g(\'body\')};try {_panel=panel} catch(e) {_panel=n.g(\'panel\')};',
-                '  return [',
+                '  var __s = {body : typeof body === \'undefined\' ? undefined : body, panel : typeof panel === \'undefined\' ? undefined : panel};',
+                '  return [__s,',
                 '  n.cpt([_panel,"panel"],0,0,0,[n.cpt([_body,"body"],0,{"class":"foo"},0,[n.$text(0,["Hello World! "])])])];',
                 '});'
         ].join("\n");
