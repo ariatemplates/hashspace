@@ -17,6 +17,16 @@ var klass = require("../klass"),
     log = require("./log"),
     json = require("../json");
 
+/**
+ * Return the core part of a function code
+ * @param {Function} fn the function to retrieve the code from
+ */
+function trimFunctionCode(fn) {
+    var s=fn.toString();
+    // trim beginning and end of the function code
+    return s.replace(/(^[^\{]+\{\s*return\s*\(?)|(\)?\;?\s*\}\s*$)/ig,"");
+}
+
 var ExpHandler = klass({
     /**
      * Expression handler Used by all node to access the expressions linked to their properties Note: the same
@@ -28,9 +38,9 @@ var ExpHandler = klass({
      * Possible expression types are:
      * 0: unbound data ref - e.g. {e1:[0,1,"item_key"]}
      * 1: bound data ref - e.g. {e1:[1,2,"person","name"]}
-     * 2: literal data ref - e.g. {e1:[2,2,person,"name"]}
+     * 2: literal data ref - e.g. {e1:[2,2,person,"person","name"]}
      * 3: function call - e.g. {e1:[3,2,"ctl","deleteItem",1,2,1,0]}
-     * 4: function call literal- e.g. {e1:[4,1,myfunc,1,2,1,0]}
+     * 4: function call literal- e.g. {e1:[4,1,myfunc,"myfunc",1,2,1,0]}
      * 5: literal value - e.g. {e1:[5,"some value"]}
      * 6: function expression - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}
      * 7: dynamic data reference - e.g. {e1:[7,2,function(i,a0,a1) {return [a0,a1][i];},2,3]}
@@ -43,6 +53,7 @@ var ExpHandler = klass({
         // initialize the exps map to support a fast accessor function
         var v, etype, exp = null; // onm=object name
         for (var key in edef) {
+            exp=null;
             v = edef[key];
             if (v.constructor === Array) {
                 etype = v[0];
@@ -60,14 +71,13 @@ var ExpHandler = klass({
                     exp = new FuncExpr(v, this);
                 } else if (etype === 7) {
                     exp = new DynRefExpr(v, this);
-                } else {
-                    log.warning("Unsupported expression type: " + etype);
                 }
-                if (exp)
-                    this.exps[key] = exp;
+            }
+            if (exp) {
+                this.exps[key] = exp;
             } else {
-                // check other types of variables - e.g. callback
-                log.warning("Unsupported expression definition: " + v);
+                // we should only get here while implementing new expressions in the compiler
+                log.error("Unsupported expression (compilation error): " + v);
             }
         }
     },
@@ -146,6 +156,14 @@ var LiteralExpr = klass({
      */
     getObservablePairs : function (eh, vscope) {
         return null;
+    },
+
+    /**
+     * Return a string representing the expression as code - e.g. "person.name"
+     */
+    toCode:function() {
+        var v=this.value;
+        return (typeof(v)==="string")? '"'+v+'"' : ""+v;
     }
 });
 
@@ -162,14 +180,21 @@ var DataRefExpr = klass({
      * @param {ExpHandler} eh the associated expression handler
      */
     $constructor : function (desc,eh) {
-        var etype = desc[0], pl = desc[1], isLiteral = (etype === 2 || etype === 4), root, path = [], ppl; // pl: path
-                                                                                                            // length
+        var etype = desc[0],
+            pl = desc[1], // path length
+            isLiteral = (etype === 2 || etype === 4),
+            root,
+            path = [],
+            ppl; // property path length
+
         if (!isLiteral) {
             // e.g. {e1:[0,1,"item_key"]} >> this is a scope variable
             root = "scope";
             path = desc.slice(2, pl + 2);
             ppl = pl;
         } else {
+            this.rootRef=desc[3];
+            desc.splice(3,1); // remove root name
             root = desc[2];
             path = desc.slice(3, pl + 2);
             ppl = pl - 1;
@@ -215,12 +240,16 @@ var DataRefExpr = klass({
      * used by input elements to push DOM value changes in the data model
      */
     setValue : function (vscope, value) {
+        var err=false;
         if (this.isLiteral && this.ppLength <= 0) {
-            log.warning("[DataRefExpr.setValue] Global literal values cannot be updated from the DOM - please use object referenes");
+            err=true;
         } else {
-            var v = this.isLiteral ? this.root : vscope[this.root], ppl = this.ppLength, goahead = true;
+            var v = this.isLiteral ? this.root : vscope[this.root], ppl = this.ppLength;
             if (ppl < 1) {
                 return; // this case should not occur
+            }
+            if (!v) {
+                err=true;
             }
             if (ppl===1) {
                 if (!this.isLiteral) {
@@ -230,14 +259,17 @@ var DataRefExpr = klass({
                 for (var i = 0; ppl - 1 > i; i++) {
                     v = v[this.path[i]];
                     if (v === undefined || v===null) {
-                        goahead = false;
+                        err=true;
                         break;
                     }
                 }
             }
-            if (goahead) {
+            if (!err) {
                 json.set(v, this.path[ppl - 1], value);
             }
+        }
+        if (err) {
+            log.warning("Reference cannot be resolved for 2-way data-binding: "+this.toCode());
         }
     },
 
@@ -285,8 +317,21 @@ var DataRefExpr = klass({
             r.push([v,null]);
         }
         return r;
-    }
+    },
 
+    /**
+     * Return a string representing the expression as code - e.g. "person.name"
+     */
+    toCode:function() {
+        var r=[];
+        if (this.rootRef) {
+            r.push(this.rootRef);
+        }
+        if (this.path.length) {
+            r.push(this.path.join("."));
+        }
+        return r.join(".");
+    }
 });
 
 /**
@@ -306,6 +351,7 @@ var FuncRefExpr = klass({
         var etype = desc[0];
         // call parent constructor
         DataRefExpr.$constructor.call(this, desc, eh);
+        this.eh=eh;
         this.bound = (etype === 3); // literal data ref are considered unbound
         var argIdx = desc[1] + 2;
         if (desc.length > argIdx) {
@@ -365,18 +411,13 @@ var FuncRefExpr = klass({
     executeCb : function (evt, eh, vscope) {
         var v = this.getFuncRef(vscope, null);
 
-        var fn, info="";
+        var fn;
         if (!v) {
-            if (this.path && this.path.length>0) {
-                info=this.path[0];
-            }
-            return log.error("[function expression] Invalid reference: "+info);
+            return log.error("Invalid function reference in expression: "+this.toCode());
         } else {
             fn = v.fn;
-
             if (!fn || !fn.apply || fn.apply.constructor !== Function) {
-                info=this.path? this.path.join('.') : "";
-                return log.error("[function expression] Object is not a function or has no apply() method: "+info);
+                return log.error("Object is not a function or has no apply() method: "+this.toCode(true));
             }
         }
 
@@ -427,17 +468,44 @@ var FuncRefExpr = klass({
             var sz=r.length,
                 lastRefOwner=r[sz-1][0],
                 lastRef=lastRefOwner[r[sz-1][1]];
-            if (lastRef.constructor === Function) {
-                // lastRef is a function - so we observe all properties of its context
-                if (sz>1) {
-                    r.push([lastRefOwner,null]);
+            if (lastRef) {
+                if (lastRef.constructor === Function) {
+                    // lastRef is a function - so we observe all properties of its context
+                    if (sz>1) {
+                        r.push([lastRefOwner,null]);
+                    }
+                } else {
+                    // lastRef is an object with an apply method - so we observe all properties of this object
+                    r.push([lastRef,null]);
                 }
-            } else {
-                // lastRef is an object with an apply method - so we observe all properties of this object
-                r.push([lastRef,null]);
             }
         }
         return r;
+    },
+
+    /**
+     * Return a string representing the expression as code - e.g. "person.getDetails()"
+     * @param {Boolean} refOnly true if only the function reference code should be returned - default: false
+     */
+    toCode:function(refOnly) {
+        var s=DataRefExpr.toCode.call(this);
+        if (refOnly===true) {
+            return s;
+        }
+        var args=this.args, ac=[], v;
+        if (args) {
+            for (var i = 0, sz = args.length; sz > i; i += 2) {
+                v=args[i + 1];
+                if (args[i] === 0) {
+                    // this is a literal argument
+                    ac.push(typeof(v)==="string"? '"'+v+'"' : v);
+                } else {
+                    // this is an expression;
+                    ac.push(this.eh.getExpr(v).toCode());
+                }
+            }
+        }
+        return s+"("+ac.join(",")+")";
     }
 });
 
@@ -496,6 +564,22 @@ var FuncExpr = klass({
     getObservablePairs : function (eh, vscope) {
         // Observable pairs are returned by the sub-expressions associated to the function arguments
         return null;
+    },
+
+    /**
+     * Return a string representing the expression as code - e.g. "person.name"
+     */
+    toCode:function() {
+        var s=trimFunctionCode(this.fn);
+        if (this.args) {
+            var sz=this.args.length, v;
+            for (var i=sz-1;i>-1;i--) {
+                // replace each argument by its code
+                v=this.eh.getExpr(this.args[i]).toCode();
+                s=s.replace(new RegExp("a"+i),v);
+            }
+        }
+        return s;
     }
 });
 
@@ -560,6 +644,9 @@ var DynRefExpr = klass({
                     return defvalue;
                 }
             }
+            if (v===null || v===undefined) {
+                break;
+            }
         }
         if (v && this.observeTarget) {
             op.push([v,null]);
@@ -598,7 +685,8 @@ var DynRefExpr = klass({
         var pfragments=this.getFragments(vscope);
 
         if (pfragments.length<2) {
-            log.error("[DynRefExpr.setValue] Invalid expression: "+this.fn.toString());
+            // we should only get there in case of wrong compilation
+            log.error("[DynRefExpr] Invalid expression (compilation error): "+this.fn.toString());
         } else {
             var v,fragment,sz=pfragments.length;
             for (var i = 0; sz-1>i; i++) {
@@ -629,5 +717,54 @@ var DynRefExpr = klass({
         // get Value also updates the opairs array
         this.getValue(vscope,eh,"");
         return this.opairs;
+    },
+
+    /**
+     * Return a string representing the expression as code - e.g. "person.name"
+     */
+    toCode:function() {
+        // this.fn looks like function(i,a0) {return [a0,(1 + 2),"blah"][i];}
+        // for {person.foo[1+2].blah}
+        var s=trimFunctionCode(this.fn);
+        // remove extra array characters to transform [a0,(1 + 2),"blah"][i]
+        // into a0,(1 + 2),"blah"
+        s=s.replace(/(^\s*\[)|(\s*\]\[i\]\s*$)/ig,"");
+        var fragments=s.split(","), sz=fragments.length, fr, idx, res=[];
+        for (var i=0;sz>i;i++) {
+            fr=fragments[i];
+            // check fragment type
+            if (fr.match(/^a(\d+)$/)) {
+                // fragment refers to another expression
+                idx=parseInt(RegExp.$1,10);
+                s=this.eh.getExpr(this.args[idx]).toCode();
+                if (i===0) {
+                    // first expression
+                    res.push(s);
+                } else {
+                    res.push("["+s+"]");
+                }
+            } else {
+                // fragment is a literal or literal expression
+                if (fr.match(/^\((.*)\)$/)) {
+                    // fragment is a literal expression - e.g. (1 + a2)
+                    s=RegExp.$1; // trim parenthesis
+                    while(s.match(/a(\d+)/)) {
+                        // replace aXXX arguments with their expression values
+                        // will also replace aXXX in strings - but this rare edge case should be acceptable
+                        // for error reporting
+                        idx=parseInt(RegExp.$1,10);
+                        s=s.replace(new RegExp("a"+idx), this.eh.getExpr(this.args[idx]).toCode() || "");
+                    }
+                    res.push("["+s+"]");
+                } else if (fr.match(/^\"(.*)\"$/)) {
+                    // fragment is a string
+                    res.push("."+RegExp.$1);
+                } else {
+                    res.push("["+fr+"]");
+                }
+            }
+        }
+
+        return res.join("");
     }
 });

@@ -12,7 +12,7 @@
 ##### Template code
 test=[
     n.elt(	"img", 
-            {e1:[4,1,_doClick,0,1]},
+            {e1:[4,1,_doClick,"doClick",0,1]},
             0,
             {"click":1}
     )

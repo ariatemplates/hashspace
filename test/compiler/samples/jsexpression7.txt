@@ -13,5 +13,5 @@
 
 ##### Template Code
 test=[
-    n.$text({e1:[4,1,_content1]},["",1])
+    n.$text({e1:[4,1,_content1,"content1"]},["",1])
 ]

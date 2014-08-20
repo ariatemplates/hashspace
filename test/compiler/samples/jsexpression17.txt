@@ -14,7 +14,7 @@
 ##### Template Code
 test=[
   n.$if({
-    e1:[4,1,_acceptEmpty,1,2],
+    e1:[4,1,_acceptEmpty,"acceptEmpty",1,2],
     e2:[1,2,"person","name"]
   },1,[n.$text(0,["hello "])])
 ]

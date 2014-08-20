@@ -16,7 +16,7 @@ hello=[
         e2:[1,1,"person"],
         e3:[1,2,"person","name"],
         e4:[7,3,function(i,a0,a1) {return [a0,(a1 + 1),"foo"][i];},2,3],
-        e5:[2,2,_x,"y"]},
+        e5:[2,2,_x,"x","y"]},
         ["",1]
     )
 ]
