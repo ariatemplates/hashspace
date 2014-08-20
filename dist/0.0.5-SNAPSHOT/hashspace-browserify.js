@@ -471,7 +471,7 @@ var evaluator = require('./evaluator');
  */
 module.exports = function getObservablePairs(tree, scope) {
 
-    var partialResult;
+    var partialResult, leftValue;
 
     if (tree instanceof Array) {
         partialResult = [];
@@ -494,7 +494,8 @@ module.exports = function getObservablePairs(tree, scope) {
         partialResult = getObservablePairs(tree.l, scope);
         if (tree.v === '.') {
             //for . we need to observe _value_ of the left-hand side
-            return partialResult.concat([[evaluator(tree.l, scope), tree.r.v]]);
+            leftValue = evaluator(tree.l, scope);
+            return leftValue ? partialResult.concat([[leftValue, tree.r.v]]) : partialResult;
         } if (tree.v === '(') { //function call on a scope
             return [[scope, null]].concat(getObservablePairs(tree.r, scope));
         } else {
