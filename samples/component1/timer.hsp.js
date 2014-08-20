@@ -24,14 +24,16 @@ var Timer=klass({
 
 
 var timer = require("hsp/rt").template({ctl:[Timer,"Timer"],ref:"t"}, function(n){
-  return [n.$text({e1:[1,2,"t","secondsElapsed"]},["Elapsed time: ",1,"s"])];
+  var __s = {};
+  return [__s,n.$text({e1:[1,2,"t","secondsElapsed"]},["Elapsed time: ",1,"s"])];
 });
 
 
 
 var test = require("hsp/rt").template([], function(n){
   var _timer;try {_timer=timer} catch(e) {_timer=n.g('timer')};
-  return [n.$text(0,["Sample showing two timer instances with different init values:"]),n.elt("br",0,0,0),n.cpt([_timer,"timer"],0,0,0),n.$text(0,[" "]),n.elt("br",0,0,0),n.cpt([_timer,"timer"],0,{"initvalue":"10"},0)];
+  var __s = {timer : typeof timer === 'undefined' ? undefined : timer};
+  return [__s,n.$text(0,["Sample showing two timer instances with different init values:"]),n.elt("br",0,0,0),n.cpt([_timer,"timer"],0,0,0),n.$text(0,[" "]),n.elt("br",0,0,0),n.cpt([_timer,"timer"],0,{"initvalue":"10"},0)];
 });
 
 
