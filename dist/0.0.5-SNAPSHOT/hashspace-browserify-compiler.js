@@ -60,7 +60,7 @@ exports.compile = function (template, path, options) {
     return res;
 };
 
-},{"../transpiler/index":18,"./jsgenerator/index":2,"./parser/index":8,"./treebuilder/index":11}],2:[function(require,module,exports){
+},{"../transpiler/index":15,"./jsgenerator/index":2,"./parser/index":8,"./treebuilder/index":11}],2:[function(require,module,exports){
 var TemplateWalker = require("./templateWalker").TemplateWalker;
 var processors = require("./processors");
 var jsv = require("./jsvalidator/validator");
@@ -333,10 +333,7 @@ function formatError (error, input) {
 
 }
 
-},{"acorn/acorn":21}],4:[function(require,module,exports){
-var exParser = require('../../expressions/parser');
-var exIdentifiers = require('../../expressions/identifiers');
-
+},{"acorn/acorn":18}],4:[function(require,module,exports){
 /**
  * Escapes new lines characters in a string.
  * @param {String} text the input string.
@@ -378,24 +375,21 @@ exports["template"] = function (node, walker) {
     }
 
     //Generates the code of the template's content
-    var templateCode = ['[', ['__s'].concat(walker.walk(node.content, module.exports)).join(","), ']'].join("");
+    var templateCode = ["[", walker.walk(node.content, module.exports).join(","), "]"].join("");
     var globals = walker._globals;
 
     //Generates globals validation statement - e.g. var _c;try {_c=c} catch(e) {};
     var globalsStatement = [], globalsLength = globals.length;
-    var scopeStatements = [], scopeStr;
     if (globalsLength) {
         var gnm;
         globalsStatement = ["  var _" + globals.join(',_') + ";"];
         for (var i=0; i < globalsLength; i++) {
             gnm=globals[i];
             globalsStatement.push( "try {_" + gnm + "=", gnm ,"} catch(e) {_" + gnm + "=n.g('", gnm ,"')};");
-            scopeStatements.push(gnm + " : typeof " + gnm + " === 'undefined' ? undefined : " + gnm);
         }
         globalsStatement.push(CRLF);
     }
     var globalsStatementString = globalsStatement.join("");
-    scopeStr = "  var __s = {" + scopeStatements.join(", ") + "};" + CRLF;
 
     //Resets template scope and global list
     walker.resetScope();
@@ -410,17 +404,17 @@ exports["template"] = function (node, walker) {
 
     var hspRef='require("hsp/rt")';
     if (walker.mode.isGlobal) {
-        hspRef = walker.globalRef; // default: "hsp"
-        exportString = ''; // export should be ignored if commonJS is not used
+        hspRef=walker.globalRef; // default: "hsp"
+        exportString=''; // export should be ignored if commonJS is not used
     }
 
     if (node.controller) {
         var path = node.controller.path;
         return ['var ', templateName, exportString, ' = ',hspRef,'.template({ctl:[', path[0], ',', walker.each(path, argAsString),
-                '],ref:"', node.controller.ref, '"}, function(n){', CRLF, globalsStatementString, scopeStr, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
+                '],ref:"', node.controller.ref, '"}, function(n){', CRLF, globalsStatementString, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
     } else {
         return ['var ', templateName, exportString, ' = ',hspRef,'.template([', walker.each(node.args, argAsString),
-                '], function(n){', CRLF, globalsStatementString, scopeStr, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
+                '], function(n){', CRLF, globalsStatementString, '  return ', templateCode, ';', CRLF, '});', CRLF].join("");
     }
 };
 
@@ -822,17 +816,6 @@ function formatExpression (expression, firstIndex, walker) {
         codefragments.splice(0, 0, code0);
         code = codefragments.join(',');
         nextIndex = index;
-    } else if (category === 'jsexptext') {
-        //compile the expression to detect errors and parse-out identifiers
-        try {
-            exIdentifiers(exParser(expression.value)).forEach(function(ident){
-                walker.addGlobalRef(ident);
-            });
-            code = ['e', exprIndex, ':[9,"', ('' + expression.value).replace(/"/g, "\\\""), '"]'].join('');
-        } catch (err) {
-            walker.logError("Invalid expression: '" + expression.value + "'", expression);
-        }
-        nextIndex++;
     } else {
         walker.logError("Unsupported expression: " + category, expression);
     }
@@ -904,7 +887,7 @@ function formatTextBlock (node, nextExprIndex, walker) {
     };
 }
 
-},{"../../expressions/identifiers":13,"../../expressions/parser":15}],5:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 var klass = require("../../klass");
 var TreeWalker = require("./treeWalker").TreeWalker;
 
@@ -1038,7 +1021,7 @@ var TemplateWalker = klass({
     }
 });
 exports.TemplateWalker = TemplateWalker;
-},{"../../klass":16,"./treeWalker":6}],6:[function(require,module,exports){
+},{"../../klass":13,"./treeWalker":6}],6:[function(require,module,exports){
 var klass = require("../../klass");
 
 var TreeWalker = klass({
@@ -1083,7 +1066,7 @@ var TreeWalker = klass({
 });
 exports.TreeWalker = TreeWalker;
 
-},{"../../klass":16}],7:[function(require,module,exports){
+},{"../../klass":13}],7:[function(require,module,exports){
 module.exports = (function(){
   /*
    * Generated by PEG.js 0.7.0.
@@ -1167,7 +1150,6 @@ module.exports = (function(){
         "LetBlock": parse_LetBlock,
         "LetAssignment": parse_LetAssignment,
         "ExpressionBlock": parse_ExpressionBlock,
-        "CoreExpText": parse_CoreExpText,
         "HExpression": parse_HExpression,
         "HPipeExpression": parse_HPipeExpression,
         "HPipeFunction": parse_HPipeFunction,
@@ -3560,7 +3542,7 @@ module.exports = (function(){
             if (result2 !== null) {
               result3 = parse__();
               if (result3 !== null) {
-                result4 = parse_CoreExpText();
+                result4 = parse_HPipeExpression();
                 if (result4 !== null) {
                   result5 = parse__();
                   if (result5 !== null) {
@@ -3678,7 +3660,7 @@ module.exports = (function(){
                 if (result4 !== null) {
                   result5 = parse__();
                   if (result5 !== null) {
-                    result6 = parse_CoreExpText();
+                    result6 = parse_HPipeExpression();
                     if (result6 !== null) {
                       result7 = parse__();
                       if (result7 !== null) {
@@ -6410,269 +6392,6 @@ module.exports = (function(){
             r.column=column;
             return r;
           })(pos0.offset, pos0.line, pos0.column, result0[1], result0[3]);
-        }
-        if (result0 === null) {
-          pos = clone(pos0);
-        }
-        
-        cache[cacheKey] = {
-          nextPos: clone(pos),
-          result:  result0
-        };
-        return result0;
-      }
-      
-      function parse_CoreExpText() {
-        var cacheKey = "CoreExpText@" + pos.offset;
-        var cachedResult = cache[cacheKey];
-        if (cachedResult) {
-          pos = clone(cachedResult.nextPos);
-          return cachedResult.result;
-        }
-        
-        var result0, result1, result2, result3;
-        var pos0, pos1, pos2;
-        
-        pos0 = clone(pos);
-        pos1 = clone(pos);
-        if (/^[^{}]/.test(input.charAt(pos.offset))) {
-          result2 = input.charAt(pos.offset);
-          advance(pos, 1);
-        } else {
-          result2 = null;
-          if (reportFailures === 0) {
-            matchFailed("[^{}]");
-          }
-        }
-        if (result2 !== null) {
-          result1 = [];
-          while (result2 !== null) {
-            result1.push(result2);
-            if (/^[^{}]/.test(input.charAt(pos.offset))) {
-              result2 = input.charAt(pos.offset);
-              advance(pos, 1);
-            } else {
-              result2 = null;
-              if (reportFailures === 0) {
-                matchFailed("[^{}]");
-              }
-            }
-          }
-        } else {
-          result1 = null;
-        }
-        if (result1 !== null) {
-          result1 = (function(offset, line, column, c1) {return c1.join('')})(pos1.offset, pos1.line, pos1.column, result1);
-        }
-        if (result1 === null) {
-          pos = clone(pos1);
-        }
-        if (result1 === null) {
-          pos1 = clone(pos);
-          pos2 = clone(pos);
-          if (input.charCodeAt(pos.offset) === 123) {
-            result1 = "{";
-            advance(pos, 1);
-          } else {
-            result1 = null;
-            if (reportFailures === 0) {
-              matchFailed("\"{\"");
-            }
-          }
-          if (result1 !== null) {
-            result2 = parse_CoreExpText();
-            result2 = result2 !== null ? result2 : "";
-            if (result2 !== null) {
-              if (input.charCodeAt(pos.offset) === 125) {
-                result3 = "}";
-                advance(pos, 1);
-              } else {
-                result3 = null;
-                if (reportFailures === 0) {
-                  matchFailed("\"}\"");
-                }
-              }
-              if (result3 !== null) {
-                result1 = [result1, result2, result3];
-              } else {
-                result1 = null;
-                pos = clone(pos2);
-              }
-            } else {
-              result1 = null;
-              pos = clone(pos2);
-            }
-          } else {
-            result1 = null;
-            pos = clone(pos2);
-          }
-          if (result1 !== null) {
-            result1 = (function(offset, line, column, c2) {return c2.join('')})(pos1.offset, pos1.line, pos1.column, result1);
-          }
-          if (result1 === null) {
-            pos = clone(pos1);
-          }
-          if (result1 === null) {
-            pos1 = clone(pos);
-            pos2 = clone(pos);
-            if (input.charCodeAt(pos.offset) === 123) {
-              result1 = "{";
-              advance(pos, 1);
-            } else {
-              result1 = null;
-              if (reportFailures === 0) {
-                matchFailed("\"{\"");
-              }
-            }
-            if (result1 !== null) {
-              result2 = parse_CoreExpText();
-              result2 = result2 !== null ? result2 : "";
-              if (result2 !== null) {
-                result1 = [result1, result2];
-              } else {
-                result1 = null;
-                pos = clone(pos2);
-              }
-            } else {
-              result1 = null;
-              pos = clone(pos2);
-            }
-            if (result1 !== null) {
-              result1 = (function(offset, line, column, c3) {return c3.join('')})(pos1.offset, pos1.line, pos1.column, result1);
-            }
-            if (result1 === null) {
-              pos = clone(pos1);
-            }
-          }
-        }
-        if (result1 !== null) {
-          result0 = [];
-          while (result1 !== null) {
-            result0.push(result1);
-            pos1 = clone(pos);
-            if (/^[^{}]/.test(input.charAt(pos.offset))) {
-              result2 = input.charAt(pos.offset);
-              advance(pos, 1);
-            } else {
-              result2 = null;
-              if (reportFailures === 0) {
-                matchFailed("[^{}]");
-              }
-            }
-            if (result2 !== null) {
-              result1 = [];
-              while (result2 !== null) {
-                result1.push(result2);
-                if (/^[^{}]/.test(input.charAt(pos.offset))) {
-                  result2 = input.charAt(pos.offset);
-                  advance(pos, 1);
-                } else {
-                  result2 = null;
-                  if (reportFailures === 0) {
-                    matchFailed("[^{}]");
-                  }
-                }
-              }
-            } else {
-              result1 = null;
-            }
-            if (result1 !== null) {
-              result1 = (function(offset, line, column, c1) {return c1.join('')})(pos1.offset, pos1.line, pos1.column, result1);
-            }
-            if (result1 === null) {
-              pos = clone(pos1);
-            }
-            if (result1 === null) {
-              pos1 = clone(pos);
-              pos2 = clone(pos);
-              if (input.charCodeAt(pos.offset) === 123) {
-                result1 = "{";
-                advance(pos, 1);
-              } else {
-                result1 = null;
-                if (reportFailures === 0) {
-                  matchFailed("\"{\"");
-                }
-              }
-              if (result1 !== null) {
-                result2 = parse_CoreExpText();
-                result2 = result2 !== null ? result2 : "";
-                if (result2 !== null) {
-                  if (input.charCodeAt(pos.offset) === 125) {
-                    result3 = "}";
-                    advance(pos, 1);
-                  } else {
-                    result3 = null;
-                    if (reportFailures === 0) {
-                      matchFailed("\"}\"");
-                    }
-                  }
-                  if (result3 !== null) {
-                    result1 = [result1, result2, result3];
-                  } else {
-                    result1 = null;
-                    pos = clone(pos2);
-                  }
-                } else {
-                  result1 = null;
-                  pos = clone(pos2);
-                }
-              } else {
-                result1 = null;
-                pos = clone(pos2);
-              }
-              if (result1 !== null) {
-                result1 = (function(offset, line, column, c2) {return c2.join('')})(pos1.offset, pos1.line, pos1.column, result1);
-              }
-              if (result1 === null) {
-                pos = clone(pos1);
-              }
-              if (result1 === null) {
-                pos1 = clone(pos);
-                pos2 = clone(pos);
-                if (input.charCodeAt(pos.offset) === 123) {
-                  result1 = "{";
-                  advance(pos, 1);
-                } else {
-                  result1 = null;
-                  if (reportFailures === 0) {
-                    matchFailed("\"{\"");
-                  }
-                }
-                if (result1 !== null) {
-                  result2 = parse_CoreExpText();
-                  result2 = result2 !== null ? result2 : "";
-                  if (result2 !== null) {
-                    result1 = [result1, result2];
-                  } else {
-                    result1 = null;
-                    pos = clone(pos2);
-                  }
-                } else {
-                  result1 = null;
-                  pos = clone(pos2);
-                }
-                if (result1 !== null) {
-                  result1 = (function(offset, line, column, c3) {return c3.join('')})(pos1.offset, pos1.line, pos1.column, result1);
-                }
-                if (result1 === null) {
-                  pos = clone(pos1);
-                }
-              }
-            }
-          }
-        } else {
-          result0 = null;
-        }
-        if (result0 !== null) {
-          result0 = (function(offset, line, column, c) {
-                return {
-                    "category": "jsexptext",
-                    "value": c.join(''),
-                    "line": line,
-                    "column": column
-                };
-             })(pos0.offset, pos0.line, pos0.column, result0);
         }
         if (result0 === null) {
           pos = clone(pos0);
@@ -17849,7 +17568,7 @@ var HExpression = klass({
     }
 });
 exports.HExpression = HExpression;
-},{"../../klass":16}],10:[function(require,module,exports){
+},{"../../klass":13}],10:[function(require,module,exports){
 var NAMED_HTML_ENTITIES = {
     "quot": 0x0022,
     "amp": 0x0026,
@@ -18574,13 +18293,9 @@ var SyntaxTree = klass({
     __if : function (index, blocks, out) {
         //creates the if node
         var node = new Node("if"), block = blocks[index], lastValidIndex = index;
-        node.condition = {
-            "category": block.condition.category,
-            "value": block.condition.value,
-            "line": block.condition.line,
-            "column": block.condition.column
-        };
-        node.condition.bound = true; //TODO: what does it mean?
+        var condition = new HExpression(block.condition, this);
+        node.condition = condition.getSyntaxTree();
+        node.condition.bound = true;
         node.content1 = [];
         out.push(node);
 
@@ -18996,459 +18711,7 @@ var SyntaxTree = klass({
 });
 exports.SyntaxTree = SyntaxTree;
 
-},{"../../klass":16,"./hExpression":9,"./htmlEntities":10}],13:[function(require,module,exports){
-module.exports = function getIdentifiers(tree) {
-
-    var partialResult;
-
-    if (tree instanceof Array) {
-        partialResult = [];
-        if (tree.length > 0) {
-            for (var i = 0; i < tree.length; i++) {
-                partialResult = partialResult.concat(getIdentifiers(tree[i]));
-            }
-        }
-        return partialResult;
-    }
-
-    if (tree.a === 'literal') {
-        return [];
-    } else if (tree.a === 'idn') {
-        return [tree.v];
-    } else if (tree.a === 'unr') {
-        return getIdentifiers(tree.l);
-    } else if (tree.a === 'bnr') {
-        return getIdentifiers(tree.l).concat(getIdentifiers(tree.r));
-    } else if (tree.a === 'tnr') {
-        return getIdentifiers(tree.l).concat(getIdentifiers(tree.r))
-            .concat(getIdentifiers(tree.othr));
-    } else {
-        throw new Error('unknown entry' + JSON.stringify(tree));
-    }
-};
-},{}],14:[function(require,module,exports){
-function isWhitespace(ch) {
-    return ch === '\t' || ch === '\r' || ch === '\n' || ch === ' ';
-}
-
-function isQuote(ch) {
-    return ch === '"' || ch === "'";
-}
-
-function isDigit(ch) {
-    return ch >= '0' && ch <= '9';
-}
-
-function isIdentifierStart(ch) {
-    return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch === '$' || ch === '_';
-}
-
-function isIdentifierPart(ch) {
-    return isIdentifierStart(ch) || isDigit(ch);
-}
-
-function isOperator(ch) {
-    return '+-*/%!|&.,=<>()[]{}?:'.indexOf(ch) > -1;
-}
-
-function isSuffixOperator(ch) {
-    return '=|&'.indexOf(ch) > -1;
-}
-
-/**
- * A lexing function
- * @param input - a string of characters to be tokenised
- * @returns {Array} - an array of token objects with the following properties:
- *  - t: type of token, one of: num (number), idn (identifier), str (string), opr (operator)
- *  - v: value of a token
- *  - f: from where (index) a given token starts in the input
- *  @throws {Error} when an unknown character is detected in the input (ex.: ^)
- */
-module.exports = function (initialInput) {
-
-    var input, EOF = String.fromCharCode(0);
-    var result = [];
-    var i = 0, current, quote; //current is a character that the lexer is currently looking at
-    var from, value;
-
-    if (typeof initialInput === 'string') {
-
-        //append special EOF token to avoid constant checks for the input end
-        input = initialInput + EOF;
-
-        current = input.charAt(0);
-        while (current !== EOF) {
-
-            //reset variables responsible for accumulating results
-            from = i;
-            value = '';
-
-            if (isWhitespace(current)) {
-
-                current = input.charAt(++i); //skip
-
-            } else if (isOperator(current)) {
-
-                do {
-                    value += current;
-                    current = input.charAt(++i);
-
-                } while (isSuffixOperator(current));
-
-                result.push({t: 'opr', v: value, f: from});
-
-            } else if (isIdentifierStart(current)) {
-
-                do {
-                    value += current;
-                    current = input.charAt(++i);
-
-                } while (isIdentifierPart(current));
-
-                result.push({t: 'idn', v: value, f: from});
-
-            } else if (isQuote(current)) {
-
-                quote = current;
-                current = input.charAt(++i); //skip the initial quote
-
-                while (current !== quote && current !== EOF) {
-
-                    if (current === '\\' && input.charAt(i + 1) === quote) {
-                        value += quote;
-                        current = input.charAt(++i);
-                    } else {
-                        value += current;
-                    }
-                    current = input.charAt(++i);
-                }
-
-                if (isQuote(current)) {
-                    result.push({t: 'str', v: value, f: from});
-                    current = input.charAt(++i); //consume the closing quote
-                } else {
-                    throw new Error('Error parsing "' + initialInput + '": unfinished string at ' + from);
-                }
-
-            } else if (isDigit(current)) {
-
-                do {
-                    value += current;
-                    current = input.charAt(++i);
-
-                } while (isDigit(current) || current === '.');
-
-                result.push({
-                    t: 'num',
-                    v: value.indexOf('.') > -1 ? parseFloat(value) : parseInt(value),
-                    f: from});
-
-            } else {
-                throw new Error('Error parsing "' + initialInput + '": unknown token ' + current + ' at ' + from);
-            }
-        }
-    }
-
-    return result;
-};
-},{}],15:[function(require,module,exports){
-var lexer = require('./lexer');
-
-var SYMBOLS = {};
-var tokens, token, tokenIdx = 0;
-
-var BaseSymbol = {
-    nud: function () {
-        throw new Error("Undefined nud function for: " + this.v);
-    },
-    led: function () {
-        throw new Error("Missing operator: " + this.v);
-    }
-};
-
-function itself() {
-    return this;
-}
-
-function symbol(id, bp) {
-    var s = SYMBOLS[id];
-    bp = bp || 0;
-
-    if (s) {
-        if (bp >= s.lbp) {
-            s.lbp = bp;
-        }
-    } else {
-        s = Object.create(BaseSymbol);
-        s.id = s.v = id;
-        s.lbp = bp;
-        SYMBOLS[id] = s;
-    }
-
-    return s;
-}
-
-function prefix(id, nud) {
-    var s = symbol(id);
-    s.nud = nud || function () {
-        this.l = expression(70);
-        this.a = 'unr';
-        return this;
-    };
-    return s;
-}
-
-function infix(id, bindingPower, led) {
-    var s = symbol(id, bindingPower);
-    s.led = led || function (left) {
-        this.l = left;
-        this.r = expression(bindingPower);
-        this.a = 'bnr';
-        return this;
-    };
-    return s;
-}
-
-function infixr(id, bp, led) {
-    var s = symbol(id, bp);
-    s.led = led || function (left) {
-        this.l = left;
-        this.r = expression(bp - 1);
-        this.a = 'bnr';
-        return this;
-    };
-    return s;
-}
-
-var constant = function (s, v) {
-    var x = symbol(s);
-    x.nud = function () {
-        this.v = SYMBOLS[this.id].v;
-        this.a = "literal";
-        return this;
-    };
-    x.v = v;
-    return x;
-};
-
-
-//define "parser rules"
-symbol('(end)');
-symbol('(identifier)').nud = itself;
-symbol('(literal)').nud = itself;
-symbol("]");
-symbol(")");
-symbol("}");
-symbol(",");
-symbol(":");
-constant("true", true);
-constant("false", false);
-constant("null", null);
-prefix("-");
-prefix("!");
-prefix("(", function () {
-    var e = expression(0);
-    advance(")");
-    return e;
-});
-prefix("[", function () {
-    var a = [];
-    if (token.id !== "]") {
-        while (true) {
-            a.push(expression(0));
-            if (token.id !== ",") {
-                break;
-            }
-            advance(",");
-        }
-    }
-    advance("]");
-    this.l = a;
-    this.a = 'unr';
-    return this;
-});
-prefix("{", function () {
-    var a = [];
-    if (token.id !== "}") {
-        while (true) {
-            var n = token;
-            if (n.a !== "idn" && n.a !== "literal") {
-                throw new Error("Bad key.");
-            }
-            advance();
-            advance(":");
-            var v = expression(0);
-            v.key = n.v;
-            a.push(v);
-            if (token.id !== ",") {
-                break;
-            }
-            advance(",");
-        }
-    }
-    advance("}");
-    this.l = a;
-    this.a = 'unr';
-    return this;
-});
-infix("?", 20, function (left) {
-    this.l = left;
-    this.r = expression(0);
-    advance(":");
-    this.othr = expression(0);
-    this.a = 'tnr';
-    return this;
-});
-infixr("&&", 30);
-infixr("||", 30);
-infixr("<", 40);
-infixr(">", 40);
-infixr("<=", 40);
-infixr(">=", 40);
-infixr("==", 40);
-infixr("!=", 40);
-infixr("===", 40);
-infixr("!==", 40);
-infix("+", 50);
-infix("-", 50);
-infix("*", 60);
-infix("/", 60);
-infix("%", 60);
-infix(".", 80, function (left) {
-    this.l = left;
-    if (token.a !== "idn") {
-        throw new Error("Expected a property name, got:" + token.a + " at " + token.f);
-    }
-    token.a = "literal";
-    this.r = token;
-    this.a = 'bnr';
-    advance();
-    return this;
-});
-infix("[", 80, function (left) {
-    this.l = left;
-    this.r = expression(0);
-    this.a = 'bnr';
-    advance("]");
-    return this;
-});
-infix("(", 80, function (left) {
-    var a = [];
-    if (left.id === "." || left.id === "[") {
-        this.a = 'tnr';
-        this.l = left.l;
-        this.r = left.r;
-        this.othr = a;
-    } else {
-        this.a = 'bnr';
-        this.l = left;
-        this.r = a;
-        if (left.a !== 'unr' &&
-            left.a !== "idn" && left.id !== "(" &&
-            left.id !== "&&" && left.id !== "||" && left.id !== "?") {
-
-            throw new Error("Expected a variable name: " + JSON.stringify(left));
-        }
-    }
-    if (token.id !== ")") {
-        while (true) {
-            a.push(expression(0));
-            if (token.id !== ",") {
-                break;
-            }
-            advance(",");
-        }
-    }
-    advance(")");
-    return this;
-});
-infixr("|", 20, function (left) {
-    //token points to a pipe function here - check if the next item is equal to :
-    this.l = left;
-    this.r = expression(20);
-    this.a = 'tnr';
-    this.othr = [];
-    while (token.a === 'opr' && token.v === ':') {
-        advance();
-        this.othr.push(expression(20));
-    }
-    return this;
-});
-
-function advance(id) {
-    var tokenType, o, inputToken, v;
-    if (id && token.id !== id) {
-        throw new Error("Expected '" + id + "' but '" + token.id + "' found.");
-    }
-    if (tokenIdx >= tokens.length) {
-        token = SYMBOLS["(end)"];
-        return;
-    }
-    inputToken = tokens[tokenIdx];
-    tokenIdx += 1;
-    v = inputToken.v;
-    tokenType = inputToken.t;
-    if (tokenType === "idn") {
-        o = SYMBOLS[v] || SYMBOLS['(identifier)'];
-    } else if (tokenType === "opr") {
-        o = SYMBOLS[v];
-        if (!o) {
-            throw new Error("Unknown operator: " + v);
-        }
-    } else if (tokenType === "str" || tokenType ===  "num") {
-        o = SYMBOLS["(literal)"];
-        tokenType = "literal";
-    } else {
-        throw new Error("Unexpected token:" + v);
-    }
-    token = Object.create(o);
-    //token.f  = inputToken.f;
-    token.v = v;
-    token.a = tokenType;
-
-    return token;
-}
-
-function expression(rbp) {
-    var left;
-    var t = token;
-    advance();
-    left = t.nud();
-    while (rbp < token.lbp) {
-        t = token;
-        advance();
-        left = t.led(left);
-    }
-    return left;
-}
-
-/**
- * Expression parsing algorithm based on http://javascript.crockford.com/tdop/tdop.html
- * Other useful resources (reading material):
- * http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/
- * http://l-lang.org/blog/TDOP---Pratt-parser-in-pictures/
- * http://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy/
- * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence
- *
- * @param input {String} - expression to parse
- * @return {Object} - parsed AST
- */
-module.exports = function (input) {
-
-    tokens = lexer(input);
-    token = undefined;
-    tokenIdx = 0;
-
-    if (tokens.length) {
-        advance(); //get the first token
-        var expr = expression(0);
-        advance('(end)'); //make sure that we are at the end of an expression
-        return expr;
-    } else {
-        return {f: 0, a: 'literal', v: undefined};
-    }
-};
-},{"./lexer":14}],16:[function(require,module,exports){
+},{"../../klass":13,"./hExpression":9,"./htmlEntities":10}],13:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -19544,7 +18807,7 @@ klass.createMetaDataPrefix = createMetaDataPrefix;
 
 module.exports = klass;
 
-},{}],17:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19622,7 +18885,7 @@ module.exports = function (ast, fileContent, options) {
     return out.join("");
 };
 
-},{"uglify-js":37}],18:[function(require,module,exports){
+},{"uglify-js":34}],15:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19644,7 +18907,7 @@ module.exports = {
     formatAST : require("./formatAST")
 };
 
-},{"./formatAST":17,"./processAST":19,"./processString":20}],19:[function(require,module,exports){
+},{"./formatAST":14,"./processAST":16,"./processString":17}],16:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19795,7 +19058,7 @@ module.exports = function (ast, options) {
     return changed;
 };
 
-},{"uglify-js":37}],20:[function(require,module,exports){
+},{"uglify-js":34}],17:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19828,7 +19091,7 @@ module.exports = function (fileContent, fileName, options) {
     };
 };
 
-},{"./formatAST":17,"./processAST":19,"uglify-js":37}],21:[function(require,module,exports){
+},{"./formatAST":14,"./processAST":16,"uglify-js":34}],18:[function(require,module,exports){
 // Acorn is a tiny, fast JavaScript parser written in JavaScript.
 //
 // Acorn was written by Marijn Haverbeke and released under an MIT
@@ -21542,7 +20805,7 @@ module.exports = function (fileContent, fileName, options) {
 
 })(typeof exports === "undefined" ? (self.acorn = {}) : exports);
 
-},{}],22:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -21567,7 +20830,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],23:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -21795,7 +21058,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require("FWaASH"))
-},{"FWaASH":24}],24:[function(require,module,exports){
+},{"FWaASH":21}],21:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -21860,14 +21123,14 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],25:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],26:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -22457,7 +21720,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require("FWaASH"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":25,"FWaASH":24,"inherits":22}],27:[function(require,module,exports){
+},{"./support/isBuffer":22,"FWaASH":21,"inherits":19}],24:[function(require,module,exports){
 /*
  * Copyright 2009-2011 Mozilla Foundation and contributors
  * Licensed under the New BSD license. See LICENSE.txt or:
@@ -22467,7 +21730,7 @@ exports.SourceMapGenerator = require('./source-map/source-map-generator').Source
 exports.SourceMapConsumer = require('./source-map/source-map-consumer').SourceMapConsumer;
 exports.SourceNode = require('./source-map/source-node').SourceNode;
 
-},{"./source-map/source-map-consumer":32,"./source-map/source-map-generator":33,"./source-map/source-node":34}],28:[function(require,module,exports){
+},{"./source-map/source-map-consumer":29,"./source-map/source-map-generator":30,"./source-map/source-node":31}],25:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -22566,7 +21829,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./util":35,"amdefine":36}],29:[function(require,module,exports){
+},{"./util":32,"amdefine":33}],26:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -22712,7 +21975,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./base64":30,"amdefine":36}],30:[function(require,module,exports){
+},{"./base64":27,"amdefine":33}],27:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -22756,7 +22019,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":36}],31:[function(require,module,exports){
+},{"amdefine":33}],28:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -22839,7 +22102,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":36}],32:[function(require,module,exports){
+},{"amdefine":33}],29:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -23319,7 +22582,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":28,"./base64-vlq":29,"./binary-search":31,"./util":35,"amdefine":36}],33:[function(require,module,exports){
+},{"./array-set":25,"./base64-vlq":26,"./binary-search":28,"./util":32,"amdefine":33}],30:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -23724,7 +22987,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./array-set":28,"./base64-vlq":29,"./util":35,"amdefine":36}],34:[function(require,module,exports){
+},{"./array-set":25,"./base64-vlq":26,"./util":32,"amdefine":33}],31:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -24134,7 +23397,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"./source-map-generator":33,"./util":35,"amdefine":36}],35:[function(require,module,exports){
+},{"./source-map-generator":30,"./util":32,"amdefine":33}],32:[function(require,module,exports){
 /* -*- Mode: js; js-indent-level: 2; -*- */
 /*
  * Copyright 2011 Mozilla Foundation and contributors
@@ -24455,7 +23718,7 @@ define(function (require, exports, module) {
 
 });
 
-},{"amdefine":36}],36:[function(require,module,exports){
+},{"amdefine":33}],33:[function(require,module,exports){
 (function (process,__filename){
 /** vim: et:ts=4:sw=4:sts=4
  * @license amdefine 0.1.0 Copyright (c) 2011, The Dojo Foundation All Rights Reserved.
@@ -24758,7 +24021,7 @@ function amdefine(module, requireFn) {
 module.exports = amdefine;
 
 }).call(this,require("FWaASH"),"/../../node_modules/uglify-js/node_modules/source-map/node_modules/amdefine/amdefine.js")
-},{"FWaASH":24,"path":23}],37:[function(require,module,exports){
+},{"FWaASH":21,"path":20}],34:[function(require,module,exports){
 var sys = require("util");
 var MOZ_SourceMap = require("source-map");
 var UglifyJS = exports;
@@ -32568,4 +31831,4 @@ exports.describe_ast = function () {
     doitem(UglifyJS.AST_Node);
     return out + "";
 };
-},{"source-map":27,"util":26}]},{},[1])
+},{"source-map":24,"util":23}]},{},[1])

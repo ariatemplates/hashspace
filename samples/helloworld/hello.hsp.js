@@ -6,8 +6,7 @@ var $set=require("hsp/$set");
 // edit me!
 
 var hello = require("hsp/rt").template(["name"], function(n){
-  var __s = {};
-  return [__s,n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[1,1,"name"]},["Hello ",1,"! "])])];
+  return [n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[1,1,"name"]},["Hello ",1,"! "])])];
 });
 
 

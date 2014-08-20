@@ -5,22 +5,19 @@ var $set=require("hsp/$set");
 // ################################################################ 
 var test = require("hsp/rt").template(["ctxt"], function(n){
   var _swapTemplate;try {_swapTemplate=swapTemplate} catch(e) {_swapTemplate=n.g('swapTemplate')};
-  var __s = {swapTemplate : typeof swapTemplate === 'undefined' ? undefined : swapTemplate};
-  return [__s,n.elt("div",0,0,0,[n.elt("a",{e1:[4,1,_swapTemplate]},0,{"click":1},[n.$text(0,["Change template"])])]),n.cpt([null,"ctxt","view"],{e1:[1,1,"ctxt"]},{"ctxt":["",1]},0)];
+  return [n.elt("div",0,0,0,[n.elt("a",{e1:[4,1,_swapTemplate]},0,{"click":1},[n.$text(0,["Change template"])])]),n.cpt([null,"ctxt","view"],{e1:[1,1,"ctxt"]},{"ctxt":["",1]},0)];
 });
 
 
 
 var tplA = require("hsp/rt").template(["ctxt"], function(n){
-  var __s = {};
-  return [__s,n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[1,2,"ctxt","msg"]},["A: ",1," "])])];
+  return [n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[1,2,"ctxt","msg"]},["A: ",1," "])])];
 });
 
 
 
 var tplB = require("hsp/rt").template(["ctxt"], function(n){
-  var __s = {};
-  return [__s,n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[1,2,"ctxt","msg2"]},["B: ",1," "])])];
+  return [n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[1,2,"ctxt","msg2"]},["B: ",1," "])])];
 });
 
 

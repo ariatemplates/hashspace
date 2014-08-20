@@ -77,8 +77,7 @@ function getNumber(s) {
 // component template associated with the NbrField controller
 
 var nbrfield =$set(exports, "nbrfield", require("hsp/rt").template({ctl:[NbrField,"NbrField"],ref:"c"}, function(n){
-  var __s = {};
-  return [__s,n.elt("span",0,{"class":"nbrfield"},0,[n.elt("input",{e1:[1,2,"c","internalValue"],e2:[6,function(a0) {return ["nbrfield",((!(a0))? ''+"error":'')].join(' ');},3],e3:[1,2,"c","isValid"]},{"type":"text","model":["",1],"class":["",2]},0),n.elt("button",{e1:[3,2,"c","resetField"]},0,{"click":1},[n.$text(0,["reset"])])])];
+  return [n.elt("span",0,{"class":"nbrfield"},0,[n.elt("input",{e1:[1,2,"c","internalValue"],e2:[6,function(a0) {return ["nbrfield",((!(a0))? ''+"error":'')].join(' ');},3],e3:[1,2,"c","isValid"]},{"type":"text","model":["",1],"class":["",2]},0),n.elt("button",{e1:[3,2,"c","resetField"]},0,{"click":1},[n.$text(0,["reset"])])])];
 }));
 
 
@@ -86,8 +85,7 @@ var nbrfield =$set(exports, "nbrfield", require("hsp/rt").template({ctl:[NbrFiel
 
 var test = require("hsp/rt").template(["d"], function(n){
   var _nbrfield;try {_nbrfield=nbrfield} catch(e) {_nbrfield=n.g('nbrfield')};
-  var __s = {nbrfield : typeof nbrfield === 'undefined' ? undefined : nbrfield};
-  return [__s,n.$text(0,["Component #1: "]),n.cpt([_nbrfield,"nbrfield"],{e1:[1,2,"d","value1"]},{"value":["",1],"min":"-10","max":"1000"},0),n.elt("br",0,0,0),n.$text(0,["Value in the data model: "]),n.elt("span",0,{"class":"textValue"},0,[n.$text({e1:[1,2,"d","value1"]},["",1])]),n.$text(0,["(min:-10 / max:1000 / default:0) "]),n.elt("hr",0,0,0),n.$text(0,["Component #2: "]),n.cpt([_nbrfield,"nbrfield"],{e1:[1,2,"d","value2"]},{"value":["",1]},0),n.elt("br",0,0,0),n.$text(0,["Value in the data model: "]),n.elt("span",0,{"class":"textValue"},0,[n.$text({e1:[1,2,"d","value2"]},["",1])])];
+  return [n.$text(0,["Component #1: "]),n.cpt([_nbrfield,"nbrfield"],{e1:[1,2,"d","value1"]},{"value":["",1],"min":"-10","max":"1000"},0),n.elt("br",0,0,0),n.$text(0,["Value in the data model: "]),n.elt("span",0,{"class":"textValue"},0,[n.$text({e1:[1,2,"d","value1"]},["",1])]),n.$text(0,["(min:-10 / max:1000 / default:0) "]),n.elt("hr",0,0,0),n.$text(0,["Component #2: "]),n.cpt([_nbrfield,"nbrfield"],{e1:[1,2,"d","value2"]},{"value":["",1]},0),n.elt("br",0,0,0),n.$text(0,["Value in the data model: "]),n.elt("span",0,{"class":"textValue"},0,[n.$text({e1:[1,2,"d","value2"]},["",1])])];
 });
 
 

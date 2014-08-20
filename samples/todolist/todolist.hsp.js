@@ -7,8 +7,7 @@ var klass=require("hsp/klass");
 
 
 var todolist = require("hsp/rt").template(["todo"], function(n){
-  var __s = {};
-  return [__s,n.elt("div",0,0,0,[n.elt("h3",0,0,0,[n.$text(0,["TODO..."])]),n.elt("ul",0,0,0,[n.$foreach({e1:[1,3,"todo","data","items"]},"itm_key","itm",0,1,[n.elt("li",0,0,0,[n.$text({e1:[1,1,"itm"]},["",1])])]),n.$text(0,[" "])]),n.elt("form",{e1:[3,2,"todo","addItem"]},0,{"submit":1},[n.elt("input",{e1:[1,3,"todo","data","newTodoItem"]},{"type":"text","value":["",1]},0),n.elt("button",0,0,0,[n.$text({e1:[6,function(a0) {return ("Add #" + (a0 + 1));},2],e2:[1,4,"todo","data","items","length"]},["",1])])])])];
+  return [n.elt("div",0,0,0,[n.elt("h3",0,0,0,[n.$text(0,["TODO..."])]),n.elt("ul",0,0,0,[n.$foreach({e1:[1,3,"todo","data","items"]},"itm_key","itm",0,1,[n.elt("li",0,0,0,[n.$text({e1:[1,1,"itm"]},["",1])])]),n.$text(0,[" "])]),n.elt("form",{e1:[3,2,"todo","addItem"]},0,{"submit":1},[n.elt("input",{e1:[1,3,"todo","data","newTodoItem"]},{"type":"text","value":["",1]},0),n.elt("button",0,0,0,[n.$text({e1:[6,function(a0) {return ("Add #" + (a0 + 1));},2],e2:[1,4,"todo","data","items","length"]},["",1])])])])];
 });
 
 
