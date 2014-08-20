@@ -171,7 +171,7 @@ var TNode = klass({
      */
     createNodeInstance : function (parent) {
         // create node instance referencing the current node as parent in the prototype chain
-        var ni = klass.createObject(this);
+        var ni = Object.create(this);
         ni.parent = parent;
         if (this.needSubScope) {
             ni.vscope = ni.createSubScope();

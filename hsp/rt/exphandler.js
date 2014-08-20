@@ -112,7 +112,7 @@ var ExpHandler = klass({
      * @return {Object} sub-scope object extending the ref object
      */
     createSubScope: function(ref) {
-        var vs = klass.createObject(ref);
+        var vs = Object.create(ref);
         vs["scope"] = vs;
         vs["+parent"] = ref;
         return vs;
