@@ -421,6 +421,22 @@
                 return fBound;
             };
         }
+        //Object.create
+        if (typeof Object.create != "function") {
+            (function() {
+                var F = function() {};
+                Object.create = function(o) {
+                    if (arguments.length > 1) {
+                        throw Error("Second argument not supported");
+                    }
+                    if (typeof o != "object") {
+                        throw TypeError("Argument must be an object");
+                    }
+                    F.prototype = o;
+                    return new F();
+                };
+            })();
+        }
     });
     define("hsp/klass.js", [], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
@@ -461,7 +477,7 @@
             if (klassdef.$extends) {
                 // create the new prototype from the parent prototype
                 if (!klassdef.$extends.prototype) throw new Error("[klass] $extends attribute must be a function");
-                var p = createObject(klassdef.$extends.prototype);
+                var p = Object.create(klassdef.$extends.prototype);
                 // add prototype properties to the prototype and to the constructor function to allow syntax shortcuts
                 // such as ClassA.$constructor()
                 for (var k in klassdef) {
@@ -482,20 +498,6 @@
             }
             return $c;
         };
-        // helper function used to create object
-        function F() {}
-        /**
- * Create an empty object that extend another object through prototype inheritance
- */
-        function createObject(o) {
-            if (Object.create) {
-                return Object.create(o);
-            } else {
-                F.prototype = o;
-                return new F();
-            }
-        }
-        klass.createObject = createObject;
         var metaDataCounter = 0;
         /**
  * Generate a unique meta-data prefix Can be used to store object-specific data into another object without much risk of
@@ -1066,7 +1068,7 @@
      * @return {Object} sub-scope object extending the ref object
      */
             createSubScope: function(ref) {
-                var vs = klass.createObject(ref);
+                var vs = Object.create(ref);
                 vs["scope"] = vs;
                 vs["+parent"] = ref;
                 return vs;
@@ -1720,7 +1722,7 @@
      */
             createNodeInstance: function(parent) {
                 // create node instance referencing the current node as parent in the prototype chain
-                var ni = klass.createObject(this);
+                var ni = Object.create(this);
                 ni.parent = parent;
                 if (this.needSubScope) {
                     ni.vscope = ni.createSubScope();
@@ -3564,7 +3566,7 @@
             createCptInstance: function(cptType, parent) {
                 // build the new type
                 var proto1 = CPT_TYPES[cptType];
-                var ct = klass.createObject(this);
+                var ct = Object.create(this);
                 for (var k in proto1) {
                     if (proto1.hasOwnProperty(k)) {
                         ct[k] = proto1[k];
@@ -3572,7 +3574,7 @@
                 }
                 this.cptType = cptType;
                 // create node instance
-                var ni = klass.createObject(ct);
+                var ni = Object.create(ct);
                 ni.vscope = parent.vscope;
                 // we don't create new named variable in vscope, so we use the same vscope
                 ni.parent = parent;
