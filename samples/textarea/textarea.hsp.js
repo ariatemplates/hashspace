@@ -5,7 +5,8 @@ var $set=require("hsp/$set");
 // ################################################################ 
 var sample = require("hsp/rt").template(["data"], function(n){
   var _changeText;try {_changeText=changeText} catch(e) {_changeText=n.g('changeText')};
-  return [n.elt("div",0,{"class":"info2"},0,[n.$text(0,["The following textarea elements are synchronized:"])]),n.elt("div",0,{"class":"section"},0,[n.elt("div",0,0,0,[n.$text(0,["Text #1:"])]),n.elt("textarea",{e1:[1,2,"data","text"]},{"rows":"4","cols":"40","model":["",1]},0)]),n.elt("div",0,{"class":"section"},0,[n.elt("div",0,0,0,[n.$text(0,["Text #2:"])]),n.elt("textarea",{e1:[1,2,"data","text"]},{"rows":"4","cols":"40","model":["",1]},0)]),n.elt("a",{e1:[4,1,_changeText,1,2],e2:[1,1,"data"]},0,{"click":1},[n.$text(0,["Change text"])])];
+  var __s = {changeText : typeof changeText === 'undefined' ? undefined : changeText};
+  return [__s,n.elt("div",0,{"class":"info2"},0,[n.$text(0,["The following textarea elements are synchronized:"])]),n.elt("div",0,{"class":"section"},0,[n.elt("div",0,0,0,[n.$text(0,["Text #1:"])]),n.elt("textarea",{e1:[1,2,"data","text"]},{"rows":"4","cols":"40","model":["",1]},0)]),n.elt("div",0,{"class":"section"},0,[n.elt("div",0,0,0,[n.$text(0,["Text #2:"])]),n.elt("textarea",{e1:[1,2,"data","text"]},{"rows":"4","cols":"40","model":["",1]},0)]),n.elt("a",{e1:[4,1,_changeText,1,2],e2:[1,1,"data"]},0,{"click":1},[n.$text(0,["Change text"])])];
 });
 
 

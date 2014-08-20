@@ -421,6 +421,22 @@
                 return fBound;
             };
         }
+        // Object.create
+        if (typeof Object.create != "function") {
+            (function() {
+                var F = function() {};
+                Object.create = function(o) {
+                    if (arguments.length > 1) {
+                        throw Error("Second argument not supported");
+                    }
+                    if (typeof o != "object") {
+                        throw TypeError("Argument must be an object");
+                    }
+                    F.prototype = o;
+                    return new F();
+                };
+            })();
+        }
     });
     define("hsp/klass.js", [], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
@@ -959,7 +975,678 @@
             };
         }
     });
-    define("hsp/rt/exphandler.js", [ "../klass", "./log", "../json" ], function(module, global) {
+    define("hsp/expressions/lexer.js", [], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        function isWhitespace(ch) {
+            return ch === "	" || ch === "\r" || ch === "\n" || ch === " ";
+        }
+        function isQuote(ch) {
+            return ch === '"' || ch === "'";
+        }
+        function isDigit(ch) {
+            return ch >= "0" && ch <= "9";
+        }
+        function isIdentifierStart(ch) {
+            return ch >= "a" && ch <= "z" || ch >= "A" && ch <= "Z" || ch === "$" || ch === "_";
+        }
+        function isIdentifierPart(ch) {
+            return isIdentifierStart(ch) || isDigit(ch);
+        }
+        function isOperator(ch) {
+            return "+-*/%!|&.,=<>()[]{}?:".indexOf(ch) > -1;
+        }
+        function isSuffixOperator(ch) {
+            return "=|&".indexOf(ch) > -1;
+        }
+        /**
+ * A lexing function
+ * @param input - a string of characters to be tokenised
+ * @returns {Array} - an array of token objects with the following properties:
+ *  - t: type of token, one of: num (number), idn (identifier), str (string), opr (operator)
+ *  - v: value of a token
+ *  - f: from where (index) a given token starts in the input
+ *  @throws {Error} when an unknown character is detected in the input (ex.: ^)
+ */
+        module.exports = function(initialInput) {
+            var input, EOF = String.fromCharCode(0);
+            var result = [];
+            var i = 0, current, quote;
+            //current is a character that the lexer is currently looking at
+            var from, value;
+            if (typeof initialInput === "string") {
+                //append special EOF token to avoid constant checks for the input end
+                input = initialInput + EOF;
+                current = input.charAt(0);
+                while (current !== EOF) {
+                    //reset variables responsible for accumulating results
+                    from = i;
+                    value = "";
+                    if (isWhitespace(current)) {
+                        current = input.charAt(++i);
+                    } else if (isOperator(current)) {
+                        do {
+                            value += current;
+                            current = input.charAt(++i);
+                        } while (isSuffixOperator(current));
+                        result.push({
+                            t: "opr",
+                            v: value,
+                            f: from
+                        });
+                    } else if (isIdentifierStart(current)) {
+                        do {
+                            value += current;
+                            current = input.charAt(++i);
+                        } while (isIdentifierPart(current));
+                        result.push({
+                            t: "idn",
+                            v: value,
+                            f: from
+                        });
+                    } else if (isQuote(current)) {
+                        quote = current;
+                        current = input.charAt(++i);
+                        //skip the initial quote
+                        while (current !== quote && current !== EOF) {
+                            if (current === "\\" && input.charAt(i + 1) === quote) {
+                                value += quote;
+                                current = input.charAt(++i);
+                            } else {
+                                value += current;
+                            }
+                            current = input.charAt(++i);
+                        }
+                        if (isQuote(current)) {
+                            result.push({
+                                t: "str",
+                                v: value,
+                                f: from
+                            });
+                            current = input.charAt(++i);
+                        } else {
+                            throw new Error('Error parsing "' + initialInput + '": unfinished string at ' + from);
+                        }
+                    } else if (isDigit(current)) {
+                        do {
+                            value += current;
+                            current = input.charAt(++i);
+                        } while (isDigit(current) || current === ".");
+                        result.push({
+                            t: "num",
+                            v: value.indexOf(".") > -1 ? parseFloat(value) : parseInt(value),
+                            f: from
+                        });
+                    } else {
+                        throw new Error('Error parsing "' + initialInput + '": unknown token ' + current + " at " + from);
+                    }
+                }
+            }
+            return result;
+        };
+    });
+    define("hsp/expressions/parser.js", [ "./lexer" ], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        var lexer = require("./lexer");
+        var SYMBOLS = {};
+        var tokens, token, tokenIdx = 0;
+        var BaseSymbol = {
+            nud: function() {
+                throw new Error("Undefined nud function for: " + this.v);
+            },
+            led: function() {
+                throw new Error("Missing operator: " + this.v);
+            }
+        };
+        function itself() {
+            return this;
+        }
+        function symbol(id, bp) {
+            var s = SYMBOLS[id];
+            bp = bp || 0;
+            if (s) {
+                if (bp >= s.lbp) {
+                    s.lbp = bp;
+                }
+            } else {
+                s = Object.create(BaseSymbol);
+                s.id = s.v = id;
+                s.lbp = bp;
+                SYMBOLS[id] = s;
+            }
+            return s;
+        }
+        function prefix(id, nud) {
+            var s = symbol(id);
+            s.nud = nud || function() {
+                this.l = expression(70);
+                this.a = "unr";
+                return this;
+            };
+            return s;
+        }
+        function infix(id, bindingPower, led) {
+            var s = symbol(id, bindingPower);
+            s.led = led || function(left) {
+                this.l = left;
+                this.r = expression(bindingPower);
+                this.a = "bnr";
+                return this;
+            };
+            return s;
+        }
+        function infixr(id, bp, led) {
+            var s = symbol(id, bp);
+            s.led = led || function(left) {
+                this.l = left;
+                this.r = expression(bp - 1);
+                this.a = "bnr";
+                return this;
+            };
+            return s;
+        }
+        var constant = function(s, v) {
+            var x = symbol(s);
+            x.nud = function() {
+                this.v = SYMBOLS[this.id].v;
+                this.a = "literal";
+                return this;
+            };
+            x.v = v;
+            return x;
+        };
+        //define "parser rules"
+        symbol("(end)");
+        symbol("(identifier)").nud = itself;
+        symbol("(literal)").nud = itself;
+        symbol("]");
+        symbol(")");
+        symbol("}");
+        symbol(",");
+        symbol(":");
+        constant("true", true);
+        constant("false", false);
+        constant("null", null);
+        prefix("-");
+        prefix("!");
+        prefix("(", function() {
+            var e = expression(0);
+            advance(")");
+            return e;
+        });
+        prefix("[", function() {
+            var a = [];
+            if (token.id !== "]") {
+                while (true) {
+                    a.push(expression(0));
+                    if (token.id !== ",") {
+                        break;
+                    }
+                    advance(",");
+                }
+            }
+            advance("]");
+            this.l = a;
+            this.a = "unr";
+            return this;
+        });
+        prefix("{", function() {
+            var a = [];
+            if (token.id !== "}") {
+                while (true) {
+                    var n = token;
+                    if (n.a !== "idn" && n.a !== "literal") {
+                        throw new Error("Bad key.");
+                    }
+                    advance();
+                    advance(":");
+                    var v = expression(0);
+                    v.key = n.v;
+                    a.push(v);
+                    if (token.id !== ",") {
+                        break;
+                    }
+                    advance(",");
+                }
+            }
+            advance("}");
+            this.l = a;
+            this.a = "unr";
+            return this;
+        });
+        infix("?", 20, function(left) {
+            this.l = left;
+            this.r = expression(0);
+            advance(":");
+            this.othr = expression(0);
+            this.a = "tnr";
+            return this;
+        });
+        infixr("&&", 30);
+        infixr("||", 30);
+        infixr("<", 40);
+        infixr(">", 40);
+        infixr("<=", 40);
+        infixr(">=", 40);
+        infixr("==", 40);
+        infixr("!=", 40);
+        infixr("===", 40);
+        infixr("!==", 40);
+        infix("+", 50);
+        infix("-", 50);
+        infix("*", 60);
+        infix("/", 60);
+        infix("%", 60);
+        infix(".", 80, function(left) {
+            this.l = left;
+            if (token.a !== "idn") {
+                throw new Error("Expected a property name, got:" + token.a + " at " + token.f);
+            }
+            token.a = "literal";
+            this.r = token;
+            this.a = "bnr";
+            advance();
+            return this;
+        });
+        infix("[", 80, function(left) {
+            this.l = left;
+            this.r = expression(0);
+            this.a = "bnr";
+            advance("]");
+            return this;
+        });
+        infix("(", 80, function(left) {
+            var a = [];
+            if (left.id === "." || left.id === "[") {
+                this.a = "tnr";
+                this.l = left.l;
+                this.r = left.r;
+                this.othr = a;
+            } else {
+                this.a = "bnr";
+                this.l = left;
+                this.r = a;
+                if (left.a !== "unr" && left.a !== "idn" && left.id !== "(" && left.id !== "&&" && left.id !== "||" && left.id !== "?") {
+                    throw new Error("Expected a variable name: " + JSON.stringify(left));
+                }
+            }
+            if (token.id !== ")") {
+                while (true) {
+                    a.push(expression(0));
+                    if (token.id !== ",") {
+                        break;
+                    }
+                    advance(",");
+                }
+            }
+            advance(")");
+            return this;
+        });
+        infixr("|", 20, function(left) {
+            //token points to a pipe function here - check if the next item is equal to :
+            this.l = left;
+            this.r = expression(20);
+            this.a = "tnr";
+            this.othr = [];
+            while (token.a === "opr" && token.v === ":") {
+                advance();
+                this.othr.push(expression(20));
+            }
+            return this;
+        });
+        function advance(id) {
+            var tokenType, o, inputToken, v;
+            if (id && token.id !== id) {
+                throw new Error("Expected '" + id + "' but '" + token.id + "' found.");
+            }
+            if (tokenIdx >= tokens.length) {
+                token = SYMBOLS["(end)"];
+                return;
+            }
+            inputToken = tokens[tokenIdx];
+            tokenIdx += 1;
+            v = inputToken.v;
+            tokenType = inputToken.t;
+            if (tokenType === "idn") {
+                o = SYMBOLS[v] || SYMBOLS["(identifier)"];
+            } else if (tokenType === "opr") {
+                o = SYMBOLS[v];
+                if (!o) {
+                    throw new Error("Unknown operator: " + v);
+                }
+            } else if (tokenType === "str" || tokenType === "num") {
+                o = SYMBOLS["(literal)"];
+                tokenType = "literal";
+            } else {
+                throw new Error("Unexpected token:" + v);
+            }
+            token = Object.create(o);
+            //token.f  = inputToken.f;
+            token.v = v;
+            token.a = tokenType;
+            return token;
+        }
+        function expression(rbp) {
+            var left;
+            var t = token;
+            advance();
+            left = t.nud();
+            while (rbp < token.lbp) {
+                t = token;
+                advance();
+                left = t.led(left);
+            }
+            return left;
+        }
+        /**
+ * Expression parsing algorithm based on http://javascript.crockford.com/tdop/tdop.html
+ * Other useful resources (reading material):
+ * http://eli.thegreenplace.net/2010/01/02/top-down-operator-precedence-parsing/
+ * http://l-lang.org/blog/TDOP---Pratt-parser-in-pictures/
+ * http://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy/
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Operator_Precedence
+ *
+ * @param input {String} - expression to parse
+ * @return {Object} - parsed AST
+ */
+        module.exports = function(input) {
+            tokens = lexer(input);
+            token = undefined;
+            tokenIdx = 0;
+            if (tokens.length) {
+                advance();
+                //get the first token
+                var expr = expression(0);
+                advance("(end)");
+                //make sure that we are at the end of an expression
+                return expr;
+            } else {
+                return {
+                    f: 0,
+                    a: "literal",
+                    v: undefined
+                };
+            }
+        };
+    });
+    define("hsp/expressions/identifiers.js", [], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        module.exports = function getIdentifiers(tree) {
+            var partialResult;
+            if (tree instanceof Array) {
+                partialResult = [];
+                if (tree.length > 0) {
+                    for (var i = 0; i < tree.length; i++) {
+                        partialResult = partialResult.concat(getIdentifiers(tree[i]));
+                    }
+                }
+                return partialResult;
+            }
+            if (tree.a === "literal") {
+                return [];
+            } else if (tree.a === "idn") {
+                return [ tree.v ];
+            } else if (tree.a === "unr") {
+                return getIdentifiers(tree.l);
+            } else if (tree.a === "bnr") {
+                return getIdentifiers(tree.l).concat(getIdentifiers(tree.r));
+            } else if (tree.a === "tnr") {
+                return getIdentifiers(tree.l).concat(getIdentifiers(tree.r)).concat(getIdentifiers(tree.othr));
+            } else {
+                throw new Error("unknown entry" + JSON.stringify(tree));
+            }
+        };
+    });
+    define("hsp/expressions/evaluator.js", [], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        function forgivingPropertyAccessor(left, right) {
+            return typeof left === "undefined" || left === null ? undefined : left[right];
+        }
+        var UNARY_OPERATORS = {
+            "!": function(right) {
+                return !right;
+            },
+            "-": function(right) {
+                return -right;
+            },
+            "[": function(right) {
+                return right;
+            },
+            //array literal
+            "{": function(right) {
+                //object literal
+                var result = {}, keyVal;
+                for (var i = 0; i < right.length; i++) {
+                    keyVal = right[i];
+                    result[keyVal.k] = keyVal.v;
+                }
+                return result;
+            }
+        };
+        var BINARY_OPERATORS = {
+            "+": function(left, right) {
+                return left + right;
+            },
+            "-": function(left, right) {
+                return left - right;
+            },
+            "*": function(left, right) {
+                return left * right;
+            },
+            "/": function(left, right) {
+                return left / right;
+            },
+            "%": function(left, right) {
+                return left % right;
+            },
+            "<": function(left, right) {
+                return left < right;
+            },
+            ">": function(left, right) {
+                return left > right;
+            },
+            ">=": function(left, right) {
+                return left >= right;
+            },
+            "<=": function(left, right) {
+                return left <= right;
+            },
+            "==": function(left, right) {
+                return left == right;
+            },
+            "!=": function(left, right) {
+                return left != right;
+            },
+            "===": function(left, right) {
+                return left === right;
+            },
+            "!==": function(left, right) {
+                return left !== right;
+            },
+            "||": function(left, right) {
+                return left || right;
+            },
+            "&&": function(left, right) {
+                return left && right;
+            },
+            "(": function(left, right) {
+                //function call on a scope
+                return left.apply(left, right);
+            },
+            ".": forgivingPropertyAccessor,
+            "[": forgivingPropertyAccessor
+        };
+        var TERNARY_OPERATORS = {
+            "(": function(target, name, args) {
+                //function call on an object
+                return typeof target === "undefined" || target === null ? undefined : target[name].apply(target, args);
+            },
+            "?": function(test, trueVal, falseVal) {
+                return test ? trueVal : falseVal;
+            },
+            "|": function(input, pipeFn, args) {
+                return pipeFn.apply(pipeFn, [ input ].concat(args));
+            }
+        };
+        module.exports = function getTreeValue(tree, scope) {
+            var operatorFn, result;
+            var parsedVal, argExp, arrayResult;
+            if (tree instanceof Array) {
+                if (tree.length > 0) {
+                    result = new Array(tree.length);
+                    for (var i = 0; i < tree.length; i++) {
+                        argExp = tree[i];
+                        arrayResult = parsedVal = getTreeValue(argExp, scope);
+                        if (argExp.key) {
+                            arrayResult = {
+                                k: argExp.key,
+                                v: parsedVal
+                            };
+                        }
+                        result[i] = arrayResult;
+                    }
+                } else {
+                    result = [];
+                }
+                return result;
+            }
+            if (tree.a === "literal") {
+                result = tree.v;
+            } else if (tree.a === "idn") {
+                result = scope[tree.v];
+            } else if (tree.a === "unr" && UNARY_OPERATORS[tree.v]) {
+                operatorFn = UNARY_OPERATORS[tree.v];
+                result = operatorFn(getTreeValue(tree.l, scope));
+            } else if (tree.a === "bnr" && BINARY_OPERATORS[tree.v]) {
+                operatorFn = BINARY_OPERATORS[tree.v];
+                result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope));
+            } else if (tree.a === "tnr" && TERNARY_OPERATORS[tree.v]) {
+                operatorFn = TERNARY_OPERATORS[tree.v];
+                result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope));
+            } else {
+                throw new Error('Unknown tree entry of type "' + tree.a + " and value " + tree.v + " in:" + JSON.stringify(tree));
+            }
+            return result;
+        };
+    });
+    define("hsp/expressions/observable.js", [ "./evaluator" ], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        var evaluator = require("./evaluator");
+        /**
+ * Get all the observable pairs for a given expression. Observable pairs
+ * are usually input to model-change-observing utilities (ex. Object.observe).
+ *
+ * An observable pair is a 2-element array where the first element is an
+ * object to observe and the second element corresponds to a property name
+ * on an object to observe (null indicates that all properties should be observed).
+ *
+ * Some examples:
+ * '"foo"' => []
+ * 'foo' => [[scope, 'foo']]
+ * 'foo.bar' => [[scope, 'foo'], [scope.foo, 'bar']]
+ * 'foo.bar()' => [[scope, 'foo'], [scope.foo, null]]
+ *
+ * Please note that function calls are tricky since we don't have any reliable
+ * way of determining (from an expression) what a given function could use
+ * to produce its results (and - as a consequence - what should be observed).
+ *
+ * @param tree - parsed tree for a given expression
+ * @param scope
+ */
+        module.exports = function getObservablePairs(tree, scope) {
+            var partialResult;
+            if (tree instanceof Array) {
+                partialResult = [];
+                if (tree.length > 0) {
+                    for (var i = 0; i < tree.length; i++) {
+                        partialResult = partialResult.concat(getObservablePairs(tree[i], scope));
+                    }
+                }
+                return partialResult;
+            }
+            if (tree.a === "literal") {
+                return [];
+            } else if (tree.a === "idn") {
+                //TODO: deal with "parent scopes" (traverse up using +parent) => should it be done here?
+                return [ [ scope, tree.v ] ];
+            } else if (tree.a === "unr") {
+                return getObservablePairs(tree.l, scope);
+            } else if (tree.a === "bnr") {
+                partialResult = getObservablePairs(tree.l, scope);
+                if (tree.v === ".") {
+                    //for . we need to observe _value_ of the left-hand side
+                    return partialResult.concat([ [ evaluator(tree.l, scope), tree.r.v ] ]);
+                }
+                if (tree.v === "(") {
+                    //function call on a scope
+                    return [ [ scope, null ] ].concat(getObservablePairs(tree.r, scope));
+                } else {
+                    //any other binary operator
+                    return partialResult.concat(getObservablePairs(tree.r, scope));
+                }
+            } else if (tree.a === "tnr") {
+                partialResult = getObservablePairs(tree.l, scope);
+                if (tree.v === "(") {
+                    // function call on an object
+                    partialResult = partialResult.concat([ [ evaluator(tree.l, scope), null ] ]);
+                } else {
+                    partialResult = partialResult.concat(getObservablePairs(tree.r, scope));
+                }
+                return partialResult.concat(getObservablePairs(tree.othr, scope));
+            } else {
+                throw new Error("unknown entry" + JSON.stringify(tree));
+            }
+        };
+    });
+    define("hsp/expressions/manipulator.js", [ "./parser", "./evaluator" ], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        var ast = require("./parser");
+        var evaluator = require("./evaluator");
+        /**
+ * Expressions handling util that can evaluate and manipulate
+ * JavaScript-like expressions
+ *
+ * @param {String} input - expression to handle
+ * @return {Object} an object with the methods described below
+ */
+        module.exports = function(input, inputTree) {
+            var tree = inputTree || ast(input);
+            //AST needs to have an identifier or binary . at the root to be assignable
+            var isAssignable = tree.a === "idn" || tree.a === "bnr" && tree.v === ".";
+            return {
+                /**
+         * Evaluates an expression against a scope
+         * @param scope
+         * @return {*} - value of an expression in a given scope
+         */
+                getValue: function(scope, defaultValue) {
+                    var val = evaluator(tree, scope);
+                    if (typeof defaultValue === "undefined") {
+                        return val;
+                    } else {
+                        return val === undefined || val === null || val != val ? defaultValue : val;
+                    }
+                },
+                /**
+         * Sets value of an expression on a scope. Not all expressions
+         * are assignable.
+         * @param scope - scope that should be modified
+         * @param {*} a new value for a given expression and scope
+         */
+                setValue: function(scope, newValue) {
+                    if (!isAssignable) {
+                        throw new Error('Expression "' + input + '" is not assignable');
+                    }
+                    if (tree.a === "idn") {
+                        scope[tree.v] = newValue;
+                    } else if (tree.a === "bnr") {
+                        evaluator(tree.l, scope)[tree.r.v] = newValue;
+                    }
+                },
+                isAssignable: isAssignable
+            };
+        };
+    });
+    define("hsp/rt/exphandler.js", [ "../klass", "./log", "../json", "../expressions/parser", "../expressions/identifiers", "../expressions/observable", "../expressions/manipulator" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -975,7 +1662,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-        var klass = require("../klass"), log = require("./log"), json = require("../json");
+        var klass = require("../klass"), log = require("./log"), json = require("../json"), exparser = require("../expressions/parser"), exidentifiers = require("../expressions/identifiers"), exobservable = require("../expressions/observable"), exmanipulator = require("../expressions/manipulator");
         var ExpHandler = klass({
             /**
      * Expression handler Used by all node to access the expressions linked to their properties Note: the same
@@ -993,6 +1680,7 @@
      * 5: literal value - e.g. {e1:[5,"some value"]}
      * 6: function expression - e.g. {e1:[6,function(a0,a1){return a0+a1;},2,3]}
      * 7: dynamic data reference - e.g. {e1:[7,2,function(i,a0,a1) {return [a0,a1][i];},2,3]}
+     * 9: raw expression to be processed by the pratt parser - e.g. {e1:[9,"foo.bar.baz()"}
      * @param {Boolean} observeTarget if true the targeted data objects will be also observed (e.g. foreach collections) - default:false
      */
             $constructor: function(edef, observeTarget) {
@@ -1019,6 +1707,8 @@
                             exp = new FuncExpr(v, this);
                         } else if (etype === 7) {
                             exp = new DynRefExpr(v, this);
+                        } else if (etype === 9) {
+                            exp = new PrattExpr(v, this);
                         } else {
                             log.warning("Unsupported expression type: " + etype);
                         }
@@ -1073,6 +1763,31 @@
             }
         });
         module.exports = ExpHandler;
+        var PrattExpr = klass({
+            /**
+     * Class constructor
+     * @param {Array} desc the expression descriptor - e.g. [9,"foo+bar.baz()"]
+     */
+            $constructor: function(desc) {
+                this.exptext = desc[1];
+                this.ast = exparser(desc[1]);
+                this.bound = exidentifiers(this.ast).length > 0;
+                this.manipulator = exmanipulator(desc[1], this.ast);
+            },
+            getValue: function(vscope, eh, defvalue) {
+                return this.manipulator.getValue(vscope, defvalue);
+            },
+            setValue: function(vscope, value) {
+                if (this.manipulator.isAssignable) {
+                    this.manipulator.setValue(vscope, value);
+                } else {
+                    log.warning(this.exptext + " can't be updated - please use object references");
+                }
+            },
+            getObservablePairs: function(eh, vscope) {
+                return exobservable(this.ast, vscope);
+            }
+        });
         /**
  * Little class representing literal expressions 5: literal value - e.g. {e1:[5,"some value"]}
  */
@@ -7102,8 +7817,8 @@
      * @param {Map} ctlInitAtts the init value of the controller attributes (optional) - e.g.
      * {value:'123',mandatory:true}
      */
-            process: function(tplctxt, scopevars, ctlWrapper, ctlInitArgs) {
-                var vs = {}, nm, argNames = [];
+            process: function(tplctxt, scopevars, ctlWrapper, ctlInitArgs, rootscope) {
+                var vs = rootscope ? klass.createObject(rootscope) : {}, nm, argNames = [];
                 // array of argument names
                 if (scopevars) {
                     for (var i = 0, sz = scopevars.length; sz > i; i += 2) {
@@ -7211,10 +7926,12 @@
                 args[0] = arg.ref;
             }
             var f = function() {
-                var cw = null, cptInitArgs = null;
+                var cw = null, cptInitArgs = null, fileScope;
                 if (!ng.nodedefs) {
                     try {
-                        ng.nodedefs = contentFunction(nodes);
+                        var r = contentFunction(nodes);
+                        fileScope = r.shift();
+                        ng.nodedefs = r;
                     } catch (ex) {
                         // TODO: add template and file name in error description
                         if (ex.constructor === ReferenceError) {
@@ -7235,7 +7952,7 @@
                 if (arguments.length > 0) {
                     cptInitArgs = arguments[0];
                 }
-                return ng.process(this, args, cw, cptInitArgs);
+                return ng.process(this, args, cw, cptInitArgs, fileScope);
             };
             f.isTemplate = true;
             f.controllerConstructor = Ctl;

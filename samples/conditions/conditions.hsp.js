@@ -8,7 +8,9 @@ var klass=require("hsp/klass");
 // nt is an instance of NumberTester
 
 var test = require("hsp/rt").template(["nt"], function(n){
-  return [n.elt("div",0,0,0,[n.$text(0,["Number: "]),n.elt("span",0,{"class":"textvalue"},0,[n.$text({e1:[1,2,"nt","number"]},["",1])]),n.$text(0,["   "]),n.$if({e1:[6,function(a0) {return (a0 == 0);},2],e2:[1,2,"nt","number"]},1,[n.$text(0,["(Number equals zero) "])],[n.$if({e1:[6,function(a0) {return (a0 > 0);},2],e2:[1,2,"nt","number"]},1,[n.$text(0,["(Number is greater than zero) "])],[n.$text(0,["(Number is less than zero) "])])]),n.elt("br",0,0,0),n.$text(0,["Condition using ternary operator: Number is "]),n.elt("span",0,{"class":"textvalue"},0,[n.$text({e1:[6,function(a0) {return ((a0 > 0)? "strictly positive" : "negative or null");},2],e2:[1,2,"nt","number"]},["",1," "])])]),n.elt("div",0,{"class":"section2"},0,[n.elt("a",{e1:[3,2,"nt","increment",0,1]},0,{"click":1},[n.$text(0,["Increment Number"])]),n.$text(0,[" - "]),n.elt("a",{e1:[3,2,"nt","increment",1,2],e2:[6,function() {return -(1);}]},0,{"click":1},[n.$text(0,["Decrement Number"])])])];
+  var _nt;try {_nt=nt} catch(e) {_nt=n.g('nt')};
+  var __s = {nt : typeof nt === 'undefined' ? undefined : nt};
+  return [__s,n.elt("div",0,0,0,[n.$text(0,["Number: "]),n.elt("span",0,{"class":"textvalue"},0,[n.$text({e1:[1,2,"nt","number"]},["",1])]),n.$text(0,["   "]),n.$if({e1:[9,"nt.number==0"]},1,[n.$text(0,["(Number equals zero) "])],[n.$if({e1:[9,"nt.number>0"]},1,[n.$text(0,["(Number is greater than zero) "])],[n.$text(0,["(Number is less than zero) "])])]),n.elt("br",0,0,0),n.$text(0,["Condition using ternary operator: Number is "]),n.elt("span",0,{"class":"textvalue"},0,[n.$text({e1:[6,function(a0) {return ((a0 > 0)? "strictly positive" : "negative or null");},2],e2:[1,2,"nt","number"]},["",1," "])])]),n.elt("div",0,{"class":"section2"},0,[n.elt("a",{e1:[3,2,"nt","increment",0,1]},0,{"click":1},[n.$text(0,["Increment Number"])]),n.$text(0,[" - "]),n.elt("a",{e1:[3,2,"nt","increment",1,2],e2:[6,function() {return -(1);}]},0,{"click":1},[n.$text(0,["Decrement Number"])])])];
 });
 
 
