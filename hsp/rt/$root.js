@@ -480,7 +480,7 @@ var $CptNode = klass({
     createCptInstance:function(cptType,parent) {
         // build the new type
         var proto1=CPT_TYPES[cptType];
-        var ct = klass.createObject(this);
+        var ct = Object.create(this);
         for (var k in proto1) {
             if (proto1.hasOwnProperty(k)) {
                 ct[k]=proto1[k];
@@ -489,7 +489,7 @@ var $CptNode = klass({
         this.cptType=cptType;
 
         // create node instance
-        var ni=klass.createObject(ct);
+        var ni = Object.create(ct);
         ni.vscope = parent.vscope; // we don't create new named variable in vscope, so we use the same vscope
         ni.parent = parent;
         ni.nodeNS = parent.nodeNS;

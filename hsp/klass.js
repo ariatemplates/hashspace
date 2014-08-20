@@ -38,7 +38,7 @@ var klass = function (klassdef) {
         // create the new prototype from the parent prototype
         if (!klassdef.$extends.prototype)
             throw new Error("[klass] $extends attribute must be a function");
-        var p = createObject(klassdef.$extends.prototype);
+        var p = Object.create(klassdef.$extends.prototype);
 
         // add prototype properties to the prototype and to the constructor function to allow syntax shortcuts
         // such as ClassA.$constructor()
@@ -62,23 +62,6 @@ var klass = function (klassdef) {
 
     return $c;
 };
-
-// helper function used to create object
-function F () {}
-
-/**
- * Create an empty object that extend another object through prototype inheritance
- */
-function createObject (o) {
-    if (Object.create) {
-        return Object.create(o);
-    } else {
-        F.prototype = o;
-        return new F();
-    }
-}
-
-klass.createObject = createObject;
 
 var metaDataCounter = 0;
 /**
