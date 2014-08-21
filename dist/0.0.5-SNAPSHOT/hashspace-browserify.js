@@ -143,6 +143,21 @@ if (typeof Object.create != 'function') {
     })();
 }
 },{}],3:[function(require,module,exports){
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 function forgivingPropertyAccessor(left, right) {
     return typeof left === 'undefined' || left === null ? undefined : left[right];
 }
@@ -241,6 +256,21 @@ module.exports = function getTreeValue(tree, scope) {
     return result;
 };
 },{}],4:[function(require,module,exports){
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 module.exports = function getIdentifiers(tree) {
 
     var partialResult;
@@ -271,6 +301,21 @@ module.exports = function getIdentifiers(tree) {
     }
 };
 },{}],5:[function(require,module,exports){
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 function isWhitespace(ch) {
     return ch === '\t' || ch === '\r' || ch === '\n' || ch === ' ';
 }
@@ -396,6 +441,21 @@ module.exports = function (initialInput) {
     return result;
 };
 },{}],6:[function(require,module,exports){
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 var ast = require('./parser');
 var evaluator = require('./evaluator');
 
@@ -446,6 +506,21 @@ module.exports = function(input, inputTree) {
     };
 };
 },{"./evaluator":3,"./parser":8}],7:[function(require,module,exports){
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 var evaluator = require('./evaluator');
 
 /**
@@ -515,6 +590,10 @@ module.exports = function getObservablePairs(tree, scope) {
     }
 };
 },{"./evaluator":3}],8:[function(require,module,exports){
+/**
+ * Code in this file is based on the work from https://github.com/douglascrockford/TDOP
+ * by Douglas Crockford douglas@crockford.com
+ */
 var lexer = require('./lexer');
 
 var SYMBOLS = {};
@@ -3246,6 +3325,8 @@ var NodeGenerator = klass({
      * @param {Object} ctlWrapper the controller observer - if any
      * @param {Map} ctlInitAtts the init value of the controller attributes (optional) - e.g.
      * {value:'123',mandatory:true}
+     * @param {Object} rootscope the parent root scope object containing the reference to
+     * the global objects accessible from the template file scope
      */
     process : function (tplctxt, scopevars, ctlWrapper, ctlInitArgs, rootscope) {
         var vs = rootscope ? Object.create(rootscope) : {}, nm, argNames = []; // array of argument names

@@ -18123,7 +18123,7 @@
                     exIdentifiers(exParser(expression.value)).forEach(function(ident) {
                         walker.addGlobalRef(ident);
                     });
-                    code = [ "e", exprIndex, ':[9,"', ("" + expression.value).replace(/"/g, '\\"'), '"]' ].join("");
+                    code = [ "e", exprIndex, ':[9,"', ("" + expression.value).replace(/"/g, '\\"').replace(/\\\\"/g, '\\"'), '"]' ].join("");
                 } catch (err) {
                     walker.logError("Invalid expression: '" + expression.value + "'", expression);
                 }

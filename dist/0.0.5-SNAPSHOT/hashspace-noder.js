@@ -963,6 +963,20 @@
     });
     define("hsp/expressions/lexer.js", [], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
         function isWhitespace(ch) {
             return ch === "	" || ch === "\r" || ch === "\n" || ch === " ";
         }
@@ -1072,6 +1086,10 @@
     });
     define("hsp/expressions/parser.js", [ "./lexer" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /**
+ * Code in this file is based on the work from https://github.com/douglascrockford/TDOP
+ * by Douglas Crockford douglas@crockford.com
+ */
         var lexer = require("./lexer");
         var SYMBOLS = {};
         var tokens, token, tokenIdx = 0;
@@ -1356,6 +1374,20 @@
     });
     define("hsp/expressions/identifiers.js", [], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
         module.exports = function getIdentifiers(tree) {
             var partialResult;
             if (tree instanceof Array) {
@@ -1384,6 +1416,20 @@
     });
     define("hsp/expressions/evaluator.js", [], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
         function forgivingPropertyAccessor(left, right) {
             return typeof left === "undefined" || left === null ? undefined : left[right];
         }
@@ -1516,6 +1562,20 @@
     });
     define("hsp/expressions/observable.js", [ "./evaluator" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
         var evaluator = require("./evaluator");
         /**
  * Get all the observable pairs for a given expression. Observable pairs
@@ -1586,6 +1646,20 @@
     });
     define("hsp/expressions/manipulator.js", [ "./parser", "./evaluator" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
         var ast = require("./parser");
         var evaluator = require("./evaluator");
         /**
@@ -7803,6 +7877,8 @@
      * @param {Object} ctlWrapper the controller observer - if any
      * @param {Map} ctlInitAtts the init value of the controller attributes (optional) - e.g.
      * {value:'123',mandatory:true}
+     * @param {Object} rootscope the parent root scope object containing the reference to
+     * the global objects accessible from the template file scope
      */
             process: function(tplctxt, scopevars, ctlWrapper, ctlInitArgs, rootscope) {
                 var vs = rootscope ? Object.create(rootscope) : {}, nm, argNames = [];
