@@ -1511,6 +1511,7 @@
                 return left.apply(left, right);
             },
             ".": forgivingPropertyAccessor,
+            //property access
             "[": forgivingPropertyAccessor
         };
         var TERNARY_OPERATORS = {
@@ -1521,8 +1522,9 @@
             "?": function(test, trueVal, falseVal) {
                 return test ? trueVal : falseVal;
             },
-            "|": function(input, pipeFn, args) {
-                return pipeFn.apply(pipeFn, [ input ].concat(args));
+            "|": function(input, pipeFn, args, target) {
+                //pipe (filter)
+                return pipeFn.apply(target, [ input ].concat(args));
             }
         };
         module.exports = function getTreeValue(tree, scope) {
@@ -1559,7 +1561,11 @@
                 result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope));
             } else if (tree.a === "tnr" && TERNARY_OPERATORS[tree.v]) {
                 operatorFn = TERNARY_OPERATORS[tree.v];
-                result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope));
+                if (tree.v === "|" && (tree.r.v === "." || tree.r.v === "[")) {
+                    result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope), getTreeValue(tree.r.l, scope));
+                } else {
+                    result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope), scope);
+                }
             } else {
                 throw new Error('Unknown tree entry of type "' + tree.a + " and value " + tree.v + " in:" + JSON.stringify(tree));
             }
