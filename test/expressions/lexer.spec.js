@@ -174,6 +174,17 @@ describe('lexer', function () {
                 {t: 'opr', v: ')', f: 18}
             ]);
         });
+
+        it('should not treat unknown operators as one token', function() {
+            expect(lexer('d[ppName]|fnSorter')).to.eql([
+                {t: 'idn', v: 'd', f: 0},
+                {t: 'opr', v: '[', f: 1},
+                {t: 'idn', v: 'ppName', f: 2},
+                {t: 'opr', v: ']', f: 8},
+                {t: 'opr', v: '|', f: 9},
+                {t: 'idn', v: 'fnSorter', f: 10}
+            ]);
+        });
     });
 
     describe('error conditions', function () {
