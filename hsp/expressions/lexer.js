@@ -37,8 +37,10 @@ function isOperator(ch) {
     return '+-*/%!|&.,=<>()[]{}?:'.indexOf(ch) > -1;
 }
 
-function isSuffixOperator(ch) {
-    return '=|&'.indexOf(ch) > -1;
+var opSuffixes = {'|': '|', '&' : '&', '=': '=<>!'};
+function isSuffixOperator(ch, previous) {
+    var validPrevious = opSuffixes[ch];
+    return validPrevious && validPrevious.indexOf(previous) > -1;
 }
 
 /**
@@ -79,7 +81,7 @@ module.exports = function (initialInput) {
                     value += current;
                     current = input.charAt(++i);
 
-                } while (isSuffixOperator(current));
+                } while (isSuffixOperator(current, value.charAt(value.length-1)));
 
                 result.push({t: 'opr', v: value, f: from});
 

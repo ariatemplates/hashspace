@@ -132,6 +132,16 @@ describe('getValue', function () {
         expect(expression('all(collection) | item:zero() | item:0').getValue(scope)).to.equal('f');
     });
 
+    it('should evaluate expression where pipe function is an expression', function() {
+        expect(expression('d[ppName]|fnSorter.sort')
+            .getValue({
+               d: {all: ['foo', 'bar']},
+               ppName: 'all',
+               fnSorter: {sort: function(input) {return input.sort();}}
+            }))
+            .to.eql(['bar', 'foo']);
+    });
+
     it('should evaluate expressions containing simple comparison (<, >)', function() {
         expect(expression('1 < 2').getValue({})).to.equal(true);
         expect(expression('1 > 2').getValue({})).to.equal(false);
