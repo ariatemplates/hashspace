@@ -23,6 +23,14 @@ describe('determining observable pairs', function () {
             expect(observable(p('foo + bar'), scope))
                 .to.eql([[scope, 'foo'], [scope, 'bar']]);
         });
+
+        it('should observe array identifiers', function() {
+            var scope = {foo: [], bar: {baz: []}};
+            expect(observable(p('foo'), scope))
+                .to.eql([[scope, 'foo'], [scope.foo, null]]);
+            expect(observable(p('bar.baz'), scope))
+                .to.eql([[scope, 'bar'], [scope.bar, 'baz'], [scope.bar.baz, null]]);
+        });
     });
 
     describe('"static" property access with .', function () {
@@ -43,7 +51,7 @@ describe('determining observable pairs', function () {
         it('should properly observe expressions with dynamic path access', function () {
             var scope = {foo: {bar: 'bar'}, idx: 'bar'};
             expect(observable(p('foo[idx]'), scope))
-                .to.eql([[scope, 'foo'], [scope, 'idx']]);
+                .to.eql([[scope, 'foo'], [scope.foo, scope.idx], [scope, 'idx']]);
         });
     });
 
@@ -82,13 +90,56 @@ describe('determining observable pairs', function () {
         it('should observe all sub-expressions of the pipe operator', function () {
             var scope = {foo: [], bar: function(input, args){}, baz: 'baz'};
             expect(observable(p('foo | bar:baz'), scope))
-                .to.eql([[scope, 'foo'], [scope, 'bar'], [scope, 'baz']]);
+                .to.eql([
+                    [scope, 'foo'],
+                    [scope.foo, null],
+                    [scope, 'bar'],
+                    [scope.bar, null],
+                    [scope, 'baz']
+                ]);
         });
 
         it('should observe all sub-expressions of the pipe operator - other case', function () {
             var scope = {ctrl: {foo: []}, bar: function(input, args){}, baz: 'baz'};
             expect(observable(p('ctrl.foo | bar:baz'), scope))
-                .to.eql([[scope, 'ctrl'], [scope.ctrl, 'foo'], [scope, 'bar'], [scope, 'baz']]);
+                .to.eql([
+                    [scope, 'ctrl'],
+                    [scope.ctrl, 'foo'],
+                    [scope.ctrl.foo, null],
+                    [scope, 'bar'],
+                    [scope.bar, null],
+                    [scope, 'baz']
+                ]);
+        });
+
+        it('should observe all sub-expressions of the pipe operator on an object', function () {
+            var scope = {ctrl: {foo: []}, bar: {baz: function(input, args){}}};
+            expect(observable(p('ctrl.foo | bar.baz'), scope))
+                .to.eql([
+                    [scope, 'ctrl'],
+                    [scope.ctrl, 'foo'],
+                    [scope.ctrl.foo, null],
+                    [scope, 'bar'],
+                    [scope.bar, 'baz'],
+                    [scope.bar, null]
+                ]);
+        });
+
+        it('should properly observe expression with dynamic part on the left', function() {
+            var scope = {
+                d: {nums: ['2', '1']},
+                sort: function(input) {return input.sort();},
+                ppName: 'nums'
+            };
+            expect(observable(p('d[ppName]|sort'), scope))
+                .to.eql([
+                    [scope, 'd'],
+                    [scope.d, scope.ppName],
+                    [scope.d[scope.ppName], null],
+                    [scope, 'ppName'],
+                    [scope, 'sort'],
+                    [scope.sort, null]
+                ]);
         });
     });
 
@@ -110,7 +161,6 @@ describe('determining observable pairs', function () {
 });
 
 //TODO:
-// - there is something not quite right with function calls, I should add observing for null
 // - expression evaluation vs. observable pair detecting? => compile functions, yay!
 // - dealing undefined values?
 // - code duplication in tree traversal (at the same time this is probably the fastest method)
