@@ -1625,7 +1625,7 @@
                 return [];
             } else if (tree.a === "idn") {
                 //TODO: deal with "parent scopes" (traverse up using +parent) => should it be done here?
-                return [ [ scope, tree.v ] ];
+                return scope[tree.v] instanceof Array ? [ [ scope, tree.v ], [ scope[tree.v], null ] ] : [ [ scope, tree.v ] ];
             } else if (tree.a === "unr") {
                 return getObservablePairs(tree.l, scope);
             } else if (tree.a === "bnr") {
@@ -1633,11 +1633,24 @@
                 if (tree.v === ".") {
                     //for . we need to observe _value_ of the left-hand side
                     leftValue = evaluator(tree.l, scope);
-                    return leftValue ? partialResult.concat([ [ leftValue, tree.r.v ] ]) : partialResult;
+                    if (leftValue) {
+                        partialResult = partialResult.concat([ [ leftValue, tree.r.v ] ]);
+                        return leftValue[tree.r.v] instanceof Array ? partialResult.concat([ [ leftValue[tree.r.v], null ] ]) : partialResult;
+                    } else {
+                        return partialResult;
+                    }
                 }
                 if (tree.v === "(") {
                     //function call on a scope
                     return [ [ scope, null ] ].concat(getObservablePairs(tree.r, scope));
+                }
+                if (tree.v === "[") {
+                    //dynamic property access
+                    leftValue = evaluator(tree.l, scope);
+                    if (leftValue) {
+                        partialResult = partialResult.concat([ [ leftValue, evaluator(tree.r, scope) ] ]);
+                    }
+                    return partialResult.concat(getObservablePairs(tree.r, scope));
                 } else {
                     //any other binary operator
                     return partialResult.concat(getObservablePairs(tree.r, scope));
@@ -1647,6 +1660,16 @@
                 if (tree.v === "(") {
                     // function call on an object
                     partialResult = partialResult.concat([ [ evaluator(tree.l, scope), null ] ]);
+                } else if (tree.v === "|") {
+                    // pipe operator is like function call
+                    partialResult = partialResult.concat(getObservablePairs(tree.r, scope));
+                    if (tree.r.v === ".") {
+                        // pipe is a function defined on an object
+                        partialResult = partialResult.concat([ [ evaluator(tree.r.l, scope), null ] ]);
+                    } else {
+                        // pipe is a function defined on a scope
+                        partialResult = partialResult.concat([ [ scope, null ] ]);
+                    }
                 } else {
                     partialResult = partialResult.concat(getObservablePairs(tree.r, scope));
                 }
