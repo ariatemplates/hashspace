@@ -132,6 +132,41 @@ describe('getValue', function () {
         expect(expression('all(collection) | item:zero() | item:0').getValue(scope)).to.equal('f');
     });
 
+    it('should evaluate expression where pipe function is an expression', function() {
+        expect(expression('d[ppName]|fnSorter.sort')
+            .getValue({
+               d: {all: ['foo', 'bar']},
+               ppName: 'all',
+               fnSorter: {sort: function(input) {return input.sort();}}
+            }))
+            .to.eql(['bar', 'foo']);
+    });
+
+    it('should bind this to a proper object when using pipe functions on object', function() {
+        var scope = {
+            input: ['foo', 'bar'],
+            obj: {
+                idx: 1,
+                selector: function(input) {
+                    return input[this.idx];
+                }
+            }
+        };
+        expect(expression('input|obj.selector').getValue(scope)).to.eql('bar');
+        expect(expression('input|obj["selector"]').getValue(scope)).to.eql('bar');
+    });
+
+    it('should bind this to a proper object when using pipe functions on object', function() {
+        var scope = {
+            input: ['foo', 'bar'],
+            idx: 1,
+            selector: function(input) {
+                return input[this.idx];
+            }
+        };
+        expect(expression('input|selector').getValue(scope)).to.eql('bar');
+    });
+
     it('should evaluate expressions containing simple comparison (<, >)', function() {
         expect(expression('1 < 2').getValue({})).to.equal(true);
         expect(expression('1 > 2').getValue({})).to.equal(false);
