@@ -142,6 +142,31 @@ describe('getValue', function () {
             .to.eql(['bar', 'foo']);
     });
 
+    it('should bind this to a proper object when using pipe functions on object', function() {
+        var scope = {
+            input: ['foo', 'bar'],
+            obj: {
+                idx: 1,
+                selector: function(input) {
+                    return input[this.idx];
+                }
+            }
+        };
+        expect(expression('input|obj.selector').getValue(scope)).to.eql('bar');
+        expect(expression('input|obj["selector"]').getValue(scope)).to.eql('bar');
+    });
+
+    it('should bind this to an empty scope when using pipe functions on scope', function() {
+        var scope = {
+            input: ['foo', 'bar'],
+            idx: 1,
+            selector: function(input) {
+                return input[this.idx || 0];
+            }
+        };
+        expect(expression('input|selector').getValue(scope)).to.eql('foo');
+    });
+
     it('should evaluate expressions containing simple comparison (<, >)', function() {
         expect(expression('1 < 2').getValue({})).to.equal(true);
         expect(expression('1 > 2').getValue({})).to.equal(false);
