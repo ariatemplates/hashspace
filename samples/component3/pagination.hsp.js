@@ -50,8 +50,9 @@ var Pagination=klass({
 
 
 var pagination = require("hsp/rt").template({ctl:[Pagination,"Pagination"],ref:"p"}, function(n){
-  var __s = {};
-  return [__s,n.elt("ul",0,{"class":"pagination"},0,[n.elt("li",{e1:[6,function(a0) {return (((a0 === 0))? ''+"disabled":'');},2],e2:[1,2,"p","activepage"]},{"class":["",1]},0,[n.elt("a",{e1:[3,2,"p","selectPage",1,2],e2:[6,function(a0) {return (a0 - 1);},3],e3:[1,2,"p","activepage"]},0,{"click":1},[n.$text(0,["Previous"])])]),n.$foreach({e1:[1,2,"p","pages"]},"page_key","page",0,1,[n.elt("li",{e1:[6,function(a0,a1) {return (((a0 == a1))? ''+"active":'');},2,3],e2:[1,1,"page"],e3:[1,2,"p","activepage"]},{"class":["",1]},0,[n.elt("a",{e1:[3,2,"p","selectPage",1,2],e2:[1,1,"page"]},0,{"click":1},[n.$text({e1:[6,function(a0) {return (a0 + 1);},2],e2:[1,1,"page"]},["",1])])])]),n.$text(0,[" "]),n.elt("li",{e1:[6,function(a0,a1) {return (((a0 >= (a1 - 1)))? ''+"disabled":'');},2,3],e2:[1,2,"p","activepage"],e3:[1,2,"p","noOfPages"]},{"class":["",1]},0,[n.elt("a",{e1:[3,2,"p","selectPage",1,2],e2:[6,function(a0) {return (a0 + 1);},3],e3:[1,2,"p","activepage"]},0,{"click":1},[n.$text(0,["Next"])])])])];
+  var _p;try {_p=p} catch(e) {_p=n.g('p')};
+  var __s = {p : typeof p === 'undefined' ? undefined : p};
+  return [__s,n.elt("ul",0,{"class":"pagination"},0,[n.elt("li",{e1:[6,function(a0) {return (((a0 === 0))? ''+"disabled":'');},2],e2:[1,2,"p","activepage"]},{"class":["",1]},0,[n.elt("a",{e1:[3,2,"p","selectPage",1,2],e2:[6,function(a0) {return (a0 - 1);},3],e3:[1,2,"p","activepage"]},0,{"click":1},[n.$text(0,["Previous"])])]),n.$foreach({e1:[9,"p.pages"]},"page_key","page",0,1,[n.elt("li",{e1:[6,function(a0,a1) {return (((a0 == a1))? ''+"active":'');},2,3],e2:[1,1,"page"],e3:[1,2,"p","activepage"]},{"class":["",1]},0,[n.elt("a",{e1:[3,2,"p","selectPage",1,2],e2:[1,1,"page"]},0,{"click":1},[n.$text({e1:[6,function(a0) {return (a0 + 1);},2],e2:[1,1,"page"]},["",1])])])]),n.$text(0,[" "]),n.elt("li",{e1:[6,function(a0,a1) {return (((a0 >= (a1 - 1)))? ''+"disabled":'');},2,3],e2:[1,2,"p","activepage"],e3:[1,2,"p","noOfPages"]},{"class":["",1]},0,[n.elt("a",{e1:[3,2,"p","selectPage",1,2],e2:[6,function(a0) {return (a0 + 1);},3],e3:[1,2,"p","activepage"]},0,{"click":1},[n.$text(0,["Next"])])])])];
 });
 
 

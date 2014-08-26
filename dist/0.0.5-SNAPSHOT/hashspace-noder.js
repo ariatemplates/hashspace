@@ -1525,7 +1525,7 @@
             "|": function(input, pipeFnOrObj, args, target) {
                 //pipe (filter)
                 var pipeFn = typeof pipeFnOrObj === "function" ? pipeFnOrObj : pipeFnOrObj["apply"];
-                return pipeFn.apply(target, [ input ].concat(args));
+                return pipeFn.apply(typeof pipeFnOrObj === "function" ? target : pipeFnOrObj, [ input ].concat(args));
             }
         };
         module.exports = function getTreeValue(tree, scope) {

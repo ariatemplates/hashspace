@@ -209,7 +209,7 @@ var TERNARY_OPERATORS = {
     '?': function (test, trueVal, falseVal) { return test ? trueVal : falseVal; },
     '|': function (input, pipeFnOrObj, args, target) {  //pipe (filter)
         var pipeFn = typeof pipeFnOrObj === 'function' ? pipeFnOrObj : pipeFnOrObj['apply'];
-        return pipeFn.apply(target, [input].concat(args));
+        return pipeFn.apply(typeof pipeFnOrObj === 'function' ? target : pipeFnOrObj, [input].concat(args));
     }
 };
 
