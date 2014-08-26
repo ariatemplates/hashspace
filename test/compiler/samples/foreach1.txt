@@ -15,11 +15,8 @@
       {"type": "text","value": "Foreach test: "},
       {"type": "foreach","item":"thing","key":"thing_key",
         "colref": {
-          "type": "Variable",
-          "name": "things",
-          "code": "things",
-          "category": "jsexpression",
-          "expType": "Variable",
+          "category": "jsexptext",
+          "value": "things",
           "line": 3,
           "column": 22
         }
@@ -43,10 +40,8 @@
       {"type": "text","value": "Foreach test: "},
         {"type": "foreach","item":"thing","key":"thing_key",
         "collection": {
-            "type": "expression",
-            "category": "objectref",
-            "bound": true,
-            "path": [ "things" ],
+            "category": "jsexptext",
+            "value": "things",
             "line": 3,
             "column": 22
         },
@@ -65,7 +60,7 @@
 ##### Template Code
 test=[__s,
   n.$text(0,["Foreach test:  "]),
-  n.$foreach({e1: [1, 1, "things"]}, "thing_key", "thing", 0 , 1, [
+  n.$foreach({e1: [9, "things"]}, "thing_key", "thing", 0 , 1, [
     n.$text({e1: [1, 1, "thing"]}, [" - ", 1, " - "])
   ])
 ]

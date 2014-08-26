@@ -23,7 +23,7 @@
       {"type": "text","value": "Hello "},
       {"type": "comment","value": " comment 1"},
       {"type": "text","value": " World! "},
-      {"type": "if", "condition": {category:"jsexptext", value:"(world)"}},
+      {"type": "if", "condition": {category:"jsexptext", value:"world"}},
       {"type": "text","value": " "},
       {"type": "comment","value": " comment 2"},
       {"type": "text","value": " "},
@@ -49,9 +49,9 @@
         "type": "if",
         "condition": {
           "category": "jsexptext",
-          "value": "(world)",
+          "value": "world",
           "line": 4,
-          "column": 6
+          "column": 7
         },
         "content1": [
           {
@@ -67,7 +67,7 @@
 ##### Template Code
 hello=[__s,
   n.$text(0,["Hello  World!"]),
-  n.$if( {e1:[9,"(world)"]}, 1, [
+  n.$if( {e1:[9,"world"]}, 1, [
       n.$text(0,["   ... "])
   ])
 ]
