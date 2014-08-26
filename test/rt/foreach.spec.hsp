@@ -656,8 +656,7 @@ describe("ForEach Node", function () {
         items.push({value:"Item C"});
         h.refresh();
 
-        // no binding - so nbr of items should be the same
-        expect(h(".itm").length).to.equal(2);
+        expect(h(".itm").length).to.equal(3);
 
         h.$dispose();
     });

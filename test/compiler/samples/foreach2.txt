@@ -21,12 +21,8 @@
     "content": [
       {"type": "foreach","item":"name","key":"k",
         "colref": {
-          "type": "PropertyAccess",
-          "base": { "type": "Variable", "name": "passengers", "code": "passengers"},
-          "name": "names",
-          "code": "passengers.names",
-          "category": "jsexpression",
-          "expType": "PropertyAccess",
+          "value": "passengers.names",
+          "category": "jsexptext",
           "line": 2,
           "column": 22
         }
@@ -58,10 +54,8 @@
     "content": [
       {"type": "foreach","item":"name","key":"k",
         "collection": {
-          "type": "expression",
-          "category": "objectref",
-          "bound": true,
-          "path": [ "passengers", "names" ],
+          "category": "jsexptext",
+          "value": "passengers.names",
           "line": 2,
           "column": 22
         },
@@ -94,7 +88,7 @@
 
 ##### Template Code
 test=[__s,
-  n.$foreach({e1: [1,2,"passengers","names"]}, "k", "name", 0 , 1, [
+  n.$foreach({e1: [9,"passengers.names"]}, "k", "name", 0 , 1, [
     n.$if( {e1:[9,"name_isfirst"]}, 1, [
         n.$text(0,["<< "])
     ]),

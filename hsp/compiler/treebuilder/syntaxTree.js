@@ -518,12 +518,7 @@ var SyntaxTree = klass({
         var node = new Node("foreach"), block = blocks[index];
         node.item = block.item;
         node.key = block.key;
-        //node.collection = block.colref;
-        //node.collection.bound = true;
-
-        var expr = new HExpression(block.colref, this);
-        node.collection = expr.getSyntaxTree();
-        node.collection.bound = true;
+        node.collection = block.colref;
 
         node.content = [];
         out.push(node);

@@ -20,7 +20,7 @@
       {"type": "if", "condition": {"category": "jsexptext", "value": "123.4"}},
       {"type": "text","value": " Number "},
       {"type": "endif"},
-      {"type": "if", "condition": {"category": "jsexptext", "value": "('ok')"}},
+      {"type": "if", "condition": {"category": "jsexptext", "value": "'ok'"}},
       {"type": "text","value": " String1 "},
       {"type": "endif"},
       {"type": "if", "condition": {"category": "jsexptext", "value": '"o\\"k"'}},
@@ -51,7 +51,7 @@
         ]
       },
       {"type": "if",
-        "condition": {"category": "jsexptext", "value": "('ok')"},
+        "condition": {"category": "jsexptext", "value": "'ok'"},
         "content1": [
           {"type": "text", "value": " String1 "}
         ]
@@ -74,7 +74,7 @@ test=[__s,
   n.$if( {e1:[9,"123.4"]}, 1, [
     n.$text(0,[" Number "])
   ]),
-  n.$if( {e1:[9,"('ok')"]}, 1, [
+  n.$if( {e1:[9,"'ok'"]}, 1, [
     n.$text(0,[" String1 "])
   ]),
   n.$if( {e1:[9,"\"o\"k\""]}, 1, [

@@ -24,7 +24,7 @@
         "category": "jsexptext",
         "value": "v1.isWorld"
       }},
-      {"type": "if", "condition": {"category": "jsexptext", "value":"(v2)"}},
+      {"type": "if", "condition": {"category": "jsexptext", "value":"v2"}},
       {"type": "text","value": "World "},
       {"type": "else"},
       {"type": "text","value": "Mate! "},
@@ -47,7 +47,7 @@
         "condition": {"category": "jsexptext", "value": "v1.isWorld"},
         "content1": [
           {"type": "if",
-            "condition": {"category": "jsexptext", "value": "(v2)"},
+            "condition": {"category": "jsexptext", "value": "v2"},
             "content1": [
               {"type": "text", "value": "World "}
             ],
@@ -65,7 +65,7 @@
 test=[__s,
   n.$text(0,["Hello "]),
   n.$if( {e1:[9,"v1.isWorld"]}, 1, [
-    n.$if( {e1:[9,"(v2)"]}, 1, [
+    n.$if( {e1:[9,"v2"]}, 1, [
         n.$text(0,["World "])
     ],[
         n.$text(0,["Mate! "])

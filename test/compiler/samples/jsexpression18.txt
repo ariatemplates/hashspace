@@ -15,8 +15,7 @@
 test=[__s,
   n.$foreach(
     {
-      e1:[4,1,_orderBy,1,2,0,"name"],
-      e2:[1,2,"person","list"]
+      e1:[9,"person.list|orderBy:\"name\""]
     },
     "p_key",
     "p",

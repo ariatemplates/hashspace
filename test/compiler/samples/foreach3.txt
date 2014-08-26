@@ -19,12 +19,8 @@
       {"type": "element","name": "div","closed": false,"attributes": []},
       {"type": "foreach","item":"name","key":"k",
         "colref": {
-          "type": "PropertyAccess",
-          "base": { "type": "Variable", "name": "passengers", "code": "passengers" },
-          "name": "names",
-          "code": "passengers.names",
-          "category": "jsexpression",
-          "expType": "PropertyAccess",
+          "category": "jsexptext",
+          "value": "passengers.names",
           "line": 3,
           "column": 24
         }
@@ -48,10 +44,8 @@
       {"type": "element","name": "div","closed": false,"attributes": [],"content": [
           {"type": "foreach","item": "name","key": "k", 
             "collection": {
-              "type": "expression",
-              "category": "objectref",
-              "bound": true,
-              "path": [ "passengers", "names" ],
+              "category": "jsexptext",
+              "value": "passengers.names",
               "line": 3,
               "column": 24
             },
@@ -73,7 +67,7 @@ test=[__s,
       0,
       0,
       [
-        n.$foreach( {e1: [1,2,"passengers","names"]}, "k", "name", 0 , 1, [
+        n.$foreach( {e1: [9,"passengers.names"]}, "k", "name", 0 , 1, [
           n.$text(0 ,["x "])
         ]),
         n.$text(0 ,[" "])
