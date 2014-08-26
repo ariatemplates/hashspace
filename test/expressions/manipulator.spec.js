@@ -325,10 +325,14 @@ describe('setValue', function () {
         var scope = {
             foo: {
                 bar: 'baz'
-            }
+            },
+            baz: 'bar'
         };
         expression("foo['bar']").setValue(scope, 'bazzzz');
         expect(scope.foo.bar).to.equal('bazzzz');
+
+        expression("foo[baz]").setValue(scope, 'barrrr');
+        expect(scope.foo.bar).to.equal('barrrr');
     });
 
     it('should set the isAssignable flag to true for assignable expressions', function () {

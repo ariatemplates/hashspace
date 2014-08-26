@@ -56,7 +56,7 @@ module.exports = function(input, inputTree) {
             if (tree.a === 'idn') {
                 scope[tree.v] = newValue;
             } else if (tree.a === 'bnr') {
-                evaluator(tree.l, scope)[tree.r.v] = newValue;
+                evaluator(tree.l, scope)[evaluator(tree.r, scope)] = newValue;
             }
         },
         isAssignable : isAssignable
