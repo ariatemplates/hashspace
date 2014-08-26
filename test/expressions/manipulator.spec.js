@@ -274,20 +274,36 @@ describe('setValue', function () {
         expect(scope.foo.bar).to.equal('bazzzz');
     });
 
-    it('should set the isAssignable flag set to true for assignable expressions', function () {
-        expect( expression("foo").isAssignable).to.equal(true);
-        expect( expression("foo.bar").isAssignable).to.equal(true);
-        expect( expression("foo.bar.baz").isAssignable).to.equal(true);
+    it('should set values of square brackets assignable expressions', function() {
+        var scope = {
+            foo: {
+                bar: 3
+            },
+            baz: 'bar'
+        };
+        expression("foo['bar']").setValue(scope, 'barrrr');
+        expect(scope.foo.bar).to.equal('barrrr');
+
+        expression("foo[baz]").setValue(scope, 'bazzzz');
+        expect(scope.foo.bar).to.equal('bazzzz');
     });
 
-    it('should set the isAssignable flag set to false for non-assignable expressions', function () {
-        expect( expression("'foo'").isAssignable).to.equal(false);
-        expect( expression("foo === bar").isAssignable).to.equal(false);
-        expect( expression("foo + bar").isAssignable).to.equal(false);
-        expect( expression("foo[bar]").isAssignable).to.equal(false);
-        expect( expression("foo.bar()").isAssignable).to.equal(false);
-        expect( expression("foo ? bar : baz").isAssignable).to.equal(false);
-        expect( expression("foo | bar").isAssignable).to.equal(false);
+    it('should set the isAssignable flag to true for assignable expressions', function () {
+        expect(expression("foo").isAssignable).to.equal(true);
+        expect(expression("foo.bar").isAssignable).to.equal(true);
+        expect(expression("foo.bar.baz").isAssignable).to.equal(true);
+        expect(expression("foo[bar]").isAssignable).to.equal(true);
+        expect(expression("foo.bar[baz]").isAssignable).to.equal(true);
+        expect(expression("foo[bar].baz").isAssignable).to.equal(true);
+    });
+
+    it('should set the isAssignable flag to false for non-assignable expressions', function () {
+        expect(expression("'foo'").isAssignable).to.equal(false);
+        expect(expression("foo === bar").isAssignable).to.equal(false);
+        expect(expression("foo + bar").isAssignable).to.equal(false);
+        expect(expression("foo.bar()").isAssignable).to.equal(false);
+        expect(expression("foo ? bar : baz").isAssignable).to.equal(false);
+        expect(expression("foo | bar").isAssignable).to.equal(false);
     });
 
     it('should throw when a non-assignable expression is set', function () {
@@ -305,4 +321,3 @@ describe('setValue', function () {
 //- non-closed brackets ( [ {
 //- using function call on something that is not a function
 //- using [] . on something that is not an object
-
