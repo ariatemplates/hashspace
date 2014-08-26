@@ -554,7 +554,7 @@ var evaluator = require('./evaluator');
  */
 module.exports = function getObservablePairs(tree, scope) {
 
-    var partialResult, leftValue;
+    var partialResult, leftValue, rightValue;
 
     if (tree instanceof Array) {
         partialResult = [];
@@ -590,7 +590,11 @@ module.exports = function getObservablePairs(tree, scope) {
         } if (tree.v === '[') { //dynamic property access
             leftValue = evaluator(tree.l, scope);
             if (leftValue) {
-                partialResult = partialResult.concat([[leftValue, evaluator(tree.r, scope)]]);
+                rightValue = evaluator(tree.r, scope);
+                partialResult = partialResult.concat([[leftValue, rightValue]]);
+                if (leftValue[rightValue] instanceof Array) {
+                    partialResult = partialResult.concat([[leftValue[rightValue], null]]);
+                }
             }
             return partialResult.concat(getObservablePairs(tree.r, scope));
         } else {
@@ -601,12 +605,12 @@ module.exports = function getObservablePairs(tree, scope) {
         partialResult = getObservablePairs(tree.l, scope);
         if (tree.v === '(') { // function call on an object
             partialResult = partialResult.concat([ [evaluator(tree.l, scope), null]]);
-        } else if (tree.v === '|') { // pipe operator is like function call
+        } else if (tree.v === '|') { // pipe operator is similar to function calls
             partialResult = partialResult.concat(getObservablePairs(tree.r, scope));
             if (tree.r.v === '.') { // pipe is a function defined on an object
                 partialResult = partialResult.concat([[evaluator(tree.r.l, scope), null]]);
             } else { // pipe is a function defined on a scope
-                partialResult = partialResult.concat([[scope, null]]);
+                partialResult = partialResult.concat([[evaluator(tree.r, scope), null]]);
             }
         } else {
             partialResult = partialResult.concat(getObservablePairs(tree.r, scope));
