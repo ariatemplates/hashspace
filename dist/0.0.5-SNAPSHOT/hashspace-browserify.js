@@ -207,8 +207,7 @@ var TERNARY_OPERATORS = {
             undefined : target[name].apply(target, args);
     },
     '?': function (test, trueVal, falseVal) { return test ? trueVal : falseVal; },
-    '|': function (input, pipeFnOrObj, args, target) {  //pipe (filter)
-        var pipeFn = typeof pipeFnOrObj === 'function' ? pipeFnOrObj : pipeFnOrObj['apply'];
+    '|': function (input, pipeFn, args, target) {  //pipe (filter)
         return pipeFn.apply(target, [input].concat(args));
     }
 };
@@ -478,8 +477,8 @@ var evaluator = require('./evaluator');
  */
 module.exports = function(input, inputTree) {
     var tree = inputTree || ast(input);
-    //AST needs to have an identifier or binary . at the root to be assignable
-    var isAssignable = tree.a === 'idn' || (tree.a === 'bnr' && tree.v === '.');
+    //AST needs to have an identifier or binary '.' or '[' at the root to be assignable
+    var isAssignable = tree.a === 'idn' || (tree.a === 'bnr' && (tree.v === '.' || tree.v === '['));
 
     return {
         /**
@@ -515,6 +514,7 @@ module.exports = function(input, inputTree) {
         isAssignable : isAssignable
     };
 };
+
 },{"./evaluator":3,"./parser":8}],7:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.

@@ -1522,9 +1522,8 @@
             "?": function(test, trueVal, falseVal) {
                 return test ? trueVal : falseVal;
             },
-            "|": function(input, pipeFnOrObj, args, target) {
+            "|": function(input, pipeFn, args, target) {
                 //pipe (filter)
-                var pipeFn = typeof pipeFnOrObj === "function" ? pipeFnOrObj : pipeFnOrObj["apply"];
                 return pipeFn.apply(target, [ input ].concat(args));
             }
         };
@@ -1686,8 +1685,8 @@
  */
         module.exports = function(input, inputTree) {
             var tree = inputTree || ast(input);
-            //AST needs to have an identifier or binary . at the root to be assignable
-            var isAssignable = tree.a === "idn" || tree.a === "bnr" && tree.v === ".";
+            //AST needs to have an identifier or binary '.' or '[' at the root to be assignable
+            var isAssignable = tree.a === "idn" || tree.a === "bnr" && (tree.v === "." || tree.v === "[");
             return {
                 /**
          * Evaluates an expression against a scope
