@@ -167,6 +167,18 @@ describe('getValue', function () {
         expect(expression('input|selector').getValue(scope)).to.eql('foo');
     });
 
+    it('should allow objects with the "apply" function in pipe expressions', function() {
+        var scope = {
+            input: ['foo', 'bar'],
+            selector: {
+                'apply': function(input) {
+                    return input[1];
+                }
+            }
+        };
+        expect(expression('input|selector').getValue(scope)).to.eql('bar');
+    });
+
     it('should evaluate expressions containing simple comparison (<, >)', function() {
         expect(expression('1 < 2').getValue({})).to.equal(true);
         expect(expression('1 > 2').getValue({})).to.equal(false);
