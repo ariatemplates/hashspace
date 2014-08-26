@@ -197,8 +197,8 @@ var BINARY_OPERATORS = {
     '(': function (left, right) { //function call on a scope
         return left.apply(left, right);
     },
-    '.': forgivingPropertyAccessor,
-    '[': forgivingPropertyAccessor
+    '.': forgivingPropertyAccessor, //property access
+    '[': forgivingPropertyAccessor  //dynamic property access
 };
 
 var TERNARY_OPERATORS = {
@@ -207,11 +207,14 @@ var TERNARY_OPERATORS = {
             undefined : target[name].apply(target, args);
     },
     '?': function (test, trueVal, falseVal) { return test ? trueVal : falseVal; },
-    '|': function (input, pipeFn, args) { return pipeFn.apply(pipeFn, [input].concat(args)); } //pipe (filter)
+    '|': function (input, pipeFn, args, target) {  //pipe (filter)
+        return pipeFn.apply(target, [input].concat(args));
+    }
 };
 
 module.exports = function getTreeValue(tree, scope) {
 
+    var emptyScope = {}; //empty object for functions that shouldn't be bound to any scope
     var operatorFn, result;
     var parsedVal, argExp, arrayResult;
 
@@ -248,7 +251,11 @@ module.exports = function getTreeValue(tree, scope) {
         result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope));
     } else if (tree.a === 'tnr' && TERNARY_OPERATORS[tree.v]) {
         operatorFn = TERNARY_OPERATORS[tree.v];
-        result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope));
+        if (tree.v === '|' && (tree.r.v === '.' || tree.r.v === '[')) {
+            result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope), getTreeValue(tree.r.l, scope));
+        } else {
+            result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope), emptyScope);
+        }
     } else {
         throw new Error('Unknown tree entry of type "'+ tree.a +' and value ' + tree.v + ' in:' + JSON.stringify(tree));
     }
