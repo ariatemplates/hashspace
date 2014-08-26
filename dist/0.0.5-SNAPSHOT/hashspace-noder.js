@@ -1522,8 +1522,9 @@
             "?": function(test, trueVal, falseVal) {
                 return test ? trueVal : falseVal;
             },
-            "|": function(input, pipeFn, args, target) {
+            "|": function(input, pipeFnOrObj, args, target) {
                 //pipe (filter)
+                var pipeFn = typeof pipeFnOrObj === "function" ? pipeFnOrObj : pipeFnOrObj["apply"];
                 return pipeFn.apply(target, [ input ].concat(args));
             }
         };
