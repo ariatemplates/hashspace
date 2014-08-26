@@ -197,8 +197,8 @@ var BINARY_OPERATORS = {
     '(': function (left, right) { //function call on a scope
         return left.apply(left, right);
     },
-    '.': forgivingPropertyAccessor, //property access
-    '[': forgivingPropertyAccessor  //dynamic property access
+    '.': forgivingPropertyAccessor,
+    '[': forgivingPropertyAccessor
 };
 
 var TERNARY_OPERATORS = {
@@ -207,9 +207,7 @@ var TERNARY_OPERATORS = {
             undefined : target[name].apply(target, args);
     },
     '?': function (test, trueVal, falseVal) { return test ? trueVal : falseVal; },
-    '|': function (input, pipeFn, args, target) {  //pipe (filter)
-        return pipeFn.apply(target, [input].concat(args));
-    }
+    '|': function (input, pipeFn, args) { return pipeFn.apply(pipeFn, [input].concat(args)); } //pipe (filter)
 };
 
 module.exports = function getTreeValue(tree, scope) {
@@ -250,11 +248,7 @@ module.exports = function getTreeValue(tree, scope) {
         result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope));
     } else if (tree.a === 'tnr' && TERNARY_OPERATORS[tree.v]) {
         operatorFn = TERNARY_OPERATORS[tree.v];
-        if (tree.v === '|' && (tree.r.v === '.' || tree.r.v === '[')) {
-            result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope), getTreeValue(tree.r.l, scope));
-        } else {
-            result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope), scope);
-        }
+        result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope));
     } else {
         throw new Error('Unknown tree entry of type "'+ tree.a +' and value ' + tree.v + ' in:' + JSON.stringify(tree));
     }
@@ -554,7 +548,7 @@ var evaluator = require('./evaluator');
  */
 module.exports = function getObservablePairs(tree, scope) {
 
-    var partialResult, leftValue, rightValue;
+    var partialResult, leftValue;
 
     if (tree instanceof Array) {
         partialResult = [];
@@ -570,7 +564,7 @@ module.exports = function getObservablePairs(tree, scope) {
         return [];
     } else if (tree.a === 'idn') {
         //TODO: deal with "parent scopes" (traverse up using +parent) => should it be done here?
-        return scope[tree.v] instanceof Array ? [[scope, tree.v], [scope[tree.v], null]] : [[scope, tree.v]];
+        return [[scope, tree.v]];
     } else if (tree.a === 'unr') {
         return getObservablePairs(tree.l, scope);
     } else if (tree.a === 'bnr') {
@@ -578,25 +572,9 @@ module.exports = function getObservablePairs(tree, scope) {
         if (tree.v === '.') {
             //for . we need to observe _value_ of the left-hand side
             leftValue = evaluator(tree.l, scope);
-            if (leftValue) {
-                partialResult = partialResult.concat([[leftValue, tree.r.v]]);
-                return leftValue[tree.r.v] instanceof Array ?
-                    partialResult.concat([[leftValue[tree.r.v], null]]) : partialResult;
-            } else {
-                return partialResult;
-            }
+            return leftValue ? partialResult.concat([[leftValue, tree.r.v]]) : partialResult;
         } if (tree.v === '(') { //function call on a scope
             return [[scope, null]].concat(getObservablePairs(tree.r, scope));
-        } if (tree.v === '[') { //dynamic property access
-            leftValue = evaluator(tree.l, scope);
-            if (leftValue) {
-                rightValue = evaluator(tree.r, scope);
-                partialResult = partialResult.concat([[leftValue, rightValue]]);
-                if (leftValue[rightValue] instanceof Array) {
-                    partialResult = partialResult.concat([[leftValue[rightValue], null]]);
-                }
-            }
-            return partialResult.concat(getObservablePairs(tree.r, scope));
         } else {
             //any other binary operator
             return partialResult.concat(getObservablePairs(tree.r, scope));
@@ -605,13 +583,6 @@ module.exports = function getObservablePairs(tree, scope) {
         partialResult = getObservablePairs(tree.l, scope);
         if (tree.v === '(') { // function call on an object
             partialResult = partialResult.concat([ [evaluator(tree.l, scope), null]]);
-        } else if (tree.v === '|') { // pipe operator is similar to function calls
-            partialResult = partialResult.concat(getObservablePairs(tree.r, scope));
-            if (tree.r.v === '.') { // pipe is a function defined on an object
-                partialResult = partialResult.concat([[evaluator(tree.r.l, scope), null]]);
-            } else { // pipe is a function defined on a scope
-                partialResult = partialResult.concat([[evaluator(tree.r, scope), null]]);
-            }
         } else {
             partialResult = partialResult.concat(getObservablePairs(tree.r, scope));
         }
