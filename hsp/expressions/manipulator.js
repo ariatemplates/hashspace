@@ -25,8 +25,8 @@ var evaluator = require('./evaluator');
  */
 module.exports = function(input, inputTree) {
     var tree = inputTree || ast(input);
-    //AST needs to have an identifier or binary . at the root to be assignable
-    var isAssignable = tree.a === 'idn' || (tree.a === 'bnr' && tree.v === '.');
+    //AST needs to have an identifier or binary '.' or '[' at the root to be assignable
+    var isAssignable = tree.a === 'idn' || (tree.a === 'bnr' && (tree.v === '.' || tree.v === '['));
 
     return {
         /**
