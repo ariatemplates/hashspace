@@ -13,15 +13,15 @@
  * limitations under the License.
  */
 
-function forgivingPropertyAccessor(left, right) {
+function forgivingPropertyAccessor(scope, left, right) {
     return typeof left === 'undefined' || left === null ? undefined : left[right];
 }
 
 var UNARY_OPERATORS = {
-    '!': function (right) { return !right; },
-    '-': function (right) { return -right; },
-    '[': function (right) { return right; }, //array literal
-    '{': function (right) { //object literal
+    '!': function (scope, right) { return !right; },
+    '-': function (scope, right) { return -right; },
+    '[': function (scope, right) { return right; }, //array literal
+    '{': function (scope, right) { //object literal
 
         var result = {}, keyVal;
         for (var i = 0; i < right.length; i++) {
@@ -34,37 +34,41 @@ var UNARY_OPERATORS = {
 };
 
 var BINARY_OPERATORS = {
-    '+': function (left, right) { return left + right; },
-    '-': function (left, right) { return left - right; },
-    '*': function (left, right) { return left * right; },
-    '/': function (left, right) { return left / right; },
-    '%': function (left, right) { return left % right; },
-    '<': function (left, right) { return left < right; },
-    '>': function (left, right) { return left > right; },
-    '>=': function (left, right) { return left >= right; },
-    '<=': function (left, right) { return left <= right; },
-    '==': function (left, right) { return left == right; },
-    '!=': function (left, right) { return left != right; },
-    '===': function (left, right) { return left === right; },
-    '!==': function (left, right) { return left !== right; },
-    '||': function (left, right) { return left || right; },
-    '&&': function (left, right) { return left && right; },
-    '(': function (left, right) { //function call on a scope
+    '+': function (scope, left, right) { return left + right; },
+    '-': function (scope, left, right) { return left - right; },
+    '*': function (scope, left, right) { return left * right; },
+    '/': function (scope, left, right) { return left / right; },
+    '%': function (scope, left, right) { return left % right; },
+    '<': function (scope, left, right) { return left < right; },
+    '>': function (scope, left, right) { return left > right; },
+    '>=': function (scope, left, right) { return left >= right; },
+    '<=': function (scope, left, right) { return left <= right; },
+    '==': function (scope, left, right) { return left == right; },
+    '!=': function (scope, left, right) { return left != right; },
+    '===': function (scope, left, right) { return left === right; },
+    '!==': function (scope, left, right) { return left !== right; },
+    '||': function (scope, left, right) { return left || right; },
+    '&&': function (scope, left, right) { return left && right; },
+    '(': function (scope, left, right) { //function call on a scope
         return left.apply(left, right);
     },
     '.': forgivingPropertyAccessor, //property access
-    '[': forgivingPropertyAccessor  //dynamic property access
+    '[': forgivingPropertyAccessor,  //dynamic property access
+    '=': function(scope, left, right) { return scope[left] = right; }
 };
 
 var TERNARY_OPERATORS = {
-    '(': function (target, name, args) { //function call on an object
+    '(': function (scope, target, name, args) { //function call on an object
         return typeof target === 'undefined' || target === null ?
             undefined : target[name].apply(target, args);
     },
-    '?': function (test, trueVal, falseVal) { return test ? trueVal : falseVal; },
-    '|': function (input, pipeFnOrObj, args, target) {  //pipe (filter)
+    '?': function (scope, test, trueVal, falseVal) { return test ? trueVal : falseVal; },
+    '|': function (scope, input, pipeFnOrObj, args, target) {  //pipe (filter)
         var pipeFn = typeof pipeFnOrObj === 'function' ? pipeFnOrObj : pipeFnOrObj['apply'];
         return pipeFn.apply(target, [input].concat(args));
+    },
+    '=': function (scope, target, property, value) {
+        return target[property] = value;
     }
 };
 
@@ -101,16 +105,16 @@ module.exports = function getTreeValue(tree, scope) {
         result = scope[tree.v];
     } else if (tree.a === 'unr' && UNARY_OPERATORS[tree.v]) {
         operatorFn = UNARY_OPERATORS[tree.v];
-        result = operatorFn(getTreeValue(tree.l, scope));
+        result = operatorFn(scope, getTreeValue(tree.l, scope));
     } else if (tree.a === 'bnr' && BINARY_OPERATORS[tree.v]) {
         operatorFn = BINARY_OPERATORS[tree.v];
-        result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope));
+        result = operatorFn(scope, getTreeValue(tree.l, scope), getTreeValue(tree.r, scope));
     } else if (tree.a === 'tnr' && TERNARY_OPERATORS[tree.v]) {
         operatorFn = TERNARY_OPERATORS[tree.v];
         if (tree.v === '|' && (tree.r.v === '.' || tree.r.v === '[')) {
-            result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope), getTreeValue(tree.r.l, scope));
+            result = operatorFn(scope, getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope), getTreeValue(tree.r.l, scope));
         } else {
-            result = operatorFn(getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope), emptyScope);
+            result = operatorFn(scope, getTreeValue(tree.l, scope), getTreeValue(tree.r, scope), getTreeValue(tree.othr, scope), emptyScope);
         }
     } else {
         throw new Error('Unknown tree entry of type "'+ tree.a +' and value ' + tree.v + ' in:' + JSON.stringify(tree));
