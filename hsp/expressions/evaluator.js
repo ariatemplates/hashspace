@@ -52,6 +52,11 @@ var BINARY_OPERATORS = {
     '(': function (left, right) { //function call on a scope
         return left.apply(left, right);
     },
+    'new': function (constructor, args) { //constructor invocation
+        var instance = Object.create(constructor.prototype);
+        var result = constructor.apply(instance, args);
+        return (result !== null && typeof result === 'object') ? result : instance;
+    },
     '.': forgivingPropertyAccessor, //property access
     '[': forgivingPropertyAccessor  //dynamic property access
 };
