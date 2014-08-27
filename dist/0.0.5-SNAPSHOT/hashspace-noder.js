@@ -1176,24 +1176,6 @@
         constant("true", true);
         constant("false", false);
         constant("null", null);
-        prefix("new", function() {
-            var args = [];
-            this.a = "bnr";
-            this.l = expression(70);
-            advance("(");
-            if (token.v !== ")") {
-                while (true) {
-                    args.push(expression(0));
-                    if (token.id !== ",") {
-                        break;
-                    }
-                    advance(",");
-                }
-            }
-            advance(")");
-            this.r = args;
-            return this;
-        });
         prefix("-");
         prefix("!");
         prefix("(", function() {
@@ -1282,7 +1264,7 @@
             advance("]");
             return this;
         });
-        infix("(", 70, function(left) {
+        infix("(", 80, function(left) {
             var a = [];
             if (left.id === "." || left.id === "[") {
                 this.a = "tnr";
@@ -1528,12 +1510,6 @@
                 //function call on a scope
                 return left.apply(left, right);
             },
-            "new": function(constructor, args) {
-                //constructor invocation
-                var instance = Object.create(constructor.prototype);
-                var result = constructor.apply(instance, args);
-                return result !== null && typeof result === "object" ? result : instance;
-            },
             ".": forgivingPropertyAccessor,
             //property access
             "[": forgivingPropertyAccessor
@@ -1549,7 +1525,7 @@
             "|": function(input, pipeFnOrObj, args, target) {
                 //pipe (filter)
                 var pipeFn = typeof pipeFnOrObj === "function" ? pipeFnOrObj : pipeFnOrObj["apply"];
-                return pipeFn.apply(target, [ input ].concat(args));
+                return pipeFn.apply(typeof pipeFnOrObj === "function" ? target : pipeFnOrObj, [ input ].concat(args));
             }
         };
         module.exports = function getTreeValue(tree, scope) {
@@ -1766,7 +1742,7 @@
                     if (tree.a === "idn") {
                         scope[tree.v] = newValue;
                     } else if (tree.a === "bnr") {
-                        evaluator(tree.l, scope)[tree.r.v] = newValue;
+                        evaluator(tree.l, scope)[evaluator(tree.r, scope)] = newValue;
                     }
                 },
                 isAssignable: isAssignable
