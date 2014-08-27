@@ -94,6 +94,24 @@ symbol(":");
 constant("true", true);
 constant("false", false);
 constant("null", null);
+prefix("new", function(){
+    var args = [];
+    this.a = 'bnr';
+    this.l = expression(70);
+    advance("(");
+    if (token.v !== ')') {
+        while (true) {
+            args.push(expression(0));
+            if (token.id !== ",") {
+                break;
+            }
+            advance(",");
+        }
+    }
+    advance(")");
+    this.r = args;
+    return this;
+});
 prefix("-");
 prefix("!");
 prefix("(", function () {
@@ -182,7 +200,7 @@ infix("[", 80, function (left) {
     advance("]");
     return this;
 });
-infix("(", 80, function (left) {
+infix("(", 70, function (left) {
     var a = [];
     if (left.id === "." || left.id === "[") {
         this.a = 'tnr';

@@ -94,6 +94,18 @@ describe('getValue', function () {
         expect(expression('obj[foo.bar("s" + "th")]').getValue({obj: {STH: 'else'}, foo: {bar: function(sth) {return sth.toUpperCase(); }}})).to.equal('else');
     });
 
+    it('should allow chained function calls', function() {
+        expect(expression('foo().bar()').getValue({
+            foo: function () {
+                return {
+                    bar: function() {
+                        return 'STH';
+                    }
+                };
+            }
+        })).to.equal('STH');
+    });
+
     it('should evaluate expressions with the pipe (|) operator without args', function() {
         expect(expression('collection | first').getValue({
             collection: ['foo', 'bar'],
@@ -258,6 +270,46 @@ describe('getValue', function () {
         expect(expression("{foo: 'bar'}").getValue({})).to.eql({foo: 'bar'});
         expect(expression("{foo: 'bar', foo2: 'baz'}").getValue({})).to.eql({foo: 'bar', foo2: 'baz'});
         expect(expression("{foo: {foo2: 'baz'}}").getValue({})).to.eql({foo: {foo2: 'baz'}});
+    });
+
+    describe('new operator', function () {
+
+        it('should create instances from constructor functions available on scope', function() {
+            expect(expression("new Foo()").getValue({
+                Foo: function(){
+                    this.foo = 'bar';
+                }
+            })).to.eql({foo: 'bar'});
+        });
+
+        it('should create instances from constructor functions available on scope with args', function() {
+            expect(expression("new Foo(bar, 'baz')").getValue({
+                Foo: function(what){
+                    this.foo = what;
+                },
+                bar: 'baz'
+            })).to.eql({foo: 'baz'});
+        });
+
+        it('should create instances from constructor functions available on objects', function() {
+            expect(expression("new foo.Foo()").getValue({
+                foo: {
+                    Foo: function(){
+                        this.foo = 'bar';
+                    }
+                }
+            })).to.eql({foo: 'bar'});
+        });
+
+        it('should create instances from constructor functions returned by functions', function() {
+            expect(expression("new (foo())()").getValue({
+                foo: function() {
+                    return function(){
+                        this.foo = 'bar';
+                    };
+                }
+            })).to.eql({foo: 'bar'});
+        });
     });
 });
 
