@@ -365,6 +365,32 @@ describe('getValue with defaults', function () {
             expect(expression("{}").getValue({}, 5)).to.eql({});
         });
     });
+
+    describe('assignment operator', function () {
+        it('should allow assignments in simple expressions', function() {
+            var scope = {foo: 'bar'};
+            expression("foo='baz'").getValue(scope);
+            expect(scope.foo).to.equal('baz');
+        });
+
+        it('should allow assignments in expressions with dots', function() {
+            var scope = {foo: {bar: 'bar'}};
+            expression("foo.bar='baz'").getValue(scope);
+            expect(scope.foo.bar).to.equal('baz');
+        });
+
+        it('should allow assignments in expressions with dynamic parts', function() {
+            var scope = {foo: {bar: 'bar'}};
+            expression("foo['bar']='baz'").getValue(scope);
+            expect(scope.foo.bar).to.equal('baz');
+        });
+
+        it('should allow assignments in expressions with very dynamic parts', function() {
+            var scope = {foo: {bar: 'bar'}, idx: 'bar'};
+            expression("foo[idx]='baz'").getValue(scope);
+            expect(scope.foo.bar).to.equal('baz');
+        });
+    });
 });
 
 describe('setValue', function () {
