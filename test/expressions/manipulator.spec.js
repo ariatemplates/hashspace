@@ -309,6 +309,20 @@ describe('getValue', function () {
                     };
                 }
             })).to.eql({foo: 'bar'});
+
+        });
+    });
+
+    describe('multiple statements in an expression', function () {
+
+        it('should allow multiple comma-separated statements', function () {
+            expect(expression("foo, bar").getValue({foo: 'foo', bar: 'bar'}))
+                .to.eql(['foo', 'bar']);
+        });
+
+        it('should mark expressions as multi-statement', function () {
+            expect(expression("foo, bar").isMultiStatement).to.be.ok();
+            expect(expression("foo").isMultiStatement).to.not.be.ok();
         });
     });
 });

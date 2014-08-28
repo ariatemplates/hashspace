@@ -302,6 +302,7 @@ function expression(rbp) {
  * @return {Object} - parsed AST
  */
 module.exports = function (input) {
+    var expr, exprs = [];
 
     tokens = lexer(input);
     token = undefined;
@@ -309,9 +310,14 @@ module.exports = function (input) {
 
     if (tokens.length) {
         advance(); //get the first token
-        var expr = expression(0);
-        advance('(end)'); //make sure that we are at the end of an expression
-        return expr;
+        while(token.id !== '(end)') {
+            expr = expression(0);
+            exprs.push(expr);
+            if (token.v === ',') {
+                advance(',');
+            }
+        }
+        return exprs.length === 1 ? exprs[0] : exprs;
     } else {
         return {f: 0, a: 'literal', v: undefined};
     }
