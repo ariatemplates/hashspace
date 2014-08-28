@@ -15,32 +15,11 @@
         "type": "log",
         "exprs": [
           {
-            "type": "expression",
-            "category": "string",
-            "value": "here",
-            "code": "here",
-            "expType": "expression",
+            "category": "jsexptext",
+            "value": '"here", person, scope',
             "line": 3,
             "column": 8
           },
-          {
-            "type": "Variable",
-            "name": "person",
-            "code": "person",
-            "category": "jsexpression",
-            "expType": "Variable",
-            "line": 3,
-            "column": 16
-          },
-          {
-            "type": "Variable",
-            "name": "scope",
-            "code": "scope",
-            "category": "jsexpression",
-            "expType": "Variable",
-            "line": 3,
-            "column": 24
-          }
         ],
         "line": 3,
         "column": 3
@@ -64,31 +43,10 @@
         "column": 3,
         "exprs": [
           {
-            "type": "expression",
-            "category": "string",
-            "value": "here",
-            "code": "here",
-            "expType": "expression",
+            "category": "jsexptext",
+            "value": '"here", person, scope',
             "line": 3,
             "column": 8
-          },
-          {
-            "type": "expression",
-            "category": "objectref",
-            "path": [
-              "person"
-            ],
-            "line": 3,
-            "column": 16
-          },
-          {
-            "type": "expression",
-            "category": "objectref",
-            "path": [
-              "scope"
-            ],
-            "line": 3,
-            "column": 24
           }
         ]
       },
@@ -101,6 +59,6 @@
 ##### Template Code
 test=[__s,
   n.$text(0,["Hello "]),
-  n.log({e1:[5,"here"],e2:[1,1,"person"],e3:[1,1,"scope"]},[1,2,3],'log1','',3,3),
+  n.log({e1:[9,"\"here\", person, scope"]},'log1','',3,3),
   n.$text(0,["World"])
 ]

@@ -221,7 +221,7 @@ HTMLAttributeChar // TODO look at W3C specs
     / [^{\"\n\r]
 
 LogBlock
-  = "{" _ "log " _ first:HPipeExpression _ next:("," _ HPipeExpression)* _"}" EOS?
+  = "{" _ "log " _ first:CoreExpText _ next:("," _ CoreExpText)* _"}" EOS?
   {
     var exprs=[first];
     if (next) {
@@ -229,7 +229,7 @@ LogBlock
         exprs.push(next[i][2]);
       }
     }
-    return {type:"log",exprs:exprs, line:line, column:column};
+    return {type:"log", exprs:exprs, line:line, column:column};
   }
 
 LetBlock

@@ -31,7 +31,7 @@ var LogNode = klass({
      * @param {Integer} line the line number
      * @param {Integer} column the column number
      */
-    $constructor : function (exps, args, file, dir, line, column) {
+    $constructor : function (exps, file, dir, line, column) {
         TNode.$constructor.call(this, exps);
         this.file='';
         var r=file.match(/[^\/\\]+$/);
@@ -41,7 +41,6 @@ var LogNode = klass({
         this.dir=dir;
         this.line=line;
         this.column=column;
-        this.args = args;
     },
 
     /**
@@ -56,15 +55,12 @@ var LogNode = klass({
      * Process the information to be logged and push it to the log output (browser console by default)
      */
     processLog : function () {
-        var itms=[], args=this.args, eh=this.eh, v;
-        if (this.args) {
-            for (var i=0, sz=args.length;sz>i;i++) {
-                v=eh.getValue(args[i], this.vscope, undefined);
-                itms.push(v);
-            }
-            itms.push({type:'debug',file:this.file,dir:this.dir,line:this.line,column:this.column});
-            log.apply(null,itms);
-        }
+        var exp=this.eh.getExpr(1); //there is only one expression for the log block
+        var v = exp.getValue(this.vscope, undefined);
+        var itms = exp.isMultiStatement ? v : [v];
+
+        itms.push({type:'debug',file:this.file,dir:this.dir,line:this.line,column:this.column});
+        log.apply(null,itms);
     },
 
     /**
