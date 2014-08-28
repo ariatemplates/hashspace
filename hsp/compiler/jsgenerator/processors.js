@@ -141,7 +141,7 @@ exports["log"] = function (node, walker) {
         indexes.push(expr.exprIdx);
         code.push(expr.code);
     }
-    return ["n.log({", code.join(","), "},[", indexes.join(','), "],'", walker.fileName, "','", walker.dirPath, "',",node.line, ",", node.column, ")"].join('');
+    return ["n.log({", code.join(","), "},'", walker.fileName, "','", walker.dirPath, "',",node.line, ",", node.column, ")"].join('');
 };
 
 /**

@@ -253,14 +253,10 @@ var SyntaxTree = klass({
      * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
      */
     __log : function (index, blocks, out) {
-        var node = new Node("log"), block = blocks[index], exprs = [];
+        var node = new Node("log"), block = blocks[index];
         node.line = block.line;
         node.column = block.column;
-        for (var i = 0; i < block.exprs.length; i++) {
-            var expr = new HExpression(block.exprs[i], this);
-            exprs[i] = expr.getSyntaxTree();
-        }
-        node.exprs = exprs;
+        node.exprs = block.exprs;
         out.push(node);
         return index;
     },
