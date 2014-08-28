@@ -188,7 +188,6 @@ var Playground = $set(module, "exports", klass({
 
         if (this.data.sampleIndex === sample.index) return;
 
-        console.log("loading", index);
         $set(sample, "changed", sample.changed || false);
 
         $set(this.data, "errors", []);
