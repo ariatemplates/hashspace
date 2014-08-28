@@ -1,4 +1,5 @@
 var splitter = require("./splitter.hsp.js");
+var plunkerExport = require("./plunker.js");
 
 var Class = require("hsp/klass");
 
@@ -53,6 +54,7 @@ var DescriptionCtrl = Class({
         <h4 class="title">{data.sampleTitle}</h4>
 
         <div class="editor" style="width: {data.splitterPos}">
+            <button class="plunker" title="Export this code to Plunker" onclick="{plunkerExport(event, playground)}">Edit in Plunker</button>
             <div id="editor"></div>
         </div>
 

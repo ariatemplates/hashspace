@@ -188,7 +188,6 @@ var Playground = module.exports = klass({
 
         if (this.data.sampleIndex === sample.index) return;
 
-        console.log("loading", index);
         sample.changed = sample.changed || false;
 
         this.data.errors = [];
