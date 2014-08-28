@@ -59,6 +59,7 @@ module.exports = function(input, inputTree) {
                 evaluator(tree.l, scope)[evaluator(tree.r, scope)] = newValue;
             }
         },
-        isAssignable : isAssignable
+        isAssignable: isAssignable,
+        isMultiStatement: tree instanceof Array
     };
 };
