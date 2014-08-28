@@ -138,6 +138,7 @@ var PrattExpr = klass({
         this.ast = exparser(desc[1]);
         this.bound = exidentifiers(this.ast).length > 0;
         this.manipulator = exmanipulator(desc[1], this.ast);
+        this.isMultiStatement = this.manipulator.isMultiStatement;
     },
 
     getValue : function (vscope, eh, defvalue) {
