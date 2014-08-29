@@ -324,8 +324,19 @@ Because of the space which always gets _inserted between the expressions_, it do
 
 ## Modifiers
 
-TBD
+It is possible to specify functions to adapt the value of an expression to the desired display, but also to provide them with arguments or to combine them through piped expressions.
 
+e.g.
+```{some.expression|modifier1:arg2:arg3|modifier2}```
+
+There are two ways to use modifiers:
+
+* as simple functions that take the value to be modified as first argument;
+* as objects that expose transformation functions: if the transformation method is called apply, it is implicitly used in the pipe expression, even if it is not specified (you can just use the object reference); an object is helpful to hold states, and manage more complex cases without overloading the main controller with this logic.
+
+In both cases the rest of the arguments have to be separated by colons in the expression as shown in the previous snippet.
+
+In order to avoid side effects, you must pay attention in modifying and returning __a copy__ of the original value passed as argument, and not the original value itself.
 
 ## Special HTML element attributes
 
@@ -552,6 +563,14 @@ Hashspace natively supports different types of attributes:
 
 ---
 
+##### Content property
+
+In order to use a `template` attribute, the template controller has to declare an attribute of such a type.
+
+When the component content is defined, it is automatically bound to this attribute (if only a `template` attribute is defined), or to the only attribute having the defaultContent flag set to true. 
+
+---
+
 ##### Attributes bindings
 
 _Binding_ means linking two references, so that they point to the same value when one is changed. More concretely in this context it means:
@@ -707,19 +726,6 @@ var Controller = klass({
   },
 });
 ```
-
----
-
-##### Content property
-
-TBD
-
----
-
-##### Attributes properties
-
-TBD
-
 
 ## JavaScript libraries
 
