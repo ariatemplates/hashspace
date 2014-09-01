@@ -19457,6 +19457,22 @@ prefix("{", function () {
     this.a = 'unr';
     return this;
 });
+infixr("=", 10, function (left) {
+    if (left.a === "idn") {
+        this.l = left;
+        this.l.a = "literal";
+        this.r = expression(9);
+        this.a = "bnr";
+    } else if (left.id === "." || left.id === "[") {
+        this.l = left.l;
+        this.r = left.r;
+        this.othr = expression(9);
+        this.a = "tnr";
+    } else {
+        throw new Error("Invalid left-hand side in assignment: " + left.id);
+    }
+    return this;
+});
 infix("?", 20, function (left) {
     this.l = left;
     this.r = expression(0);
