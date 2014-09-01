@@ -8055,7 +8055,7 @@
  */
         exports.template = function(arg, contentFunction) {
             // closure variables
-            var ng = new NodeGenerator(null), args = [], sz = 0, hasController = false, Ctl = null;
+            var ng = new NodeGenerator(null), args = [], sz = 0, hasController = false, Ctl = null, fileScope;
             if (arg.constructor === Array) {
                 sz = arg.length;
                 for (var i = 0; sz > i; i++) {
@@ -8081,7 +8081,7 @@
                 args[0] = arg.ref;
             }
             var f = function() {
-                var cw = null, cptInitArgs = null, fileScope;
+                var cw = null, cptInitArgs = null;
                 if (!ng.nodedefs) {
                     try {
                         var r = contentFunction(nodes);
