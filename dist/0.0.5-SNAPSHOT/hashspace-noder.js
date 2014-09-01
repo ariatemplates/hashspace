@@ -1377,16 +1377,21 @@
  * @return {Object} - parsed AST
  */
         module.exports = function(input) {
+            var expr, exprs = [];
             tokens = lexer(input);
             token = undefined;
             tokenIdx = 0;
             if (tokens.length) {
                 advance();
                 //get the first token
-                var expr = expression(0);
-                advance("(end)");
-                //make sure that we are at the end of an expression
-                return expr;
+                while (token.id !== "(end)") {
+                    expr = expression(0);
+                    exprs.push(expr);
+                    if (token.v === ",") {
+                        advance(",");
+                    }
+                }
+                return exprs.length === 1 ? exprs[0] : exprs;
             } else {
                 return {
                     f: 0,
@@ -1769,7 +1774,8 @@
                         evaluator(tree.l, scope)[evaluator(tree.r, scope)] = newValue;
                     }
                 },
-                isAssignable: isAssignable
+                isAssignable: isAssignable,
+                isMultiStatement: tree instanceof Array
             };
         };
     });
@@ -1900,6 +1906,7 @@
                 this.ast = exparser(desc[1]);
                 this.bound = exidentifiers(this.ast).length > 0;
                 this.manipulator = exmanipulator(desc[1], this.ast);
+                this.isMultiStatement = this.manipulator.isMultiStatement;
             },
             getValue: function(vscope, eh, defvalue) {
                 return this.manipulator.getValue(vscope, defvalue);
@@ -7785,7 +7792,7 @@
      * @param {Integer} line the line number
      * @param {Integer} column the column number
      */
-            $constructor: function(exps, args, file, dir, line, column) {
+            $constructor: function(exps, file, dir, line, column) {
                 TNode.$constructor.call(this, exps);
                 this.file = "";
                 var r = file.match(/[^\/\\]+$/);
@@ -7795,7 +7802,6 @@
                 this.dir = dir;
                 this.line = line;
                 this.column = column;
-                this.args = args;
             },
             /**
      * Create the DOM node element and attach it to the parent
@@ -7808,21 +7814,18 @@
      * Process the information to be logged and push it to the log output (browser console by default)
      */
             processLog: function() {
-                var itms = [], args = this.args, eh = this.eh, v;
-                if (this.args) {
-                    for (var i = 0, sz = args.length; sz > i; i++) {
-                        v = eh.getValue(args[i], this.vscope, undefined);
-                        itms.push(v);
-                    }
-                    itms.push({
-                        type: "debug",
-                        file: this.file,
-                        dir: this.dir,
-                        line: this.line,
-                        column: this.column
-                    });
-                    log.apply(null, itms);
-                }
+                var exp = this.eh.getExpr(1);
+                //there is only one expression for the log block
+                var v = exp.getValue(this.vscope, undefined);
+                var itms = exp.isMultiStatement ? v : [ v ];
+                itms.push({
+                    type: "debug",
+                    file: this.file,
+                    dir: this.dir,
+                    line: this.line,
+                    column: this.column
+                });
+                log.apply(null, itms);
             },
             /**
      * Refresh the text node if its properties have changed

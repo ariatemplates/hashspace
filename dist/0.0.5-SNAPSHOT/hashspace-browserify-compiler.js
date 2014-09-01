@@ -477,7 +477,7 @@ exports["log"] = function (node, walker) {
         indexes.push(expr.exprIdx);
         code.push(expr.code);
     }
-    return ["n.log({", code.join(","), "},[", indexes.join(','), "],'", walker.fileName, "','", walker.dirPath, "',",node.line, ",", node.column, ")"].join('');
+    return ["n.log({", code.join(","), "},'", walker.fileName, "','", walker.dirPath, "',",node.line, ",", node.column, ")"].join('');
 };
 
 /**
@@ -5979,7 +5979,7 @@ module.exports = (function(){
             if (result2 !== null) {
               result3 = parse__();
               if (result3 !== null) {
-                result4 = parse_HPipeExpression();
+                result4 = parse_CoreExpText();
                 if (result4 !== null) {
                   result5 = parse__();
                   if (result5 !== null) {
@@ -5997,7 +5997,7 @@ module.exports = (function(){
                     if (result7 !== null) {
                       result8 = parse__();
                       if (result8 !== null) {
-                        result9 = parse_HPipeExpression();
+                        result9 = parse_CoreExpText();
                         if (result9 !== null) {
                           result7 = [result7, result8, result9];
                         } else {
@@ -6027,7 +6027,7 @@ module.exports = (function(){
                       if (result7 !== null) {
                         result8 = parse__();
                         if (result8 !== null) {
-                          result9 = parse_HPipeExpression();
+                          result9 = parse_CoreExpText();
                           if (result9 !== null) {
                             result7 = [result7, result8, result9];
                           } else {
@@ -6108,7 +6108,7 @@ module.exports = (function(){
                 exprs.push(next[i][2]);
               }
             }
-            return {type:"log",exprs:exprs, line:line, column:column};
+            return {type:"log", exprs:exprs, line:line, column:column};
           })(pos0.offset, pos0.line, pos0.column, result0[4], result0[6]);
         }
         if (result0 === null) {
@@ -18540,14 +18540,10 @@ var SyntaxTree = klass({
      * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
      */
     __log : function (index, blocks, out) {
-        var node = new Node("log"), block = blocks[index], exprs = [];
+        var node = new Node("log"), block = blocks[index];
         node.line = block.line;
         node.column = block.column;
-        for (var i = 0; i < block.exprs.length; i++) {
-            var expr = new HExpression(block.exprs[i], this);
-            exprs[i] = expr.getSyntaxTree();
-        }
-        node.exprs = exprs;
+        node.exprs = block.exprs;
         out.push(node);
         return index;
     },
@@ -19604,6 +19600,7 @@ function expression(rbp) {
  * @return {Object} - parsed AST
  */
 module.exports = function (input) {
+    var expr, exprs = [];
 
     tokens = lexer(input);
     token = undefined;
@@ -19611,9 +19608,14 @@ module.exports = function (input) {
 
     if (tokens.length) {
         advance(); //get the first token
-        var expr = expression(0);
-        advance('(end)'); //make sure that we are at the end of an expression
-        return expr;
+        while(token.id !== '(end)') {
+            expr = expression(0);
+            exprs.push(expr);
+            if (token.v === ',') {
+                advance(',');
+            }
+        }
+        return exprs.length === 1 ? exprs[0] : exprs;
     } else {
         return {f: 0, a: 'literal', v: undefined};
     }

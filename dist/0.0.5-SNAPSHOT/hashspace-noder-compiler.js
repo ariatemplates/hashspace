@@ -4972,7 +4972,7 @@
                                 if (result2 !== null) {
                                     result3 = parse__();
                                     if (result3 !== null) {
-                                        result4 = parse_HPipeExpression();
+                                        result4 = parse_CoreExpText();
                                         if (result4 !== null) {
                                             result5 = parse__();
                                             if (result5 !== null) {
@@ -4990,7 +4990,7 @@
                                                 if (result7 !== null) {
                                                     result8 = parse__();
                                                     if (result8 !== null) {
-                                                        result9 = parse_HPipeExpression();
+                                                        result9 = parse_CoreExpText();
                                                         if (result9 !== null) {
                                                             result7 = [ result7, result8, result9 ];
                                                         } else {
@@ -5020,7 +5020,7 @@
                                                     if (result7 !== null) {
                                                         result8 = parse__();
                                                         if (result8 !== null) {
-                                                            result9 = parse_HPipeExpression();
+                                                            result9 = parse_CoreExpText();
                                                             if (result9 !== null) {
                                                                 result7 = [ result7, result8, result9 ];
                                                             } else {
@@ -17043,14 +17043,10 @@
      * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
      */
             __log: function(index, blocks, out) {
-                var node = new Node("log"), block = blocks[index], exprs = [];
+                var node = new Node("log"), block = blocks[index];
                 node.line = block.line;
                 node.column = block.column;
-                for (var i = 0; i < block.exprs.length; i++) {
-                    var expr = new HExpression(block.exprs[i], this);
-                    exprs[i] = expr.getSyntaxTree();
-                }
-                node.exprs = exprs;
+                node.exprs = block.exprs;
                 out.push(node);
                 return index;
             },
@@ -17902,7 +17898,7 @@
                 indexes.push(expr.exprIdx);
                 code.push(expr.code);
             }
-            return [ "n.log({", code.join(","), "},[", indexes.join(","), "],'", walker.fileName, "','", walker.dirPath, "',", node.line, ",", node.column, ")" ].join("");
+            return [ "n.log({", code.join(","), "},'", walker.fileName, "','", walker.dirPath, "',", node.line, ",", node.column, ")" ].join("");
         };
         /**
  * Generates a let expression.
