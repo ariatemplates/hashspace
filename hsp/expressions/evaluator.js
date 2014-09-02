@@ -52,10 +52,10 @@ var BINARY_OPERATORS = {
     '(': function (scope, left, right) { //function call on a scope
         return left.apply(left, right);
     },
-    'new': function (scope, constructor, args) { //constructor invocation
-        var instance = Object.create(constructor.prototype);
-        var result = constructor.apply(instance, args);
-        return (result !== null && typeof result === 'object') ? result : instance;
+    'new': function (scope, constrFunc, args) { //constructor invocation
+        var inst = Object.create(constrFunc.prototype);
+        Function.prototype.apply.call(constrFunc, inst, args);
+        return inst;
     },
     '.': forgivingPropertyAccessor, //property access
     '[': forgivingPropertyAccessor,  //dynamic property access
