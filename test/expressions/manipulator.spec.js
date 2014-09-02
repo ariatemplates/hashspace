@@ -311,6 +311,16 @@ describe('getValue', function () {
             })).to.eql({foo: 'bar'});
 
         });
+
+        it('should create instances even if a constructor function overrides apply', function () {
+            var Foo = function Foo() {
+              this.foo = 'bar';
+            };
+            Foo.apply = function() {
+                return [];
+            };
+            expect(expression("new Foo()").getValue({Foo: Foo })).to.eql({foo: 'bar'});
+        });
     });
 
     describe('multiple statements in an expression', function () {
