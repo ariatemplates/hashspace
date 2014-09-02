@@ -62,6 +62,19 @@ var SelectionWrapper=klass({
         var elt=this.$selection[0];
         fireEvent("mousedown",elt);
         fireEvent("mouseup",elt);
+        if (elt.tagName==="INPUT" && elt.type.toLowerCase()==="checkbox") {
+            var ua = window.navigator ? window.navigator.userAgent.toLowerCase() : "";
+            var an = window.navigator ? window.navigator.appName : "";
+            var isIE11=(an == 'Netscape' && ua.match(/trident/));
+            if (!isIE11 && !ua.match(/(firefox)|(msie\s+9)|(msie\s+10)/ig)) {
+                // we have to raise an 'onchange' before 'onclick' on browsers different from firefox and
+                var originalChecked=elt.checked;
+                elt.checked=!originalChecked;
+                fireEvent("change",elt);
+                // set back orginal checked as next click with toggle the value again
+                elt.checked=originalChecked;
+            }
+        }
         var res=fireEvent("click",elt);
         hsp.refresh();
         return res;
