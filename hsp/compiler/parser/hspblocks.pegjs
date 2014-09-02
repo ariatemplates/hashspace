@@ -233,7 +233,7 @@ LogBlock
   }
 
 LetBlock
-  = "{" _ "let " _ first:LetAssignment __ next:("," __ LetAssignment)* "}" EOS?
+  = "{" _ "let " _ first:CoreExpText __ next:("," __ CoreExpText)* "}" EOS?
   {
     var asn=[first];
     if (next) {
@@ -242,12 +242,6 @@ LetBlock
       }
     }
     return {type:"let",assignments:asn, line:line, column:column}
-  }
-
-LetAssignment
-  =  nm:Identifier _ "=" _ val:HPipeExpression
-  {
-    return {identifier:nm, value:val}
   }
 
 CoreExpText

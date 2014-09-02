@@ -12,35 +12,12 @@
         "type": "let",
         "line": 2,
         "column": 3,
-        "assignments": [
-          {
-            "identifier": "x",
-            "value": {
-              "type": "BinaryExpression",
-              "operator": "+",
-              "left": {
-                "type": "PropertyAccess",
-                "base": {
-                  "type": "Variable",
-                  "name": "value",
-                  "code": "value"
-                },
-                "name": "nbr",
-                "code": "value.nbr"
-              },
-              "right": {
-                "type": "expression",
-                "category": "number",
-                "value": 3,
-                "code": "3"
-              },
-              "category": "jsexpression",
-              "expType": "BinaryExpression",
-              "line": 2,
-              "column": 10
-            }
-          }
-        ]
+        "assignments": [{
+            category: 'jsexptext',
+            value: 'x=value.nbr+3',
+            line: 2,
+            column: 8
+        }]
       }
     ]
   }
@@ -53,28 +30,12 @@
     "content": [
       {
         "type": "let",
-        "assignments": [
-          {
-            "identifier": "x",
-            "value": {
-              "type": "expression",
-              "category": "jsexpression",
-              "objectrefs": [
-                {
-                  "type": "expression",
-                  "category": "objectref",
-                  "path": [
-                    "value",
-                    "nbr"
-                  ]
-                }
-              ],
-              "code": "(a0 + 3)",
-              "line": 2,
-              "column": 10
-            }
-          }
-        ]
+        "assignments": [{
+            category: 'jsexptext',
+            value: 'x=value.nbr+3',
+            line: 2,
+            column: 8
+        }]
       }
     ]
   }
@@ -83,7 +44,6 @@
 ##### Template Code
 test=[__s,
   n.let({
-    e1:[6,function(a0) {return (a0 + 3);},2],
-    e2:[1,2,"value","nbr"]
-  },['x',1])
+    e1:[9,"x=value.nbr+3"]
+  })
 ]

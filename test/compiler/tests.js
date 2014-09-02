@@ -274,7 +274,7 @@ describe('Block Parser: ', function () {
                 '',
                 'var test = require("hsp/rt").template([], function(n){',
                 '  var _body,_panel;try {_body=body} catch(e) {_body=n.g(\'body\')};try {_panel=panel} catch(e) {_panel=n.g(\'panel\')};',
-                '  var __s = {body : typeof body === \'undefined\' ? undefined : body, panel : typeof panel === \'undefined\' ? undefined : panel};',
+                '  var __s = {body : typeof body === \'undefined\' ? n.g(\'body\') : body, panel : typeof panel === \'undefined\' ? n.g(\'panel\') : panel};',
                 '  return [__s,',
                 '  n.cpt([_panel,"panel"],0,0,0,[n.cpt([_body,"body"],0,{"class":"foo"},0,[n.$text(0,["Hello World! "])])])];',
                 '});'

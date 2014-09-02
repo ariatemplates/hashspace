@@ -18,11 +18,8 @@ test=[__s,
     "div",0,{"class":"foo"},0,[
       n.$text(0,[" "]),
       n.let({
-        e1:[6,function(a0) {return new a0();},2],
-        e2:[2,1,_Foo],
-        e3:[6,function(a0) {return new a0();},4],
-        e4:[1,2,"foo","Bar"]
-      },['aVarName',1,'anotherName',3])
+        e1:[9,"aVarName = new Foo(), anotherName = new foo.Bar()"]
+      })
     ],1
   )
 ]
