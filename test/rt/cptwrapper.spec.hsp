@@ -192,6 +192,9 @@ describe("Component Nodes", function () {
     expect(c.value).to.equal(0);
     expect(c.isValid).to.equal(false);
 
+    //Issue #33
+    expect(c.onbeforereset.isEmpty).to.be.ok();
+
     cw.$dispose();
     expect(cw.cpt).to.equal(null);
     expect(c["+json:observers"]).to.equal(undefined);
@@ -334,10 +337,22 @@ it("tests a component inside another template", function() {
 
     expect(resetCount).to.equal(1); //validate that "onbeforereset" callback has been called
     expect(lastEvtType).to.equal("beforereset");
-    expect(isBrCbEmpty).to.equal(true);
+    expect(isBrCbEmpty).to.equal(false);
     expect(lastResetArg).to.equal(123);
     expect(lastEvtType2).to.equal("afterreset");
     expect(lastEvtOldValue2).to.equal(42);
+  });
+
+  it("tests if callback is not empty (issue #33)", function() {
+    isBrCbEmpty=false;
+    var d={value:'42'};
+    var n=test(d);
+    var cptButton=n.node.childNodes[3];
+
+    fireEvent("click",cptButton);
+    hsp.refresh();
+
+    expect(isBrCbEmpty).to.equal(false); 
   });
 
   it("tests if callback is empty", function() {
