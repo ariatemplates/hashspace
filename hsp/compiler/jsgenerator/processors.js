@@ -54,7 +54,7 @@ exports["template"] = function (node, walker) {
         for (var i=0; i < globalsLength; i++) {
             gnm=globals[i];
             globalsStatement.push( "try {_" + gnm + "=", gnm ,"} catch(e) {_" + gnm + "=n.g('", gnm ,"')};");
-            scopeStatements.push(gnm + " : typeof " + gnm + " === 'undefined' ? undefined : " + gnm);
+            scopeStatements.push(gnm + " : typeof " + gnm + " === 'undefined' ? n.g('" + gnm + "') : " + gnm);
         }
         globalsStatement.push(CRLF);
     }
@@ -151,17 +151,21 @@ exports["log"] = function (node, walker) {
  * @return {String} a snippet of Javascript code built from the node.
  */
 exports["let"] = function (node, walker) {
-    var expr, index = 1, code = [], assignment = [], varName;
-    for (var i = 0; i < node.assignments.length; i++) {
-        expr = formatExpression(node.assignments[i].value, index, walker);
-        index = expr.nextIndex;
-        varName = node.assignments[i].identifier;
-        walker.addScopeVariable(varName);
-        assignment.push("'" + varName + "'");
-        assignment.push(expr.exprIdx);
-        code.push(expr.code);
+    var expr = formatExpression(node.assignments[0], 1, walker);
+    var wholeAst = exParser(node.assignments[0].value);
+    var assignAst, assignmentsAsts = wholeAst instanceof Array ? wholeAst : [wholeAst];
+
+    //check if all the assignments are properly constructed
+    for (var i = 0; i < assignmentsAsts.length; i++) {
+        assignAst = assignmentsAsts[i];
+        if (assignAst.a === 'bnr' && assignAst.v === '=') {
+            walker.addScopeVariable(assignAst.l.v);
+        } else {
+            walker.logError("Unsupported expression: " + node.assignments[0].value);
+        }
     }
-    return ["n.let({", code.join(",") , "},[", assignment.join(',') , "])"].join('');
+
+    return ["n.let({", expr.code, "})"].join('');
 };
 
 /**

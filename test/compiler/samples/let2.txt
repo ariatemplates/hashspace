@@ -22,10 +22,8 @@ test=[__s,
     [
       n.$text(0,[" "]),
       n.let({
-        e1:[1,2,"value","nbr"],
-        e2:[2,1,_blah]
-      },['aVarName',1,'anotherName',2]
-      )
+        e1:[9,"aVarName = value.nbr, anotherName = blah"]
+      })
     ],
     1
   )

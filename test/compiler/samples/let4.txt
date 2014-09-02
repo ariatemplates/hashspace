@@ -16,12 +16,8 @@ test=[__s,
   n.elt(
     "div",0,{"class":"foo"},0,[
       n.let({
-        e1:[6,function(a0,a1) {return new a0("a",123,a1);},2,3],
-        e2:[2,1,_Foo],
-        e3:[4,1,_blah,1,4],
-        e4:[6,function(a0) {return (1 + a0);},5],
-        e5:[1,2,"foo","value"]
-      },['val',1])
+        e1:[9,"val = new Foo(\"a\",123,blah(1+foo.value))"]
+      })
     ],
     1
   )
