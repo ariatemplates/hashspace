@@ -197,10 +197,10 @@ var BINARY_OPERATORS = {
     '(': function (scope, left, right) { //function call on a scope
         return left.apply(left, right);
     },
-    'new': function (scope, constructor, args) { //constructor invocation
-        var instance = Object.create(constructor.prototype);
-        var result = constructor.apply(instance, args);
-        return (result !== null && typeof result === 'object') ? result : instance;
+    'new': function (scope, constrFunc, args) { //constructor invocation
+        var inst = Object.create(constrFunc.prototype);
+        Function.prototype.apply.call(constrFunc, inst, args);
+        return inst;
     },
     '.': forgivingPropertyAccessor, //property access
     '[': forgivingPropertyAccessor,  //dynamic property access
@@ -4388,21 +4388,31 @@ module.exports = $IfNode;
 var klass = require("../klass"),
     $set = require("../$set"),
     doc = require("./document"),
-    TNode = require("./tnode").TNode;
+    TNode = require("./tnode").TNode,
+    exmanipulator = require("../expressions/manipulator");
 
 var LetNode = klass({
     $extends : TNode,
 
     /**
      * Log node generator ex: {log scope}
-     * @param {Map<Expression>|int} exps the map of the variables used by the node. 
-     *      0 is passed if no expression is used
-     * @param {Array} args array of the variable name, expression index associated to this statement
-     *      e.g. ['aVarName',1,'anotherName',2]
+     * @param {Map<Expression>} expressions that, when evaluated, will create new variables
      */
-    $constructor : function (exps, args) {
+    $constructor : function (exps) {
         TNode.$constructor.call(this, exps);
-        this.args = args;
+        var exp = this.eh.getExpr(1); //there is only one expression for the let block
+        var trees = exp.isMultiStatement ? exp.ast : [exp.ast];
+        this.expTrees = [];
+
+        /*
+         * The logic below splits the comma-separated expressions into individual
+         * expressions and prepares a collection of 2-element arrays where the first
+         * element is a variable name to be assigned and the second one - expression
+         * manipulator that knows how to get value of the right-hand side.
+         */
+        for (var i = 0; i < trees.length; i++) {
+            this.expTrees.push([trees[i].l.v, exmanipulator(exps[0], trees[i].r)]);
+        }
     },
 
     /**
@@ -4426,12 +4436,9 @@ var LetNode = klass({
      * Process the information to be logged and push it to the log output (browser console by default)
      */
     updateScope : function () {
-        var args=this.args, eh=this.eh, v;
-        if (args) {
-            for (var i=0, sz=args.length;sz>i;i+=2) {
-                v=eh.getValue(args[i+1], this.vscope, undefined);
-                $set(this.vscope,args[i],v);
-            }
+        var expts = this.expTrees;
+        for (var i = 0; i < expts.length; i++) {
+            $set(this.vscope, expts[i][0], expts[i][1].getValue(this.vscope, undefined));
         }
     }
 });
@@ -4440,7 +4447,7 @@ var LetNode = klass({
 module.exports=LetNode;
 
 
-},{"../$set":1,"../klass":20,"./document":35,"./tnode":39}],26:[function(require,module,exports){
+},{"../$set":1,"../expressions/manipulator":6,"../klass":20,"./document":35,"./tnode":39}],26:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.

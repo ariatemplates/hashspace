@@ -5,7 +5,7 @@ var $set=require("hsp/$set");
 // ################################################################ 
 var grid = require("hsp/rt").template(["data"], function(n){
   var _data,_name,_update,_swapC;try {_data=data} catch(e) {_data=n.g('data')};try {_name=name} catch(e) {_name=n.g('name')};try {_update=update} catch(e) {_update=n.g('update')};try {_swapC=swapC} catch(e) {_swapC=n.g('swapC')};
-  var __s = {data : typeof data === 'undefined' ? undefined : data, name : typeof name === 'undefined' ? undefined : name, update : typeof update === 'undefined' ? undefined : update, swapC : typeof swapC === 'undefined' ? undefined : swapC};
+  var __s = {data : typeof data === 'undefined' ? n.g('data') : data, name : typeof name === 'undefined' ? n.g('name') : name, update : typeof update === 'undefined' ? n.g('update') : update, swapC : typeof swapC === 'undefined' ? n.g('swapC') : swapC};
   return [__s,n.elt("div",0,0,0,[n.$foreach({e1:[9,"data.rows"]},"idx_key","idx",0,1,[n.elt("div",0,0,0,[n.$foreach({e1:[9,"data.columns"]},"name_key","name",0,1,[n.$if({e1:[9,"name===\"c\""]},1,[n.elt("input",{e1:[7,3,function(i,a0,a1,a2) {return [a0,a1,a2][i];},2,3,4],e2:[1,2,"data","items"],e3:[1,1,"idx"],e4:[1,1,"name"]},{"class":"cell","type":"text","model":["",1]},0)]),n.elt("div",{e1:[1,1,"idx"],e2:[1,1,"name"]},{"class":"cell","title":["Ref: ",1,"/",2]},0,[n.$text({e1:[7,3,function(i,a0,a1,a2) {return [a0,a1,a2][i];},2,3,4],e2:[1,2,"data","items"],e3:[1,1,"idx"],e4:[1,1,"name"]},["",1,"   "])])]),n.$text(0,[" "])])]),n.$text(0,[" "])]),n.elt("a",{e1:[4,1,_update]},0,{"click":1},[n.$text(0,["Update columns B&C"])]),n.$text(0,[" -  "]),n.elt("a",{e1:[4,1,_swapC]},0,{"click":1},[n.$text(0,["Show/Hide columns C"])])];
 });
 

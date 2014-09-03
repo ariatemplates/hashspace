@@ -8,7 +8,7 @@ var msg={text:""}, count=-1;
 
 var message = require("hsp/rt").template(["msg"], function(n){
   var _changeMessage,_msg;try {_changeMessage=changeMessage} catch(e) {_changeMessage=n.g('changeMessage')};try {_msg=msg} catch(e) {_msg=n.g('msg')};
-  var __s = {changeMessage : typeof changeMessage === 'undefined' ? undefined : changeMessage, msg : typeof msg === 'undefined' ? undefined : msg};
+  var __s = {changeMessage : typeof changeMessage === 'undefined' ? n.g('changeMessage') : changeMessage, msg : typeof msg === 'undefined' ? n.g('msg') : msg};
   return [__s,n.elt("div",{e1:[4,1,_changeMessage]},{"title":"click me!"},{"click":1,"selectstart":"return false"},[n.$if({e1:[9,"msg.isWarning"]},1,[n.elt("div",0,{"class":"warning"},0,[n.$text(0,["WARNING: "])])]),n.$text({e1:[1,2,"msg","text"]},["",1," "])])];
 });
 

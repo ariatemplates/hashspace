@@ -32,7 +32,7 @@ var timer = require("hsp/rt").template({ctl:[Timer,"Timer"],ref:"t"}, function(n
 
 var test = require("hsp/rt").template([], function(n){
   var _timer;try {_timer=timer} catch(e) {_timer=n.g('timer')};
-  var __s = {timer : typeof timer === 'undefined' ? undefined : timer};
+  var __s = {timer : typeof timer === 'undefined' ? n.g('timer') : timer};
   return [__s,n.$text(0,["Sample showing two timer instances with different init values:"]),n.elt("br",0,0,0),n.cpt([_timer,"timer"],0,0,0),n.$text(0,[" "]),n.elt("br",0,0,0),n.cpt([_timer,"timer"],0,{"initvalue":"10"},0)];
 });
 

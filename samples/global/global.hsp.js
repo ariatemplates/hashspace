@@ -8,7 +8,7 @@ var hsp=require("hsp/rt");
 
 var item = require("hsp/rt").template(["text","value"], function(n){
   var _value;try {_value=value} catch(e) {_value=n.g('value')};
-  var __s = {value : typeof value === 'undefined' ? undefined : value};
+  var __s = {value : typeof value === 'undefined' ? n.g('value') : value};
   return [__s,n.$if({e1:[9,"value"]},1,[n.elt("div",0,0,0,[n.elt("div",0,{"class":"label"},0,[n.$text({e1:[1,1,"text"]},["",1])]),n.elt("div",0,{"class":"value"},0,[n.$text({e1:[1,1,"value"]},["",1])])])])];
 });
 
@@ -19,7 +19,7 @@ $set(hsp.global, "ln", {personDetails:"Person details"});
 
 var test = require("hsp/rt").template(["person"], function(n){
   var _ln,_label;try {_ln=ln} catch(e) {_ln=n.g('ln')};try {_label=label} catch(e) {_label=n.g('label')};
-  var __s = {ln : typeof ln === 'undefined' ? undefined : ln, label : typeof label === 'undefined' ? undefined : label};
+  var __s = {ln : typeof ln === 'undefined' ? n.g('ln') : ln, label : typeof label === 'undefined' ? n.g('label') : label};
   return [__s,n.elt("div",{e1:[2,2,_ln,"personDetails"]},{"class":"global","title":["",1]},0,[n.cpt([_label,"label"],{e1:[1,2,"person","firstName"]},{"text":"First Name: ","value":["",1]},0),n.cpt([_label,"label"],{e1:[1,2,"person","lastName"]},{"text":"Last Name: ","value":["",1]},0)])];
 });
 

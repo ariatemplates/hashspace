@@ -22,7 +22,7 @@ var ListController = klass({
 
 var list = require("hsp/rt").template({ctl:[ListController,"ListController"],ref:"lc"}, function(n){
   var _lc,_itm,_itm_isfirst,_itm_islast;try {_lc=lc} catch(e) {_lc=n.g('lc')};try {_itm=itm} catch(e) {_itm=n.g('itm')};try {_itm_isfirst=itm_isfirst} catch(e) {_itm_isfirst=n.g('itm_isfirst')};try {_itm_islast=itm_islast} catch(e) {_itm_islast=n.g('itm_islast')};
-  var __s = {lc : typeof lc === 'undefined' ? undefined : lc, itm : typeof itm === 'undefined' ? undefined : itm, itm_isfirst : typeof itm_isfirst === 'undefined' ? undefined : itm_isfirst, itm_islast : typeof itm_islast === 'undefined' ? undefined : itm_islast};
+  var __s = {lc : typeof lc === 'undefined' ? n.g('lc') : lc, itm : typeof itm === 'undefined' ? n.g('itm') : itm, itm_isfirst : typeof itm_isfirst === 'undefined' ? n.g('itm_isfirst') : itm_isfirst, itm_islast : typeof itm_islast === 'undefined' ? n.g('itm_islast') : itm_islast};
   return [__s,n.$text(0,[" "]),n.elt("div",{e1:[1,2,"lc","class"]},{"class":["list ",1]},0,[n.$if({e1:[9,"lc.head"]},1,[n.elt("div",0,{"class":"head"},0,[n.cpt([null,"lc","head"],0,0,0)])]),n.$if({e1:[9,"!lc.content"]},1,[n.elt("span",0,{"class":"nodata"},0,[n.$text(0,["Empty list"])])],[n.elt("ul",0,{"class":""},0,[n.$foreach({e1:[9,"lc.content"]},"idx","itm",0,1,[n.$if({e1:[9,"itm.tagName===\"@option\""]},1,[n.elt("li",0,{"class":"opt"},0,[n.cpt([null,"itm"],0,0,0)])],[n.$if({e1:[9,"itm.tagName===\"@separator\" &&  !itm_isfirst && !itm_islast"]},1,[n.elt("hr",0,0,0)])])]),n.$text(0,[" "])])])])];
 });
 
@@ -31,7 +31,7 @@ var list = require("hsp/rt").template({ctl:[ListController,"ListController"],ref
 
 var test = require("hsp/rt").template(["d"], function(n){
   var _list,_toggle,_empty,_update,_d;try {_list=list} catch(e) {_list=n.g('list')};try {_toggle=toggle} catch(e) {_toggle=n.g('toggle')};try {_empty=empty} catch(e) {_empty=n.g('empty')};try {_update=update} catch(e) {_update=n.g('update')};try {_d=d} catch(e) {_d=n.g('d')};
-  var __s = {list : typeof list === 'undefined' ? undefined : list, toggle : typeof toggle === 'undefined' ? undefined : toggle, empty : typeof empty === 'undefined' ? undefined : empty, update : typeof update === 'undefined' ? undefined : update, d : typeof d === 'undefined' ? undefined : d};
+  var __s = {list : typeof list === 'undefined' ? n.g('list') : list, toggle : typeof toggle === 'undefined' ? n.g('toggle') : toggle, empty : typeof empty === 'undefined' ? n.g('empty') : empty, update : typeof update === 'undefined' ? n.g('update') : update, d : typeof d === 'undefined' ? n.g('d') : d};
   return [__s,n.cpt([_list,"list"],0,{"head":"Static list","class":"listcpt"},0,[n.catt("option",0,0,0,[n.$text({e1:[1,2,"d","itemName"]},["First ",1])]),n.catt("option",0,0,0,[n.$text({e1:[1,2,"d","itemName"]},["Second ",1])])]),n.$text(0,[" "]),n.cpt([_list,"list"],0,{"class":"listcpt"},0,[n.catt("head",0,0,0,[n.$text(0,["Dynamic list: "]),n.elt("a",{e1:[4,1,_toggle]},0,{"click":1},[n.$text(0,["Toggle favourite"])]),n.$text(0,[" - "]),n.elt("a",{e1:[4,1,_empty]},0,{"click":1},[n.$text(0,["Empty"])]),n.$text(0,[" - "]),n.elt("a",{e1:[4,1,_update]},0,{"click":1},[n.$text(0,["Update list"])])]),n.$if({e1:[9,"d.preferredOption"]},1,[n.catt("option",0,0,0,[n.$text({e1:[1,2,"d","preferredOption"]},["",1," (!)"])]),n.catt("separator",0,0,0)]),n.$foreach({e1:[9,"d.items"]},"idx","itm",0,1,[n.catt("option",0,0,0,[n.$text({e1:[6,function(a0) {return (a0 + 1);},2],e2:[1,1,"idx"],e3:[1,1,"itm"]},["",1,". ",3])])]),n.$text(0,[" "])])];
 });
 

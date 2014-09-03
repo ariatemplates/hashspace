@@ -7,7 +7,7 @@ var $set=require("hsp/$set");
 
 var personList =$set(exports, "personList", require("hsp/rt").template(["persons"], function(n){
   var _persons,_personDescription,_p_islast;try {_persons=persons} catch(e) {_persons=n.g('persons')};try {_personDescription=personDescription} catch(e) {_personDescription=n.g('personDescription')};try {_p_islast=p_islast} catch(e) {_p_islast=n.g('p_islast')};
-  var __s = {persons : typeof persons === 'undefined' ? undefined : persons, personDescription : typeof personDescription === 'undefined' ? undefined : personDescription, p_islast : typeof p_islast === 'undefined' ? undefined : p_islast};
+  var __s = {persons : typeof persons === 'undefined' ? n.g('persons') : persons, personDescription : typeof personDescription === 'undefined' ? n.g('personDescription') : personDescription, p_islast : typeof p_islast === 'undefined' ? n.g('p_islast') : p_islast};
   return [__s,n.elt("div",0,{"class":"subtemplates"},0,[n.$foreach({e1:[9,"persons"]},"p_key","p",0,1,[n.cpt([_personDescription,"personDescription"],{e1:[1,1,"p"]},{"person":["",1]},0),n.$text(0,[" "]),n.$if({e1:[9,"!p_islast"]},1,[n.$text(0,[" "]),n.elt("hr",0,0,0),n.$text(0,[" "])])]),n.$text(0,[" "])])];
 }));
 
@@ -15,7 +15,7 @@ var personList =$set(exports, "personList", require("hsp/rt").template(["persons
 
 var personDescription =$set(exports, "personDescription", require("hsp/rt").template(["person"], function(n){
   var _item;try {_item=item} catch(e) {_item=n.g('item')};
-  var __s = {item : typeof item === 'undefined' ? undefined : item};
+  var __s = {item : typeof item === 'undefined' ? n.g('item') : item};
   return [__s,n.elt("div",0,{"class":"person"},0,[n.cpt([_item,"item"],{e1:[1,2,"person","firstName"]},{"label":"First Name: ","value":["",1]},0),n.cpt([_item,"item"],{e1:[1,2,"person","lastName"]},{"label":"Last Name: ","value":["",1]},0)])];
 }));
 
@@ -23,7 +23,7 @@ var personDescription =$set(exports, "personDescription", require("hsp/rt").temp
 
 var item = require("hsp/rt").template(["label","value"], function(n){
   var _value;try {_value=value} catch(e) {_value=n.g('value')};
-  var __s = {value : typeof value === 'undefined' ? undefined : value};
+  var __s = {value : typeof value === 'undefined' ? n.g('value') : value};
   return [__s,n.$if({e1:[9,"value"]},1,[n.elt("div",0,0,0,[n.elt("div",0,{"class":"label"},0,[n.$text({e1:[1,1,"label"]},["",1])]),n.elt("div",0,{"class":"value"},0,[n.$text({e1:[1,1,"value"]},["",1])])])])];
 });
 

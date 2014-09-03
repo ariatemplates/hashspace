@@ -72,7 +72,6 @@
                         HTMLAttributeChar: parse_HTMLAttributeChar,
                         LogBlock: parse_LogBlock,
                         LetBlock: parse_LetBlock,
-                        LetAssignment: parse_LetAssignment,
                         CoreExpText: parse_CoreExpText,
                         CoreExpTextNoBrackets: parse_CoreExpTextNoBrackets,
                         CoreExpTextInCurly: parse_CoreExpTextInCurly,
@@ -5153,7 +5152,7 @@
                                 if (result2 !== null) {
                                     result3 = parse__();
                                     if (result3 !== null) {
-                                        result4 = parse_LetAssignment();
+                                        result4 = parse_CoreExpText();
                                         if (result4 !== null) {
                                             result5 = parse___();
                                             if (result5 !== null) {
@@ -5171,7 +5170,7 @@
                                                 if (result7 !== null) {
                                                     result8 = parse___();
                                                     if (result8 !== null) {
-                                                        result9 = parse_LetAssignment();
+                                                        result9 = parse_CoreExpText();
                                                         if (result9 !== null) {
                                                             result7 = [ result7, result8, result9 ];
                                                         } else {
@@ -5201,7 +5200,7 @@
                                                     if (result7 !== null) {
                                                         result8 = parse___();
                                                         if (result8 !== null) {
-                                                            result9 = parse_LetAssignment();
+                                                            result9 = parse_CoreExpText();
                                                             if (result9 !== null) {
                                                                 result7 = [ result7, result8, result9 ];
                                                             } else {
@@ -5283,73 +5282,6 @@
                                     column: column
                                 };
                             }(pos0.offset, pos0.line, pos0.column, result0[4], result0[6]);
-                        }
-                        if (result0 === null) {
-                            pos = clone(pos0);
-                        }
-                        cache[cacheKey] = {
-                            nextPos: clone(pos),
-                            result: result0
-                        };
-                        return result0;
-                    }
-                    function parse_LetAssignment() {
-                        var cacheKey = "LetAssignment@" + pos.offset;
-                        var cachedResult = cache[cacheKey];
-                        if (cachedResult) {
-                            pos = clone(cachedResult.nextPos);
-                            return cachedResult.result;
-                        }
-                        var result0, result1, result2, result3, result4;
-                        var pos0, pos1;
-                        pos0 = clone(pos);
-                        pos1 = clone(pos);
-                        result0 = parse_Identifier();
-                        if (result0 !== null) {
-                            result1 = parse__();
-                            if (result1 !== null) {
-                                if (input.charCodeAt(pos.offset) === 61) {
-                                    result2 = "=";
-                                    advance(pos, 1);
-                                } else {
-                                    result2 = null;
-                                    if (reportFailures === 0) {
-                                        matchFailed('"="');
-                                    }
-                                }
-                                if (result2 !== null) {
-                                    result3 = parse__();
-                                    if (result3 !== null) {
-                                        result4 = parse_HPipeExpression();
-                                        if (result4 !== null) {
-                                            result0 = [ result0, result1, result2, result3, result4 ];
-                                        } else {
-                                            result0 = null;
-                                            pos = clone(pos1);
-                                        }
-                                    } else {
-                                        result0 = null;
-                                        pos = clone(pos1);
-                                    }
-                                } else {
-                                    result0 = null;
-                                    pos = clone(pos1);
-                                }
-                            } else {
-                                result0 = null;
-                                pos = clone(pos1);
-                            }
-                        } else {
-                            result0 = null;
-                            pos = clone(pos1);
-                        }
-                        if (result0 !== null) {
-                            result0 = function(offset, line, column, nm, val) {
-                                return {
-                                    identifier: nm,
-                                    value: val
-                                };
-                            }(pos0.offset, pos0.line, pos0.column, result0[0], result0[4]);
                         }
                         if (result0 === null) {
                             pos = clone(pos0);
@@ -17058,17 +16990,10 @@
      * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
      */
             __let: function(index, blocks, out) {
-                var node = new Node("let"), block = blocks[index], assignments = [];
+                var node = new Node("let"), block = blocks[index];
                 node.line = block.line;
                 node.column = block.column;
-                for (var i = 0; i < block.assignments.length; i++) {
-                    var expr = new HExpression(block.assignments[i].value, this);
-                    assignments.push({
-                        identifier: block.assignments[i].identifier,
-                        value: expr.getSyntaxTree()
-                    });
-                }
-                node.assignments = assignments;
+                node.assignments = block.assignments;
                 out.push(node);
                 return index;
             },
@@ -17822,7 +17747,7 @@
                 for (var i = 0; i < globalsLength; i++) {
                     gnm = globals[i];
                     globalsStatement.push("try {_" + gnm + "=", gnm, "} catch(e) {_" + gnm + "=n.g('", gnm, "')};");
-                    scopeStatements.push(gnm + " : typeof " + gnm + " === 'undefined' ? undefined : " + gnm);
+                    scopeStatements.push(gnm + " : typeof " + gnm + " === 'undefined' ? n.g('" + gnm + "') : " + gnm);
                 }
                 globalsStatement.push(CRLF);
             }
@@ -17907,17 +17832,19 @@
  * @return {String} a snippet of Javascript code built from the node.
  */
         exports["let"] = function(node, walker) {
-            var expr, index = 1, code = [], assignment = [], varName;
-            for (var i = 0; i < node.assignments.length; i++) {
-                expr = formatExpression(node.assignments[i].value, index, walker);
-                index = expr.nextIndex;
-                varName = node.assignments[i].identifier;
-                walker.addScopeVariable(varName);
-                assignment.push("'" + varName + "'");
-                assignment.push(expr.exprIdx);
-                code.push(expr.code);
+            var expr = formatExpression(node.assignments[0], 1, walker);
+            var wholeAst = exParser(node.assignments[0].value);
+            var assignAst, assignmentsAsts = wholeAst instanceof Array ? wholeAst : [ wholeAst ];
+            //check if all the assignments are properly constructed
+            for (var i = 0; i < assignmentsAsts.length; i++) {
+                assignAst = assignmentsAsts[i];
+                if (assignAst.a === "bnr" && assignAst.v === "=") {
+                    walker.addScopeVariable(assignAst.l.v);
+                } else {
+                    walker.logError("Unsupported expression: " + node.assignments[0].value);
+                }
             }
-            return [ "n.let({", code.join(","), "},[", assignment.join(","), "])" ].join("");
+            return [ "n.let({", expr.code, "})" ].join("");
         };
         /**
  * Generates an if node.

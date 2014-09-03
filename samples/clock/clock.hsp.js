@@ -50,7 +50,7 @@ var ClockController=klass({
 
 var clock = require("hsp/rt").template({ctl:[ClockController,"ClockController"],ref:"c"}, function(n){
   var _c;try {_c=c} catch(e) {_c=n.g('c')};
-  var __s = {c : typeof c === 'undefined' ? undefined : c};
+  var __s = {c : typeof c === 'undefined' ? n.g('c') : c};
   return [__s,n.$text(0,[" "]),n.elt("div",0,{"class":"square"},0,[n.elt("svg",0,{"viewBox":"0 0 100 100"},0,[n.elt("g",0,{"transform":"translate(50,50)"},0,[n.elt("circle",0,{"class":"clock-face","r":"48"},0),n.$text(0,[" "]),n.$foreach({e1:[9,"c.minuteMarkers"]},"idx","m",0,1,[n.$text(0,[" "]),n.elt("line",{e1:[6,function(a0) {return [((a0)? ''+"major":''),((!(a0))? ''+"minor":'')].join(' ');},2],e2:[1,2,"m","major"],e3:[6,function(a0) {return (a0? 35 : 42);},4],e4:[1,2,"m","major"],e5:[6,function(a0,a1) {return ((360 * a0) / a1);},6,7],e6:[1,1,"idx"],e7:[1,3,"c","minuteMarkers","length"]},{"class":["",1],"y1":["",3],"y2":"45","transform":["rotate(",5,")"]},0)]),n.$text(0,["  "]),n.elt("line",{e1:[6,function(a0,a1) {return ((30 * a0) + (a1 / 2));},2,3],e2:[1,2,"c","hours"],e3:[1,2,"c","minutes"]},{"class":"hour","y1":"2","y2":"-20","transform":["rotate(",1,")"]},0),n.$text(0,[" "]),n.elt("line",{e1:[6,function(a0,a1) {return ((6 * a0) + (a1 / 10));},2,3],e2:[1,2,"c","minutes"],e3:[1,2,"c","seconds"]},{"class":"minute","y1":"4","y2":"-30","transform":["rotate(",1,")"]},0),n.$text(0,[" "]),n.elt("g",{e1:[6,function(a0,a1) {return (6 * (a0 + (a1 * 0.001)));},2,3],e2:[1,2,"c","seconds"],e3:[1,2,"c","milliseconds"]},{"transform":["rotate(",1,")"]},0,[n.elt("line",0,{"class":"second","y1":"10","y2":"-38"},0),n.elt("line",0,{"class":"second-counterweight","y1":"10","y2":"2"},0)])])]),n.elt("div",0,{"class":"city"},0,[n.$text({e1:[1,2,"c","cityName"]},["",1])])])];
 });
 
@@ -58,7 +58,7 @@ var clock = require("hsp/rt").template({ctl:[ClockController,"ClockController"],
 
 var demo = require("hsp/rt").template([], function(n){
   var _clock;try {_clock=clock} catch(e) {_clock=n.g('clock')};
-  var __s = {clock : typeof clock === 'undefined' ? undefined : clock};
+  var __s = {clock : typeof clock === 'undefined' ? n.g('clock') : clock};
   return [__s,n.cpt([_clock,"clock"],0,{"city":"SFO"},0),n.cpt([_clock,"clock"],0,{"city":"PAR"},0),n.cpt([_clock,"clock"],0,{"city":"TYO"},0)];
 });
 
