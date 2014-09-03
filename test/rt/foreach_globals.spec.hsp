@@ -1,0 +1,30 @@
+var hsp=require("hsp/rt"),
+    ht=require("hsp/utils/hashtester");
+
+hsp.global.orderBy = require("hsp/rt/colutils").orderBy;
+
+{template test(d)}
+<div class="section2">
+    <ol>
+        {foreach p in d.persons|orderBy:"name"}
+        <li>{p.name}</li>
+        {/foreach}
+    </ol>
+</div>
+{/template}
+
+describe('repeater with global pipe functions', function() {
+    it("validates collection sorting through pipe expression being global", function() {
+        var h=ht.newTestContext();
+        var data = {persons: [{name: 'Foo'}, {name: 'Bar'}]};
+        test(data).render(h.container);
+
+        expect(h("li").length).to.equal(2);
+
+        expect(h("li").item(0).text()).to.equal("Bar");
+        expect(h("li").item(1).text()).to.equal("Foo");
+
+        h.$dispose();
+        hsp.global.orderBy = undefined;
+    });
+});
