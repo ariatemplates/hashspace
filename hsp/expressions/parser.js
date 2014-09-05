@@ -9,7 +9,7 @@ var tokens, token, tokenIdx = 0;
 
 var BaseSymbol = {
     nud: function () {
-        throw new Error("Undefined nud function for: " + this.v);
+        throw new Error("Invalid expression - missing operand for the " + this.v + " operator");
     },
     led: function () {
         throw new Error("Missing operator: " + this.v);
@@ -318,7 +318,7 @@ function expression(rbp) {
  * @return {Object} - parsed AST
  */
 module.exports = function (input) {
-    var expr, exprs = [];
+    var expr, exprs = [], previousToken;
 
     tokens = lexer(input);
     token = undefined;
@@ -329,10 +329,16 @@ module.exports = function (input) {
         while(token.id !== '(end)') {
             expr = expression(0);
             exprs.push(expr);
+            previousToken = token;
             if (token.v === ',') {
                 advance(',');
             }
         }
+
+        if (previousToken.v === ',') {
+            throw new Error('Statement separator , can\'t be placed at the end of an expression');
+        }
+
         return exprs.length === 1 ? exprs[0] : exprs;
     } else {
         return {f: 0, a: 'literal', v: undefined};
