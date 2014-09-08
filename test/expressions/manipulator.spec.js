@@ -106,89 +106,100 @@ describe('getValue', function () {
         })).to.equal('STH');
     });
 
-    it('should evaluate expressions with the pipe (|) operator without args', function() {
-        expect(expression('collection | first').getValue({
-            collection: ['foo', 'bar'],
-            first: function(input) {
-                return input[0];
-            }
-        })).to.equal('foo');
-    });
+    describe('pipe operator', function () {
 
-    it('should evaluate expressions with the pipe (|) operator with args', function() {
-        var scope = {
-            collection: ['foo', 'bar'],
-            zeroone: [0, 1],
-            item: function(input, idx) {
-                return input[idx];
-            },
-            all: function(input) {
-                return input;
-            },
-            zero: function() {
-                return 0;
-            }
-        };
+        it('should evaluate expressions with the pipe (|) operator without args', function() {
+            expect(expression('collection | first').getValue({
+                collection: ['foo', 'bar'],
+                first: function(input) {
+                    return input[0];
+                }
+            })).to.equal('foo');
+        });
 
-        expect(expression('collection | all').getValue(scope)).to.eql(scope.collection);
-        expect(expression('collection | all | item:1').getValue(scope)).to.equal('bar');
-        expect(expression('collection | item:0 | item:1').getValue(scope)).to.equal('o');
-        expect(expression('collection | item:1').getValue(scope)).to.equal('bar');
-        expect(expression('collection | item:1:false').getValue(scope)).to.equal('bar');
-        expect(expression('collection | item:(zeroone | item:1)').getValue(scope)).to.equal('bar');
-        expect(expression('collection | item:zero()').getValue(scope)).to.equal('foo');
-        expect(expression('collection | item:zero() | item:0').getValue(scope)).to.equal('f');
-        expect(expression('collection | item:0+1').getValue(scope)).to.equal('bar');
-        expect(expression('collection | item:0*1').getValue(scope)).to.equal('foo');
-        expect(expression('all(collection) | item:0*1').getValue(scope)).to.equal('foo');
-        expect(expression('all(collection) | item:zero() | item:0').getValue(scope)).to.equal('f');
-    });
+        it('should evaluate expressions with the pipe (|) operator with args', function() {
+            var scope = {
+                collection: ['foo', 'bar'],
+                zeroone: [0, 1],
+                item: function(input, idx) {
+                    return input[idx];
+                },
+                all: function(input) {
+                    return input;
+                },
+                zero: function() {
+                    return 0;
+                }
+            };
 
-    it('should evaluate expression where pipe function is an expression', function() {
-        expect(expression('d[ppName]|fnSorter.sort')
-            .getValue({
-               d: {all: ['foo', 'bar']},
-               ppName: 'all',
-               fnSorter: {sort: function(input) {return input.sort();}}
-            }))
-            .to.eql(['bar', 'foo']);
-    });
+            expect(expression('collection | all').getValue(scope)).to.eql(scope.collection);
+            expect(expression('collection | all | item:1').getValue(scope)).to.equal('bar');
+            expect(expression('collection | item:0 | item:1').getValue(scope)).to.equal('o');
+            expect(expression('collection | item:1').getValue(scope)).to.equal('bar');
+            expect(expression('collection | item:1:false').getValue(scope)).to.equal('bar');
+            expect(expression('collection | item:(zeroone | item:1)').getValue(scope)).to.equal('bar');
+            expect(expression('collection | item:zero()').getValue(scope)).to.equal('foo');
+            expect(expression('collection | item:zero() | item:0').getValue(scope)).to.equal('f');
+            expect(expression('collection | item:0+1').getValue(scope)).to.equal('bar');
+            expect(expression('collection | item:0*1').getValue(scope)).to.equal('foo');
+            expect(expression('all(collection) | item:0*1').getValue(scope)).to.equal('foo');
+            expect(expression('all(collection) | item:zero() | item:0').getValue(scope)).to.equal('f');
+        });
 
-    it('should bind this to a proper object when using pipe functions on object', function() {
-        var scope = {
-            input: ['foo', 'bar'],
-            obj: {
+        it('should evaluate expression where pipe function is an expression', function() {
+            expect(expression('d[ppName]|fnSorter.sort')
+                .getValue({
+                    d: {all: ['foo', 'bar']},
+                    ppName: 'all',
+                    fnSorter: {sort: function(input) {return input.sort();}}
+                }))
+                .to.eql(['bar', 'foo']);
+        });
+
+        it('should bind this to a proper object when using pipe functions on object', function() {
+            var scope = {
+                input: ['foo', 'bar'],
+                obj: {
+                    idx: 1,
+                    selector: function(input) {
+                        return input[this.idx];
+                    }
+                }
+            };
+            expect(expression('input|obj.selector').getValue(scope)).to.eql('bar');
+            expect(expression('input|obj["selector"]').getValue(scope)).to.eql('bar');
+        });
+
+        it('should bind this to an empty scope when using pipe functions on scope', function() {
+            var scope = {
+                input: ['foo', 'bar'],
                 idx: 1,
                 selector: function(input) {
-                    return input[this.idx];
+                    return input[this.idx || 0];
                 }
-            }
-        };
-        expect(expression('input|obj.selector').getValue(scope)).to.eql('bar');
-        expect(expression('input|obj["selector"]').getValue(scope)).to.eql('bar');
-    });
+            };
+            expect(expression('input|selector').getValue(scope)).to.eql('foo');
+        });
 
-    it('should bind this to an empty scope when using pipe functions on scope', function() {
-        var scope = {
-            input: ['foo', 'bar'],
-            idx: 1,
-            selector: function(input) {
-                return input[this.idx || 0];
-            }
-        };
-        expect(expression('input|selector').getValue(scope)).to.eql('foo');
-    });
-
-    it('should allow objects with the "apply" function in pipe expressions', function() {
-        var scope = {
-            input: ['foo', 'bar'],
-            selector: {
-                'apply': function(input) {
-                    return input[1];
+        it('should allow objects with the "apply" function in pipe expressions', function() {
+            var scope = {
+                input: ['foo', 'bar'],
+                selector: {
+                    'apply': function(input) {
+                        return input[1];
+                    }
                 }
-            }
-        };
-        expect(expression('input|selector').getValue(scope)).to.eql('bar');
+            };
+            expect(expression('input|selector').getValue(scope)).to.eql('bar');
+        });
+
+        it('should report runtime errors for pipes that are neither functions nor objects', function () {
+            expect(function () {
+                expression('input|foo').getValue({input: [], foo: 'foo'});
+            }).to.throwError(function(err){
+                return err === 'Pipe expression is neither a function nor an object with the apply() method';
+            });
+        });
     });
 
     it('should evaluate expressions containing simple comparison (<, >)', function() {
