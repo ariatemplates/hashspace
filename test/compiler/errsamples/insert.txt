@@ -8,9 +8,8 @@
 ##### Errors:
 [
   {
-    "description": "Invalid expression",
+    "description": "Invalid expression: 'content(\"First Name\", person.firstName'",
     "line": 3,
-    "column": 5,
-    "code": "content(\"First Name\", person.firstName"
+    "column": 5
   }
 ]

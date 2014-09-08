@@ -20,6 +20,6 @@ filterLink=[__s,
         },
         {"title":["",3]},
         {"click":1},
-        [n.$text({e1:[1,1,"label"]},["",1," "])]
+        [n.$text({e1:[9,"label"]},["",1," "])]
     )
 ]

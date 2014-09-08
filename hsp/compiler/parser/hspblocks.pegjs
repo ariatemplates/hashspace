@@ -17,7 +17,7 @@ TextBlock
   {return {type:"plaintext", value:lines.join('')}}
 
 TemplateBlock "template block"
-  = start:TemplateStart content:TemplateContent? end:TemplateEnd? 
+  = start:TemplateStart content:TemplateContent? end:TemplateEnd?
   {
     start.content=content;
     if (end) {start.closed=true;start.endLine=end.line;};
@@ -84,7 +84,7 @@ TemplateContent "template content" // TODO: CSSClassExpression
                 / HspCptAttribute / EndHspCptAttribute
                 / LetBlock
                 / LogBlock
-                / ExpressionBlock
+                / ExpressionTextBlock
                 / InvalidHTMLElement
                 / InvalidBlock)* 
   {return blocks}
@@ -260,7 +260,7 @@ CoreExpText
      }
 
 CoreExpTextNoBrackets
- = c:[^{}()]+ {return c.join('')}
+ = !"/template" c:[^{}()]+ {return c.join('')}
 
 CoreExpTextInCurly
  = c:("{" (exp:CoreExpText? {return exp !==null ? exp.value : ''}) "}") {return c.join('')}
@@ -270,6 +270,19 @@ CoreExpTextInBrackets
 
 InvalidCoreExpText
  = c:([{(] (exp:CoreExpText? {return exp !==null ? exp.value : ''})) {return c.join('')}
+
+ExpressionTextBlock
+  = "{" ubflag:":"? __ e:CoreExpText "}"
+  {
+    var r={};
+    r.bound=(ubflag.length==0);
+    r.line=line;
+    r.column=column;
+    r.type="expression";
+    r.category="jsexptext";
+    r.value = e.value;
+    return r;
+  }
 
 ExpressionBlock
   = "{" ubflag:":"? __ e:HExpression* "}" // keep a list of expression to match expressions starting with a valid part

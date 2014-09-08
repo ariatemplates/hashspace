@@ -1,6 +1,7 @@
 var klass = require("../../klass");
 var HExpression = require("./hExpression").HExpression;
 var htmlEntitiesToUtf8 = require("./htmlEntities").htmlEntitiesToUtf8;
+var exParser = require('../../expressions/parser');
 
 //http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
 var VOID_HTML_ELEMENTS = {
@@ -301,18 +302,27 @@ var SyntaxTree = klass({
                     }
                 }
             } else if (block.type === "expression") {
-                if (block.category === "jsexpression") {
+
+                if (block.category === "jsexptext") {
+                    //parse the expression to detect errors
+                    //TODO(pk): avoid parsing the same expression several times
+                    try {
+                        exParser(block.value);
+                        buffer.push(block);
+                    } catch (e) {
+                        this._logError("Invalid expression: '" + block.value + "'", block);
+                    }
+                } else if (block.category === "jsexpression") {
                     // pre-process expression
                     var expr = new HExpression(block, this);
                     // inject the processed expression in the block list
                     block = blocks[nextIndex] = expr.getSyntaxTree();
-                }
-
-                if (block.category === "invalidexpression") {
+                } else if (block.category === "invalidexpression") {
                     this._logError("Invalid expression", block);
                 } else {
                     buffer.push(block);
                 }
+
             } else if (block.type === "comment") {
                 // ignore comments
             } else {

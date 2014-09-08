@@ -160,7 +160,7 @@ describe('Block Parser: ', function () {
         // assert.equal(r.code,s,"template generated code"); // strange issue with non visible characters
         assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
 
-        var lm = [0, 6, 7, 8, 9, 9, 9, 15, 16, 17, 18, 19, 19, 19, 19, 25];
+        var lm = [0, 6, 7, 8, 9, 9, 9, 16, 17, 18, 19, 20, 20, 20, 20, 27];
         assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "", "line map comparison");
     });
 
@@ -188,7 +188,7 @@ describe('Block Parser: ', function () {
         assert.equal(r.errors.length, 0, "no compilation error");
         assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
 
-        var lm = [0, 6, 7, 8, 9, 9, 9, 15, 16, 17, 18, 19, 19, 19, 19, 25];
+        var lm = [0, 6, 7, 8, 9, 9, 9, 16, 17, 18, 19, 20, 20, 20, 20, 27];
         assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "", "line map comparison");
     });
 

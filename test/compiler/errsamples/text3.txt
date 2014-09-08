@@ -6,9 +6,8 @@
 ##### Errors:
 [
   {
-    "description": "Invalid expression",
+    "description": "Invalid expression: 'foo[2].bar[\"hello\"]]'",
     "line": 2,
-    "column": 5,
-    "code": "foo.2.bar.hello]"
+    "column": 5
   }
 ]

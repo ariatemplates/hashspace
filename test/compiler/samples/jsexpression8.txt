@@ -11,11 +11,8 @@
       { "type": "text","value": "Hello ","line": 2,"column": 2 },
       {
         "type": "expression",
-        "base": { "type": "Variable","name": "person","code": "person" },
-        "name": { "type": "Variable","name": "property","code": "property" },
-        "code": "person.property",
-        "category": "jsexpression",
-        "expType": "PropertyAccess",
+        "value": "person[property]",
+        "category": "jsexptext",
         "line": 2,
         "column": 8,
         "bound": true
@@ -38,21 +35,8 @@
           { "type": "text","value": "Hello ","line": 2,"column": 2 },
           {
             "type": "expression",
-            "category": "dynref",
-            "codefragments": ["a0","a1"],
-            "objectrefs": [
-              {
-                "type": "expression",
-                "category": "objectref",
-                "bound": true,
-                "path": [ "person" ]
-              },
-              {
-                "type": "expression",
-                "category": "objectref",
-                "path": [ "property" ]
-              }
-            ],
+            "value": "person[property]",
+            "category": "jsexptext",
             "line": 2,
             "column": 8
           },
@@ -66,8 +50,6 @@
 ##### Template Code
 hello=[__s,
   n.$text({
-    e1:[7,2,function(i,a0,a1) {return [a0,a1][i];},2,3],
-    e2:[1,1,"person"],
-    e3:[1,1,"property"]
+    e1:[9,"person[property]"]
   },["Hello ",1,"!"])
 ]

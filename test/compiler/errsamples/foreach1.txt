@@ -7,10 +7,9 @@
 ##### Errors:
 [
   {
-    "description": "Invalid expression",
+    "description": "Invalid expression: 'foreach (thing inm things)'",
     "line": 3,
-    "column": 3,
-    "code": "foreach (thing inm things)"
+    "column": 3
   },
   {
     "description": "{/foreach} statement does not match any {foreach} block",

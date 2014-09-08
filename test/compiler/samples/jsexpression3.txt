@@ -13,5 +13,5 @@
 
 ##### Template Code
 test=[__s,
-  n.$text({e1:[6,function(a0) {return ((a0+2)+"a");},2], e2:[1,1,"value"]}, ["",1])
+  n.$text({e1:[9,"value+2+\"a\""]}, ["",1])
 ]

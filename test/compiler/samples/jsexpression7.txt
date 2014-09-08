@@ -13,5 +13,5 @@
 
 ##### Template Code
 test=[__s,
-    n.$text({e1:[4,1,_content1]},["",1])
+    n.$text({e1:[9,"content1()"]},["",1])
 ]

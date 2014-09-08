@@ -17,7 +17,6 @@ var klass = require("../klass"),
     log = require("./log"),
     json = require("../json"),
     exparser = require("../expressions/parser"),
-    exidentifiers = require("../expressions/identifiers"),
     exobservable = require("../expressions/observable"),
     exmanipulator = require("../expressions/manipulator");
 
@@ -136,13 +135,17 @@ var PrattExpr = klass({
     $constructor : function (desc) {
         this.exptext = desc[1];
         this.ast = exparser(desc[1]);
-        this.bound = exidentifiers(this.ast).length > 0;
+        this.bound = desc.length > 2 ? desc[2] : true;
         this.manipulator = exmanipulator(desc[1], this.ast);
         this.isMultiStatement = this.manipulator.isMultiStatement;
     },
 
     getValue : function (vscope, eh, defvalue) {
-        return this.manipulator.getValue(vscope,defvalue);
+        try {
+            return this.manipulator.getValue(vscope,defvalue);
+        } catch (e) {
+            log.warning("Error evaluating expression '" + this.exptext + "': " + e.message);
+        }
     },
 
     setValue : function (vscope, value) {
@@ -154,7 +157,7 @@ var PrattExpr = klass({
     },
 
     getObservablePairs : function (eh, vscope) {
-        return exobservable(this.ast, vscope);
+        return this.bound ? exobservable(this.ast, vscope) : null;
     }
 });
 

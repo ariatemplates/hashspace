@@ -13,4 +13,4 @@ var nullValue = "null";
 
 ##### Template Code
 main=[__s,
- n.$text({e1:[2,1,_nullValue]},["before-",1,"-after"])]
+ n.$text({e1:[9,"nullValue"]},["before-",1,"-after"])]
