@@ -159,7 +159,7 @@ function _generateLineMap (res, file) {
         }
     }
 
-    var nbrOfLinesInCompiledTemplate = 6;
+    var nbrOfLinesInCompiledTemplate = 7; //all generated templates got fixed no of LOC
     var lineMap = [], pos = HEADER_SZ, template;
     var pos1 = -1; // position of the next template start
     var pos2 = -1; // position of the next template end
@@ -173,11 +173,7 @@ function _generateLineMap (res, file) {
                 // there is another template
                 template = templates[tplIdx];
                 pos1 = template.startLine;
-                pos2 = template.endLine;
-                if (pos2 < pos1) {
-                    // this case should never arrive..
-                    pos2 = pos1;
-                }
+                pos2 = Math.max(template.endLine, pos1);
             } else {
                 // last template has been found
                 tplIdx = pos1 = pos2 = -1;
@@ -200,6 +196,5 @@ function _generateLineMap (res, file) {
             pos++;
         }
     }
-
     return lineMap;
 }

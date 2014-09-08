@@ -19,10 +19,8 @@
       },
       {
         "type": "expression",
-        "name": "name",
-        "code": "name",
-        "category": "jsexpression",
-        "expType": "Variable",
+        "value": "name",
+        "category": "jsexptext",
         "bound": true
       },
       {
@@ -58,11 +56,9 @@
           },
           {
             "type": "expression",
-            "category": "objectref",
-            "bound": true,
-            "path": [
-              "name"
-            ]
+            "value": "name",
+            "category": "jsexptext",
+            "bound": true
           },
           {
             "type": "text",
@@ -81,5 +77,5 @@
 
 ##### Template Code
 hello=[__s,
-  n.$text({e1:[1,1,"name"]}, ["Hello ",1,"!"])
+  n.$text({e1:[9,"name"]}, ["Hello ",1,"!"])
 ]

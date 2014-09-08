@@ -5,8 +5,7 @@
 
 ##### Errors:
 [ { 
-    description: 'Invalid expression',
+    description: 'Invalid expression: \'person.name,\'',
     line: 2,
-    column: 11,
-    code: 'person.name,' 
+    column: 11
 } ]

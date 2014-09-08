@@ -90,7 +90,7 @@ describe("Hashspace global object", function () {
 
         // change in global should not trigger a refresh
         h.$set(hsp.global.g,"msg", "Hello Folks");
-        expect(h(".content").text()).to.equal("Hello World!");
+        expect(h(".content").text()).to.equal("Hello Folks!");
     });
 
     it("validates global cpt call", function () {

@@ -6,9 +6,8 @@
 ##### Error:
 [
   {
-    "description": "Invalid expression",
+    "description": "Invalid expression: 'person.name|foo:'",
     "line": 2,
-    "column": 3,
-    "code": "person.name:"
+    "column": 3
   }
 ]

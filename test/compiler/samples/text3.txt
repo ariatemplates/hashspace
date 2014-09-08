@@ -14,18 +14,14 @@
       	"type": "text", "value": "Hello "
       },{
         "type": "expression",
-        "expType": "PropertyAccess",
-        "category": "jsexpression",
+        "category": "jsexptext",
         "bound": true,
-        "base": {type:"Variable", name:"person"},
-        "name": "firstName"
+        "value": "person.firstName"
       },{
         "type": "expression",
-        "expType": "PropertyAccess",
-        "category": "jsexpression",
+        "category": "jsexptext",
         "bound": true,
-        "base": {type:"Variable", name:"person"},
-        "name": "lastName"
+        "value": "person.lastName"
       }
     ]
   }
@@ -44,16 +40,17 @@
         "content": [
           { 
           	"type": "text", "value": "Hello " 
-          }, { 
-          	"type": "expression", 
-          	"category": "objectref",
-          	"bound": true, 
-          	"path": [ "person", "firstName" ]
-          }, { 
-          	"type": "expression", 
-          	"category": "objectref",
-          	"bound": true, 
-          	"path": [ "person", "lastName" ]
+          },
+          {
+            "type": "expression",
+            "category": "jsexptext",
+            "bound": true,
+            "value": "person.firstName"
+          },{
+            "type": "expression",
+            "category": "jsexptext",
+            "bound": true,
+            "value": "person.lastName"
           }
         ]
       }
@@ -63,5 +60,5 @@
 
 ##### Template Code
 hello=[__s,
-  n.$text({e1:[1,2,"person","firstName"],e2:[1,2,"person","lastName"]}, ["Hello ",1,"",2])
+  n.$text({e1:[9,"person.firstName"],e2:[9,"person.lastName"]}, ["Hello ",1,"",2])
 ]

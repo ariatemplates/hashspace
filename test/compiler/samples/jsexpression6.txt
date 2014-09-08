@@ -14,23 +14,9 @@
     "args": ["person"],
     "content": [
       {type: "text", "value": "Before "},
-      {type: "expression", "category": "jsexpression", "expType": "FunctionCall", bound:true, 
-        "name": {
-          "type": "Variable",
-          "name": "content1"
-        },
-        "arguments": []
-      },
+      {type: "expression", "category": "jsexptext", "value": "content1()", bound:true},
       {type: "text", "value": " "},
-      {type: "expression", "category": "jsexpression", "expType": "FunctionCall", bound:true, 
-        name:{
-          "type": "Variable",
-          "name": "content2"
-        }, 
-        arguments:[
-          {type:"expression", category:"string", value:"First Name"},
-          {type:"PropertyAccess", base:{type:"Variable",name:"person"}, name:"firstName"}
-      ]},
+      {type: "expression", "category": "jsexptext", "value": "content2(\"First Name\", person.firstName)", bound:true},
       {type: "text", "value": " After"}
     ]
   }
@@ -47,26 +33,9 @@
         "type": "textblock",
         "content": [
           {type: "text", "value": "Before "},
-          {
-            "type": "expression",
-            "category": "functionref",
-            "bound": true,
-            "path": ["_content1"],
-            "args": [],
-            "line": 3,
-            "column": 2
-          },
+          {type: "expression", "category": "jsexptext", "value": "content1()", bound:true},
           {type: "text", "value": " "},
-          {
-            "type": "expression",
-            "category": "functionref",
-            "bound": true,
-            "path": ["_content2"],
-            "args": [
-              {"type": "expression","category": "string","value": "First Name","code": "First Name"},
-              {"type": "expression","category": "objectref", "path": ["person","firstName"]}
-            ]
-          },
+          {type: "expression", "category": "jsexptext", "value": "content2(\"First Name\", person.firstName)", bound:true},
           {"type": "text","value": " After"}
         ]
       }
@@ -78,8 +47,7 @@
 ##### Template Code
 test=[__s,
   n.$text({
-    e1:[4,1,_content1],
-    e2:[4,1,_content2,0,"First Name",1,3],
-    e3:[1,2,"person","firstName"]
+    e1:[9,"content1()"],
+    e2:[9,"content2(\"First Name\", person.firstName)"]
   },["Before ",1," ",2," After"])
 ]

@@ -12,11 +12,9 @@
     "content": [
       {
         "type": "expression",
-        "expType": "PropertyAccess",
-        "category": "jsexpression",
+        "category": "jsexptext",
         "bound": false,
-        "base": {type:"Variable", name:"person"},
-        "name": "name"
+        "value": "person.name"
       }, { 
       	"type": "text", "value": "!"
       }
@@ -35,12 +33,12 @@
       {
         "type": "textblock",
         "content": [
-          { 
-          	"type": "expression", 
-          	"category": "objectref",
-          	"bound": false, 
-          	"path": [ "person", "name" ]
-          }, { 
+          {
+            "type": "expression",
+            "category": "jsexptext",
+            "bound": false,
+            "value": "person.name"
+          }, {
           	"type": "text", "value": "!" 
           }
         ]
@@ -51,5 +49,5 @@
 
 ##### Template Code
 hello=[__s,
-  n.$text({e1:[0,2,"person","name"]},["",1,"!"])
+  n.$text({e1:[9,"person.name",false]},["",1,"!"])
 ]

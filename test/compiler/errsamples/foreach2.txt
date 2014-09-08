@@ -7,10 +7,9 @@
 ##### Errors:
 [
   {
-    "description": "Invalid expression",
+    "description": "Invalid expression: '/forach'",
     "line": 3,
-    "column": 43,
-    "code": "/forach"
+    "column": 43
   },
   {
     "description": "Missing end foreach statement",

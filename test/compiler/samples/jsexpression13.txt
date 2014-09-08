@@ -10,31 +10,8 @@
     "content": [
       {
         "type": "expression",
-        "name": {
-          "type": "Variable",
-          "name": "orderBy",
-          "code": "orderBy"
-        },
-        "arguments": [
-          {
-            "type": "PropertyAccess",
-            "base": {
-              "type": "Variable",
-              "name": "person",
-              "code": "person"
-            },
-            "name": "list",
-            "code": "person.list"
-          },
-          {
-            "type": "expression",
-            "category": "string",
-            "value": "firstName",
-            "code": "firstName"
-          }
-        ],
-        "category": "jsexpression",
-        "expType": "FunctionCall",
+        "category": "jsexptext",
+        "value": "orderBy(person.list,\"firstName\")",
         "line": 2,
         "column": 2,
         "bound": true
@@ -56,27 +33,8 @@
         "content": [
           {
             "type": "expression",
-            "category": "functionref",
-            "bound": true,
-            "path": [
-              "_orderBy"
-            ],
-            "args": [
-              {
-                "type": "expression",
-                "category": "objectref",
-                "path": [
-                  "person",
-                  "list"
-                ]
-              },
-              {
-                "type": "expression",
-                "category": "string",
-                "value": "firstName",
-                "code": "firstName"
-              }
-            ],
+            "category": "jsexptext",
+            "value": "orderBy(person.list,\"firstName\")",
             "line": 2,
             "column": 2
           }
@@ -89,7 +47,6 @@
 ##### Template Code
 test=[__s,
   n.$text({
-    e1:[4,1,_orderBy,1,2,0,"firstName"],
-    e2:[1,2,"person","list"]
+    e1:[9,"orderBy(person.list,\"firstName\")"]
   },["",1])
 ]

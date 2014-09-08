@@ -56,8 +56,8 @@ exports["template"] = function (node, walker) {
             globalsStatement.push( "try {_" + gnm + "=", gnm ,"} catch(e) {_" + gnm + "=n.g('", gnm ,"')};");
             scopeStatements.push(gnm + " : typeof " + gnm + " === 'undefined' ? n.g('" + gnm + "') : " + gnm);
         }
-        globalsStatement.push(CRLF);
     }
+    globalsStatement.push(CRLF);
     var globalsStatementString = globalsStatement.join("");
     scopeStr = "  var __s = {" + scopeStatements.join(", ") + "};" + CRLF;
 
@@ -341,8 +341,10 @@ exports["cptattribute"] = function (node, walker) {
  * @return {Object} the expression string and the next expression index that can be used
  */
 function formatExpression (expression, firstIndex, walker) {
-    var category = expression.category, code = '', nextIndex = firstIndex, bound = (expression.bound === false) ? 0 : 1;
+    var category = expression.category, codeStmts, code = '', nextIndex = firstIndex;
+    var bound = (expression.bound === false) ? 0 : 1;
     var exprIndex = firstIndex;
+    var expAst;
     if (category === 'objectref' || category === 'functionref') {
         var path = expression.path, argExprs = null, argExprIndex = null, args = expression.args;
         if (path.length === 0) {
@@ -493,12 +495,18 @@ function formatExpression (expression, firstIndex, walker) {
     } else if (category === 'jsexptext') {
         //compile the expression to detect errors and parse-out identifiers
         try {
-            exIdentifiers(exParser(expression.value)).forEach(function(ident){
+            expAst = exParser(expression.value);
+            exIdentifiers(expAst).forEach(function(ident){
                 walker.addGlobalRef(ident);
             });
-            code = ['e', exprIndex, ':[9,"',
+            codeStmts = ['e', exprIndex, ':[9,"',
                 ('' + expression.value).replace(/"/g, "\\\"").replace(/\\\\"/g, "\\\""),
-                '"]'].join('');
+                '"'];
+            if (expression.bound === false) {
+                codeStmts.push(',false');
+            }
+            codeStmts.push(']');
+            code = codeStmts.join('');
         } catch (err) {
             walker.logError("Invalid expression: '" + expression.value + "'", expression);
         }
@@ -509,6 +517,7 @@ function formatExpression (expression, firstIndex, walker) {
 
     return {
         code : code,
+        ast: expAst,
         exprIdx : exprIndex,
         nextIndex : nextIndex
     };
@@ -519,7 +528,7 @@ function formatExpression (expression, firstIndex, walker) {
  * @param {Node} node the current Node object as built by the treebuilder.
  * @param {Integer} nextExprIndex the index of the next expression.
  * @param {TreeWalker} walker the template walker instance.
- * @return {String} a snippet of Javascript code built from the node.
+ * @return {Object} a snippet of Javascript code built from the node.
  */
 function formatTextBlock (node, nextExprIndex, walker) {
     var content = node.content, item, exprArray = [], args = [], index = 0; // idx is the index in the $text array
@@ -549,8 +558,14 @@ function formatTextBlock (node, nextExprIndex, walker) {
             var expr = formatExpression(item, nextExprIndex, walker);
             nextExprIndex = expr.nextIndex;
             if (expr.code) {
-                exprArray.push(expr.code);
-                args[index] = expr.exprIdx; // expression index
+                if (expr.ast instanceof Array) {
+                    //it is a multi-statement expression that is not allowed in this context
+                    walker.logError("Invalid expression: " + item.value, item);
+                    args[index] = 0; // invalid expression
+                } else {
+                    exprArray.push(expr.code);
+                    args[index] = expr.exprIdx; // expression index
+                }
             } else {
                 args[index] = 0; // invalid expression
             }
@@ -558,18 +573,9 @@ function formatTextBlock (node, nextExprIndex, walker) {
         }
     }
 
-    var exprArg = "0";
-    if (exprArray.length) {
-        exprArg = '{' + exprArray.join(",") + '}';
-    }
-    var blockArgs = "[]";
-    if (args.length) {
-        blockArgs = '[' + args.join(',') + ']';
-    }
-
     return {
-        exprArg : exprArg,
+        exprArg : exprArray.length ? '{' + exprArray.join(",") + '}' : "0",
         nextIndex : nextExprIndex,
-        blockArgs : blockArgs
+        blockArgs : args.length ? '[' + args.join(',') + ']' : "[]"
     };
 }

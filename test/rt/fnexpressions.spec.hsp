@@ -261,7 +261,7 @@ describe("Function expressions", function () {
         test7(d).render(h.container);
 
         expect(h.logs().length).to.equal(1);
-        expect(h.logs()[0].message).to.equal("[function expression] Object is not a function or has no apply() method: modifier");
+        expect(h.logs()[0].message).to.equal("Error evaluating expression 'd.msg|modifier': Pipe expression is neither a function nor an object with the apply() method");
         h.logs.clear();
 
         h.$dispose();

@@ -23,7 +23,7 @@
     		]}
     	]},
     	{"type": "text","value": "Hello "},
-    	{"type": "expression", "category": "jsexpression", expType:"PropertyAccess", "bound": true, base:{type:"Variable", name:"person"}, name:"name"},
+    	{"type": "expression", "category": "jsexptext", value:"person.name", "bound": true},
     	{"type": "text","value": "! "},
     	{"type": "endelement",name:"div"}
     ]
@@ -49,7 +49,7 @@
       ],"content": [
       	{ "type": "textblock", "content": [
         	{"type": "text","value": "Hello "},
-            {"type": "expression", "category": "objectref", "bound": true, "path": [ "person", "name" ]},
+    	    {"type": "expression", "category": "jsexptext", value:"person.name", "bound": true},
     		{"type": "text","value": "! "}
          ]}
       ]}
@@ -63,7 +63,7 @@ test=[__s,
 			{e1:[1,2,"person","id"],e2:[1,2,"person","gender"],e3:[1,2,"person","category"]} ,
 			{"title":"Some text","id":["",1],"class":["",2," ",3]},
 			0,[
-				n.$text({e1:[1,2,"person","name"]},["Hello ",1,"! "])
+				n.$text({e1:[9,"person.name"]},["Hello ",1,"! "])
 			]
 	)
 ]
