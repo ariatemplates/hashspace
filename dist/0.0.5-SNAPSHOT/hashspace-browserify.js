@@ -54,7 +54,7 @@ $set.dec = function (object, property) {
     return previousValue;
 };
 
-},{"./json":19}],2:[function(require,module,exports){
+},{"./json":18}],2:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -215,7 +215,11 @@ var TERNARY_OPERATORS = {
     '?': function (scope, test, trueVal, falseVal) { return test ? trueVal : falseVal; },
     '|': function (scope, input, pipeFnOrObj, args, target) {  //pipe (filter)
         var pipeFn = typeof pipeFnOrObj === 'function' ? pipeFnOrObj : pipeFnOrObj['apply'];
-        return pipeFn.apply(typeof pipeFnOrObj === 'function' ? target : pipeFnOrObj, [input].concat(args));
+        if (pipeFn) {
+            return pipeFn.apply(typeof pipeFnOrObj === 'function' ? target : pipeFnOrObj, [input].concat(args));
+        } else {
+            throw new Error('Pipe expression is neither a function nor an object with the apply() method');
+        }
     },
     '=': function (scope, target, property, value) {
         return target[property] = value;
@@ -273,51 +277,6 @@ module.exports = function getTreeValue(tree, scope) {
     return result;
 };
 },{}],4:[function(require,module,exports){
-/*
- * Copyright 2014 Amadeus s.a.s.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-module.exports = function getIdentifiers(tree) {
-
-    var partialResult;
-
-    if (tree instanceof Array) {
-        partialResult = [];
-        if (tree.length > 0) {
-            for (var i = 0; i < tree.length; i++) {
-                partialResult = partialResult.concat(getIdentifiers(tree[i]));
-            }
-        }
-        return partialResult;
-    }
-
-    if (tree.a === 'literal') {
-        return [];
-    } else if (tree.a === 'idn') {
-        return [tree.v];
-    } else if (tree.a === 'unr') {
-        return getIdentifiers(tree.l);
-    } else if (tree.a === 'bnr') {
-        return getIdentifiers(tree.l).concat(getIdentifiers(tree.r));
-    } else if (tree.a === 'tnr') {
-        return getIdentifiers(tree.l).concat(getIdentifiers(tree.r))
-            .concat(getIdentifiers(tree.othr));
-    } else {
-        throw new Error('unknown entry' + JSON.stringify(tree));
-    }
-};
-},{}],5:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -459,7 +418,7 @@ module.exports = function (initialInput) {
 
     return result;
 };
-},{}],6:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -526,7 +485,7 @@ module.exports = function(input, inputTree) {
     };
 };
 
-},{"./evaluator":3,"./parser":8}],7:[function(require,module,exports){
+},{"./evaluator":3,"./parser":7}],6:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -633,7 +592,7 @@ module.exports = function getObservablePairs(tree, scope) {
         throw new Error('unknown entry' + JSON.stringify(tree));
     }
 };
-},{"./evaluator":3}],8:[function(require,module,exports){
+},{"./evaluator":3}],7:[function(require,module,exports){
 /**
  * Code in this file is based on the work from https://github.com/douglascrockford/TDOP
  * by Douglas Crockford douglas@crockford.com
@@ -645,7 +604,7 @@ var tokens, token, tokenIdx = 0;
 
 var BaseSymbol = {
     nud: function () {
-        throw new Error("Undefined nud function for: " + this.v);
+        throw new Error("Invalid expression - missing operand for the " + this.v + " operator");
     },
     led: function () {
         throw new Error("Missing operator: " + this.v);
@@ -954,7 +913,7 @@ function expression(rbp) {
  * @return {Object} - parsed AST
  */
 module.exports = function (input) {
-    var expr, exprs = [];
+    var expr, exprs = [], previousToken;
 
     tokens = lexer(input);
     token = undefined;
@@ -965,16 +924,22 @@ module.exports = function (input) {
         while(token.id !== '(end)') {
             expr = expression(0);
             exprs.push(expr);
+            previousToken = token;
             if (token.v === ',') {
                 advance(',');
             }
         }
+
+        if (previousToken.v === ',') {
+            throw new Error('Statement separator , can\'t be placed at the end of an expression');
+        }
+
         return exprs.length === 1 ? exprs[0] : exprs;
     } else {
         return {f: 0, a: 'literal', v: undefined};
     }
 };
-},{"./lexer":5}],9:[function(require,module,exports){
+},{"./lexer":4}],8:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1136,7 +1101,7 @@ var DoubleTap = klass({
 });
 
 module.exports.DoubleTap = DoubleTap;
-},{"../klass":20,"./gesture":11,"./touchEvent":18}],10:[function(require,module,exports){
+},{"../klass":19,"./gesture":10,"./touchEvent":17}],9:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1252,7 +1217,7 @@ var Drag = klass({
 });
 
 module.exports.Drag = Drag;
-},{"../klass":20,"./gesture":11,"./touchEvent":18}],11:[function(require,module,exports){
+},{"../klass":19,"./gesture":10,"./touchEvent":17}],10:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1620,7 +1585,7 @@ var Gesture = klass({
 });
 
 module.exports.Gesture = Gesture;
-},{"../klass":20,"./touchEvent":18}],12:[function(require,module,exports){
+},{"../klass":19,"./touchEvent":17}],11:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1727,7 +1692,7 @@ var Gestures = klass({
 module.exports.Gestures = Gestures;
 
 
-},{"../klass":20,"./doubleTap":9,"./drag":10,"./longPress":13,"./pinch":14,"./singleTap":15,"./swipe":16,"./tap":17}],13:[function(require,module,exports){
+},{"../klass":19,"./doubleTap":8,"./drag":9,"./longPress":12,"./pinch":13,"./singleTap":14,"./swipe":15,"./tap":16}],12:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -1857,7 +1822,7 @@ var LongPress = klass({
 });
 
 module.exports.LongPress = LongPress;
-},{"../klass":20,"./gesture":11,"./touchEvent":18}],14:[function(require,module,exports){
+},{"../klass":19,"./gesture":10,"./touchEvent":17}],13:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -2040,7 +2005,7 @@ var Pinch = klass({
 });
 
 module.exports.Pinch = Pinch;
-},{"../klass":20,"./gesture":11,"./touchEvent":18}],15:[function(require,module,exports){
+},{"../klass":19,"./gesture":10,"./touchEvent":17}],14:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -2199,7 +2164,7 @@ var SingleTap = klass({
 });
 
 module.exports.SingleTap = SingleTap;
-},{"../klass":20,"./gesture":11,"./touchEvent":18}],16:[function(require,module,exports){
+},{"../klass":19,"./gesture":10,"./touchEvent":17}],15:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -2358,7 +2323,7 @@ var Swipe = klass({
 });
 
 module.exports.Swipe = Swipe;
-},{"../klass":20,"./gesture":11,"./touchEvent":18}],17:[function(require,module,exports){
+},{"../klass":19,"./gesture":10,"./touchEvent":17}],16:[function(require,module,exports){
 var klass = require("../klass");
 var touchEvent = require("./touchEvent");
 var Gesture = require("./gesture").Gesture;
@@ -2454,7 +2419,7 @@ var Tap = klass({
 });
 
 module.exports.Tap = Tap;
-},{"../klass":20,"./gesture":11,"./touchEvent":18}],18:[function(require,module,exports){
+},{"../klass":19,"./gesture":10,"./touchEvent":17}],17:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -2829,7 +2794,7 @@ exports.getFakeEvent = function(type, target) {
     fakeEvent.target = target;
     return fakeEvent;
 };
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3167,7 +3132,7 @@ function unobserve (object, callback, metaProperty) {
     }
 }
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3246,7 +3211,7 @@ klass.createMetaDataPrefix = createMetaDataPrefix;
 
 module.exports = klass;
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3363,7 +3328,7 @@ function PropObserver_notifyChange (po, chge, chgName) {
 
 module.exports = PropObserver;
 
-},{"./json":19,"./klass":20}],22:[function(require,module,exports){
+},{"./json":18,"./klass":19}],21:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3593,7 +3558,7 @@ function createShortcut (tagName, tagConstructor) {
     };
 }
 
-},{"./es5":2,"./klass":20,"./rt/$foreach":23,"./rt/$if":24,"./rt/$let":25,"./rt/$log":26,"./rt/$root":27,"./rt/$text":28,"./rt/colutils":30,"./rt/cptwrapper":34,"./rt/eltnode":36,"./rt/log":38}],23:[function(require,module,exports){
+},{"./es5":2,"./klass":19,"./rt/$foreach":22,"./rt/$if":23,"./rt/$let":24,"./rt/$log":25,"./rt/$root":26,"./rt/$text":27,"./rt/colutils":29,"./rt/cptwrapper":33,"./rt/eltnode":35,"./rt/log":37}],22:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4175,7 +4140,7 @@ var $ItemNode = klass({
 
 module.exports = $ForEachNode;
 
-},{"../json":19,"../klass":20,"./document":35,"./log":38,"./tnode":39}],24:[function(require,module,exports){
+},{"../json":18,"../klass":19,"./document":34,"./log":37,"./tnode":38}],23:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -4367,7 +4332,7 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"../klass":20,"./document":35,"./tnode":39}],25:[function(require,module,exports){
+},{"../klass":19,"./document":34,"./tnode":38}],24:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -4447,7 +4412,7 @@ var LetNode = klass({
 module.exports=LetNode;
 
 
-},{"../$set":1,"../expressions/manipulator":6,"../klass":20,"./document":35,"./tnode":39}],26:[function(require,module,exports){
+},{"../$set":1,"../expressions/manipulator":5,"../klass":19,"./document":34,"./tnode":38}],25:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -4540,7 +4505,7 @@ var LogNode = klass({
 module.exports=LogNode;
 
 
-},{"../klass":20,"./document":35,"./log":38,"./tnode":39}],27:[function(require,module,exports){
+},{"../klass":19,"./document":34,"./log":37,"./tnode":38}],26:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5392,7 +5357,7 @@ exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
 
 
-},{"../json":19,"../klass":20,"../propobserver":21,"./cptattinsert":31,"./cptcomponent":32,"./cpttemplate":33,"./document":35,"./log":38,"./tnode":39}],28:[function(require,module,exports){
+},{"../json":18,"../klass":19,"../propobserver":20,"./cptattinsert":30,"./cptcomponent":31,"./cpttemplate":32,"./document":34,"./log":37,"./tnode":38}],27:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5486,7 +5451,7 @@ var $TextNode = klass({
 });
 
 module.exports = $TextNode;
-},{"../klass":20,"./document":35,"./tnode":39}],29:[function(require,module,exports){
+},{"../klass":19,"./document":34,"./tnode":38}],28:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5517,7 +5482,7 @@ function supportsSvg() {
  * Most importantly it contains feature-detection logic.
  */
 module.exports.supportsSvg = supportsSvg;
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5710,7 +5675,7 @@ exports.setGlobal = function(global) {
     global.Sorter=Sorter;
 };
 
-},{"../$set":1,"../klass":20,"./log":38}],31:[function(require,module,exports){
+},{"../$set":1,"../klass":19,"./log":37}],30:[function(require,module,exports){
 var doc = require("./document");
 
 /**
@@ -5762,7 +5727,7 @@ module.exports.$CptAttInsert = {
   }
 };
 
-},{"./document":35}],32:[function(require,module,exports){
+},{"./document":34}],31:[function(require,module,exports){
 var json = require("../json"),
     log = require("./log"),
     doc = require("./document"),
@@ -6248,7 +6213,7 @@ exports.$CptComponent = {
   }
 };
 
-},{"../json":19,"./$text":28,"./cptwrapper":34,"./document":35,"./log":38}],33:[function(require,module,exports){
+},{"../json":18,"./$text":27,"./cptwrapper":33,"./document":34,"./log":37}],32:[function(require,module,exports){
 var json = require("../json"),
     doc = require("./document");
 
@@ -6339,7 +6304,7 @@ module.exports.$CptTemplate = {
   }
 };
 
-},{"../json":19,"./document":35}],34:[function(require,module,exports){
+},{"../json":18,"./document":34}],33:[function(require,module,exports){
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -6772,7 +6737,7 @@ function createCptWrapper(Ctl, cptArgs) {
 exports.CptWrapper = CptWrapper;
 exports.createCptWrapper=createCptWrapper;
 
-},{"../json":19,"../klass":20,"./log":38}],35:[function(require,module,exports){
+},{"../json":18,"../klass":19,"./log":37}],34:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -6829,7 +6794,7 @@ if (doc.createEventObject) {
     };
 }
 
-},{}],36:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -7190,7 +7155,7 @@ var EltNode = klass({
 
 module.exports = EltNode;
 
-},{"../gestures/gestures":12,"../klass":20,"../rt":22,"./browser":29,"./document":35,"./log":38,"./tnode":39}],37:[function(require,module,exports){
+},{"../gestures/gestures":11,"../klass":19,"../rt":21,"./browser":28,"./document":34,"./log":37,"./tnode":38}],36:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -7210,7 +7175,6 @@ var klass = require("../klass"),
     log = require("./log"),
     json = require("../json"),
     exparser = require("../expressions/parser"),
-    exidentifiers = require("../expressions/identifiers"),
     exobservable = require("../expressions/observable"),
     exmanipulator = require("../expressions/manipulator");
 
@@ -7329,13 +7293,17 @@ var PrattExpr = klass({
     $constructor : function (desc) {
         this.exptext = desc[1];
         this.ast = exparser(desc[1]);
-        this.bound = exidentifiers(this.ast).length > 0;
+        this.bound = desc.length > 2 ? desc[2] : true;
         this.manipulator = exmanipulator(desc[1], this.ast);
         this.isMultiStatement = this.manipulator.isMultiStatement;
     },
 
     getValue : function (vscope, eh, defvalue) {
-        return this.manipulator.getValue(vscope,defvalue);
+        try {
+            return this.manipulator.getValue(vscope,defvalue);
+        } catch (e) {
+            log.warning("Error evaluating expression '" + this.exptext + "': " + e.message);
+        }
     },
 
     setValue : function (vscope, value) {
@@ -7347,7 +7315,7 @@ var PrattExpr = klass({
     },
 
     getObservablePairs : function (eh, vscope) {
-        return exobservable(this.ast, vscope);
+        return this.bound ? exobservable(this.ast, vscope) : null;
     }
 });
 
@@ -7862,7 +7830,7 @@ var DynRefExpr = klass({
     }
 });
 
-},{"../expressions/identifiers":4,"../expressions/manipulator":6,"../expressions/observable":7,"../expressions/parser":8,"../json":19,"../klass":20,"./log":38}],38:[function(require,module,exports){
+},{"../expressions/manipulator":5,"../expressions/observable":6,"../expressions/parser":7,"../json":18,"../klass":19,"./log":37}],37:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -8171,7 +8139,7 @@ function formatValue(v,depth) {
 
 module.exports = log;
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -8692,4 +8660,4 @@ module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;
 
-},{"../klass":20,"../rt":22,"./exphandler":37,"./log":38}]},{},[22])
+},{"../klass":19,"../rt":21,"./exphandler":36,"./log":37}]},{},[21])

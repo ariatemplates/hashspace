@@ -77,6 +77,7 @@
                         CoreExpTextInCurly: parse_CoreExpTextInCurly,
                         CoreExpTextInBrackets: parse_CoreExpTextInBrackets,
                         InvalidCoreExpText: parse_InvalidCoreExpText,
+                        ExpressionTextBlock: parse_ExpressionTextBlock,
                         ExpressionBlock: parse_ExpressionBlock,
                         HExpression: parse_HExpression,
                         HPipeExpression: parse_HPipeExpression,
@@ -1858,7 +1859,7 @@
                                                                                         if (result2 === null) {
                                                                                             result2 = parse_LogBlock();
                                                                                             if (result2 === null) {
-                                                                                                result2 = parse_ExpressionBlock();
+                                                                                                result2 = parse_ExpressionTextBlock();
                                                                                                 if (result2 === null) {
                                                                                                     result2 = parse_InvalidHTMLElement();
                                                                                                     if (result2 === null) {
@@ -1918,7 +1919,7 @@
                                                                                             if (result2 === null) {
                                                                                                 result2 = parse_LogBlock();
                                                                                                 if (result2 === null) {
-                                                                                                    result2 = parse_ExpressionBlock();
+                                                                                                    result2 = parse_ExpressionTextBlock();
                                                                                                     if (result2 === null) {
                                                                                                         result2 = parse_InvalidHTMLElement();
                                                                                                         if (result2 === null) {
@@ -5356,39 +5357,69 @@
                             pos = clone(cachedResult.nextPos);
                             return cachedResult.result;
                         }
-                        var result0, result1;
-                        var pos0;
+                        var result0, result1, result2;
+                        var pos0, pos1, pos2;
                         pos0 = clone(pos);
-                        if (/^[^{}()]/.test(input.charAt(pos.offset))) {
-                            result1 = input.charAt(pos.offset);
-                            advance(pos, 1);
+                        pos1 = clone(pos);
+                        pos2 = clone(pos);
+                        reportFailures++;
+                        if (input.substr(pos.offset, 9) === "/template") {
+                            result0 = "/template";
+                            advance(pos, 9);
                         } else {
-                            result1 = null;
+                            result0 = null;
                             if (reportFailures === 0) {
-                                matchFailed("[^{}()]");
+                                matchFailed('"/template"');
                             }
                         }
-                        if (result1 !== null) {
-                            result0 = [];
-                            while (result1 !== null) {
-                                result0.push(result1);
-                                if (/^[^{}()]/.test(input.charAt(pos.offset))) {
-                                    result1 = input.charAt(pos.offset);
-                                    advance(pos, 1);
-                                } else {
-                                    result1 = null;
-                                    if (reportFailures === 0) {
-                                        matchFailed("[^{}()]");
+                        reportFailures--;
+                        if (result0 === null) {
+                            result0 = "";
+                        } else {
+                            result0 = null;
+                            pos = clone(pos2);
+                        }
+                        if (result0 !== null) {
+                            if (/^[^{}()]/.test(input.charAt(pos.offset))) {
+                                result2 = input.charAt(pos.offset);
+                                advance(pos, 1);
+                            } else {
+                                result2 = null;
+                                if (reportFailures === 0) {
+                                    matchFailed("[^{}()]");
+                                }
+                            }
+                            if (result2 !== null) {
+                                result1 = [];
+                                while (result2 !== null) {
+                                    result1.push(result2);
+                                    if (/^[^{}()]/.test(input.charAt(pos.offset))) {
+                                        result2 = input.charAt(pos.offset);
+                                        advance(pos, 1);
+                                    } else {
+                                        result2 = null;
+                                        if (reportFailures === 0) {
+                                            matchFailed("[^{}()]");
+                                        }
                                     }
                                 }
+                            } else {
+                                result1 = null;
+                            }
+                            if (result1 !== null) {
+                                result0 = [ result0, result1 ];
+                            } else {
+                                result0 = null;
+                                pos = clone(pos1);
                             }
                         } else {
                             result0 = null;
+                            pos = clone(pos1);
                         }
                         if (result0 !== null) {
                             result0 = function(offset, line, column, c) {
                                 return c.join("");
-                            }(pos0.offset, pos0.line, pos0.column, result0);
+                            }(pos0.offset, pos0.line, pos0.column, result0[1]);
                         }
                         if (result0 === null) {
                             pos = clone(pos0);
@@ -5585,6 +5616,94 @@
                             result0 = function(offset, line, column, c) {
                                 return c.join("");
                             }(pos0.offset, pos0.line, pos0.column, result0);
+                        }
+                        if (result0 === null) {
+                            pos = clone(pos0);
+                        }
+                        cache[cacheKey] = {
+                            nextPos: clone(pos),
+                            result: result0
+                        };
+                        return result0;
+                    }
+                    function parse_ExpressionTextBlock() {
+                        var cacheKey = "ExpressionTextBlock@" + pos.offset;
+                        var cachedResult = cache[cacheKey];
+                        if (cachedResult) {
+                            pos = clone(cachedResult.nextPos);
+                            return cachedResult.result;
+                        }
+                        var result0, result1, result2, result3, result4;
+                        var pos0, pos1;
+                        pos0 = clone(pos);
+                        pos1 = clone(pos);
+                        if (input.charCodeAt(pos.offset) === 123) {
+                            result0 = "{";
+                            advance(pos, 1);
+                        } else {
+                            result0 = null;
+                            if (reportFailures === 0) {
+                                matchFailed('"{"');
+                            }
+                        }
+                        if (result0 !== null) {
+                            if (input.charCodeAt(pos.offset) === 58) {
+                                result1 = ":";
+                                advance(pos, 1);
+                            } else {
+                                result1 = null;
+                                if (reportFailures === 0) {
+                                    matchFailed('":"');
+                                }
+                            }
+                            result1 = result1 !== null ? result1 : "";
+                            if (result1 !== null) {
+                                result2 = parse___();
+                                if (result2 !== null) {
+                                    result3 = parse_CoreExpText();
+                                    if (result3 !== null) {
+                                        if (input.charCodeAt(pos.offset) === 125) {
+                                            result4 = "}";
+                                            advance(pos, 1);
+                                        } else {
+                                            result4 = null;
+                                            if (reportFailures === 0) {
+                                                matchFailed('"}"');
+                                            }
+                                        }
+                                        if (result4 !== null) {
+                                            result0 = [ result0, result1, result2, result3, result4 ];
+                                        } else {
+                                            result0 = null;
+                                            pos = clone(pos1);
+                                        }
+                                    } else {
+                                        result0 = null;
+                                        pos = clone(pos1);
+                                    }
+                                } else {
+                                    result0 = null;
+                                    pos = clone(pos1);
+                                }
+                            } else {
+                                result0 = null;
+                                pos = clone(pos1);
+                            }
+                        } else {
+                            result0 = null;
+                            pos = clone(pos1);
+                        }
+                        if (result0 !== null) {
+                            result0 = function(offset, line, column, ubflag, e) {
+                                var r = {};
+                                r.bound = ubflag.length == 0;
+                                r.line = line;
+                                r.column = column;
+                                r.type = "expression";
+                                r.category = "jsexptext";
+                                r.value = e.value;
+                                return r;
+                            }(pos0.offset, pos0.line, pos0.column, result0[1], result0[3]);
                         }
                         if (result0 === null) {
                             pos = clone(pos0);
@@ -16736,11 +16855,12 @@
             }) : inputText;
         };
     });
-    define("hsp/compiler/treebuilder/syntaxTree.js", [ "../../klass", "./hExpression", "./htmlEntities" ], function(module, global) {
+    define("hsp/compiler/treebuilder/syntaxTree.js", [ "../../klass", "./hExpression", "./htmlEntities", "../../expressions/parser" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         var klass = require("../../klass");
         var HExpression = require("./hExpression").HExpression;
         var htmlEntitiesToUtf8 = require("./htmlEntities").htmlEntitiesToUtf8;
+        var exParser = require("../../expressions/parser");
         //http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
         var VOID_HTML_ELEMENTS = {
             area: true,
@@ -17020,13 +17140,21 @@
                             }
                         }
                     } else if (block.type === "expression") {
-                        if (block.category === "jsexpression") {
+                        if (block.category === "jsexptext") {
+                            //parse the expression to detect errors
+                            //TODO(pk): avoid parsing the same expression several times
+                            try {
+                                exParser(block.value);
+                                buffer.push(block);
+                            } catch (e) {
+                                this._logError("Invalid expression: '" + block.value + "'", block);
+                            }
+                        } else if (block.category === "jsexpression") {
                             // pre-process expression
                             var expr = new HExpression(block, this);
                             // inject the processed expression in the block list
                             block = blocks[nextIndex] = expr.getSyntaxTree();
-                        }
-                        if (block.category === "invalidexpression") {
+                        } else if (block.category === "invalidexpression") {
                             this._logError("Invalid expression", block);
                         } else {
                             buffer.push(block);
@@ -17695,6 +17823,48 @@
         });
         exports.TemplateWalker = TemplateWalker;
     });
+    define("hsp/expressions/identifiers.js", [], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+        module.exports = function getIdentifiers(tree) {
+            var partialResult;
+            if (tree instanceof Array) {
+                partialResult = [];
+                if (tree.length > 0) {
+                    for (var i = 0; i < tree.length; i++) {
+                        partialResult = partialResult.concat(getIdentifiers(tree[i]));
+                    }
+                }
+                return partialResult;
+            }
+            if (tree.a === "literal") {
+                return [];
+            } else if (tree.a === "idn") {
+                return [ tree.v ];
+            } else if (tree.a === "unr") {
+                return getIdentifiers(tree.l);
+            } else if (tree.a === "bnr") {
+                return getIdentifiers(tree.l).concat(getIdentifiers(tree.r));
+            } else if (tree.a === "tnr") {
+                return getIdentifiers(tree.l).concat(getIdentifiers(tree.r)).concat(getIdentifiers(tree.othr));
+            } else {
+                throw new Error("unknown entry" + JSON.stringify(tree));
+            }
+        };
+    });
     define("hsp/compiler/jsgenerator/processors.js", [ "../../expressions/parser", "../../expressions/identifiers" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         var exParser = require("../../expressions/parser");
@@ -17749,8 +17919,8 @@
                     globalsStatement.push("try {_" + gnm + "=", gnm, "} catch(e) {_" + gnm + "=n.g('", gnm, "')};");
                     scopeStatements.push(gnm + " : typeof " + gnm + " === 'undefined' ? n.g('" + gnm + "') : " + gnm);
                 }
-                globalsStatement.push(CRLF);
             }
+            globalsStatement.push(CRLF);
             var globalsStatementString = globalsStatement.join("");
             scopeStr = "  var __s = {" + scopeStatements.join(", ") + "};" + CRLF;
             //Resets template scope and global list
@@ -18001,8 +18171,10 @@
  * @return {Object} the expression string and the next expression index that can be used
  */
         function formatExpression(expression, firstIndex, walker) {
-            var category = expression.category, code = "", nextIndex = firstIndex, bound = expression.bound === false ? 0 : 1;
+            var category = expression.category, codeStmts, code = "", nextIndex = firstIndex;
+            var bound = expression.bound === false ? 0 : 1;
             var exprIndex = firstIndex;
+            var expAst;
             if (category === "objectref" || category === "functionref") {
                 var path = expression.path, argExprs = null, argExprIndex = null, args = expression.args;
                 if (path.length === 0) {
@@ -18142,10 +18314,16 @@
             } else if (category === "jsexptext") {
                 //compile the expression to detect errors and parse-out identifiers
                 try {
-                    exIdentifiers(exParser(expression.value)).forEach(function(ident) {
+                    expAst = exParser(expression.value);
+                    exIdentifiers(expAst).forEach(function(ident) {
                         walker.addGlobalRef(ident);
                     });
-                    code = [ "e", exprIndex, ':[9,"', ("" + expression.value).replace(/"/g, '\\"').replace(/\\\\"/g, '\\"'), '"]' ].join("");
+                    codeStmts = [ "e", exprIndex, ':[9,"', ("" + expression.value).replace(/"/g, '\\"').replace(/\\\\"/g, '\\"'), '"' ];
+                    if (expression.bound === false) {
+                        codeStmts.push(",false");
+                    }
+                    codeStmts.push("]");
+                    code = codeStmts.join("");
                 } catch (err) {
                     walker.logError("Invalid expression: '" + expression.value + "'", expression);
                 }
@@ -18155,6 +18333,7 @@
             }
             return {
                 code: code,
+                ast: expAst,
                 exprIdx: exprIndex,
                 nextIndex: nextIndex
             };
@@ -18164,7 +18343,7 @@
  * @param {Node} node the current Node object as built by the treebuilder.
  * @param {Integer} nextExprIndex the index of the next expression.
  * @param {TreeWalker} walker the template walker instance.
- * @return {String} a snippet of Javascript code built from the node.
+ * @return {Object} a snippet of Javascript code built from the node.
  */
         function formatTextBlock(node, nextExprIndex, walker) {
             var content = node.content, item, exprArray = [], args = [], index = 0;
@@ -18195,26 +18374,24 @@
                     var expr = formatExpression(item, nextExprIndex, walker);
                     nextExprIndex = expr.nextIndex;
                     if (expr.code) {
-                        exprArray.push(expr.code);
-                        args[index] = expr.exprIdx;
+                        if (expr.ast instanceof Array) {
+                            //it is a multi-statement expression that is not allowed in this context
+                            walker.logError("Invalid expression: " + item.value, item);
+                            args[index] = 0;
+                        } else {
+                            exprArray.push(expr.code);
+                            args[index] = expr.exprIdx;
+                        }
                     } else {
                         args[index] = 0;
                     }
                     index++;
                 }
             }
-            var exprArg = "0";
-            if (exprArray.length) {
-                exprArg = "{" + exprArray.join(",") + "}";
-            }
-            var blockArgs = "[]";
-            if (args.length) {
-                blockArgs = "[" + args.join(",") + "]";
-            }
             return {
-                exprArg: exprArg,
+                exprArg: exprArray.length ? "{" + exprArray.join(",") + "}" : "0",
                 nextIndex: nextExprIndex,
-                blockArgs: blockArgs
+                blockArgs: args.length ? "[" + args.join(",") + "]" : "[]"
             };
         }
     });
@@ -20227,7 +20404,8 @@
                     templates.push(syntaxTree[i]);
                 }
             }
-            var nbrOfLinesInCompiledTemplate = 6;
+            var nbrOfLinesInCompiledTemplate = 7;
+            //all generated templates got fixed no of LOC
             var lineMap = [], pos = HEADER_SZ, template;
             var pos1 = -1;
             // position of the next template start
@@ -20243,11 +20421,7 @@
                         // there is another template
                         template = templates[tplIdx];
                         pos1 = template.startLine;
-                        pos2 = template.endLine;
-                        if (pos2 < pos1) {
-                            // this case should never arrive..
-                            pos2 = pos1;
-                        }
+                        pos2 = Math.max(template.endLine, pos1);
                     } else {
                         // last template has been found
                         tplIdx = pos1 = pos2 = -1;

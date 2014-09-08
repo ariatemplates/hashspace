@@ -24,8 +24,9 @@ var Timer=klass({
 
 
 var timer = require("hsp/rt").template({ctl:[Timer,"Timer"],ref:"t"}, function(n){
-  var __s = {};
-  return [__s,n.$text({e1:[1,2,"t","secondsElapsed"]},["Elapsed time: ",1,"s"])];
+  var _t;try {_t=t} catch(e) {_t=n.g('t')};
+  var __s = {t : typeof t === 'undefined' ? n.g('t') : t};
+  return [__s,n.$text({e1:[9,"t.secondsElapsed"]},["Elapsed time: ",1,"s"])];
 });
 
 

@@ -222,7 +222,7 @@ function _generateLineMap (res, file) {
         }
     }
 
-    var nbrOfLinesInCompiledTemplate = 6;
+    var nbrOfLinesInCompiledTemplate = 7; //all generated templates got fixed no of LOC
     var lineMap = [], pos = HEADER_SZ, template;
     var pos1 = -1; // position of the next template start
     var pos2 = -1; // position of the next template end
@@ -236,11 +236,7 @@ function _generateLineMap (res, file) {
                 // there is another template
                 template = templates[tplIdx];
                 pos1 = template.startLine;
-                pos2 = template.endLine;
-                if (pos2 < pos1) {
-                    // this case should never arrive..
-                    pos2 = pos1;
-                }
+                pos2 = Math.max(template.endLine, pos1);
             } else {
                 // last template has been found
                 tplIdx = pos1 = pos2 = -1;
@@ -263,7 +259,6 @@ function _generateLineMap (res, file) {
             pos++;
         }
     }
-
     return lineMap;
 }
 },{"./jsvalidator/validator":3,"./processors":4,"./templateWalker":5}],3:[function(require,module,exports){
@@ -392,8 +387,8 @@ exports["template"] = function (node, walker) {
             globalsStatement.push( "try {_" + gnm + "=", gnm ,"} catch(e) {_" + gnm + "=n.g('", gnm ,"')};");
             scopeStatements.push(gnm + " : typeof " + gnm + " === 'undefined' ? n.g('" + gnm + "') : " + gnm);
         }
-        globalsStatement.push(CRLF);
     }
+    globalsStatement.push(CRLF);
     var globalsStatementString = globalsStatement.join("");
     scopeStr = "  var __s = {" + scopeStatements.join(", ") + "};" + CRLF;
 
@@ -677,8 +672,10 @@ exports["cptattribute"] = function (node, walker) {
  * @return {Object} the expression string and the next expression index that can be used
  */
 function formatExpression (expression, firstIndex, walker) {
-    var category = expression.category, code = '', nextIndex = firstIndex, bound = (expression.bound === false) ? 0 : 1;
+    var category = expression.category, codeStmts, code = '', nextIndex = firstIndex;
+    var bound = (expression.bound === false) ? 0 : 1;
     var exprIndex = firstIndex;
+    var expAst;
     if (category === 'objectref' || category === 'functionref') {
         var path = expression.path, argExprs = null, argExprIndex = null, args = expression.args;
         if (path.length === 0) {
@@ -829,12 +826,18 @@ function formatExpression (expression, firstIndex, walker) {
     } else if (category === 'jsexptext') {
         //compile the expression to detect errors and parse-out identifiers
         try {
-            exIdentifiers(exParser(expression.value)).forEach(function(ident){
+            expAst = exParser(expression.value);
+            exIdentifiers(expAst).forEach(function(ident){
                 walker.addGlobalRef(ident);
             });
-            code = ['e', exprIndex, ':[9,"',
+            codeStmts = ['e', exprIndex, ':[9,"',
                 ('' + expression.value).replace(/"/g, "\\\"").replace(/\\\\"/g, "\\\""),
-                '"]'].join('');
+                '"'];
+            if (expression.bound === false) {
+                codeStmts.push(',false');
+            }
+            codeStmts.push(']');
+            code = codeStmts.join('');
         } catch (err) {
             walker.logError("Invalid expression: '" + expression.value + "'", expression);
         }
@@ -845,6 +848,7 @@ function formatExpression (expression, firstIndex, walker) {
 
     return {
         code : code,
+        ast: expAst,
         exprIdx : exprIndex,
         nextIndex : nextIndex
     };
@@ -855,7 +859,7 @@ function formatExpression (expression, firstIndex, walker) {
  * @param {Node} node the current Node object as built by the treebuilder.
  * @param {Integer} nextExprIndex the index of the next expression.
  * @param {TreeWalker} walker the template walker instance.
- * @return {String} a snippet of Javascript code built from the node.
+ * @return {Object} a snippet of Javascript code built from the node.
  */
 function formatTextBlock (node, nextExprIndex, walker) {
     var content = node.content, item, exprArray = [], args = [], index = 0; // idx is the index in the $text array
@@ -885,8 +889,14 @@ function formatTextBlock (node, nextExprIndex, walker) {
             var expr = formatExpression(item, nextExprIndex, walker);
             nextExprIndex = expr.nextIndex;
             if (expr.code) {
-                exprArray.push(expr.code);
-                args[index] = expr.exprIdx; // expression index
+                if (expr.ast instanceof Array) {
+                    //it is a multi-statement expression that is not allowed in this context
+                    walker.logError("Invalid expression: " + item.value, item);
+                    args[index] = 0; // invalid expression
+                } else {
+                    exprArray.push(expr.code);
+                    args[index] = expr.exprIdx; // expression index
+                }
             } else {
                 args[index] = 0; // invalid expression
             }
@@ -894,19 +904,10 @@ function formatTextBlock (node, nextExprIndex, walker) {
         }
     }
 
-    var exprArg = "0";
-    if (exprArray.length) {
-        exprArg = '{' + exprArray.join(",") + '}';
-    }
-    var blockArgs = "[]";
-    if (args.length) {
-        blockArgs = '[' + args.join(',') + ']';
-    }
-
     return {
-        exprArg : exprArg,
+        exprArg : exprArray.length ? '{' + exprArray.join(",") + '}' : "0",
         nextIndex : nextExprIndex,
-        blockArgs : blockArgs
+        blockArgs : args.length ? '[' + args.join(',') + ']' : "[]"
     };
 }
 
@@ -1177,6 +1178,7 @@ module.exports = (function(){
         "CoreExpTextInCurly": parse_CoreExpTextInCurly,
         "CoreExpTextInBrackets": parse_CoreExpTextInBrackets,
         "InvalidCoreExpText": parse_InvalidCoreExpText,
+        "ExpressionTextBlock": parse_ExpressionTextBlock,
         "ExpressionBlock": parse_ExpressionBlock,
         "HExpression": parse_HExpression,
         "HPipeExpression": parse_HPipeExpression,
@@ -2934,7 +2936,7 @@ module.exports = (function(){
                                         if (result2 === null) {
                                           result2 = parse_LogBlock();
                                           if (result2 === null) {
-                                            result2 = parse_ExpressionBlock();
+                                            result2 = parse_ExpressionTextBlock();
                                             if (result2 === null) {
                                               result2 = parse_InvalidHTMLElement();
                                               if (result2 === null) {
@@ -2994,7 +2996,7 @@ module.exports = (function(){
                                           if (result2 === null) {
                                             result2 = parse_LogBlock();
                                             if (result2 === null) {
-                                              result2 = parse_ExpressionBlock();
+                                              result2 = parse_ExpressionTextBlock();
                                               if (result2 === null) {
                                                 result2 = parse_InvalidHTMLElement();
                                                 if (result2 === null) {
@@ -6368,38 +6370,68 @@ module.exports = (function(){
           return cachedResult.result;
         }
         
-        var result0, result1;
-        var pos0;
+        var result0, result1, result2;
+        var pos0, pos1, pos2;
         
         pos0 = clone(pos);
-        if (/^[^{}()]/.test(input.charAt(pos.offset))) {
-          result1 = input.charAt(pos.offset);
-          advance(pos, 1);
+        pos1 = clone(pos);
+        pos2 = clone(pos);
+        reportFailures++;
+        if (input.substr(pos.offset, 9) === "/template") {
+          result0 = "/template";
+          advance(pos, 9);
         } else {
-          result1 = null;
+          result0 = null;
           if (reportFailures === 0) {
-            matchFailed("[^{}()]");
+            matchFailed("\"/template\"");
           }
         }
-        if (result1 !== null) {
-          result0 = [];
-          while (result1 !== null) {
-            result0.push(result1);
-            if (/^[^{}()]/.test(input.charAt(pos.offset))) {
-              result1 = input.charAt(pos.offset);
-              advance(pos, 1);
-            } else {
-              result1 = null;
-              if (reportFailures === 0) {
-                matchFailed("[^{}()]");
+        reportFailures--;
+        if (result0 === null) {
+          result0 = "";
+        } else {
+          result0 = null;
+          pos = clone(pos2);
+        }
+        if (result0 !== null) {
+          if (/^[^{}()]/.test(input.charAt(pos.offset))) {
+            result2 = input.charAt(pos.offset);
+            advance(pos, 1);
+          } else {
+            result2 = null;
+            if (reportFailures === 0) {
+              matchFailed("[^{}()]");
+            }
+          }
+          if (result2 !== null) {
+            result1 = [];
+            while (result2 !== null) {
+              result1.push(result2);
+              if (/^[^{}()]/.test(input.charAt(pos.offset))) {
+                result2 = input.charAt(pos.offset);
+                advance(pos, 1);
+              } else {
+                result2 = null;
+                if (reportFailures === 0) {
+                  matchFailed("[^{}()]");
+                }
               }
             }
+          } else {
+            result1 = null;
+          }
+          if (result1 !== null) {
+            result0 = [result0, result1];
+          } else {
+            result0 = null;
+            pos = clone(pos1);
           }
         } else {
           result0 = null;
+          pos = clone(pos1);
         }
         if (result0 !== null) {
-          result0 = (function(offset, line, column, c) {return c.join('')})(pos0.offset, pos0.line, pos0.column, result0);
+          result0 = (function(offset, line, column, c) {return c.join('')})(pos0.offset, pos0.line, pos0.column, result0[1]);
         }
         if (result0 === null) {
           pos = clone(pos0);
@@ -6596,6 +6628,98 @@ module.exports = (function(){
         }
         if (result0 !== null) {
           result0 = (function(offset, line, column, c) {return c.join('')})(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        
+        cache[cacheKey] = {
+          nextPos: clone(pos),
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_ExpressionTextBlock() {
+        var cacheKey = "ExpressionTextBlock@" + pos.offset;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = clone(cachedResult.nextPos);
+          return cachedResult.result;
+        }
+        
+        var result0, result1, result2, result3, result4;
+        var pos0, pos1;
+        
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        if (input.charCodeAt(pos.offset) === 123) {
+          result0 = "{";
+          advance(pos, 1);
+        } else {
+          result0 = null;
+          if (reportFailures === 0) {
+            matchFailed("\"{\"");
+          }
+        }
+        if (result0 !== null) {
+          if (input.charCodeAt(pos.offset) === 58) {
+            result1 = ":";
+            advance(pos, 1);
+          } else {
+            result1 = null;
+            if (reportFailures === 0) {
+              matchFailed("\":\"");
+            }
+          }
+          result1 = result1 !== null ? result1 : "";
+          if (result1 !== null) {
+            result2 = parse___();
+            if (result2 !== null) {
+              result3 = parse_CoreExpText();
+              if (result3 !== null) {
+                if (input.charCodeAt(pos.offset) === 125) {
+                  result4 = "}";
+                  advance(pos, 1);
+                } else {
+                  result4 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"}\"");
+                  }
+                }
+                if (result4 !== null) {
+                  result0 = [result0, result1, result2, result3, result4];
+                } else {
+                  result0 = null;
+                  pos = clone(pos1);
+                }
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, ubflag, e) {
+            var r={};
+            r.bound=(ubflag.length==0);
+            r.line=line;
+            r.column=column;
+            r.type="expression";
+            r.category="jsexptext";
+            r.value = e.value;
+            return r;
+          })(pos0.offset, pos0.line, pos0.column, result0[1], result0[3]);
         }
         if (result0 === null) {
           pos = clone(pos0);
@@ -18223,6 +18347,7 @@ exports.build = function (blockList) {
 var klass = require("../../klass");
 var HExpression = require("./hExpression").HExpression;
 var htmlEntitiesToUtf8 = require("./htmlEntities").htmlEntitiesToUtf8;
+var exParser = require('../../expressions/parser');
 
 //http://www.w3.org/TR/html-markup/syntax.html#syntax-elements
 var VOID_HTML_ELEMENTS = {
@@ -18523,18 +18648,27 @@ var SyntaxTree = klass({
                     }
                 }
             } else if (block.type === "expression") {
-                if (block.category === "jsexpression") {
+
+                if (block.category === "jsexptext") {
+                    //parse the expression to detect errors
+                    //TODO(pk): avoid parsing the same expression several times
+                    try {
+                        exParser(block.value);
+                        buffer.push(block);
+                    } catch (e) {
+                        this._logError("Invalid expression: '" + block.value + "'", block);
+                    }
+                } else if (block.category === "jsexpression") {
                     // pre-process expression
                     var expr = new HExpression(block, this);
                     // inject the processed expression in the block list
                     block = blocks[nextIndex] = expr.getSyntaxTree();
-                }
-
-                if (block.category === "invalidexpression") {
+                } else if (block.category === "invalidexpression") {
                     this._logError("Invalid expression", block);
                 } else {
                     buffer.push(block);
                 }
+
             } else if (block.type === "comment") {
                 // ignore comments
             } else {
@@ -19039,7 +19173,7 @@ var SyntaxTree = klass({
 });
 exports.SyntaxTree = SyntaxTree;
 
-},{"../../klass":16,"./hExpression":9,"./htmlEntities":10}],13:[function(require,module,exports){
+},{"../../expressions/parser":15,"../../klass":16,"./hExpression":9,"./htmlEntities":10}],13:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19238,7 +19372,7 @@ var tokens, token, tokenIdx = 0;
 
 var BaseSymbol = {
     nud: function () {
-        throw new Error("Undefined nud function for: " + this.v);
+        throw new Error("Invalid expression - missing operand for the " + this.v + " operator");
     },
     led: function () {
         throw new Error("Missing operator: " + this.v);
@@ -19547,7 +19681,7 @@ function expression(rbp) {
  * @return {Object} - parsed AST
  */
 module.exports = function (input) {
-    var expr, exprs = [];
+    var expr, exprs = [], previousToken;
 
     tokens = lexer(input);
     token = undefined;
@@ -19558,10 +19692,16 @@ module.exports = function (input) {
         while(token.id !== '(end)') {
             expr = expression(0);
             exprs.push(expr);
+            previousToken = token;
             if (token.v === ',') {
                 advance(',');
             }
         }
+
+        if (previousToken.v === ',') {
+            throw new Error('Statement separator , can\'t be placed at the end of an expression');
+        }
+
         return exprs.length === 1 ? exprs[0] : exprs;
     } else {
         return {f: 0, a: 'literal', v: undefined};

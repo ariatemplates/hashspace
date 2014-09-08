@@ -1101,7 +1101,7 @@
         var tokens, token, tokenIdx = 0;
         var BaseSymbol = {
             nud: function() {
-                throw new Error("Undefined nud function for: " + this.v);
+                throw new Error("Invalid expression - missing operand for the " + this.v + " operator");
             },
             led: function() {
                 throw new Error("Missing operator: " + this.v);
@@ -1393,7 +1393,7 @@
  * @return {Object} - parsed AST
  */
         module.exports = function(input) {
-            var expr, exprs = [];
+            var expr, exprs = [], previousToken;
             tokens = lexer(input);
             token = undefined;
             tokenIdx = 0;
@@ -1403,9 +1403,13 @@
                 while (token.id !== "(end)") {
                     expr = expression(0);
                     exprs.push(expr);
+                    previousToken = token;
                     if (token.v === ",") {
                         advance(",");
                     }
+                }
+                if (previousToken.v === ",") {
+                    throw new Error("Statement separator , can't be placed at the end of an expression");
                 }
                 return exprs.length === 1 ? exprs[0] : exprs;
             } else {
@@ -1414,48 +1418,6 @@
                     a: "literal",
                     v: undefined
                 };
-            }
-        };
-    });
-    define("hsp/expressions/identifiers.js", [], function(module, global) {
-        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
-        /*
- * Copyright 2014 Amadeus s.a.s.
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-        module.exports = function getIdentifiers(tree) {
-            var partialResult;
-            if (tree instanceof Array) {
-                partialResult = [];
-                if (tree.length > 0) {
-                    for (var i = 0; i < tree.length; i++) {
-                        partialResult = partialResult.concat(getIdentifiers(tree[i]));
-                    }
-                }
-                return partialResult;
-            }
-            if (tree.a === "literal") {
-                return [];
-            } else if (tree.a === "idn") {
-                return [ tree.v ];
-            } else if (tree.a === "unr") {
-                return getIdentifiers(tree.l);
-            } else if (tree.a === "bnr") {
-                return getIdentifiers(tree.l).concat(getIdentifiers(tree.r));
-            } else if (tree.a === "tnr") {
-                return getIdentifiers(tree.l).concat(getIdentifiers(tree.r)).concat(getIdentifiers(tree.othr));
-            } else {
-                throw new Error("unknown entry" + JSON.stringify(tree));
             }
         };
     });
@@ -1574,7 +1536,11 @@
             "|": function(scope, input, pipeFnOrObj, args, target) {
                 //pipe (filter)
                 var pipeFn = typeof pipeFnOrObj === "function" ? pipeFnOrObj : pipeFnOrObj["apply"];
-                return pipeFn.apply(typeof pipeFnOrObj === "function" ? target : pipeFnOrObj, [ input ].concat(args));
+                if (pipeFn) {
+                    return pipeFn.apply(typeof pipeFnOrObj === "function" ? target : pipeFnOrObj, [ input ].concat(args));
+                } else {
+                    throw new Error("Pipe expression is neither a function nor an object with the apply() method");
+                }
             },
             "=": function(scope, target, property, value) {
                 return target[property] = value;
@@ -1802,7 +1768,7 @@
             };
         };
     });
-    define("hsp/rt/exphandler.js", [ "../klass", "./log", "../json", "../expressions/parser", "../expressions/identifiers", "../expressions/observable", "../expressions/manipulator" ], function(module, global) {
+    define("hsp/rt/exphandler.js", [ "../klass", "./log", "../json", "../expressions/parser", "../expressions/observable", "../expressions/manipulator" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -1818,7 +1784,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-        var klass = require("../klass"), log = require("./log"), json = require("../json"), exparser = require("../expressions/parser"), exidentifiers = require("../expressions/identifiers"), exobservable = require("../expressions/observable"), exmanipulator = require("../expressions/manipulator");
+        var klass = require("../klass"), log = require("./log"), json = require("../json"), exparser = require("../expressions/parser"), exobservable = require("../expressions/observable"), exmanipulator = require("../expressions/manipulator");
         var ExpHandler = klass({
             /**
      * Expression handler Used by all node to access the expressions linked to their properties Note: the same
@@ -1927,12 +1893,16 @@
             $constructor: function(desc) {
                 this.exptext = desc[1];
                 this.ast = exparser(desc[1]);
-                this.bound = exidentifiers(this.ast).length > 0;
+                this.bound = desc.length > 2 ? desc[2] : true;
                 this.manipulator = exmanipulator(desc[1], this.ast);
                 this.isMultiStatement = this.manipulator.isMultiStatement;
             },
             getValue: function(vscope, eh, defvalue) {
-                return this.manipulator.getValue(vscope, defvalue);
+                try {
+                    return this.manipulator.getValue(vscope, defvalue);
+                } catch (e) {
+                    log.warning("Error evaluating expression '" + this.exptext + "': " + e.message);
+                }
             },
             setValue: function(vscope, value) {
                 if (this.manipulator.isAssignable) {
@@ -1942,7 +1912,7 @@
                 }
             },
             getObservablePairs: function(eh, vscope) {
-                return exobservable(this.ast, vscope);
+                return this.bound ? exobservable(this.ast, vscope) : null;
             }
         });
         /**

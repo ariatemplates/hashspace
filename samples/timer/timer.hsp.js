@@ -7,8 +7,9 @@ var klass=require("hsp/klass");
 
 
 var elapsedTime = require("hsp/rt").template(["timer"], function(n){
-  var __s = {};
-  return [__s,n.$text({e1:[1,2,"timer","secondsElapsed"]},["Seconds Elapsed: ",1])];
+  var _timer;try {_timer=timer} catch(e) {_timer=n.g('timer')};
+  var __s = {timer : typeof timer === 'undefined' ? n.g('timer') : timer};
+  return [__s,n.$text({e1:[9,"timer.secondsElapsed"]},["Seconds Elapsed: ",1])];
 });
 
 

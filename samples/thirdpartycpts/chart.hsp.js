@@ -43,6 +43,7 @@ var ChartCpt=klass({
 
 
 var chart = require("hsp/rt").template({ctl:[ChartCpt,"ChartCpt"],ref:"c"}, function(n){
+
   var __s = {};
   return [__s,n.elt("canvas",{e1:[1,2,"c","width"],e2:[1,2,"c","height"]},{"width":["",1],"height":["",2]},0)];
 });

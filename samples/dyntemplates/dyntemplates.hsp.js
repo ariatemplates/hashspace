@@ -12,15 +12,17 @@ var test = require("hsp/rt").template(["ctxt"], function(n){
 
 
 var tplA = require("hsp/rt").template(["ctxt"], function(n){
-  var __s = {};
-  return [__s,n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[1,2,"ctxt","msg"]},["A: ",1," "])])];
+  var _ctxt;try {_ctxt=ctxt} catch(e) {_ctxt=n.g('ctxt')};
+  var __s = {ctxt : typeof ctxt === 'undefined' ? n.g('ctxt') : ctxt};
+  return [__s,n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[9,"ctxt.msg"]},["A: ",1," "])])];
 });
 
 
 
 var tplB = require("hsp/rt").template(["ctxt"], function(n){
-  var __s = {};
-  return [__s,n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[1,2,"ctxt","msg2"]},["B: ",1," "])])];
+  var _ctxt;try {_ctxt=ctxt} catch(e) {_ctxt=n.g('ctxt')};
+  var __s = {ctxt : typeof ctxt === 'undefined' ? n.g('ctxt') : ctxt};
+  return [__s,n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[9,"ctxt.msg2"]},["B: ",1," "])])];
 });
 
 

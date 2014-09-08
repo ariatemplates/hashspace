@@ -22,9 +22,9 @@ var personDescription =$set(exports, "personDescription", require("hsp/rt").temp
 
 
 var item = require("hsp/rt").template(["label","value"], function(n){
-  var _value;try {_value=value} catch(e) {_value=n.g('value')};
-  var __s = {value : typeof value === 'undefined' ? n.g('value') : value};
-  return [__s,n.$if({e1:[9,"value"]},1,[n.elt("div",0,0,0,[n.elt("div",0,{"class":"label"},0,[n.$text({e1:[1,1,"label"]},["",1])]),n.elt("div",0,{"class":"value"},0,[n.$text({e1:[1,1,"value"]},["",1])])])])];
+  var _value,_label;try {_value=value} catch(e) {_value=n.g('value')};try {_label=label} catch(e) {_label=n.g('label')};
+  var __s = {value : typeof value === 'undefined' ? n.g('value') : value, label : typeof label === 'undefined' ? n.g('label') : label};
+  return [__s,n.$if({e1:[9,"value"]},1,[n.elt("div",0,0,0,[n.elt("div",0,{"class":"label"},0,[n.$text({e1:[9,"label"]},["",1])]),n.elt("div",0,{"class":"value"},0,[n.$text({e1:[9,"value"]},["",1])])])])];
 });
 
 

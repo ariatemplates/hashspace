@@ -7,9 +7,9 @@ var hsp=require("hsp/rt");
 
 
 var item = require("hsp/rt").template(["text","value"], function(n){
-  var _value;try {_value=value} catch(e) {_value=n.g('value')};
-  var __s = {value : typeof value === 'undefined' ? n.g('value') : value};
-  return [__s,n.$if({e1:[9,"value"]},1,[n.elt("div",0,0,0,[n.elt("div",0,{"class":"label"},0,[n.$text({e1:[1,1,"text"]},["",1])]),n.elt("div",0,{"class":"value"},0,[n.$text({e1:[1,1,"value"]},["",1])])])])];
+  var _value,_text;try {_value=value} catch(e) {_value=n.g('value')};try {_text=text} catch(e) {_text=n.g('text')};
+  var __s = {value : typeof value === 'undefined' ? n.g('value') : value, text : typeof text === 'undefined' ? n.g('text') : text};
+  return [__s,n.$if({e1:[9,"value"]},1,[n.elt("div",0,0,0,[n.elt("div",0,{"class":"label"},0,[n.$text({e1:[9,"text"]},["",1])]),n.elt("div",0,{"class":"value"},0,[n.$text({e1:[9,"value"]},["",1])])])])];
 });
 
 

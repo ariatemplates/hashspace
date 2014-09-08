@@ -80,6 +80,7 @@ var SplitterCtrl = Class({
 
 
 var splitter = require("hsp/rt").template({ctl:[SplitterCtrl,"SplitterCtrl"],ref:"controller"}, function(n){
+
   var __s = {};
   return [__s,n.elt("div",{e1:[3,2,"controller","onMouseDown",1,2],e2:[0,1,"event"]},{"class":"splitter"},{"mousedown":1}),n.elt("div",{e1:[6,function(a0) {return ["splitter-proxy",((!(a0))? ''+"splitter-proxy-hidden":'')].join(' ');},2],e2:[1,2,"controller","active"]},{"class":["",1]},0)];
 });

@@ -6,8 +6,9 @@ var $set=require("hsp/$set");
 // edit me!
 
 var hello = require("hsp/rt").template(["name"], function(n){
-  var __s = {};
-  return [__s,n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[1,1,"name"]},["Hello ",1,"! "])])];
+  var _name;try {_name=name} catch(e) {_name=n.g('name')};
+  var __s = {name : typeof name === 'undefined' ? n.g('name') : name};
+  return [__s,n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[9,"name"]},["Hello ",1,"! "])])];
 });
 
 
