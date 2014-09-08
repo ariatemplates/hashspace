@@ -70,7 +70,11 @@ var TERNARY_OPERATORS = {
     '?': function (scope, test, trueVal, falseVal) { return test ? trueVal : falseVal; },
     '|': function (scope, input, pipeFnOrObj, args, target) {  //pipe (filter)
         var pipeFn = typeof pipeFnOrObj === 'function' ? pipeFnOrObj : pipeFnOrObj['apply'];
-        return pipeFn.apply(typeof pipeFnOrObj === 'function' ? target : pipeFnOrObj, [input].concat(args));
+        if (pipeFn) {
+            return pipeFn.apply(typeof pipeFnOrObj === 'function' ? target : pipeFnOrObj, [input].concat(args));
+        } else {
+            throw new Error('Pipe expression is neither a function nor an object with the apply() method');
+        }
     },
     '=': function (scope, target, property, value) {
         return target[property] = value;
