@@ -52,16 +52,16 @@ var hsp=require("hsp/rt"),
 <template test4(things)>
     {foreach oneThing in things}
         {if oneThing_isfirst}
-            First
+First
         {else}
             {if oneThing_islast}
-                and last
+and last
             {else}
-                then
+then
             {/if}
         {/if}
-        {oneThing}
-        <br/>
+{oneThing}
+<br/>
     {/foreach}
 </template>
 
@@ -175,7 +175,7 @@ var Sorter=klass({
 describe("ForEach Node", function () {
     function test1Count (arrayLength) {
         // return number of items produced by test 1
-        return 1 + arrayLength * 5 + 1 + 1;
+        return 1 + arrayLength * 7 + 1 + 1;
     }
 
     function test1SpanValue (n, idx) {
@@ -185,7 +185,7 @@ describe("ForEach Node", function () {
 
     function test1SpanNodeValue (node, idx) {
         // return the value of the text node in the span
-        return node.childNodes[1 + idx * 5 + 1].childNodes[0].nodeValue;
+        return node.childNodes[1 + idx * 7 + 1 + 1].childNodes[0].nodeValue.trim();
     }
 
     function test2Count (arrayLength) {
@@ -214,12 +214,12 @@ describe("ForEach Node", function () {
         var elt = doc.createElement("div");
         n.render(elt);
 
-        expect(test1SpanNodeValue(elt, 1)).to.equal("index 1: Marge (5 chars) ");
-        expect(test1SpanNodeValue(elt, 3)).to.equal("index 3: Lisa (4 chars) ");
-        expect(elt.childNodes[1 + 4 * 5 + 3].nodeValue).to.equal("Number of items: 5 "); // last if content
+        expect(test1SpanNodeValue(elt, 1)).to.equal("index 1: Marge (5 chars)");
+        expect(test1SpanNodeValue(elt, 3)).to.equal("index 3: Lisa (4 chars)");
+        expect(elt.childNodes[1 + 4 * 7 + 5].nodeValue.trim()).to.equal("Number of items: 5"); // last if content
 
-        var nd = n.childNodes[0].childNodes[2].childNodes[0].childNodes[0]; // text node for Bart
-        expect(nd.node.nodeValue).to.equal("index 2: Bart (4 chars) ");
+        var nd = n.childNodes[0].childNodes[2].childNodes[1].childNodes[0]; // text node for Bart
+        expect(nd.node.nodeValue.trim()).to.equal("index 2: Bart (4 chars)");
 
         n.$dispose();
         expect(nd.node).to.equal(null);
@@ -229,14 +229,14 @@ describe("ForEach Node", function () {
         var ds = ["Omer", "Marge", "Bart", "Lisa", "Maggie"];
         var n = test1("index", ds);
 
-        expect(n.node.childNodes.length).to.equal(1 + 5 * 5 + 1 + 1);
-        expect(test1SpanValue(n, 1)).to.equal("index 1: Marge (5 chars) ");
+        expect(n.node.childNodes.length).to.equal(1 + 5 * 7 + 1 + 1);
+        expect(test1SpanValue(n, 1)).to.equal("index 1: Marge (5 chars)");
 
         var idx = n.childNodes[0].deleteItem(1);
         hsp.refresh();
-        expect(n.node.childNodes.length).to.equal(1 + 4 * 5 + 1 + 1);
-        expect(idx).to.equal(1 + 5 - 1);
-        expect(test1SpanValue(n, 1)).to.equal("index 1: Bart (4 chars) ");
+        expect(n.node.childNodes.length).to.equal(1 + 4 * 7 + 1 + 1);
+        expect(idx).to.equal(1 + 7 - 1);
+        expect(test1SpanValue(n, 1)).to.equal("index 1: Bart (4 chars)");
 
         n.$dispose();
     });
@@ -252,19 +252,19 @@ describe("ForEach Node", function () {
         hsp.refresh();
         // new displayed array: ["Omer","Lisa","Marge","Bart","Maggie"]
         expect(n.node.childNodes.length).to.equal(test1Count(5));
-        expect(test1SpanNodeValue(elt, 1)).to.equal("index 1: Lisa (4 chars) ");
-        expect(test1SpanNodeValue(elt, 2)).to.equal("index 2: Marge (5 chars) ");
-        expect(test1SpanNodeValue(elt, 3)).to.equal("index 3: Bart (4 chars) ");
+        expect(test1SpanNodeValue(elt, 1)).to.equal("index 1: Lisa (4 chars)");
+        expect(test1SpanNodeValue(elt, 2)).to.equal("index 2: Marge (5 chars)");
+        expect(test1SpanNodeValue(elt, 3)).to.equal("index 3: Bart (4 chars)");
 
         n.childNodes[0].moveItem(0, 4); // Omer should replace Maggie
         hsp.refresh();
         // new displayed array: ["Lisa","Marge","Bart","Maggie","Omer"]
         expect(n.childNodes[0].childNodes.length).to.equal(5);
         expect(n.node.childNodes.length).to.equal(test1Count(5));
-        expect(test1SpanNodeValue(elt, 0)).to.equal("index 0: Lisa (4 chars) ");
-        expect(test1SpanNodeValue(elt, 1)).to.equal("index 1: Marge (5 chars) ");
-        expect(test1SpanNodeValue(elt, 3)).to.equal("index 3: Maggie (6 chars) ");
-        expect(test1SpanNodeValue(elt, 4)).to.equal("index 4: Omer (4 chars) ");
+        expect(test1SpanNodeValue(elt, 0)).to.equal("index 0: Lisa (4 chars)");
+        expect(test1SpanNodeValue(elt, 1)).to.equal("index 1: Marge (5 chars)");
+        expect(test1SpanNodeValue(elt, 3)).to.equal("index 3: Maggie (6 chars)");
+        expect(test1SpanNodeValue(elt, 4)).to.equal("index 4: Omer (4 chars)");
 
         n.$dispose();
     });
@@ -273,14 +273,14 @@ describe("ForEach Node", function () {
         var ds = ["Omer", "Marge", "Bart", "Lisa", "Maggie"];
         var n = test1("index", ds);
 
-        expect(test1SpanValue(n, 3)).to.equal("index 3: Lisa (4 chars) ");
+        expect(test1SpanValue(n, 3)).to.equal("index 3: Lisa (4 chars)");
 
         // item change: ["Omer","Marge","Bart","LISA","Maggie"]
         json.set(ds, 3, "LISA");
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).to.equal(5);
         expect(n.node.childNodes.length).to.equal(test1Count(5));
-        expect(test1SpanValue(n, 3)).to.equal("index 3: LISA (4 chars) ");
+        expect(test1SpanValue(n, 3)).to.equal("index 3: LISA (4 chars)");
 
         n.$dispose();
     });
@@ -297,11 +297,11 @@ describe("ForEach Node", function () {
 
         expect(n.childNodes[0].childNodes.length).to.equal(5);
         expect(n.node.childNodes.length).to.equal(test1Count(5));
-        expect(test1SpanValue(n, 0)).to.equal("index 0: Omer (4 chars) ");
-        expect(test1SpanValue(n, 1)).to.equal("index 1: Maggie (6 chars) ");
-        expect(test1SpanValue(n, 2)).to.equal("index 2: Marge (5 chars) ");
-        expect(test1SpanValue(n, 3)).to.equal("index 3: LISA (4 chars) ");
-        expect(test1SpanValue(n, 4)).to.equal("index 4: BART (4 chars) ");
+        expect(test1SpanValue(n, 0)).to.equal("index 0: Omer (4 chars)");
+        expect(test1SpanValue(n, 1)).to.equal("index 1: Maggie (6 chars)");
+        expect(test1SpanValue(n, 2)).to.equal("index 2: Marge (5 chars)");
+        expect(test1SpanValue(n, 3)).to.equal("index 3: LISA (4 chars)");
+        expect(test1SpanValue(n, 4)).to.equal("index 4: BART (4 chars)");
 
         n.$dispose();
     });
@@ -316,8 +316,8 @@ describe("ForEach Node", function () {
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).to.equal(2);
         expect(n.node.childNodes.length).to.equal(test1Count(2));
-        expect(test1SpanValue(n, 0)).to.equal("index 0: Omer (4 chars) ");
-        expect(test1SpanValue(n, 1)).to.equal("index 1: Marge (5 chars) ");
+        expect(test1SpanValue(n, 0)).to.equal("index 0: Omer (4 chars)");
+        expect(test1SpanValue(n, 1)).to.equal("index 1: Marge (5 chars)");
 
         n.$dispose();
     });
@@ -334,10 +334,10 @@ describe("ForEach Node", function () {
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).to.equal(4);
         expect(n.node.childNodes.length).to.equal(test1Count(4));
-        expect(test1SpanNodeValue(elt, 0)).to.equal("index 0: Omer (4 chars) ");
-        expect(test1SpanNodeValue(elt, 1)).to.equal("index 1: Bart (4 chars) ");
-        expect(test1SpanNodeValue(elt, 2)).to.equal("index 2: Lisa (4 chars) ");
-        expect(test1SpanNodeValue(elt, 3)).to.equal("index 3: Marge (5 chars) ");
+        expect(test1SpanNodeValue(elt, 0)).to.equal("index 0: Omer (4 chars)");
+        expect(test1SpanNodeValue(elt, 1)).to.equal("index 1: Bart (4 chars)");
+        expect(test1SpanNodeValue(elt, 2)).to.equal("index 2: Lisa (4 chars)");
+        expect(test1SpanNodeValue(elt, 3)).to.equal("index 3: Marge (5 chars)");
 
         n.$dispose();
     });
@@ -351,9 +351,9 @@ describe("ForEach Node", function () {
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).to.equal(3);
         expect(n.node.childNodes.length).to.equal(test1Count(3));
-        expect(test1SpanValue(n, 0)).to.equal("index 0: Omer (4 chars) ");
-        expect(test1SpanValue(n, 1)).to.equal("index 1: Marge (5 chars) ");
-        expect(test1SpanValue(n, 2)).to.equal("index 2: Bart (4 chars) ");
+        expect(test1SpanValue(n, 0)).to.equal("index 0: Omer (4 chars)");
+        expect(test1SpanValue(n, 1)).to.equal("index 1: Marge (5 chars)");
+        expect(test1SpanValue(n, 2)).to.equal("index 2: Bart (4 chars)");
 
         n.$dispose();
     });
@@ -370,16 +370,16 @@ describe("ForEach Node", function () {
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).to.equal(4);
         expect(n.node.childNodes.length).to.equal(test1Count(4));
-        expect(test1SpanNodeValue(elt, 0)).to.equal("index 0: Bart (4 chars) ");
-        expect(test1SpanNodeValue(elt, 1)).to.equal("index 1: Lisa (4 chars) ");
-        expect(test1SpanNodeValue(elt, 2)).to.equal("index 2: Marge (5 chars) ");
-        expect(test1SpanNodeValue(elt, 3)).to.equal("index 3: Maggie (6 chars) ");
+        expect(test1SpanNodeValue(elt, 0)).to.equal("index 0: Bart (4 chars)");
+        expect(test1SpanNodeValue(elt, 1)).to.equal("index 1: Lisa (4 chars)");
+        expect(test1SpanNodeValue(elt, 2)).to.equal("index 2: Marge (5 chars)");
+        expect(test1SpanNodeValue(elt, 3)).to.equal("index 3: Maggie (6 chars)");
 
         ds.shift();
         hsp.refresh();
         expect(n.childNodes[0].childNodes.length).to.equal(3);
         expect(n.node.childNodes.length).to.equal(test1Count(3));
-        expect(test1SpanNodeValue(elt, 0)).to.equal("index 0: Lisa (4 chars) ");
+        expect(test1SpanNodeValue(elt, 0)).to.equal("index 0: Lisa (4 chars)");
 
         n.$dispose();
     });
@@ -390,8 +390,8 @@ describe("ForEach Node", function () {
 
         expect(n.childNodes[0].childNodes.length).to.equal(2);
         expect(n.node.childNodes.length).to.equal(test1Count(2) - 1);
-        expect(test1SpanValue(n, 0)).to.equal("index 0: Omer (4 chars) ");
-        expect(test1SpanValue(n, 1)).to.equal("index 1: Marge (5 chars) ");
+        expect(test1SpanValue(n, 0)).to.equal("index 0: Omer (4 chars)");
+        expect(test1SpanValue(n, 1)).to.equal("index 1: Marge (5 chars)");
         n.$dispose();
     });
 
@@ -404,9 +404,9 @@ describe("ForEach Node", function () {
 
         expect(n.childNodes[0].childNodes.length).to.equal(3);
         expect(n.node.childNodes.length).to.equal(test1Count(3));
-        expect(test1SpanValue(n, 0)).to.equal("index 0: Omer (4 chars) ");
-        expect(test1SpanValue(n, 1)).to.equal("index 1: Marge (5 chars) ");
-        expect(test1SpanValue(n, 2)).to.equal("index 2: Lisa (4 chars) ");
+        expect(test1SpanValue(n, 0)).to.equal("index 0: Omer (4 chars)");
+        expect(test1SpanValue(n, 1)).to.equal("index 1: Marge (5 chars)");
+        expect(test1SpanValue(n, 2)).to.equal("index 2: Lisa (4 chars)");
         n.$dispose();
     });
 
@@ -427,19 +427,19 @@ describe("ForEach Node", function () {
 
         expect(n.childNodes[0].childNodes.length).to.equal(3);
         expect(n.node.childNodes.length).to.equal(test2Count(3));
-        expect(test2NodeValue(n, 0, 1)).to.equal("Person #0: Omer Simpson ");
-        expect(test2NodeValue(n, 0, 3)).to.equal("(first) ");
-        expect(test2NodeValue(n, 1, 1)).to.equal("Person #1: Marge Simpson ");
-        expect(test2NodeValue(n, 2, 1)).to.equal("Person #2: Bart Simpson ");
+        expect(test2NodeValue(n, 0, 1)).to.equal("        Person #0: Omer Simpson\n");
+        expect(test2NodeValue(n, 0, 3)).to.equal("            (first)\n");
+        expect(test2NodeValue(n, 1, 1)).to.equal("        Person #1: Marge Simpson\n");
+        expect(test2NodeValue(n, 2, 1)).to.equal("        Person #2: Bart Simpson\n");
 
         // test dynamic update
         json.set(ds.persons[1], "lastName", "SIMPSON");
         hsp.refresh();
 
         expect(n.node.childNodes.length).to.equal(test2Count(3));
-        expect(test2NodeValue(n, 0, 1)).to.equal("Person #0: Omer Simpson ");
-        expect(test2NodeValue(n, 1, 1)).to.equal("Person #1: Marge SIMPSON ");
-        expect(test2NodeValue(n, 2, 1)).to.equal("Person #2: Bart Simpson ");
+        expect(test2NodeValue(n, 0, 1)).to.equal("        Person #0: Omer Simpson\n");
+        expect(test2NodeValue(n, 1, 1)).to.equal("        Person #1: Marge SIMPSON\n");
+        expect(test2NodeValue(n, 2, 1)).to.equal("        Person #2: Bart Simpson\n");
 
         n.$dispose();
     });
@@ -471,12 +471,12 @@ describe("ForEach Node", function () {
         hsp.refresh();
 
         expect(n.node.childNodes.length).to.equal(test2Count(4));
-        expect(test2NodeValue(n, 0, 1)).to.equal("Person #0: Omer Simpson ");
-        expect(test2NodeValue(n, 0, 3)).to.equal("(first) ");
-        expect(test2NodeValue(n, 1, 1)).to.equal("Person #1: Bart Simpson ");
-        expect(test2NodeValue(n, 2, 1)).to.equal("Person #2: Lisa SIMPSON ");
-        expect(test2NodeValue(n, 3, 1)).to.equal("Person #3: Maggie S ");
-        expect(test2NodeValue(n, 3, 5)).to.equal("(last) ");
+        expect(test2NodeValue(n, 0, 1)).to.equal("        Person #0: Omer Simpson\n");
+        expect(test2NodeValue(n, 0, 3)).to.equal("            (first)\n");
+        expect(test2NodeValue(n, 1, 1)).to.equal("        Person #1: Bart Simpson\n");
+        expect(test2NodeValue(n, 2, 1)).to.equal("        Person #2: Lisa SIMPSON\n");
+        expect(test2NodeValue(n, 3, 1)).to.equal("        Person #3: Maggie S\n");
+        expect(test2NodeValue(n, 3, 5)).to.equal("            (last)\n");
 
         n.$dispose();
     });
@@ -507,10 +507,10 @@ describe("ForEach Node", function () {
         json.set(ds, "persons", ds2);
         hsp.refresh();
         expect(n.node.childNodes.length).to.equal(test2Count(2));
-        expect(test2NodeValue(n, 0, 1)).to.equal("Person #0: Fred Astaire ");
-        expect(test2NodeValue(n, 0, 3)).to.equal("(first) ");
-        expect(test2NodeValue(n, 1, 1)).to.equal("Person #1: Ginger Rogers ");
-        expect(test2NodeValue(n, 1, 5)).to.equal("(last) ");
+        expect(test2NodeValue(n, 0, 1)).to.equal("        Person #0: Fred Astaire\n");
+        expect(test2NodeValue(n, 0, 3)).to.equal("            (first)\n");
+        expect(test2NodeValue(n, 1, 1)).to.equal("        Person #1: Ginger Rogers\n");
+        expect(test2NodeValue(n, 1, 5)).to.equal("            (last)\n");
 
         n.$dispose();
     });
@@ -529,7 +529,7 @@ describe("ForEach Node", function () {
         hsp.refresh();
 
         expect(elt.childNodes.length).to.equal(8);
-        expect(elt.childNodes[5].nodeValue).to.equal("mangos ");
+        expect(elt.childNodes[5].nodeValue).to.equal("        mangos\n");
     });
 
     it("tests splice with nested ifs in a foreach loop", function () {
@@ -540,8 +540,8 @@ describe("ForEach Node", function () {
         var elt = doc.createElement("div");
         n.render(elt);
 
-        var str1 = "# foreach+# item+# if+First +# /if+AA ++# /item+# item+# if+# if+and last +# /if+# /if+BB ++# /item+# /foreach";
-        var str2 = "# foreach+# item+# if+First +# /if+AA ++# /item+# item+# if+# if+then +# /if+# /if+CC ++# /item+# item+# if+# if+and last +# /if+# /if+BB ++# /item+# /foreach";
+        var str1 = "# foreach+# item+# if+First\n+# /if+AA\n++\n+# /item+# item+# if+# if+and last\n+# /if+# /if+BB\n++\n+# /item+# /foreach";
+        var str2 = "# foreach+# item+# if+First\n+# /if+AA\n++\n+# /item+# item+# if+# if+then\n+# /if+# /if+CC\n++\n+# /item+# item+# if+# if+and last\n+# /if+# /if+BB\n++\n+# /item+# /foreach";
 
         var r = domToString(elt);
         expect(r).to.equal(str1);
@@ -562,10 +562,10 @@ describe("ForEach Node", function () {
         var elt = doc.createElement("div");
         n.render(elt);
 
-        var str1 = "# foreach+# item+# if+First +# /if+AA ++# /item+# item+# if+# if+and last +# /if+# /if+BB ++# /item+# /foreach";
-        var str2 = "# foreach+# item+# if+First +# /if+AA ++# /item+# item+# if+# if+then +# /if+# /if+BB ++# /item+# item+# if+# if+and last +# /if+# /if+CC ++# /item+# /foreach";
-        var str3 = "# foreach+# item+# if+First +# /if+AA ++# /item+# item+# if+# if+then +# /if+# /if+BB ++# /item+# item+# if+# if+then +# /if+# /if+CC ++# /item+# item+# if+# if+and last +# /if+# /if+DD ++# /item+# /foreach";
-        var str4 = "# foreach+# item+# if+First +# /if+AA ++# /item+# item+# if+# if+then +# /if+# /if+A2 ++# /item+# item+# if+# if+then +# /if+# /if+BB ++# /item+# item+# if+# if+then +# /if+# /if+CC ++# /item+# item+# if+# if+and last +# /if+# /if+DD ++# /item+# /foreach";
+        var str1 = "# foreach+# item+# if+First\n+# /if+AA\n++\n+# /item+# item+# if+# if+and last\n+# /if+# /if+BB\n++\n+# /item+# /foreach";
+        var str2 = "# foreach+# item+# if+First\n+# /if+AA\n++\n+# /item+# item+# if+# if+then\n+# /if+# /if+BB\n++\n+# /item+# item+# if+# if+and last\n+# /if+# /if+CC\n++\n+# /item+# /foreach";
+        var str3 = "# foreach+# item+# if+First\n+# /if+AA\n++\n+# /item+# item+# if+# if+then\n+# /if+# /if+BB\n++\n+# /item+# item+# if+# if+then\n+# /if+# /if+CC\n++\n+# /item+# item+# if+# if+and last\n+# /if+# /if+DD\n++\n+# /item+# /foreach";
+        var str4 = "# foreach+# item+# if+First\n+# /if+AA\n++\n+# /item+# item+# if+# if+then\n+# /if+# /if+A2\n++\n+# /item+# item+# if+# if+then\n+# /if+# /if+BB\n++\n+# /item+# item+# if+# if+then\n+# /if+# /if+CC\n++\n+# /item+# item+# if+# if+and last\n+# /if+# /if+DD\n++\n+# /item+# /foreach";
 
         var r = domToString(elt);
         expect(r).to.equal(str1);
@@ -598,7 +598,7 @@ describe("ForEach Node", function () {
         var n = test5(ds);
 
         expect(n.node.childNodes.length).to.equal(5);
-        expect(n.node.childNodes[2].nodeValue).to.equal("Omer ");
+        expect(n.node.childNodes[2].nodeValue).to.equal("        Omer\n");
 
         ds.splice(0, 1);
         hsp.refresh();
@@ -609,7 +609,7 @@ describe("ForEach Node", function () {
         }]);
         hsp.refresh();
         expect(n.node.childNodes.length).to.equal(5);
-        expect(n.node.childNodes[2].nodeValue).to.equal("Marge ");
+        expect(n.node.childNodes[2].nodeValue).to.equal("        Marge\n");
 
         ds.splice(0, 1);
         hsp.refresh();

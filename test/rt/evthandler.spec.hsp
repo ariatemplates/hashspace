@@ -52,12 +52,12 @@ function doClick (str, evt) {
 
 describe("Event Handlers", function () {
     function test2SpanNode (n, idx) {
-        return n.node.childNodes[1 + idx * 3 + 1];
+        return n.node.childNodes[1 + idx * 5 + 1 + 1];
     }
 
     function test2SpanValue (n, idx) {
         // return the value of the text node in the span
-        return test2SpanNode(n, idx).childNodes[0].nodeValue;
+        return test2SpanNode(n, idx).childNodes[0].nodeValue.trim();
     }
 
     it("tests a simple event handler", function () {
@@ -73,10 +73,10 @@ describe("Event Handlers", function () {
             }
         };
         var n = test1(dm, ctl);
-        expect(n.node.firstChild.firstChild.nodeValue).to.equal("Hello Omer! ");
+        expect(n.node.childNodes[1].childNodes[0].nodeValue.trim()).to.equal("Hello Omer!");
         expect(count).to.equal(0);
 
-        fireEvent("click",n.node.firstChild);
+        fireEvent("click",n.node.childNodes[1]);
         expect(count).to.equal(1);
         expect(lastArg).to.equal(undefined);
 
@@ -102,8 +102,8 @@ describe("Event Handlers", function () {
         var ds = ["Omer", "Marge", "Bart", "Lisa", "Maggie"];
         var n = test2("index", ds, ctl);
 
-        expect(test2SpanValue(n, 1)).to.equal("index 1: Marge ");
-        expect(test2SpanValue(n, 3)).to.equal("index 3: Lisa ");
+        expect(test2SpanValue(n, 1)).to.equal("index 1: Marge");
+        expect(test2SpanValue(n, 3)).to.equal("index 3: Lisa");
         expect(count).to.equal(0);
 
         fireEvent("click",test2SpanNode(n, 1)); 
@@ -131,10 +131,10 @@ describe("Event Handlers", function () {
         };
         var n = test3(dm);
 
-        expect(n.node.firstChild.firstChild.nodeValue).to.equal("Hello Omer! ");
+        expect(n.node.childNodes[1].childNodes[0].nodeValue.trim()).to.equal("Hello Omer!");
         expect(doClickCount).to.equal(0);
 
-        fireEvent("click",n.node.firstChild); 
+        fireEvent("click",n.node.childNodes[1]); 
         expect(doClickCount).to.equal(1);
         expect(doClickStrArg).to.equal("blah");
 

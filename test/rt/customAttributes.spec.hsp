@@ -121,14 +121,14 @@ describe("Custom attributes", function () {
 
     it("tests a simple custom attribute", function () {
         var n = test1();
-        expect(n.node.firstChild.style.height).to.equal("100px");
+        expect(n.node.childNodes[1].style.height).to.equal("100px");
         n.$dispose();
         expect(status).to.equal("Dirty");
     });
 
     it("tests a custom attribute with static value", function () {
         var n = test2();
-        expect(n.node.firstChild.style.height).to.equal("50px");
+        expect(n.node.childNodes[1].style.height).to.equal("50px");
         n.$dispose();
         expect(status).to.equal("Dirty");
     });
@@ -138,10 +138,10 @@ describe("Custom attributes", function () {
             myHeight: 25
         };
         var n = test3(ctl);
-        expect(n.node.firstChild.style.height).to.equal("25px");
+        expect(n.node.childNodes[1].style.height).to.equal("25px");
         $set(ctl, "myHeight", 90);
         hsp.refresh();
-        expect(n.node.firstChild.style.height).to.equal("90px");
+        expect(n.node.childNodes[1].style.height).to.equal("90px");
         n.$dispose();
         expect(status).to.equal("Dirty");
     });
@@ -162,11 +162,11 @@ describe("Custom attributes", function () {
             myHeight: 25
         };
         var n = test3(ctl);
-        expect(n.node.firstChild.className).to.equal("");
+        expect(n.node.childNodes[1].className).to.equal("");
         expect(handleAttributeCount).to.equal(1);
         $set(ctl, "isActive", true);
         hsp.refresh();
-        expect(n.node.firstChild.className).to.equal("active");
+        expect(n.node.childNodes[1].className).to.equal("active");
         expect(handleAttributeCount).to.equal(1);
         n.$dispose();
         expect(status).to.equal("Dirty");
@@ -174,7 +174,7 @@ describe("Custom attributes", function () {
 
     it("tests several custom attributes on same node", function () {
         var n = test4();
-        expect(n.node.firstChild.style.height).to.equal("100px");
+        expect(n.node.childNodes[1].style.height).to.equal("100px");
         n.$dispose();
         expect(status).to.equal("Dirty");
     });
@@ -183,8 +183,8 @@ describe("Custom attributes", function () {
         handlerCreationCount = 0;
         var n = test6();
         expect(handlerCreationCount).to.equal(1);
-        expect(n.node.firstChild.style.height).to.equal("50px");
-        expect(n.node.firstChild.style.width).to.equal("100px");
+        expect(n.node.childNodes[1].style.height).to.equal("50px");
+        expect(n.node.childNodes[1].style.width).to.equal("100px");
         n.$dispose();
         expect(status).to.equal("Dirty");
     });
@@ -200,7 +200,7 @@ describe("Custom attributes", function () {
     it("tests a simple custom attribute with several handlers", function () {
         hsp.registerCustomAttributes("verybigdiv", customHandler2, 1);
         var n = test1();
-        expect(n.node.firstChild.style.height).to.equal("90px");
+        expect(n.node.childNodes[1].style.height).to.equal("90px");
         n.$dispose();
         expect(status).to.equal("Clean");
     });

@@ -71,13 +71,13 @@ describe("Let statement", function () {
         var h=ht.newTestContext(), d={value:"hello"};
         test1(d).render(h.container);
 
-        expect(h(".foo").text()).to.equal("Blah hello");
+        expect(h(".foo").text()).to.equal("Blah\n        hello");
         expect(h(".bar").text()).to.equal("hello3AL");
 
         // change value dynamically
         h.$set(d,"value","salut");
 
-        expect(h(".foo").text()).to.equal("Blah salut");
+        expect(h(".foo").text()).to.equal("Blah\n        salut");
         expect(h(".bar").text()).to.equal("salut3AL");
         expect(h.logs().length).to.equal(0);
         

@@ -45,7 +45,8 @@ describe("Swipe gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             isPrimary : true,
             touches : [{
                         clientX : 0,
@@ -56,7 +57,7 @@ describe("Swipe gesture", function () {
                         clientY : 0
                     }]
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             isPrimary : false,
             touches : [{
                         clientX : 0,
@@ -83,27 +84,28 @@ describe("Swipe gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             clientX : 0,
             clientY : 0
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 10,
             clientY : 5
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 20,
             clientY : 10
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 30,
             clientY : 15
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 40,
             clientY : 21
         });
-        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+        fireEvent(touchEventMap.touchend, target, {
             clientX : 40,
             clientY : 21
         });
@@ -120,23 +122,24 @@ describe("Swipe gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             clientX : 0,
             clientY : 0
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 5,
             clientY : 0
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 10,
             clientY : 0
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 15,
             clientY : 0
         });
-        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+        fireEvent(touchEventMap.touchend, target, {
             clientX : 15,
             clientY : 5
         });

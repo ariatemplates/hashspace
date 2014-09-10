@@ -76,12 +76,12 @@ describe("If Node", function () {
         expect(n.node.firstChild.nodeType).to.equal(COMMENT_NODE);
         expect(n.node.firstChild.nodeValue).to.equal("# if");
         expect(n.node.childNodes.length).to.equal(3);
-        expect(n.node.childNodes[1].nodeValue).to.equal("Hello Omer ");
+        expect(n.node.childNodes[1].nodeValue).to.equal("        Hello Omer\n");
 
         // change first name and check update
         json.set(dm, "firstName", "Marge");
         hsp.refresh();
-        expect(n.node.childNodes[1].nodeValue).to.equal("Hello Marge ");
+        expect(n.node.childNodes[1].nodeValue).to.equal("        Hello Marge\n");
 
         json.set(dm, "firstName", null);
         hsp.refresh();
@@ -97,22 +97,22 @@ describe("If Node", function () {
         };
         var n = test2(dm);
 
-        expect(n.node.childNodes[1].nodeName).to.equal("H2");
-        expect(n.node.childNodes[1].firstChild.nodeValue).to.equal("Hello Omer");
-        expect(n.node.childNodes.length).to.equal(5);
-        expect(n.node.childNodes[3].nodeName).to.equal("#comment");
+        expect(n.node.childNodes[2].nodeName).to.equal("H2");
+        expect(n.node.childNodes[2].firstChild.nodeValue).to.equal("Hello Omer");
+        expect(n.node.childNodes.length).to.equal(7);
+        expect(n.node.childNodes[6].nodeName).to.equal("#comment");
 
         json.set(dm, "favouriteDish", "Donuts");
         hsp.refresh();
-        expect(n.node.childNodes.length).to.equal(6);
-        expect(n.node.childNodes[3].nodeName).to.equal("SPAN");
-        expect(n.node.childNodes[3].firstChild.nodeValue).to.equal("Your preferred dish: Donuts");
+        expect(n.node.childNodes.length).to.equal(10);
+        expect(n.node.childNodes[6].nodeName).to.equal("SPAN");
+        expect(n.node.childNodes[6].firstChild.nodeValue).to.equal("Your preferred dish: Donuts");
 
         json.set(dm, "firstName", null);
         hsp.refresh();
-        expect(n.node.childNodes.length).to.equal(3);
-        expect(n.node.childNodes[1].nodeName).to.equal("DIV");
-        expect(n.node.childNodes[1].firstChild.nodeValue).to.equal("Hello Simpson ");
+        expect(n.node.childNodes.length).to.equal(5);
+        expect(n.node.childNodes[2].nodeName).to.equal("DIV");
+        expect(n.node.childNodes[2].firstChild.nodeValue).to.equal("\n            Hello Simpson\n        ");
 
         n.$dispose();
     });
@@ -125,8 +125,8 @@ describe("If Node", function () {
         };
         var n = test2(dm);
 
-        var n1 = n.childNodes[0].childNodes[0];
-        var n2 = n.childNodes[0].childNodes[1].childNodes[0];
+        var n1 = n.childNodes[0].childNodes[1];
+        var n2 = n.childNodes[0].childNodes[3].childNodes[1];
         expect(n1.tag).to.equal("h2");
         expect(n1.node).not.to.equal(null);
         expect(n2.tag).to.equal("span");
@@ -136,13 +136,13 @@ describe("If Node", function () {
         json.set(dm, "firstName", null);
         hsp.refresh();
         expect(n1.node).to.equal(null);
-        expect(n.childNodes[0].childNodes[0].tag).to.equal("div");
+        expect(n.childNodes[0].childNodes[1].tag).to.equal("div");
         expect(n2.node).to.equal(null);
 
         json.set(dm, "firstName", "Marge");
         hsp.refresh();
-        expect(n.childNodes[0].childNodes[0].tag).to.equal("h2");
-        n2 = n.childNodes[0].childNodes[1].childNodes[0];
+        expect(n.childNodes[0].childNodes[1].tag).to.equal("h2");
+        n2 = n.childNodes[0].childNodes[3].childNodes[1];
         expect(n2.node).not.to.equal(null);
 
         n.$dispose();
@@ -161,7 +161,7 @@ describe("If Node", function () {
         var ch1 = n.childNodes[1];
         var ch2 = n.childNodes[1].childNodes[0];
         expect(ch1.node).not.to.equal(null);
-        expect(ch2.node.nodeValue).to.equal("Omer! ");
+        expect(ch2.node.nodeValue).to.equal("        Omer!\n");
         n.$dispose();
         expect(n.childNodes).to.equal(null);
         expect(ch1.node).to.equal(null);
@@ -179,7 +179,7 @@ describe("If Node", function () {
         var ch1 = n.childNodes[1];
         var ch2 = n.childNodes[1].childNodes[0];
         expect(ch1.node).not.to.equal(null);
-        expect(ch2.node.nodeValue).to.equal("Omer! ");
+        expect(ch2.node.nodeValue).to.equal("        Omer!\n");
         n.$dispose();
     });
 
@@ -192,7 +192,7 @@ describe("If Node", function () {
         var if1 = n.childNodes[0];
         expect(if1.childNodes.length).to.equal(1);
         var text1 = if1.childNodes[0];
-        expect(text1.node.nodeValue).to.equal("Hello ");
+        expect(text1.node.nodeValue).to.equal("     Hello\n");
 
         json.set(dm, "value", "foo");
         hsp.refresh();
@@ -202,7 +202,7 @@ describe("If Node", function () {
         hsp.refresh();
         expect(if1.childNodes.length).to.equal(1);
         text1 = if1.childNodes[0];
-        expect(text1.node.nodeValue).to.equal("Hello ");
+        expect(text1.node.nodeValue).to.equal("     Hello\n");
 
         n.$dispose();
     });
@@ -213,7 +213,7 @@ describe("If Node", function () {
         var if1 = n.childNodes[0];
         expect(if1.childNodes.length).to.equal(1);
         var text1 = if1.childNodes[0];
-        expect(text1.node.nodeValue).to.equal("Hello ");
+        expect(text1.node.nodeValue).to.equal("     Hello\n");
 
         n.$dispose();
     });

@@ -45,7 +45,8 @@ describe("Pinch gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             touches : [{
                         clientX : 0,
                         clientY : 0
@@ -61,7 +62,7 @@ describe("Pinch gesture", function () {
                         clientY : 5
                     }]
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             touches : [{
                         clientX : 0,
                         clientY : 0
@@ -74,7 +75,7 @@ describe("Pinch gesture", function () {
                         clientY : 10
                     }]
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             touches : [{
                         clientX : 0,
                         clientY : 0
@@ -87,7 +88,7 @@ describe("Pinch gesture", function () {
                         clientY : 15
                     }]
         });
-        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+        fireEvent(touchEventMap.touchend, target, {
             touches : [{
                         clientX : 0,
                         clientY : 0
@@ -110,7 +111,8 @@ describe("Pinch gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             touches : [{
                         clientX : 0,
                         clientY : 0
@@ -126,7 +128,7 @@ describe("Pinch gesture", function () {
                         clientY : 5
                     }]
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             touches : [{
                         clientX : 0,
                         clientY : 0
@@ -139,7 +141,7 @@ describe("Pinch gesture", function () {
                         clientY : 10
                     }]
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             touches : [{
                         clientX : 0,
                         clientY : 0
@@ -152,7 +154,7 @@ describe("Pinch gesture", function () {
                         clientY : 15
                     }]
         });
-        fireEvent(touchEventMap.touchend, n.node.firstChild,{
+        fireEvent(touchEventMap.touchend, target,{
             touches : [],
             changedTouches : [{
                         clientX : 0,
@@ -175,37 +177,38 @@ describe("Pinch gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             clientX : 0,
             clientY : 0,
             isPrimary : true
         });
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        fireEvent(touchEventMap.touchstart, target, {
             clientX : 20,
             clientY : 20,
             isPrimary : false
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 10,
             clientY : 5,
             isPrimary : true
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 20,
             clientY : 10,
             isPrimary : false
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 30,
             clientY : 15,
             isPrimary : true
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 40,
             clientY : 21,
             isPrimary : false
         });
-        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+        fireEvent(touchEventMap.touchend, target, {
             clientX : 40,
             clientY : 21,
             isPrimary : false

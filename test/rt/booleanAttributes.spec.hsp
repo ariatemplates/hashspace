@@ -16,14 +16,14 @@ describe('boolean attributes', function () {
         var n = tpl(model);
 
         expect(n.node.firstChild.required).to.equal(true);
-        expect(n.node.childNodes[1].checked).to.equal(false);
+        expect(n.node.childNodes[2].checked).to.equal(false);
 
         // test property change
         json.set(model, "flag", false);
         json.set(model, "flag2", true);
         hsp.refresh();
         expect(n.node.firstChild.required).to.equal(false);
-        expect(n.node.childNodes[1].checked).to.equal(true);
+        expect(n.node.childNodes[2].checked).to.equal(true);
 
         n.$dispose();
     });

@@ -23,7 +23,7 @@ describe('simple list', function () {
 
     it('should toggle message on list item click', function () {
         h('li:eq(1)').click();
-        expect(h('li:eq(1)').text()).to.equal('Marge : 38 years old');
+        expect(h('li:eq(1)').text()).to.equal('Marge\n            : 38 years old');
         expect(h('li:eq(1)').hasClass('details')).to.be.ok();
         h('li:eq(1)').click();
         expect(h('li:eq(1)').text()).to.equal('Marge');
