@@ -228,17 +228,34 @@ Please refer to their specific <a href="#elements">section</a> for more informat
 <p>Because of the space which always gets <em>inserted between the expressions</em>, it does not suit all use cases. However, this is perfect to define the <code>class</code> attribute of a HTML element for instance.</p>
 <pre><code class="lang-cs">&lt;div <span class="keyword">class</span>=<span class="string">"{'urgent':msg.urgency, msg.category}"</span>&gt;&lt;/div&gt;</code></pre>
 <h2 id="modifiers">Modifiers</h2>
-<p>TBD</p>
-<h2 id="special-html-element-attributes">Special HTML element attributes</h2>
-<h4 id="event-handlers-onclick-a-b-dothis-event-mydata-">Event handlers <code>onclick=&quot;{a.b.doThis(event, mydata)}&quot;</code></h4>
-<p>Event handler attributes of HTML elements accept function expressions.</p>
-<p>This means that instead of giving a piece of JavaScript code to be executed in the global environment, you can use the standard call mechanisms, in the environment of the current module (file).</p>
-<p>Event handlers have a particularity though: in your function call, you can pass the <code>event</code> object to your handler function. This <code>event</code> object is implicitly available in the context of your expression, but it is not automatically passed, so you need to explicitly pass it if you want to have it available in your function.</p>
-<pre><code class="lang-cs">{template example()}
+<p>It is possible to specify functions to adapt the value of an expression to the desired display, but also to provide them with arguments or to combine them through piped expressions.</p>
+<p>e.g.</p>
+<pre><code class="lang-{some.expression|modifier1:arg2:arg3|modifier2}```">
+There are two ways to <span class="keyword">use</span> modifiers:
+
+* <span class="keyword">as</span> simple functions that take the value to be modified <span class="keyword">as</span> first argument;
+* <span class="keyword">as</span> objects that expose transformation functions: <span class="keyword">if</span> the transformation method is called apply, it is implicitly used in the pipe expression, even <span class="keyword">if</span> it is not specified (you can just <span class="keyword">use</span> the object reference); an object is helpful to hold states, <span class="keyword">and</span> manage more complex cases without overloading the main controller with <span class="keyword">this</span> logic.
+
+In both cases the rest of the arguments have to be separated by colons in the expression <span class="keyword">as</span> shown in the previous snippet.
+
+In order to avoid side effects, you must pay attention in modifying <span class="keyword">and</span> returning __a copy__ of the original value passed <span class="keyword">as</span> argument, <span class="keyword">and</span> not the original value itself.
+
+<span class="comment">## Special HTML element attributes</span>
+
+<span class="comment">#### Event handlers ` onclick="{a.b.doThis(event, mydata)}"`</span>
+
+Event handler attributes of HTML elements accept <span class="function"><span class="keyword">function</span> <span class="title">expressions</span>.
+
+<span class="title">This</span> <span class="title">means</span> <span class="title">that</span> <span class="title">instead</span> <span class="title">of</span> <span class="title">giving</span> <span class="title">a</span> <span class="title">piece</span> <span class="title">of</span> <span class="title">JavaScript</span> <span class="title">code</span> <span class="title">to</span> <span class="title">be</span> <span class="title">executed</span> <span class="title">in</span> <span class="title">the</span> <span class="title">global</span> <span class="title">environment</span>, <span class="title">you</span> <span class="title">can</span> <span class="title">use</span> <span class="title">the</span> <span class="title">standard</span> <span class="title">call</span> <span class="title">mechanisms</span>, <span class="title">in</span> <span class="title">the</span> <span class="title">environment</span> <span class="title">of</span> <span class="title">the</span> <span class="title">current</span> <span class="title">module</span> <span class="params">(file)</span>.
+
+<span class="title">Event</span> <span class="title">handlers</span> <span class="title">have</span> <span class="title">a</span> <span class="title">particularity</span> <span class="title">though</span>: <span class="title">in</span> <span class="title">your</span> <span class="title">function</span> <span class="title">call</span>, <span class="title">you</span> <span class="title">can</span> <span class="title">pass</span> <span class="title">the</span> `<span class="title">event</span>` <span class="title">object</span> <span class="title">to</span> <span class="title">your</span> <span class="title">handler</span> <span class="title">function</span>. <span class="title">This</span> `<span class="title">event</span>` <span class="title">object</span> <span class="title">is</span> <span class="title">implicitly</span> <span class="title">available</span> <span class="title">in</span> <span class="title">the</span> <span class="title">context</span> <span class="title">of</span> <span class="title">your</span> <span class="title">expression</span>, <span class="title">but</span> <span class="title">it</span> <span class="title">is</span> <span class="title">not</span> <span class="title">automatically</span> <span class="title">passed</span>, <span class="title">so</span> <span class="title">you</span> <span class="title">need</span> <span class="title">to</span> <span class="title">explicitly</span> <span class="title">pass</span> <span class="title">it</span> <span class="title">if</span> <span class="title">you</span> <span class="title">want</span> <span class="title">to</span> <span class="title">have</span> <span class="title">it</span> <span class="title">available</span> <span class="title">in</span> <span class="title">your</span> <span class="title">function</span>.
+
+```<span class="title">cs</span>
+{</span>template example()}
   &lt;span onclick=<span class="string">"{handler(event)}"</span>&gt;Click me&lt;/span&gt;
 {/template}
 
-function handler(<span class="keyword">event</span>) {
+<span class="function"><span class="keyword">function</span> <span class="title">handler</span><span class="params">(event)</span> {</span>
   <span class="comment">// ...</span>
 }</code></pre>
 <hr>
@@ -381,6 +398,10 @@ function handler(<span class="keyword">event</span>) {
 </li>
 </ul>
 <hr>
+<h5 id="content-property">Content property</h5>
+<p>In order to use a <code>template</code> attribute, the template controller has to declare an attribute of such a type.</p>
+<p>When the component content is defined, it is automatically bound to this attribute (if only a <code>template</code> attribute is defined), or to the only attribute having the defaultContent flag set to true.</p>
+<hr>
 <h5 id="attributes-bindings">Attributes bindings</h5>
 <p><em>Binding</em> means linking two references, so that they point to the same value when one is changed. More concretely in this context it means:</p>
 <ul>
@@ -478,12 +499,6 @@ function handler(<span class="keyword">event</span>) {
     <span class="comment">// ...</span>
   },
 });</code></pre>
-<hr>
-<h5 id="content-property">Content property</h5>
-<p>TBD</p>
-<hr>
-<h5 id="attributes-properties">Attributes properties</h5>
-<p>TBD</p>
 <h2 id="javascript-libraries">JavaScript libraries</h2>
 <h4 id="class-utility-require-hsp-klass-">Class utility <code>require(&quot;hsp/klass&quot;)</code></h4>
 <p>A utility to define (JavaScript) classes easily.</p>
