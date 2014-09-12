@@ -4,11 +4,11 @@
         <a href="javascript:void(0)" onclick="{toggleUrgency()}">Change Urgency</a> -
         <a href="javascript:void(0)" onclick="{setCategory('personal')}">Set "Personal"</a> -
         <a href="javascript:void(0)" onclick="{setCategory('professional')}">Set "Professional"</a>
-        <div class="{'msg', 'urgent':msg.urgency, msg.category}">
+        <div class="msg {msg.category} {{'urgent':msg.urgency}}">
             Message: {msg.text}
         </div>
         <div class="note">
-            Class value: "{'msg', 'urgent':msg.urgency, msg.category}"
+            Class value: "msg {msg.category} {msg.urgency ? 'urgent' : ''}"
         </div>
     </div>
 {/template}

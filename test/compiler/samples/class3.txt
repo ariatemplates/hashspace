@@ -1,6 +1,6 @@
 ##### Template:
 {template test(msg)}
-	<div class="{msg.category, 'warning':msg.urgent, 'msg'}">
+	<div class="{msg.category} {{'warning':msg.urgent}} msg">
     Hello World
   </div>
 {/template}
@@ -14,8 +14,8 @@
 ##### Template Code
 test=[__s,
     n.elt(  "div", 
-            {e1:[6,function(a0,a1) {return [a0,((a1)? ''+"warning":''),"msg"].join(' ');},2,3],e2:[1,2,"msg","category"],e3:[1,2,"msg","urgent"]},
-            {"class":["",1]},
+            {e1:[9,"msg.category"],e2:[9,"{'warning':msg.urgent}"]},
+            {"class":["",1,"",2,"msg"]},
             0,[
                 n.$text(0,["Hello World "])
             ]

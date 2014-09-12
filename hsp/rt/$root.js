@@ -532,8 +532,7 @@ var $CptNode = klass({
                 var cv=exp.getValue(pvs,this.eh);
                 if (cv!==change.newValue) {
                     // if current value is different, we update it on the scope object that owns it
-                    var vs=this.parent.getScopeOwner(exp.path[0],pvs);
-                    exp.setValue(vs, change.newValue);
+                    exp.setValue(pvs, change.newValue);
                 }
             }
         }

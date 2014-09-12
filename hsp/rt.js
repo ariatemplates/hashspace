@@ -211,12 +211,14 @@ var customAttributesRegistry = [];
  * @param {Array|String} names the name of the attributes.
  * @param {Object} handler the attribute handler function, which can implement:
  *  - $constructor(nodeInstance, callback): used to create the handler instance.
- *  - $setValue(name, value): called each time the attribute value changed, including when the initial value is set.
+ *  - $setValue(name, stringValue): called each time the attribute value changed, including when the initial value is set.
+ *  - $setValueFromExp(name, expresionValues): called each time the attribute is refreshed, including when the initial value is set.
  *  - $onAttributesRefresh(): called at the end of the attributes'refresh process, i.e. once all attributes have their new value.
  *  - $handleEvent(event): called when an event for which the custom attribute registered for is fired.
  *  - $dispose(): used to dispose the handler instance. 
  *  It is instanciated on each element node with one of the custom attributes.
  *  WARNING: when $constructor is executed, the node instance tree is not fully built, so links with other nodes (parent, children, siblinngs) must be done in setValue.
+ *  WARNING: custom attribute handler should implement only one of $setValue and $setValueFromExp
  * @param {Integer} priority the priority of the handler, default value is 0, the higher the more priority (i.e. higher executed first).
  * @param {Array} tags the list of tags on which the handler will apply, undefined means all.
  */

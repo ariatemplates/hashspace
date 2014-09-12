@@ -12,14 +12,11 @@
 ##### Template Code
 hello=[__s,
     n.elt("div",{
-        e1:[7,2,function(i,a0,a1) {return [a0,a1][i];},2,3],
-        e2:[1,1,"person"],
-        e3:[1,1,"bar"],
-        e4:[7,3,function(i,a0) {return [a0,(1 + 2),"blah"][i];},5],
-        e5:[1,2,"person","foo"]
+        e1:[9,"person[bar]"],
+        e2:[9,"person.foo[1+2].blah"]
     },{
         "title":["",1],
-        "class":["",4]
+        "class":["",2]
     },0,[
         n.$text(0,["..."])
     ])

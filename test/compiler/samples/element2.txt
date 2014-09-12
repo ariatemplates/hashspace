@@ -27,7 +27,7 @@
 		{"type": "endelement",name:"b"},
 		{type:"element", name:"input", closed:true, attributes:[
     		{type:"attribute", name:"type", value:[{type:"text", value:"text"}]},
-    		{type:"attribute", name:"value", value:[{type:"expression", "category": "jsexpression", expType:"PropertyAccess", "bound": true, base:{type:"Variable", name:"person"}, name:"name"}]}
+    		{type:"attribute", name:"value", value:[{type:"expression", "category": "jsexptext", "value":"person.name"}]}
     	]},
     	{"type": "endelement",name:"div"}
     ]
@@ -55,7 +55,7 @@
 			]},
 			{type:"element", name:"input", closed:true, content:[], attributes:[
           		{name:"type", type:"text", value:"text"},
-          		{name:"value", type:"expression", "category": "objectref", "bound": true, "path": [ "person", "name" ]}
+          		{name:"value", type:"expression", "category": "jsexptext", "value":"person.name"}
           	]}
       ]}
     ]
@@ -78,7 +78,7 @@ test=[__s,
 					])
 				]),
 				n.elt("input", 
-					{e1:[1,2,"person","name"]},
+					{e1:[9,"person.name"]},
 					{"type":"text", "value":["",1]},
 					0
 				)
