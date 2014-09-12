@@ -14,11 +14,10 @@
 ##### Template Code
 filterLink=[__s,
     n.elt("a",
-        {   e1:[3,2,"ctl","selectFilter",1,2],
-            e2:[1,1,"filterCode"],
-            e3:[1,1,"label"]
+        {   e1:[9,"ctl.selectFilter(filterCode)"],
+            e2:[9,"label"]
         },
-        {"title":["",3]},
+        {"title":["",2]},
         {"click":1},
         [n.$text({e1:[9,"label"]},["",1," "])]
     )

@@ -6,9 +6,8 @@
 ##### Errors:
 [
   {
-    "description": "Invalid expression",
+    "description": "Invalid expression: 'doClick('blah',event,)'",
     "line": 2,
-    "column": 19,
-    "code": "doClick('blah',event,)"
+    "column": 19
   }
 ]

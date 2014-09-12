@@ -12,5 +12,6 @@
 
 ##### Template Code:
 test=[__s,
-  n.cpt([_lib,"lib","nbrfield"],{e1:[6,function(a0,a1) {return {value:a0,min:10,max:"10",reset:a1};},2,3],e2:[1,2,"d","value"],e3:[4,1,_notifyReset,0,123]},{"objliteral":["",1]},0)
+  n.cpt([_lib,"lib","nbrfield"],{e1:[9,"{value: d.value, min: 10, max: \"10\", reset: notifyReset(123)}"]},
+  {"objliteral":["",1]},0)
 ]

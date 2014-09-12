@@ -1,5 +1,4 @@
 var klass = require("../../klass");
-var HExpression = require("./hExpression").HExpression;
 var htmlEntitiesToUtf8 = require("./htmlEntities").htmlEntitiesToUtf8;
 var exParser = require('../../expressions/parser');
 
@@ -54,6 +53,10 @@ var reservedKeywords = {
     "scope": true
 };
 
+function isEventHandlerAttr(attrName) {
+    return attrName.match(/^on/i);
+}
+
 /**
  * The SyntaxTree class made to build the syntax tree from the block list from the parser. 
  * Entry point: generateTree()
@@ -93,6 +96,21 @@ var SyntaxTree = klass({
             }
         }
         this.errors.push(desc);
+    },
+
+    /**
+     * Validates expression for syntax errors
+     * @param {String} exp
+     * @return {Object} ast or undefined if expression is not valid
+     */
+    _validateExpressionBlock : function(block) {
+        //parse the expression to detect errors
+        //TODO(pk): avoid parsing the same expression several times
+        try {
+            return exParser(block.value);
+        } catch (e) {
+            this._logError("Invalid expression: '" + block.value + "'", block);
+        }
     },
 
     /**
@@ -302,27 +320,10 @@ var SyntaxTree = klass({
                     }
                 }
             } else if (block.type === "expression") {
-
-                if (block.category === "jsexptext") {
-                    //parse the expression to detect errors
-                    //TODO(pk): avoid parsing the same expression several times
-                    try {
-                        exParser(block.value);
-                        buffer.push(block);
-                    } catch (e) {
-                        this._logError("Invalid expression: '" + block.value + "'", block);
-                    }
-                } else if (block.category === "jsexpression") {
-                    // pre-process expression
-                    var expr = new HExpression(block, this);
-                    // inject the processed expression in the block list
-                    block = blocks[nextIndex] = expr.getSyntaxTree();
-                } else if (block.category === "invalidexpression") {
-                    this._logError("Invalid expression", block);
-                } else {
+                //parse the expression to detect errors
+                if (this._validateExpressionBlock(block)){
                     buffer.push(block);
                 }
-
             } else if (block.type === "comment") {
                 // ignore comments
             } else {
@@ -603,7 +604,7 @@ var SyntaxTree = klass({
      * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
      */
     _elementOrComponent : function (blockType, index, blocks, out) {
-        var node = new Node(blockType), block = blocks[index];
+        var node = new Node(blockType), block = blocks[index], blockValue, expAst;
         node.name = block.name;
         node.closed = block.closed;
         if (block.ref) {
@@ -620,7 +621,7 @@ var SyntaxTree = klass({
             var length = attribute.value.length;
 
             if (length === 0) {
-                // this case arises when the attibute is empty - so let's create an empty text node
+                // this case arises when the attribute is empty - so let's create an empty text node
                 if (attribute.value === '') {
                     // attribute has no value - e.g. autocomplete in an input element
                     outAttribute = {
@@ -639,50 +640,42 @@ var SyntaxTree = klass({
                 }
                 length = 1;
             }
+
             if (length === 1) {
                 // literal or expression
                 var type = attribute.value[0].type;
                 if (type === "text" || type === "expression") {
-                    if (type === "expression") {
-                        var value = attribute.value[0], category = value.category;
-                        if (category === "jsexpression") {
-                            // pre-process expression
-                            var expr = new HExpression(value, this);
-                            // inject the processed expression in the block list
-                            attribute.value[0] = expr.getSyntaxTree();
-                        } else if (category === "invalidexpression") {
-                            this._logError("Invalid expression", value);
-                        } else if (attribute.name.match(/^on/i) && category !== "functionref") {
-                            this._logError("Event handler attribute only support function expressions", value);
-                        }
-                    }
                     outAttribute = attribute.value[0];
                     outAttribute.name = attribute.name;
+                    if (type === "expression") {
+                        expAst = this._validateExpressionBlock(outAttribute);
+                        //verify that an event handler is a function call
+                        if (expAst && isEventHandlerAttr(attribute.name) && expAst.v !== '(') {
+                            this._logError("Event handler attribute only support function expressions", attribute.value[0]);
+                        }
+                    }
                 } else {
                     this._logError("Invalid attribute type: " + type, attribute);
                     continue;
                 }
             } else {
                 // length > 1 so attribute is a text block
-
                 // if attribute is an event handler, raise an error
-                if (attribute.name.match(/^on/i)) {
+                if (isEventHandlerAttr(attribute.name)) {
                     this._logError("Event handler attributes don't support text and expression mix", attribute);
                 }
-                // raise errors if we have invalid attributes
-                for (var j = 0; j < length; j++) {
-                    var value = attribute.value[j];
-                    if (value.type === "expression") {
-                        if (value.category === "jsexpression") {
-                            // pre-process expression
-                            var expr = new HExpression(value, this);
-                            // inject the processed expression in the block list
-                            attribute.value[j] = expr.getSyntaxTree();
-                        } else if (value.category === "invalidexpression") {
-                            this._logError("Invalid expression", value);
+
+                //check expression attributes for syntax errors
+                for (var j=0; j<length; j++) {
+                    blockValue = attribute.value[j];
+                    if (blockValue.type === "expression") {
+                        expAst = this._validateExpressionBlock(blockValue);
+                        if (expAst && isEventHandlerAttr(attribute.name) && expAst.v !== '(') {
+                            this._logError("Event handler attribute only support function expressions", attribute.value[0]);
                         }
                     }
                 }
+
                 outAttribute = {
                     name : attribute.name,
                     type : "textblock",

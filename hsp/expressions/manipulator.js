@@ -15,6 +15,7 @@
 
 var ast = require('./parser');
 var evaluator = require('./evaluator');
+var json = require("../json");
 
 /**
  * Expressions handling util that can evaluate and manipulate
@@ -54,9 +55,9 @@ module.exports = function(input, inputTree) {
             }
 
             if (tree.a === 'idn') {
-                scope[tree.v] = newValue;
+                json.set(scope, tree.v, newValue);
             } else if (tree.a === 'bnr') {
-                evaluator(tree.l, scope)[evaluator(tree.r, scope)] = newValue;
+                json.set(evaluator(tree.l, scope), evaluator(tree.r, scope), newValue);
             }
         },
         isAssignable: isAssignable,

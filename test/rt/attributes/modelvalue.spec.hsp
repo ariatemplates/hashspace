@@ -21,8 +21,8 @@ var hsp=require("hsp/rt"),
 {template inputSample(data)}
     <div class="info section">All the following inputs are synchronized:</div>
     <div class="section">
-        Comment #1: <input type="text" value="{data.comment}"/><br/>
-        Comment #2: <input type="text" model="{data.comment}"/><br/>
+        Comment #1: <input id="1" type="text" value="{data.comment}"/><br/>
+        Comment #2: <input id="2" type="text" model="{data.comment}"/><br/>
         Comment #3: <span class="inputText">{data.comment}</span><br/>
     </div>
     <div class="section">
@@ -47,7 +47,7 @@ var hsp=require("hsp/rt"),
     <div class="info section">Please type a command and press enter.</div>
     <pre>{object.commandsHistory}</pre>
     <input type="text" value="{object.value}" onkeydown="{object.keydown(event)}" placeholder="Your command"><br>
-    <input type="text" model="{object.value}" onkeydown="{object.keydown(event)}" placeholder="Your command"><br>
+    <input type="text" value="{object.value}" onkeydown="{object.keydown(event)}" placeholder="Your command"><br>
 {/template}
 
 {template html5NumberInput(model)}
