@@ -52,7 +52,7 @@ var TabBarCtrl = klass({
 var tabbar = require("hsp/rt").template({ctl:[TabBarCtrl,"TabBarCtrl"],ref:"ctrl"}, function(n){
   var _ctrl,_tab,_tab_islast;try {_ctrl=ctrl} catch(e) {_ctrl=n.g('ctrl')};try {_tab=tab} catch(e) {_tab=n.g('tab')};try {_tab_islast=tab_islast} catch(e) {_tab_islast=n.g('tab_islast')};
   var __s = {ctrl : typeof ctrl === 'undefined' ? n.g('ctrl') : ctrl, tab : typeof tab === 'undefined' ? n.g('tab') : tab, tab_islast : typeof tab_islast === 'undefined' ? n.g('tab_islast') : tab_islast};
-  return [__s,n.elt("div",0,{"class":"x-tabbar"},0,[n.elt("nav",0,{"class":"x-tabs"},0,[n.$foreach({e1:[9,"ctrl.content"]},"idx","tab",0,1,[n.$if({e1:[9,"tab.selected"]},1,[n.elt("span",0,{"class":"x-tab x-tab-selected"},0,[n.cpt([null,"tab","label"],0,0,0)])],[n.elt("a",{e1:[3,2,"ctrl","select",1,2],e2:[1,1,"idx"]},{"class":"x-tab"},{"click":1},[n.cpt([null,"tab","label"],0,0,0)])]),n.$if({e1:[9,"!tab_islast"]},1,[n.$text(0,["   "])])]),n.$text(0,[" "])]),n.elt("div",0,{"class":"x-tab-content"},0,[n.cpt([null,"ctrl","selectedTab","body"],0,0,0)])])];
+  return [__s,n.elt("div",0,{"class":"x-tabbar"},0,[n.elt("nav",0,{"class":"x-tabs"},0,[n.$foreach({e1:[9,"ctrl.content"]},"idx","tab",0,1,[n.$if({e1:[9,"tab.selected"]},1,[n.elt("span",0,{"class":"x-tab x-tab-selected"},0,[n.cpt([null,"tab","label"],0,0,0)])],[n.elt("a",{e1:[3,2,"ctrl","select",1,2],e2:[1,1,"idx"]},{"class":"x-tab","href":"javascript:void(0)"},{"click":1},[n.cpt([null,"tab","label"],0,0,0)])]),n.$if({e1:[9,"!tab_islast"]},1,[n.$text(0,["   "])])]),n.$text(0,[" "])]),n.elt("div",0,{"class":"x-tab-content"},0,[n.cpt([null,"ctrl","selectedTab","body"],0,0,0)])])];
 });
 
 

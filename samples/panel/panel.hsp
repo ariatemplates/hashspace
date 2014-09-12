@@ -23,12 +23,12 @@ var PanelController = klass({
   <#panel body="Panel A (headless): {m.text}"/>
 
   <#panel head="Panel B ({m.text}!)">
-    {m.text}! <a onclick="{update(1)}">Update model</a>
+    {m.text}! <a href="javascript:void(0)" onclick="{update(1)}">Update model</a>
   </#panel>
 
   <#panel>
-    <@head>Panel C: <a onclick="{update(10)}">Update model</a></@head>
-    <@body>{m.text}! <a onclick="{update(100)}">Update model</a></@body>
+    <@head>Panel C: <a href="javascript:void(0)" onclick="{update(10)}">Update model</a></@head>
+    <@body>{m.text}! <a href="javascript:void(0)" onclick="{update(100)}">Update model</a></@body>
   </#panel>
 {/template}
 

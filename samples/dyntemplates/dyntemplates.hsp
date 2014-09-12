@@ -1,5 +1,5 @@
 {template test(ctxt)}
-  <div><a onclick="{swapTemplate()}">Change template</a></div>
+  <div><a href="javascript:void(0)" onclick="{swapTemplate()}">Change template</a></div>
   <#ctxt.view ctxt="{ctxt}"/>
 {/template}
 
