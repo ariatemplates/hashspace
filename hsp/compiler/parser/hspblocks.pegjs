@@ -191,9 +191,9 @@ HTMLName
   {return first + next.join("");}
 
 HTMLAttName
-  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-")* 
+  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-")* endString:(":" end:([a-zA-Z] / [0-9] / "-")+ {return ":" + end.join("")})? 
   // uppercase chars are considered as error in the parse post-processor
-  {return first + next.join("");}
+  {return first + next.join("") + endString;}
 
 HTMLAttribute
   = name:HTMLAttName v:(_ "=" _ "\"" value:HTMLAttributeValue "\"" {return value;})?
@@ -211,7 +211,8 @@ HTMLAttributeText
 HTMLAttributeChar // TODO look at W3C specs
   =   "\\{" {return "\u007B"}  // { = \u007B
     / "\\\"" {return "\""}
-    / [^{\"\n\r]
+    / EOL {return "\\n"}
+    / [^{\"]
 
 LogBlock
   = "{" _ "log " _ first:CoreExpText _ next:("," _ CoreExpText)* _"}" EOS?

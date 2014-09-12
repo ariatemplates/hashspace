@@ -1,0 +1,16 @@
+##### Template:
+<template test()>
+    <div data-foo="0"></div>
+    <div data-foo-bar="1"></div>
+    <div data:foo="2"></div>
+    <div data:="3"></div>
+</template>
+
+##### Errors:
+[
+  {
+    "description": "Invalid HTML element syntax",
+    "line": 5,
+    "column": 5
+  }
+]
