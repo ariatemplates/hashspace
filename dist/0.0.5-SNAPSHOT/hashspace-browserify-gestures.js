@@ -5656,7 +5656,7 @@ var ModelValueHandler = klass({
         this._lastValues = {};
         // note: when the input event is properly implemented we don't need to listen to keyup
         // but IE8 and IE9 don't implement it completely - thus the need for keyup
-        this._inputEvents = ["click", "focus", "input", "keyup"];
+        this._inputEvents = ["click", "focus", "input", "keyup", "change"];
         nodeInstance.addEventListeners(this._inputEvents);
     },
 
