@@ -102,7 +102,7 @@ PanelController = klass({
 
 var TestCtl=klass({
       attributes:{
-        "value":{type:"string",binding:"1-way"}
+        "value":{type:"string",binding:"1-way", defaultValue: "abc"}
     }
 })
 
@@ -283,6 +283,27 @@ describe("Component attribute elements (1)", function () {
     h.$dispose();
   });
 
+  it("tests issue #164 - Attributes of type string should contain null when the bound value is null", function() {
+    var h=ht.newTestContext();
+    var m={prop:{value: null}};
+    test7(m).render(h.container);
+
+    expect(h(".content").text()).to.equal("Value:");
+
+    h.$dispose();
+  });
+
+  //TODO: fix this test or remove it if not valid
+  /*it("tests issue #164 - Attributes of type string contain string defaultValue when the bound value is undefined", function() {
+    var h=ht.newTestContext();
+    var m={prop:{}};
+    test7(m).render(h.container);
+    
+    expect(h(".content").text()).to.equal("Value:abc");
+
+    h.$dispose();
+  });*/
+
   it("tests invalid component content", function() {
     var h=ht.newTestContext();
     var m={panel:panel,text:"Hello World"}
@@ -295,6 +316,8 @@ describe("Component attribute elements (1)", function () {
     h.logs.clear();
     h.$dispose();
   });
+
+
 
   // TODO
   // properly dispose generated properties
