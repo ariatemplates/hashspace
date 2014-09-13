@@ -104,6 +104,21 @@ exports["text"] = function (node, walker) {
 };
 
 /**
+ * Generates a comment node.
+ * @param {Node} node the current Node object as built by the treebuilder.
+ * @param {TreeWalker} walker the template walker instance.
+ * @return {String} a snippet of Javascript code built from the node.
+ */
+exports["htmlcomment"] = function (node, walker) {
+    if (node.value === undefined) {
+        console.dir(node);
+        return "n.$comment(\"\")";
+    }
+
+    return ["n.$comment(\"", escapeNewLines(node.value.replace(/"/g, "\\\"")), "\")"].join('');
+};
+
+/**
  * For a given value double it's definition returning "value",value.
  * This method should only be called on object literals (strings).
  * @param {String} value the initial value.

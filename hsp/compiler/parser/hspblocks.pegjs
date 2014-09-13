@@ -135,7 +135,7 @@ CommentBlock
 
 HTMLCommentBlock
   = "<!--" chars:HTMLCommentChar* "-->"
-  {return {type:"comment", value:chars.join('')}}
+  {return {type:"htmlcomment", value:chars.join(''), line:line, column:column}}
 
 HTMLCommentChar
   = !"-" "-" !">" {return "-"}

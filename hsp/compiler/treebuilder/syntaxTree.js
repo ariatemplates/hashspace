@@ -779,6 +779,22 @@ var SyntaxTree = klass({
     },
 
     /**
+     * Manages HTML comment blocks.
+     * @param {Array} blocks the full list of blocks.
+     * @param {Integer} index the index of the block to manage.
+     * @param {Array} out the output as an array of Node.
+     * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
+     */
+    __htmlcomment : function (index, blocks, out) {
+        var node = new Node("htmlcomment"), block = blocks[index];
+        node.value = block.value;
+        node.line = block.line;
+        node.column = block.column;
+        out.push(node);
+        return index;
+    },
+
+    /**
      * Captures isolated end elements to raise an error.
      * @param {Array} blocks the full list of blocks.
      * @param {Integer} index the index of the block to manage.
