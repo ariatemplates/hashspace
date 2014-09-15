@@ -27,7 +27,7 @@
       {"type": "text","value": " "},
       {"type": "comment","value": " comment 2"},
       {"type": "text","value": " "},
-      {"type": "comment","value": " another comment\n\t   on multiple \n\t   lines \n\t   {/template}\n\t   "},
+      {"type": "htmlcomment","value": " another comment\n\t   on multiple \n\t   lines \n\t   {/template}\n\t   "},
       {"type": "text","value": " ... "},
       {"type": "endif"}
     ]
@@ -56,7 +56,17 @@
         "content1": [
           {
             "type": "text",
-            "value": "   ... "
+            "value": "  "
+          },
+          {
+            "type": "htmlcomment",
+            "value": " another comment\n\t   on multiple \n\t   lines \n\t   {/template}\n\t   ",
+            "line": 5,
+            "column": 5
+          },
+          {
+            "type": "text",
+            "value": " ... "
           }
         ]
       }
@@ -68,6 +78,8 @@
 hello=[__s,
   n.$text(0,["Hello  World!"]),
   n.$if( {e1:[9,"world"]}, 1, [
-      n.$text(0,["   ... "])
+      n.$text(0,["  "]),
+      n.$comment(" another comment\n     on multiple \n     lines \n     {/template}\n     "),
+      n.$text(0,[" ... "])
   ])
 ]

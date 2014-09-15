@@ -266,6 +266,7 @@ var nodes = {};
 
 var nodeList = [
     "$text", require("./rt/$text"),
+    "$comment", require("./rt/$comment"),
     "$if", require("./rt/$if"),
     "$foreach", require("./rt/$foreach"),
     "elt", require("./rt/eltnode"),
