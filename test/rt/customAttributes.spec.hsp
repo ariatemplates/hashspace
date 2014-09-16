@@ -14,7 +14,7 @@ var klass = klass=require("hsp/klass");
 {/template}
 
 {template test3(ctl)}
-    <div style="height: 20px" customheightdiv="{ctl.myHeight}" class="{'active': ctl.isActive}">
+    <div style="height: 20px" customheightdiv="{ctl.myHeight}" class="{{'active': ctl.isActive}}">
         <span>Test</span>
     </div>
 {/template}

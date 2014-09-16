@@ -1,6 +1,6 @@
 ##### Template:
 {template test(msg)}
-	<div class="{}">
+	<div class="{{}}">
     Hello World
   </div>
 {/template}
@@ -14,8 +14,8 @@
 ##### Template Code
 test=[__s,
     n.elt(  "div", 
-            0,
-            {"class":""},
+            {e1:[9,"{}"]},
+            {"class":["",1]},
             0,[
                 n.$text(0,["Hello World "])
             ]

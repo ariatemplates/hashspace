@@ -209,7 +209,7 @@ HTMLAttribute
   }
 
 HTMLAttributeValue
-  = (HTMLAttributeText / ExpressionBlock)*
+  = (HTMLAttributeText / ExpressionTextBlock)*
 
 HTMLAttributeText
   = chars:HTMLAttributeChar+

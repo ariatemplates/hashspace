@@ -117,7 +117,7 @@ lib.NbrField = klass({
 
 
 {template nbrfield using c:lib.NbrField}
-  <input type="text" model="{c.internalValue}" class="{'nbrfield','error': c.invalidValue, 'mandatory': c.mandatory}"/>
+  <input type="text" model="{c.internalValue}" class="nbrfield {{'error': c.invalidValue, 'mandatory': c.mandatory}}"/>
   <input type="button" value="..." onclick="{c.resetField()}"/>
 {/template}
 

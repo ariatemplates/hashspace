@@ -437,6 +437,10 @@ var TSimpleAtt = klass({
 
     getValue : function (eh, vscope, defvalue) {
         return this.value;
+    },
+
+    getExprValues: function(eh, vscope, defvalue) {
+        return [this.value];
     }
 });
 
@@ -470,12 +474,26 @@ var TExpAtt = klass({
 
         for (var i = 0; sz > i; i++) {
             // odd elements are variables
-            if (i % 2)
-                buf.push(eh.getValue(tcfg[i], vscope, defvalue));
-            else
-                buf.push(tcfg[i]);
+            buf.push(i % 2 ? eh.getValue(tcfg[i], vscope, defvalue) : tcfg[i]);
         }
+
         return buf.join("");
+    },
+
+    /**
+     * Returns an array of text values / evaluated expression values
+     * @param eh
+     * @param vscope
+     * @param defvalue
+     * @returns {Array}
+     */
+    getExprValues: function(eh, vscope, defvalue) {
+        var textConfig = this.textcfg, result = [];
+        for (var i = 0; i < textConfig.length; i++) {
+            // odd elements are variables
+            result.push(i % 2 ? eh.getValue(textConfig[i], vscope, defvalue) : textConfig[i]);
+        }
+        return result;
     }
 });
 

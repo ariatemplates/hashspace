@@ -18,8 +18,8 @@ var $set = require('hsp/$set');
 
 {template test1(model)}
     <div class="test"></div>
-    <div class="{'active': model.isActive}"></div>
-    <div class="{'base', 'active': model.isActive}"></div>
+    <div class="{{'active': model.isActive}}"></div>
+    <div class="base {{'active': model.isActive}}"></div>
     <div class="{model.list}"></div>
     <div class="base {model.more}"></div>
 {/template}

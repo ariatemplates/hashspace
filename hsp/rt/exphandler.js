@@ -156,6 +156,15 @@ var PrattExpr = klass({
         }
     },
 
+    executeCb : function (evt, eh, vscope) {
+        var cbScope = Object.create(vscope);
+        //create a throw-away scope to expose additional identifiers to
+        //callback expression
+        cbScope.event = evt;
+
+        return this.getValue(cbScope, eh);
+    },
+
     getObservablePairs : function (eh, vscope) {
         return this.bound ? exobservable(this.ast, vscope) : null;
     }

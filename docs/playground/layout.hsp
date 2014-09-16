@@ -46,7 +46,7 @@ var DescriptionCtrl = Class({
 {export template mainLayout(data, playground)}
     <#sampleList data="{data}" playground="{playground}"/>
 
-    <div class="{'hsp-sample', 'hsp-sample-full': data.navCollapsed}" onclick="{hideNavHover(event, data)}">
+    <div class="hsp-sample {{'hsp-sample-full': data.navCollapsed}}" onclick="{hideNavHover(event, data)}">
         <!--div class="actions">
             <a href="" title="Toggle code panel"><span class="icon icon-code icon-active"></span></a>
             <a href="" title="Toggle description panel"><span class="icon icon-preview icon-active"></span></a>
@@ -102,7 +102,7 @@ function hideNavHover(event, data) {
 }
 
 {template sampleList(data, playground)}
-    <div class="{'samples-list', 'samples-list-collapsed': data.navCollapsed}"
+    <div class="samples-list {{'samples-list-collapsed': data.navCollapsed}}"
         onclick="{hideNavHover(event, data)}">
 
         <a href="" class="collapse" title="{data.navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}" onclick="{collapseNav(event, data, playground)}"><span class="icon"></span></a>
@@ -120,7 +120,7 @@ function hideNavHover(event, data) {
                 {if sample.category}
                     <div class="category">{sample.category}</div>
                 {else}
-                    <div class="{'item', 'selected': data.sampleIndex === index}">
+                    <div class="item {{'selected': data.sampleIndex === index}}">
                         <a href="{'#' + sample.folder}">{sample.title}</a>
                     </div>
                 {/if}

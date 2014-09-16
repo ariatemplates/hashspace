@@ -51,7 +51,7 @@ var ClockController=klass({
 		    // minute markers
         	{foreach idx,m in c.minuteMarkers}
         		// {foreach i in [1..60]} should be supported in a future version
-          		<line class="{'major':m.major,'minor':!m.major}" y1="{m.major?35:42}"
+          		<line class="{{'major':m.major,'minor':!m.major}}" y1="{m.major?35:42}"
           		y2="45" transform="rotate({360*idx/c.minuteMarkers.length})"/>
         	{/foreach}
 		    // hour hand

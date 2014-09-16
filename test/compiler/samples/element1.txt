@@ -15,11 +15,12 @@
     "content": [
     	{type:"element", name:"div", closed:false, attributes:[
     		{type:"attribute", name:"title", value:[{type:"text", value:"Some text"}]},
-    		{type:"attribute", name:"id", value:[{type:"expression", "category": "jsexpression", expType:"PropertyAccess", "bound": true, base:{type:"Variable", name:"person"}, name:"id"}]},
+    		{type:"attribute", name:"id", value:[{type:"expression", "category": "jsexptext", "bound": true,
+    		value:"person.id"}]},
     		{type:"attribute", name:"class", value:[
-    			{type:"expression", "category": "jsexpression", expType:"PropertyAccess", "bound": true, base:{type:"Variable", name:"person"}, name:"gender"},
+    			{type:"expression", "category": "jsexptext", "bound": true, value:"person.gender"},
     			{type:"text", value:" "},
-    			{type:"expression", "category": "jsexpression", expType:"PropertyAccess", "bound": true, base:{type:"Variable", name:"person"}, name:"category"}
+    			{type:"expression", "category": "jsexptext", "bound": true, value:"person.category"}
     		]}
     	]},
     	{"type": "text","value": "Hello "},
@@ -40,11 +41,11 @@
     "content": [
       {type:"element", name:"div", closed:false, attributes:[
           {name:"title", type:"text", value:"Some text"},
-          {name:"id", type:"expression", "category": "objectref", "bound": true, "path": [ "person", "id" ]},
+          {name:"id", type:"expression", "category": "jsexptext", "bound": true, "value": "person.id"},
           {name:"class", type:"textblock", content:[
-          	{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "gender" ]},
+          	{type:"expression", "category": "jsexptext", "bound": true, "value": "person.gender"},
 			{type:"text", value:" "},
-			{type:"expression", "category": "objectref", "bound": true, "path": [ "person", "category" ]}
+			{type:"expression", "category": "jsexptext", "bound": true, "value": "person.category"}
           ]}
       ],"content": [
       	{ "type": "textblock", "content": [
@@ -60,7 +61,7 @@
 ##### Template Code
 test=[__s,
 	n.elt(	"div", 
-			{e1:[1,2,"person","id"],e2:[1,2,"person","gender"],e3:[1,2,"person","category"]} ,
+			{e1:[9,"person.id"],e2:[9,"person.gender"],e3:[9,"person.category"]} ,
 			{"title":"Some text","id":["",1],"class":["",2," ",3]},
 			0,[
 				n.$text({e1:[9,"person.name"]},["Hello ",1,"! "])

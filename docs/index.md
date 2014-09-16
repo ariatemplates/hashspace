@@ -21,7 +21,7 @@ Hashspace turns static HTML pages into dynamic templates with the help of a few 
 {if tasklist.length > 0}
   <ul>
   {foreach task in tasklist}
-    <li class="{'done': task.completed, 'ongoing': !task.completed}">
+    <li class="{{'done': task.completed, 'ongoing': !task.completed}}">
       {task.description}
     </li>
   {/foreach}
