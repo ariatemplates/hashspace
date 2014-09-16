@@ -311,12 +311,14 @@ var EltNode = klass({
                 var customHandlers = this._custAttrHandlers[name];
                 if (customHandlers) {
                     var newValue = attribute.getValue(expressionHandler, vscope, null);
-                    if (this._custAttrData[name].value !== newValue) {
-                        for (var j = 0; customHandlers && j < customHandlers.length; j++) {
-                            var handlerInstance = customHandlers[j].instance;
-                            if (handlerInstance.$setValue) {
-                                handlerInstance.$setValue(name, newValue);
-                            }
+                    var stringValueHasChanged = this._custAttrData[name].value !== newValue;
+                    var newExprValues = attribute.getExprValues(expressionHandler, vscope, null);
+                    for (var j = 0; customHandlers && j < customHandlers.length; j++) {
+                        var handlerInstance = customHandlers[j].instance;
+                        if (handlerInstance.$setValueFromExp) {
+                            handlerInstance.$setValueFromExp(name, newExprValues);
+                        } else if (handlerInstance.$setValue && stringValueHasChanged) {
+                            handlerInstance.$setValue(name, newValue);
                         }
                     }
                     this._custAttrData[name].value = newValue;

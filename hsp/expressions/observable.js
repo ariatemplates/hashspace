@@ -54,7 +54,7 @@ module.exports = function getObservablePairs(tree, scope) {
         return [];
     } else if (tree.a === 'idn') {
         //TODO: deal with "parent scopes" (traverse up using +parent) => should it be done here?
-        return scope[tree.v] instanceof Array ? [[scope, tree.v], [scope[tree.v], null]] : [[scope, tree.v]];
+        return scope[tree.v] && scope[tree.v] instanceof Array ? [[scope, tree.v], [scope[tree.v], null]] : [[scope, tree.v]];
     } else if (tree.a === 'unr') {
         return getObservablePairs(tree.l, scope);
     } else if (tree.a === 'bnr') {
