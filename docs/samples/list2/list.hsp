@@ -49,7 +49,7 @@ var ListCtrl = klass({
         {foreach idx,itm in lc.content}
           {if itm.tagName==="@option"}
             <li class="opt" onclick="{lc.select(itm.value)}">
-              <span class="{'item','highlight':itm.selected}"><#itm.label/></span>
+              <span class="item {{'highlight':itm.selected}}"><#itm.label/></span>
             </li>
           {else if itm.tagName==="@separator" &&  !itm_isfirst && !itm_islast}
             <hr/>
