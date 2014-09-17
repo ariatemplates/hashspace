@@ -1,7 +1,7 @@
 ##### Template:
-{template test(path, ctl, person)}
+<template test(path, ctl, person)>
 	<img onclick="return false"/>
-{/template}
+</template>
 
 ##### Parsed Tree
 "skip"

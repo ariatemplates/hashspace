@@ -36,7 +36,7 @@ var ListCtrl = klass({
 });
 
 // simple list template
-{template list using lc:ListCtrl}
+<template list using lc:ListCtrl>
   // content is the list of attribute sub-elements
   <div class="list {lc.class}">
     {if lc.head}
@@ -58,10 +58,10 @@ var ListCtrl = klass({
       </ul>
     {/if}
   </div>
-{/template}
+</template>
 
 // test template
-{template test(d)}
+<template test(d)>
   Click on an item to select it:
 
   <#list head="Static list" class="listcpt" onselect="{showSelection(event.value)}">
@@ -81,7 +81,7 @@ var ListCtrl = klass({
   </#list>
 
   {if d.selectedItem!==null}Last selected value: {d.selectedItem}{/if}
-{/template}
+</template>
 
 var count=0, model={
   itemName: "item",

@@ -1,7 +1,7 @@
 var klass=require("hsp/klass");
 
 // nt is an instance of NumberTester
-{template test(nt)}
+<template test(nt)>
     <div>
         Number: <span class="textvalue">{nt.number}</span>
         {if nt.number==0}
@@ -21,7 +21,7 @@ var klass=require("hsp/klass");
         <a href="javascript:void(0)" onclick="{nt.increment(1)}">Increment Number</a> -
         <a href="javascript:void(0)" onclick="{nt.increment(-1)}">Decrement Number</a>
     </div>
-{/template}
+</template>
 
 // klass is a little utility to create a JS object constructor
 // from a simple JSON structure - main goals are to

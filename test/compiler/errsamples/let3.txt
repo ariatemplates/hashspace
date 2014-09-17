@@ -1,5 +1,5 @@
 ##### Template:
-{template hello(person)}
+<template hello(person)>
   <#x.mycpt class="foo">
     {let p=person} // OK
     {foreach n in p.names}
@@ -16,7 +16,7 @@
       {let p=person} // KO
     </@body>
   </#x.cpt2>
-{/template}
+</template>
 
 ##### Error:
 [

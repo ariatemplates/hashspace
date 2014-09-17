@@ -30,12 +30,12 @@ First, let's create a simple HSP file and a controller:
 ````
 var HelloCtrl = require("./HelloCtrl");
 
-{template Hello using ctrl:HelloCtrl}
+<template Hello using ctrl:HelloCtrl>
    <p>Hello, {ctrl.name}!</p>
 
    <input model="{ctrl.name}">
    <button onclick="{ctrl.clear()}">Clear</button>
-{/template}
+</template>
 
 module.exports = Hello;
 ```

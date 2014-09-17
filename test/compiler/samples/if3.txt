@@ -1,10 +1,10 @@
 ##### Template:
-{template test}
+<template test>
    {if true} Boolean {/if}
    {if 123.4} Number {/if}
    {if ('ok')} String1 {/if}
    {if "o\"k"} String2 {/if}
-{/template}
+</template>
 
 ##### Parsed Tree
 

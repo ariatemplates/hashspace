@@ -1,5 +1,5 @@
 ##### Template:
-{template test(value1, value2)}
+<template test(value1, value2)>
    Hello
 
    {if value1} World {/if}
@@ -10,7 +10,7 @@
    		B
    {/if}
 
-{/template}
+</template>
 
 ##### Parsed Tree
 

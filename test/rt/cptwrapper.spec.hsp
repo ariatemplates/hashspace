@@ -115,24 +115,23 @@ lib.NbrField = klass({
   }
 })
 
-
-{template nbrfield using c:lib.NbrField}
+<template nbrfield using c:lib.NbrField>
   <input type="text" model="{c.internalValue}" class="nbrfield {{'error': c.invalidValue, 'mandatory': c.mandatory}}"/>
   <input type="button" value="..." onclick="{c.resetField()}"/>
-{/template}
+</template>
 
 lib.nbrfield=nbrfield;
 
-{template test(d)}
+<template test(d)>
   <input type="text" value="{d.value}"/>
   <#lib.nbrfield value="{d.value}" min="-10" max="10" onbeforereset="{notifyReset(123,event)}" 
   onafterreset="{notifyReset2(event.type,event)}"/>
-{/template}
+</template>
 
-{template test2(d)}
+<template test2(d)>
   <input type="text" value="{d.value}"/>
   <#lib.nbrfield value="{d.value}" min="-10" max="10"/>
-{/template}
+</template>
 
 var resetCount=0, lastResetArg=0, lastEvtType="";
 function notifyReset(arg,evt) {
@@ -162,9 +161,9 @@ var HelloCtrl = klass({
     }
 });
 
-{template test3 using ctrl:HelloCtrl}
+<template test3 using ctrl:HelloCtrl>
    <input type="checkbox" model="{ctrl.inputChecked}">
-{/template}
+</template>
 
 describe("Component Nodes", function () {
   var ELEMENT_NODE=1;

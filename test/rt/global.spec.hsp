@@ -17,42 +17,42 @@
 var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 
-{template test1()}
+<template test1()>
     <div class="content">Hello {msg}</div>
-{/template}
+</template>
 
-{template test2()}
+<template test2()>
     <div class="content">{g.msg}!</div>
-{/template}
+</template>
 
-{template w1(message)}
+<template w1(message)>
     <span class="wmsg">{message}</span>
-{/template}
+</template>
 
-{template test3(msg)}
+<template test3(msg)>
     <div class="content">
         <#mywidget message="{msg}"/>
     </div>
-{/template}
+</template>
 
-{template test4(msg)}
+<template test4(msg)>
     <div class="content">
         <#lib.widget message="{msg}"/>
     </div>
-{/template}
+</template>
 
-{template test5(values)}
+<template test5(values)>
     <div class="content">
         Values: {mytransform(values)}
     </div>
-{/template}
+</template>
 
-{template test6(values)}
+<template test6(values)>
     {let t=new TestTransform("A")}
     <div class="content">
         Values: {t.process(values)}
     </div>
-{/template}
+</template>
 
 
 describe("Hashspace global object", function () {

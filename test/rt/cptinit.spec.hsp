@@ -27,39 +27,39 @@ var TestCtrl=klass({
   }
 });
 
-{template cpt using c:TestCtrl}
+<template cpt using c:TestCtrl>
     <div class="cpt">{c.value}</div>
-{/template}
+</template>
 
-{template test1(d)}
+<template test1(d)>
       {if d.show}
           <div class="foo">
               <#cpt value="{d.getValue()}" oninit="{d.update()}"/>
           </div>
       {/if}
-{/template}
+</template>
 
-{template test2(items)}
+<template test2(items)>
       {foreach itm in items}
           <div class="foo">
               <#cpt value="{itm.getValue()}" oninit="{itm.update()}"/>
           </div>
       {/foreach}
-{/template}
+</template>
 
-{template tpA}
+<template tpA>
   AA
-{/template}
+</template>
 
-{template tpB(data)}
+<template tpB(data)>
   <div class="foo">
       <#cpt value="{data.getValue()}" oninit="{data.update()}"/>
   </div>
-{/template}
+</template>
 
-{template test3(ctxt,d)}
+<template test3(ctxt,d)>
     <#ctxt.tpl data="{d}"/>
-{/template}
+</template>
 
 var Model=klass({
   $constructor:function(v) {

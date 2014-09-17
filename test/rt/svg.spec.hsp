@@ -2,11 +2,11 @@ var hsp = require("hsp/rt");
 var browser = require("hsp/rt/browser");
 var ht = require("hsp/utils/hashtester");
 
-{template svgTest()}
+<template svgTest()>
     <svg>
         <circle cx="60" cy="60" r="50" stroke="black" stroke-width="5" fill="silver"/>
     </svg>
-{/template}
+</template>
 
 describe('svg support', function() {
 

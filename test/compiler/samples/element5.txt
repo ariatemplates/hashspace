@@ -1,9 +1,9 @@
 ##### Template:
-{template filterLink(ds, ctl, label, filterCode)   }
+<template filterLink(ds, ctl, label, filterCode)   >
     <a onclick="{ctl.selectFilter(filterCode)}" title="{label}">
         {label}
     </a>
-{/template}
+</template>
 
 ##### Parsed Tree
 "skip"

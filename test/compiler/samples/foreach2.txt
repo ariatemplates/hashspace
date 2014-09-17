@@ -1,5 +1,5 @@
 ##### Template:
-{template test(label, passengers)}
+<template test(label, passengers)>
   {foreach k,name in passengers.names}
     {if name_isfirst}
       \<\<
@@ -9,7 +9,7 @@
       >>
     {/if}
   {/foreach}
-{/template}
+</template>
 
 ##### Parsed Tree
 

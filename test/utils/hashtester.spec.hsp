@@ -2,7 +2,7 @@ var ht=require("hsp/utils/hashtester"),
     log=require("hsp/rt/log"),
     $set=require("hsp/$set");
 
-{template testContent(data)}
+<template testContent(data)>
     <div class="foo1 foo2">
         <span class="sometext" title="Hello World!">Here is some text</span>
         <span class="count" onclick="{increaseCount(data,1)}" ondblclick="{increaseCount(data,5)}">{data.count}</span>
@@ -12,7 +12,7 @@ var ht=require("hsp/utils/hashtester"),
         <li class="foo2 bar2">item 2</li>
         <li>item 3</li>
     </ul>
-{/template}
+</template>
 
 function increaseCount(d,incr) {
     $set(d,"count",d.count+incr);

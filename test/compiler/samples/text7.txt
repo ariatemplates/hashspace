@@ -1,8 +1,8 @@
 ##### Template:
 var person = {name : "World"};
-{template hello()}
+<template hello()>
 	Hello {person.name}!
-{/template}
+</template>
 
 ##### Parsed Tree:
 "skip"

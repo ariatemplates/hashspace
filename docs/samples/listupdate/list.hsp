@@ -1,4 +1,4 @@
-{template list(persons)}
+<template list(persons)>
     <div> 
         <div class="msg">
             <a href="javascript:void(0)" onclick="{addElement()}">Add element</a> -
@@ -18,7 +18,7 @@
     <div class="msg">
         Number of people in the list: {persons.length}
     </div>
-{/template}
+</template>
 
 var persons=[
     {firstName:"Homer",lastName:"Simpsons"},

@@ -1,7 +1,7 @@
 ##### Template:
-{template test(person)}
+<template test(person)>
   {person.list|orderBy:"firstName"}
-{/template}
+</template>
 
 ##### Parsed Tree:
 [

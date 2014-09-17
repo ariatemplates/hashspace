@@ -2,17 +2,17 @@
 var x="text1";
 function func() {var x="text2"};
 
-{template hello1}
+<template hello1>
    Hello World!
-{/template}
+</template>
 
 // comment
 function func2(z) {return z;}
 
-{template hello1bis (arg1, arg2)}
+<template hello1bis (arg1, arg2)>
 	Hello
 	Again!
-{/template}
+</template>
 var z;
 ##### Parsed Tree:
 

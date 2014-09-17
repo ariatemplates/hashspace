@@ -1,11 +1,11 @@
 ##### Template:
-{template hello(person)}
+<template hello(person)>
     {if person.isAdult}
         blah
     {else if person.isMinor/}
         blah
     {/if}
-{/template}
+</template>
 
 ##### Error:
 [

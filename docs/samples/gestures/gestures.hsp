@@ -1,6 +1,6 @@
 require('hsp/gestures/index').register();
 
-{template gestures(msgList)}
+<template gestures(msgList)>
     <div class="touchboard" style="height:200px; background: #27AAFC;text-align:center;"
     	ontap="{addMsg(event)}" ontapstart="{addMsg(event)}" ontapcancel="{addMsg(event)}"
         onlongpress="{addMsg(event)}" onlongpressstart="{addMsg(event)}" onlongpresscancel="{addMsg(event)}"
@@ -17,7 +17,7 @@ require('hsp/gestures/index').register();
     		<div>{msg}</div>
     	{/foreach}
     </div>
-{/template}
+</template>
 
 var eventLog = [];
 

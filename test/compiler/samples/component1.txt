@@ -1,10 +1,10 @@
 ##### Template:
 
-{template foo()}
+<template foo()>
   foo
   <#mylib.mycpt att1="foo" att2="bar"/>
   bar
-{/template}
+</template>
 
 ##### Parsed Tree:
 

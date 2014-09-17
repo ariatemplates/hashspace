@@ -1,8 +1,8 @@
 ##### Template:
 
-{export template hello4()}
+<export template hello4()>
    Hello World!
-{/template}
+</template>
 
 ##### Parsed Tree:
 

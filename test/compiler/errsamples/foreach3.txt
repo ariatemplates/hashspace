@@ -1,8 +1,8 @@
 ##### Template:
-{template test(things)}
+<template test(things)>
   Foreach test:
   {thing} - {/foreach}
-{/template}
+</template>
 
 ##### Errors:
 [

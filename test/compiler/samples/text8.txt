@@ -1,9 +1,9 @@
 ##### Template:
 var nullValue = "null";
 
-{template main()}
+<template main()>
     before-{nullValue}-after
-{/template} 
+</template> 
 
 ##### Parsed Tree:
 "skip"

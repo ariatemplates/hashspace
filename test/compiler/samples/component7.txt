@@ -1,8 +1,8 @@
 ##### Template:
 
-{template test(d)}
+<template test(d)>
   <#lib.nbrfield objliteral="{{value: d.value, min: 10, max: "10", reset: notifyReset(123)}}"/>
-{/template}
+</template>
 
 ##### Parsed Tree:
 "skip"

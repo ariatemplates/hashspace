@@ -1,11 +1,11 @@
 ##### Template:
-{template test()}
+<template test()>
   <#panel>
     <#body class="foo">
       Hello World!
     </#body>
   </#panel>
-{/template}
+</template>
 
 ##### Parsed Tree:
 [

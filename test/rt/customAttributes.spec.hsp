@@ -1,31 +1,31 @@
 var hsp = require("hsp/rt");
 var klass = klass=require("hsp/klass");
 
-{template test1()}
+<template test1()>
     <div style="height: 20px" verybigdiv>
         <span>Test</span>
     </div>
-{/template}
+</template>
 
-{template test2()}
+<template test2()>
     <div style="height: 20px" customheightdiv="50">
         <span>Test</span>
     </div>
-{/template}
+</template>
 
-{template test3(ctl)}
+<template test3(ctl)>
     <div style="height: 20px" customheightdiv="{ctl.myHeight}" class="{{'active': ctl.isActive}}">
         <span>Test</span>
     </div>
-{/template}
+</template>
 
-{template test4()}
+<template test4()>
     <div style="height: 20px" customheightdiv="50" verybigdiv>
         <span>Test</span>
     </div>
-{/template}
+</template>
 
-{template test5()}
+<template test5()>
     <div>
         <div>
             <span customButton>
@@ -33,22 +33,22 @@ var klass = klass=require("hsp/klass");
             </span>
         </div>
     </div>
-{/template}
+</template>
 
-{template test6()}
+<template test6()>
     <div style="height: 20px" customone="50" customtwo>
         <span>Test</span>
     </div>
-{/template}
+</template>
 
-{template test7()}
+<template test7()>
     <div id="found" verybigdiv>
         <span>
             <button customButton/>
             <input customButton/>
         </span>
     </div>
-{/template}
+</template>
 
 describe("Custom attributes", function () {
 

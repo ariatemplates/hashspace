@@ -1,10 +1,10 @@
 var json=require("hsp/json");
 hsp=require("hsp/rt");
 
-{template tpl(model)}
+<template tpl(model)>
 <input type = "text" required = "{model.flag}">
 <input type = "radio" checked = "{model.flag2}">
-{/template}
+</template>
 
 describe('boolean attributes', function () {
 

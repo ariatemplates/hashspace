@@ -1,7 +1,7 @@
 ##### Template:
-{template test(person)}
+<template test(person)>
 	<input type="text" autocomplete/>
-{/template}
+</template>
 
 ##### Parsed Tree
 "skip"

@@ -1,12 +1,12 @@
 ##### Template:
-{template test(msg)}
+<template test(msg)>
   <div class="one {{'two':msg.isTrue}}">
     foo
   </div>
   <div class="one {{'two':msg.isTrue}}">
     foo
   </div>
-{/template}
+</template>
 
 ##### Parsed Tree
 "skip"

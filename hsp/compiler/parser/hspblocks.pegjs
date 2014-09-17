@@ -13,7 +13,7 @@ TemplateFile
   {return blocks;}
 
 TextBlock
-  = lines:(!(_ ("#" / "{") _ "template") !(_ ("#" / "{") _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+
+  = lines:(!(_ ("<") _ "template") !(_ ("<") _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+
   {return {type:"plaintext", value:lines.join('')}}
 
 TemplateBlock "template block"
@@ -25,8 +25,8 @@ TemplateBlock "template block"
   }
 
 TemplateStart "template statement"
-  = _ d1:("#" / "{") p:_ m:(("template") / (c:[a-zA-Z0-9]+ _ "template") {return c.join('')})
-    S+ name:Identifier args:(TemplateController / ArgumentsDefinition / invarg:InvalidTplArgs)? _ d2:("}")? EOL 
+  = _ d1:("<") p:_ m:(("template") / (c:[a-zA-Z0-9]+ _ "template") {return c.join('')})
+    S+ name:Identifier args:(TemplateController / ArgumentsDefinition / invarg:InvalidTplArgs)? _ d2:(">")? EOL 
   {
     var mod=""; // modifier (e.g. "export")
     if (m!=="template") {
@@ -38,7 +38,7 @@ TemplateStart "template statement"
       }
       return {type:"invalidtemplate", line:line, column:column, code: d1+p+mod+"template "+name+" "+args.invalidTplArg+d2}
     } else {
-      if ((d1 === "{" && d2 !=="}") || (d1 === "#" && d2!=="")) {
+      if ((d1 === "<" && d2 !==">")) {
         // inconsistant delimiters
         return {type:"invalidtemplate", line:line, column:column, code: d1+p+mod+"template "+name+" "+args.invalidTplArg+d2}
       }
@@ -60,19 +60,12 @@ ArgumentsDefinition "arguments"
   {var args = first ? [first] : []; if (others && others.length) args=args.concat(others);return args;}
 
 InvalidTplArgs
-  = _ !"}" chars:[^\n\r]+ &EOL
+  = _ !">" chars:[^\n\r]+ &EOL
   {return {invalidTplArg:chars.join('')}}
 
 TemplateEnd "template end statement"
-  = TemplateEnd1 / TemplateEnd2
-
-TemplateEnd1
-  = _"{/template" _ "}" _ (EOL / EOF)
+  = _ "</template" _ ">" _ (EOL / EOF)
   {return {type:"/template",line:line,column:column}}  
-
-TemplateEnd2
-  = _"#" _ "/template" _ (EOL / EOF)
-  {return {type:"/template",line:line,column:column}} 
 
 TemplateContent "template content"
   = _ blocks:(  TplTextBlock 
@@ -107,7 +100,7 @@ TplTextChar "text character"
   / [^{#/<]
 
 InvalidBlock
-  = "{" !(_ "/template" _ "}") chars:[^{}#]* "}"
+  = "{" chars:[^{}#]* "}"
   {return {type:"invalidblock", code:chars.join(''), line:line, column:column}}
 
 IfBlock "if statement"
@@ -163,14 +156,14 @@ EndForeachBlock
   {return {type:"endforeach", line:line, column:column}}
 
 HTMLElement
-  = "<" name:HTMLName  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
+  = "<" !(_ "template") name:HTMLName  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
   {return {type:"element", name:name, closed:(end!==""), attributes:atts, line:line, column:column}}
 
 HTMLElementAttributes
   = atts:((S att:(HTMLAttribute)) {return att})*
 
 EndHTMLElement // TODO support comments inside Element
-  = "</" name:HTMLName S? ">" EOS?
+  = "</" !(_ "template") name:HTMLName S? ">" EOS?
   {return {type:"endelement", name:name, line:line, column:column}}
 
 HspComponent
@@ -190,7 +183,7 @@ EndHspCptAttribute
   {return {type:"endcptattribute", name:ref, line:line, column:column}}
 
 InvalidHTMLElement
-  = "<" code:[^\r\n]* EOL
+  = "<" !(_ "/template" _ ">") code:[^\r\n]* EOL
   {return {type:"invalidelement", code:'<'+code.join(''), line:line, column:column}}
 
 HTMLName

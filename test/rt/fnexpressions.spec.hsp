@@ -23,41 +23,41 @@ function endText(a) {
     return "*"+a+"*";
 }
 
-{template test1(d)}
+<template test1(d)>
     <div class="content" title="{d.fn(d.msg1,d.msg2)}">foo</div>
-{/template}
+</template>
 
-{template test2(d)}
+<template test2(d)>
     <div class="content" title="{concat(d.msg1,d.msg2)}!">foo</div>
-{/template}
+</template>
 
-{template test3(d)}
+<template test3(d)>
     <div class="content" title="{d.sub.fn(d.msg1,d.msg2)}">foo</div>
-{/template}
+</template>
 
-{template test4(d)}
+<template test4(d)>
     <div class="content">
         {d.fn(d.msg1,d.msg2)}!
         {if d.showEndText}
             {endText(123)}
         {/if}
     </div>
-{/template}
+</template>
 
-{template test5(d)}
+<template test5(d)>
     <div class="content">A {concat(d.msg1,d.msg2)} B</div>
-{/template}
+</template>
 
-{template test6(d)}
+<template test6(d)>
     <div class="content">{d.sub.fn(d.msg1,d.msg2)}</div>
-{/template}
+</template>
 
 function InvalidModifier() {}
 
-{template test7(d)}
+<template test7(d)>
     {let modifier=new InvalidModifier()}
     <div class="content">{d.msg|modifier}</div>
-{/template}
+</template>
 
 describe("Function expressions", function () {
     var C=".content";

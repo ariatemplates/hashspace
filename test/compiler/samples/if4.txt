@@ -1,5 +1,5 @@
 ##### Template:
-{template test(x)}
+<template test(x)>
    {if x==1} 
    	one 
    {else if x==2}
@@ -7,7 +7,7 @@
    {else}
    	neither one nor two
    {/if}
-{/template}
+</template>
 
 ##### Parsed Tree
 

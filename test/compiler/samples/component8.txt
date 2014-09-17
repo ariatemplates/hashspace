@@ -1,7 +1,7 @@
 ##### Template:
-{template test using c:Ctrl}
+<template test using c:Ctrl>
    <#c.tpl />
-{/template}
+</template>
 
 ##### Parsed Tree:
 "skip"

@@ -20,7 +20,7 @@ var hsp=require("hsp/rt"),
     log=require("hsp/rt/log"),
     ht=require("hsp/utils/hashtester");
 
-{template test1(d)}
+<template test1(d)>
     {let x=d.value, y=x+3}
     <div class="foo">
         Blah
@@ -29,9 +29,9 @@ var hsp=require("hsp/rt"),
     <span class="bar">
         {y+'AL'}
     </span>
-{/template}
+</template>
 
-{template test2(d)}
+<template test2(d)>
     <div class="foo">
         {let x=d.value+' World'}
         {x}
@@ -39,9 +39,9 @@ var hsp=require("hsp/rt"),
     <span class="bar">
         {x}
     </span>
-{/template}
+</template>
 
-{template test3(d)}
+<template test3(d)>
     <div class="foo">
         {if d.condition}
             {let x=d.value1+' World'}
@@ -51,9 +51,9 @@ var hsp=require("hsp/rt"),
             x: {x} - y: {y}
         {/if}
     </div>
-{/template}
+</template>
 
-{template test4(d)}
+<template test4(d)>
     <div class="foo">
         <ul>
             {foreach city in d.cities}
@@ -63,7 +63,7 @@ var hsp=require("hsp/rt"),
         </ul>
     </div>
     <div class="bar">{nm}</div>
-{/template}
+</template>
 
 describe("Let statement", function () {
   

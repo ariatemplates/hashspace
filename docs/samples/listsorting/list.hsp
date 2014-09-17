@@ -1,4 +1,4 @@
-{template list(persons)}
+<template list(persons)>
     <div onselectstart="return false">
         <div class="msg">
             <span class="info">
@@ -24,7 +24,7 @@
             <a onclick="{nameSorter.nextState()}">Change sort order</a>
         </div>
     </div>
-{/template}
+</template>
 
 var people = [
     {name:"Homer", age:38},

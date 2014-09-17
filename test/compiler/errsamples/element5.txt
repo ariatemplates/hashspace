@@ -1,9 +1,9 @@
 ##### Template:
-{template test(person)}
+<template test(person)>
     <div title="blah" 
         foo bar
     </div>
-{/template}
+</template>
 
 ##### Errors:
 [

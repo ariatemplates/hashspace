@@ -1,9 +1,9 @@
 ##### Template:
-{template test(person)}
+<template test(person)>
 	<div title="">
 		Hello World
 	</div>
-{/template}
+</template>
 
 ##### Parsed Tree
 "skip"

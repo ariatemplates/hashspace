@@ -21,36 +21,36 @@ var hsp=require("hsp/rt"),
     klass=require("hsp/klass");
 
 
-{template test1(person)}
+<template test1(person)>
     <div title="test1">
         Hello {person.name}!
     </div>
-{/template}
+</template>
 
-{template test2(person)}
+<template test2(person)>
     <div title="test2" class="t2 {person.gender}" tabIndex="{person.idx}">
         {person.firstName} / {person.lastName} 
         [ <span class="{person.ffLevel}">
             Frequent flyer #: {person.ffNbr}
         </span> ]
     </div>
-{/template}
+</template>
 
-{template test3(person)}
+<template test3(person)>
     <input type="text" value="{person.name}"/>
-{/template}
+</template>
 
 
 var globalObject={value:"foo"};
-{template test4()}
+<template test4()>
     <input type="text" value="{globalObject.value}"/>
-{/template}
+</template>
 
-{template test5(name)}
+<template test5(name)>
     <div style="color:red;">
         Hello {name}!
     </div>
-{/template}
+</template>
 
 var TestCtl6=klass({
     attributes: {
@@ -66,11 +66,11 @@ var TestCtl6=klass({
     }
 });
 
-{template test6 using c:TestCtl6}
+<template test6 using c:TestCtl6>
     // test onchange cross browser consitency
     <input type="checkbox" model="{c.selected}" onchange="{c.processChange()}">
     <span class="label">{c.label}</span>
-{/template}
+</template>
 
 describe("Element Nodes", function () {
     var ELEMENT_NODE=1;

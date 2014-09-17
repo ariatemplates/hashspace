@@ -21,11 +21,11 @@ require("hsp/gestures/drag").register();
 var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
 
-{template test1(ctl)}
+<template test1(ctl)>
     <div title="test1" ondrag="{ctl.handleEvent(event)}" ondragstart="{ctl.handleEvent(event)}" ondragmove="{ctl.handleEvent(event)}" ondragcancel="{ctl.handleEvent(event)}">
         Hello!
     </div>
-{/template}
+</template>
 
 describe("Drag gesture", function () {
 

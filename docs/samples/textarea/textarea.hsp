@@ -1,4 +1,4 @@
-{template sample(data)}
+<template sample(data)>
     <div class="info2">The following textarea elements are synchronized:</div>
     <div class="section">
         <div>Text #1:</div>
@@ -9,7 +9,7 @@
         <textarea rows="4" cols="40"  model="{data.text}"/>
     </div>
     <a href="javascript:void(0)" onclick="{changeText(data)}">Change text</a>
-{/template}
+</template>
 
 var d={
     // Frog by Donna Shepherd

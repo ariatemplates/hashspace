@@ -1,9 +1,9 @@
 ##### Template:
-# espor template hello()
+<espor template hello()>
     Hello World!
-# blahblah foo
+<blahblah foo>
 
-# /templte
+</templte>
 
 ##### Errors:
 [

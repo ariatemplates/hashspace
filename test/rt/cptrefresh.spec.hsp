@@ -22,16 +22,16 @@ var Cpt1 = klass({
   }
 });
 
-{template cpt1 using c:Cpt1}
+<template cpt1 using c:Cpt1>
 {if !c.closed}
   <button onclick="{c.close()}">Close</button>
 {/if}
-{/template}
+</template>
 
-{template test1(d)}
+<template test1(d)>
   <#cpt1 />
   <#d.cpt />
-{/template}
+</template>
 
 
 describe("Component refresh", function () {

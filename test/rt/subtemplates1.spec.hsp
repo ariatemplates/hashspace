@@ -18,68 +18,68 @@ var hsp=require("hsp/rt"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     json=require("hsp/json");
 
-{template content(label, value)}
+<template content(label, value)>
     {:label}: {value}
-{/template}
+</template>
 
-{template test1(person)}
+<template test1(person)>
     Before
     <#content label="First Name" value="{person.firstName}"/>
     After
-{/template}
+</template>
 
-{template nameDetails(person)}
+<template nameDetails(person)>
     <#content value="{person.lastName}" label="Last Name"/>
     {if (person.firstName)}
         , 
         <#content label="First Name" value="{person.firstName}"/>
     {/if}
-{/template}
+</template>
 
-{template test2(p)}
+<template test2(p)>
     <#nameDetails person="{p}"/>
-{/template}
+</template>
 
-{template test3(person, label)}
+<template test3(person, label)>
     // inserted template also has a label argument
     {label}
     <#content label="{person.firstName}" value="{:person.lastName}"/>
-{/template}
+</template>
 
 function concat(a,b) {
     return a+": "+b;
 }
 
-{template test4(person)}
+<template test4(person)>
     {concat(person.firstName, person.lastName)}
-{/template}
+</template>
 
-{template field(label,value)}
+<template field(label,value)>
     {label}
     <input type="text" value="{value}"/>
-{/template}
+</template>
 
-{template test5(d)}
+<template test5(d)>
     <#field label="Enter some text" value="{d.text}"/>
-{/template}
+</template>
 
-{template field2(attributes)}
+<template field2(attributes)>
     Enter some text: 
     <input type="text" value="{attributes.value}"/>
-{/template}
+</template>
 
-{template test6(d)}
+<template test6(d)>
     <#field2 attributes="{d.attributes}"/>
-{/template}
+</template>
 
-{template field3(attributes)}
+<template field3(attributes)>
     Enter some text: 
     <input type="text" value="{attributes.myvalue.value}"/>
-{/template}
+</template>
 
-{template test7(d)}
+<template test7(d)>
     <#field3 attributes="{{myvalue: d}}"/>
-{/template}
+</template>
 
 describe("Sub-template insertion", function () {
     it("tests a simple insertion", function () {

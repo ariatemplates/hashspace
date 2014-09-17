@@ -3,7 +3,7 @@ var hsp=require("hsp/rt"),
 
 hsp.global.orderBy = require("hsp/rt/colutils").orderBy;
 
-{template test(d)}
+<template test(d)>
 <div class="section2">
     <ol>
         {foreach p in d.persons|orderBy:"name"}
@@ -11,7 +11,7 @@ hsp.global.orderBy = require("hsp/rt/colutils").orderBy;
         {/foreach}
     </ol>
 </div>
-{/template}
+</template>
 
 describe('repeater with global pipe functions', function() {
     it("validates collection sorting through pipe expression being global", function() {

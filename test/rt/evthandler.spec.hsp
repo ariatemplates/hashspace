@@ -17,29 +17,29 @@
 var ht=require("hsp/utils/hashtester"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent;
 
-{template test1(person,ctl)}
+<template test1(person,ctl)>
     <div title="test1" onclick="{ctl.handleClick()}">
         Hello {person.name}!
     </div>
-{/template}
+</template>
 
-{template test2(label,names,ctl)}
+<template test2(label,names,ctl)>
     {foreach key,name in names}
         <span onclick="{ctl.handleClick(name,key,'literal arg',event)}">
             {:label} {key}: {:name}
         </span>
     {/foreach}
-{/template}
+</template>
 
-{template test3(person)}
+<template test3(person)>
     <div title="test3" onclick="{doClick('blah',event)}">
         Hello {person.name}!
     </div>
-{/template}
+</template>
 
-{template test4()}
+<template test4()>
     <img onclick="this.cbatt=123;return false;"/>
-{/template}
+</template>
 
 
 var doClickCount = 0, doClickEvtType = "", doClickStrArg = "";

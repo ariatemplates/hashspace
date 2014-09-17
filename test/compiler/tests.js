@@ -12,17 +12,17 @@ describe('Block Parser: ', function () {
         var s = ['var x="text1";',
                 'function func() {var x="text2"};',
                 '',
-                '{template hello1}',
+                '<template hello1>',
                 '   Hello World!',
-                '{/template}',
+                '</template>',
                 '',
                 '// comment',
                 'function func2(z) {return z;}',
                 '',
-                '{template hello1bis (arg1, arg2)}',
+                '<template hello1bis (arg1, arg2)>',
                 '\tHello',
                 '\tAgain!',
-                '{/template}',
+                '</template>',
                 'var z;'].join("\n");
 
         assert.equal(tpl.replace(/\r/g, ""), s, "sample content");
@@ -102,17 +102,17 @@ describe('Block Parser: ', function () {
         }));
     }
 
-    it('should allow whitespaces before {template}', function(){
+    it('should allow whitespaces before <template>', function(){
       var r = compiler.compile(
-        '\n   {template spacesBefore()}\n' +
-        ' {/template}', "spacesBefore");
+        '\n    <template spacesBefore()>\n' +
+        ' </template>', "spacesBefore");
       assert.equal(r.errors.length, 0, "no compilation error");
     });
 
-    it('should allow whitespaces before {template} when a modifier is present', function(){
+    it('should allow whitespaces before <template> when a modifier is present', function(){
         var r = compiler.compile(
-            '\n   { export  template spacesBefore()}\n' +
-                ' {/template}', "spacesBefore");
+            '\n   < export  template spacesBefore()>\n' +
+                ' </template>', "spacesBefore");
         assert.equal(r.errors.length, 0, "no compilation error");
     });
 
@@ -122,14 +122,14 @@ describe('Block Parser: ', function () {
         }, /The template "\/foo\/bar.js" is empty but content to compile is mandatory./);
 
         assert.throws(function() {
-            compiler.compile('{template foo()}\n{/template}');
+            compiler.compile('<template foo()>\n</template>');
         }, /The template "path" argument is mandatory./);
     });
 
     it('should correctly compile templates with HTML elements containing -', function () {
-        var r =compiler.compile('{template x()}\n' +
+        var r =compiler.compile('<template x()>\n' +
             '<x-div></x-div>\n' +
-            '{/template}', 'x.js');
+            '</template>', 'x.js');
         assert.equal(r.errors.length, 0);
     });
 

@@ -1,15 +1,15 @@
 ##### Template:
 // line 1
-{template test(person)}
+<template test(person)>
     <div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
         <span>Hello {person.name}!</span>
     </div>
-{/template}
+</template>
 // line 7
 var foo=42;
-{template bar}
+<template bar>
     Hello
-{/template}
+</template>
 // line 12
 .
 

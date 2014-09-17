@@ -9,11 +9,11 @@ The grammar is stored in the `hspblocks.pegjs` file, which is itself compiled in
 ## Input ##
 The hashspace template source code, e.g.:
 ```
-{template test(person)}
+<template test(person)>
     <div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
         Hello {person.name}!
     </div>
-{/template}
+</template>
 ```
 
 ## Output ##

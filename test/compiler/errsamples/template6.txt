@@ -1,7 +1,7 @@
 ##### Template:
-{template test(scope)}
+<template test(scope)>
     Hello World!
-{/template}
+</template>
 
 ##### Errors:
 [

@@ -7,23 +7,23 @@
             {if !p_islast} <hr/> {/if}
         {/foreach}
     </div>
-{/template}
+</template>
 
 {export template personDescription(person)}
     <div class="person">
         <#item label="First Name: " value="{person.firstName}"/>
         <#item label="Last Name: " value="{person.lastName}"/>
     </div>
-{/template}
+</template>
 
-{template item(label,value)}
+<template item(label,value)>
     {if value}
         <div>
             <div class="label">{label}</div>
             <div class="value">{value}</div>
         </div>
     {/if}
-{/template}
+</template>
 
 var persons=[
     {firstName:"Homer",lastName:"Simpsons"},

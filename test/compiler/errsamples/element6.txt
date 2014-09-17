@@ -1,7 +1,7 @@
 ##### Template:
-{template test(person)}
+<template test(person)>
     <img onclick="{doClick('blah',event,)}"/>
-{/template}
+</template>
 
 ##### Errors:
 [

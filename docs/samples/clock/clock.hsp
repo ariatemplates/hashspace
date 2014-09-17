@@ -42,7 +42,7 @@ var ClockController=klass({
 	}
 });
 
-{template clock using c:ClockController}
+<template clock using c:ClockController>
 	// example from http://www.ractivejs.org/examples/clock/
 	<div class="square">
 		<svg viewBox="0 0 100 100">
@@ -67,13 +67,13 @@ var ClockController=klass({
 		</svg>
 		<div class="city">{c.cityName}</div>
 	</div>
-{/template}
+</template>
 
-{template demo}
+<template demo>
 	<#clock city="SFO"/>
 	<#clock city="PAR"/>
 	<#clock city="TYO"/>
-{/template}
+</template>
 
 // Needed by the playground application.
 // Update it, but do not remove it!

@@ -1,7 +1,7 @@
 ##### Template:
-{template hello(person,foo,bar)}
+<template hello(person,foo,bar)>
   {person.name[foo[bar+1]]}
-{/template}
+</template>
 
 ##### Parsed Tree:
 "skip"

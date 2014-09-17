@@ -22,16 +22,16 @@ function globalHelper() {
     return true;
 }
 
-{template test1}
+<template test1>
     {if (globalHelper())}
         <div class="test">I am here because of a global helper</div>
     {/if}
-{/template}
+</template>
 
-{template test2}
+<template test2>
   <#test1 />
   <#test1 />
-{/template}
+</template>
 
 describe("Templates using expressions with global references", function () {
 
