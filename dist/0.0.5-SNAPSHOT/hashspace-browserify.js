@@ -436,6 +436,7 @@ module.exports = function (initialInput) {
 
 var ast = require('./parser');
 var evaluator = require('./evaluator');
+var json = require("../json");
 
 /**
  * Expressions handling util that can evaluate and manipulate
@@ -475,9 +476,9 @@ module.exports = function(input, inputTree) {
             }
 
             if (tree.a === 'idn') {
-                scope[tree.v] = newValue;
+                json.set(scope, tree.v, newValue);
             } else if (tree.a === 'bnr') {
-                evaluator(tree.l, scope)[evaluator(tree.r, scope)] = newValue;
+                json.set(evaluator(tree.l, scope), evaluator(tree.r, scope), newValue);
             }
         },
         isAssignable: isAssignable,
@@ -485,7 +486,7 @@ module.exports = function(input, inputTree) {
     };
 };
 
-},{"./evaluator":3,"./parser":7}],6:[function(require,module,exports){
+},{"../json":8,"./evaluator":3,"./parser":7}],6:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -542,7 +543,7 @@ module.exports = function getObservablePairs(tree, scope) {
         return [];
     } else if (tree.a === 'idn') {
         //TODO: deal with "parent scopes" (traverse up using +parent) => should it be done here?
-        return scope[tree.v] instanceof Array ? [[scope, tree.v], [scope[tree.v], null]] : [[scope, tree.v]];
+        return scope[tree.v] && scope[tree.v] instanceof Array ? [[scope, tree.v], [scope[tree.v], null]] : [[scope, tree.v]];
     } else if (tree.a === 'unr') {
         return getObservablePairs(tree.l, scope);
     } else if (tree.a === 'bnr') {
@@ -1687,12 +1688,14 @@ var customAttributesRegistry = [];
  * @param {Array|String} names the name of the attributes.
  * @param {Object} handler the attribute handler function, which can implement:
  *  - $constructor(nodeInstance, callback): used to create the handler instance.
- *  - $setValue(name, value): called each time the attribute value changed, including when the initial value is set.
+ *  - $setValue(name, stringValue): called each time the attribute value changed, including when the initial value is set.
+ *  - $setValueFromExp(name, expresionValues): called each time the attribute is refreshed, including when the initial value is set.
  *  - $onAttributesRefresh(): called at the end of the attributes'refresh process, i.e. once all attributes have their new value.
  *  - $handleEvent(event): called when an event for which the custom attribute registered for is fired.
  *  - $dispose(): used to dispose the handler instance. 
  *  It is instanciated on each element node with one of the custom attributes.
  *  WARNING: when $constructor is executed, the node instance tree is not fully built, so links with other nodes (parent, children, siblinngs) must be done in setValue.
+ *  WARNING: custom attribute handler should implement only one of $setValue and $setValueFromExp
  * @param {Integer} priority the priority of the handler, default value is 0, the higher the more priority (i.e. higher executed first).
  * @param {Array} tags the list of tags on which the handler will apply, undefined means all.
  */
@@ -3248,8 +3251,7 @@ var $CptNode = klass({
                 var cv=exp.getValue(pvs,this.eh);
                 if (cv!==change.newValue) {
                     // if current value is different, we update it on the scope object that owns it
-                    var vs=this.parent.getScopeOwner(exp.path[0],pvs);
-                    exp.setValue(vs, change.newValue);
+                    exp.setValue(pvs, change.newValue);
                 }
             }
         }
@@ -3683,7 +3685,23 @@ var ClassHandler = klass({
         this.previousClasses = null;
     },
 
-    $setValue: function (name, newClasses) {
+    $setValueFromExp: function (name, exprVals) {
+        var newClassesArr = [], newClasses, classExpr;
+
+        for (var i = 0; i < exprVals.length; i++) {
+            if (exprVals % 2 || typeof exprVals[i] !== 'object') {
+                newClassesArr.push(exprVals[i]);
+            } else {
+                classExpr = exprVals[i];
+                for (var className in classExpr) {
+                    if (classExpr.hasOwnProperty(className) && classExpr[className]) {
+                        newClassesArr.push(className);
+                    }
+                }
+            }
+        }
+        newClasses = newClassesArr.join(' ');
+
         var currentClasses = this.nodeInstance.node.className;
         var results = currentClasses? currentClasses.split(' '): [];
         if (this.previousClasses) {
@@ -5448,12 +5466,14 @@ var EltNode = klass({
                 var customHandlers = this._custAttrHandlers[name];
                 if (customHandlers) {
                     var newValue = attribute.getValue(expressionHandler, vscope, null);
-                    if (this._custAttrData[name].value !== newValue) {
-                        for (var j = 0; customHandlers && j < customHandlers.length; j++) {
-                            var handlerInstance = customHandlers[j].instance;
-                            if (handlerInstance.$setValue) {
-                                handlerInstance.$setValue(name, newValue);
-                            }
+                    var stringValueHasChanged = this._custAttrData[name].value !== newValue;
+                    var newExprValues = attribute.getExprValues(expressionHandler, vscope, null);
+                    for (var j = 0; customHandlers && j < customHandlers.length; j++) {
+                        var handlerInstance = customHandlers[j].instance;
+                        if (handlerInstance.$setValueFromExp) {
+                            handlerInstance.$setValueFromExp(name, newExprValues);
+                        } else if (handlerInstance.$setValue && stringValueHasChanged) {
+                            handlerInstance.$setValue(name, newValue);
                         }
                     }
                     this._custAttrData[name].value = newValue;
@@ -5728,6 +5748,15 @@ var PrattExpr = klass({
         } else {
             log.warning(this.exptext + " can't be updated - please use object references");
         }
+    },
+
+    executeCb : function (evt, eh, vscope) {
+        var cbScope = Object.create(vscope);
+        //create a throw-away scope to expose additional identifiers to
+        //callback expression
+        cbScope.event = evt;
+
+        return this.getValue(cbScope, eh);
     },
 
     getObservablePairs : function (eh, vscope) {
@@ -6995,6 +7024,10 @@ var TSimpleAtt = klass({
 
     getValue : function (eh, vscope, defvalue) {
         return this.value;
+    },
+
+    getExprValues: function(eh, vscope, defvalue) {
+        return [this.value];
     }
 });
 
@@ -7028,12 +7061,26 @@ var TExpAtt = klass({
 
         for (var i = 0; sz > i; i++) {
             // odd elements are variables
-            if (i % 2)
-                buf.push(eh.getValue(tcfg[i], vscope, defvalue));
-            else
-                buf.push(tcfg[i]);
+            buf.push(i % 2 ? eh.getValue(tcfg[i], vscope, defvalue) : tcfg[i]);
         }
+
         return buf.join("");
+    },
+
+    /**
+     * Returns an array of text values / evaluated expression values
+     * @param eh
+     * @param vscope
+     * @param defvalue
+     * @returns {Array}
+     */
+    getExprValues: function(eh, vscope, defvalue) {
+        var textConfig = this.textcfg, result = [];
+        for (var i = 0; i < textConfig.length; i++) {
+            // odd elements are variables
+            result.push(i % 2 ? eh.getValue(textConfig[i], vscope, defvalue) : textConfig[i]);
+        }
+        return result;
     }
 });
 

@@ -222,11 +222,11 @@ Please refer to their specific <a href="#elements">section</a> for more informat
 <p>Those parts can be any simple expressions, which means not compound nor conditional ones.</p>
 <p>The right one determines whether the result of the left one should be output or not: yes if the right part is truthy, no otherwise.</p>
 <hr>
-<h4 id="css-expressions-class-urgent-msg-urgency-msg-category-or-compound-expressions">CSS expressions <code>class=&quot;{&#39;urgent&#39;:msg.urgency, msg.category}&quot;</code> or compound expressions</h4>
+<h4 id="css-expressions-class-msg-category-urgent-msg-urgency-or-compound-expressions">CSS expressions <code>class=&quot;{msg.category} {{&#39;urgent&#39;:msg.urgency}}&quot;</code> or compound expressions</h4>
 <p>You can combine several expressions into one expression statement using the comma; note that there is only one pair of braces which is for the compound expression, subexpressions being delimited by commas.</p>
 <p>The results of the expressions will be concatenated with a single white space before it is output.</p>
 <p>Because of the space which always gets <em>inserted between the expressions</em>, it does not suit all use cases. However, this is perfect to define the <code>class</code> attribute of a HTML element for instance.</p>
-<pre><code class="lang-cs">&lt;div <span class="keyword">class</span>=<span class="string">"{'urgent':msg.urgency, msg.category}"</span>&gt;&lt;/div&gt;</code></pre>
+<pre><code class="lang-cs">&lt;div <span class="keyword">class</span>=<span class="string">"{msg.category} {{'urgent':msg.urgency}}"</span>&gt;&lt;/div&gt;</code></pre>
 <h2 id="modifiers">Modifiers</h2>
 <p>It is possible to specify functions to adapt the value of an expression to the desired display, but also to provide them with arguments or to combine them through piped expressions.</p>
 <p>e.g.</p>

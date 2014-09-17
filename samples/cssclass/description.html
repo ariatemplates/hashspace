@@ -1,17 +1,15 @@
 <p>This sample shows a special type of expression that is particularly convenient for class attributes:</p>
 [#output]
-<p>As you can see in the example, this expression is structured as a comma-separated list of sub-expressions that can have the following forms:</p>
+<p>As you can see in the example, you can combine static values and expressions inside the &quot;class&quot; attribute.
+If an expression is used it can evaluate to either:</p>
 <ul>
-<li>either a <strong>Hashspace expression</strong> - a subset of the JavaScript expression syntax, such as<ul>
-<li>a string - e.g. <em>&quot;urgent&quot;</em> - in this case this will be considered as a mandatory class element</li>
-<li>a path resolving to a string - e.g. <em>msg.category</em> to use dynamic class elements</li>
-<li>a more complex expression - e.g. <em>&#39;type&#39;+msg.urgency</em> to build a more dynamic class element</li>
-</ul>
-</li>
-<li>or a <strong>pair of Hashspace expressions</strong> separated by a colon - e.g. <em>&#39;urgent&#39; : msg.urgency===1</em><ul>
-<li>the first expression will be resolved as the class element that should be inserted (e.g. <em>&#39;urgent&#39;</em>)</li>
-<li>whereas the second expression should resolve to a boolean to tell if the class element should be inserted or not (e.g. <em>msg.urgency===1</em>)</li>
+<li>a string - e.g. <em>msg.category</em> - in this case it will be interpreted as class names to add</li>
+<li>an object - e.g. <em>{&#39;urgent&#39; : msg.urgency===1}</em><ul>
+<li>each key in an object is interpreted as a class name that should be inserted (e.g. <em>&#39;urgent&#39;</em>)</li>
+<li>whereas the expression in the value part should resolve to a boolean to tell if the class element should be
+inserted or not (e.g. <em>msg.urgency===1</em>)</li>
 </ul>
 </li>
 </ul>
+<p>You can use more complex expression - e.g. <em>&#39;type&#39;+msg.urgency</em> to build a more dynamic class element.</p>
 

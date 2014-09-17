@@ -50,17 +50,17 @@ var TabBarCtrl = klass({
 
 
 var tabbar = require("hsp/rt").template({ctl:[TabBarCtrl,"TabBarCtrl"],ref:"ctrl"}, function(n){
-  var _ctrl,_tab,_tab_islast;try {_ctrl=ctrl} catch(e) {_ctrl=n.g('ctrl')};try {_tab=tab} catch(e) {_tab=n.g('tab')};try {_tab_islast=tab_islast} catch(e) {_tab_islast=n.g('tab_islast')};
-  var __s = {ctrl : typeof ctrl === 'undefined' ? n.g('ctrl') : ctrl, tab : typeof tab === 'undefined' ? n.g('tab') : tab, tab_islast : typeof tab_islast === 'undefined' ? n.g('tab_islast') : tab_islast};
-  return [__s,n.elt("div",0,{"class":"x-tabbar"},0,[n.elt("nav",0,{"class":"x-tabs"},0,[n.$foreach({e1:[9,"ctrl.content"]},"idx","tab",0,1,[n.$if({e1:[9,"tab.selected"]},1,[n.elt("span",0,{"class":"x-tab x-tab-selected"},0,[n.cpt([null,"tab","label"],0,0,0)])],[n.elt("a",{e1:[3,2,"ctrl","select",1,2],e2:[1,1,"idx"]},{"class":"x-tab","href":"javascript:void(0)"},{"click":1},[n.cpt([null,"tab","label"],0,0,0)])]),n.$if({e1:[9,"!tab_islast"]},1,[n.$text(0,["   "])])]),n.$text(0,[" "])]),n.elt("div",0,{"class":"x-tab-content"},0,[n.cpt([null,"ctrl","selectedTab","body"],0,0,0)])])];
+  var _ctrl,_tab,_idx,_tab_islast;try {_ctrl=ctrl} catch(e) {_ctrl=n.g('ctrl')};try {_tab=tab} catch(e) {_tab=n.g('tab')};try {_idx=idx} catch(e) {_idx=n.g('idx')};try {_tab_islast=tab_islast} catch(e) {_tab_islast=n.g('tab_islast')};
+  var __s = {ctrl : typeof ctrl === 'undefined' ? n.g('ctrl') : ctrl, tab : typeof tab === 'undefined' ? n.g('tab') : tab, idx : typeof idx === 'undefined' ? n.g('idx') : idx, tab_islast : typeof tab_islast === 'undefined' ? n.g('tab_islast') : tab_islast};
+  return [__s,n.elt("div",0,{"class":"x-tabbar"},0,[n.elt("nav",0,{"class":"x-tabs"},0,[n.$foreach({e1:[9,"ctrl.content"]},"idx","tab",0,1,[n.$if({e1:[9,"tab.selected"]},1,[n.elt("span",0,{"class":"x-tab x-tab-selected"},0,[n.cpt([null,"tab","label"],0,0,0)])],[n.elt("a",{e1:[9,"ctrl.select(idx)"]},{"class":"x-tab","href":"javascript:void(0)"},{"click":1},[n.cpt([null,"tab","label"],0,0,0)])]),n.$if({e1:[9,"!tab_islast"]},1,[n.$text(0,["   "])])]),n.$text(0,[" "])]),n.elt("div",0,{"class":"x-tab-content"},0,[n.cpt([null,"ctrl","selectedTab","body"],0,0,0)])])];
 });
 
 
 
 var test = require("hsp/rt").template([], function(n){
-  var _showSubTabs,_tabbar;try {_showSubTabs=showSubTabs} catch(e) {_showSubTabs=n.g('showSubTabs')};try {_tabbar=tabbar} catch(e) {_tabbar=n.g('tabbar')};
-  var __s = {showSubTabs : typeof showSubTabs === 'undefined' ? n.g('showSubTabs') : showSubTabs, tabbar : typeof tabbar === 'undefined' ? n.g('tabbar') : tabbar};
-  return [__s,n.let({e1:[9,"showSubTabs=false, selection1=0, selection2=0"]}),n.cpt([_tabbar,"tabbar"],{e1:[1,1,"selection1"]},{"selection":["",1]},0,[n.catt("tab",0,{"label":"Tab A"},0,[n.$if({e1:[9,"showSubTabs"]},1,[n.cpt([_tabbar,"tabbar"],{e1:[1,1,"selection2"]},{"selection":["",1]},0,[n.catt("tab",0,{"label":"Tab 1"},0,[n.$text(0,["Sub tab 1"])]),n.catt("tab",0,{"label":"Tab 2"},0,[n.$text(0,["Sub tab 2"])])])],[n.$text(0,["Tab A content... "])])]),n.catt("tab",0,{"label":"Tab B"},0,[n.$text(0,["Tab B content..."])]),n.catt("tab",0,{"label":"Tab C"},0,[n.$text(0,["Tab C content..."])])]),n.elt("label",0,{"for":"cb1"},0,[n.elt("input",{e1:[1,1,"showSubTabs"]},{"id":"cb1","type":"checkbox","model":["",1]},0),n.$text(0,["Show nested tabs in tab A "])])];
+  var _selection1,_showSubTabs,_selection2,_tabbar;try {_selection1=selection1} catch(e) {_selection1=n.g('selection1')};try {_showSubTabs=showSubTabs} catch(e) {_showSubTabs=n.g('showSubTabs')};try {_selection2=selection2} catch(e) {_selection2=n.g('selection2')};try {_tabbar=tabbar} catch(e) {_tabbar=n.g('tabbar')};
+  var __s = {selection1 : typeof selection1 === 'undefined' ? n.g('selection1') : selection1, showSubTabs : typeof showSubTabs === 'undefined' ? n.g('showSubTabs') : showSubTabs, selection2 : typeof selection2 === 'undefined' ? n.g('selection2') : selection2, tabbar : typeof tabbar === 'undefined' ? n.g('tabbar') : tabbar};
+  return [__s,n.let({e1:[9,"showSubTabs=false, selection1=0, selection2=0"]}),n.cpt([_tabbar,"tabbar"],{e1:[9,"selection1"]},{"selection":["",1]},0,[n.catt("tab",0,{"label":"Tab A"},0,[n.$if({e1:[9,"showSubTabs"]},1,[n.cpt([_tabbar,"tabbar"],{e1:[9,"selection2"]},{"selection":["",1]},0,[n.catt("tab",0,{"label":"Tab 1"},0,[n.$text(0,["Sub tab 1"])]),n.catt("tab",0,{"label":"Tab 2"},0,[n.$text(0,["Sub tab 2"])])])],[n.$text(0,["Tab A content... "])])]),n.catt("tab",0,{"label":"Tab B"},0,[n.$text(0,["Tab B content..."])]),n.catt("tab",0,{"label":"Tab C"},0,[n.$text(0,["Tab C content..."])])]),n.elt("label",0,{"for":"cb1"},0,[n.elt("input",{e1:[9,"showSubTabs"]},{"id":"cb1","type":"checkbox","model":["",1]},0),n.$text(0,["Show nested tabs in tab A "])])];
 });
 
 

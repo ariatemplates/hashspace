@@ -44,7 +44,7 @@
 <pre><code class="lang-html">{if tasklist.length &gt; 0}
   <span class="tag">&lt;<span class="title">ul</span>&gt;</span>
   {foreach task in tasklist}
-    <span class="tag">&lt;<span class="title">li</span> <span class="attribute">class</span>=<span class="value">"{'done': task.completed, 'ongoing': !task.completed}"</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">li</span> <span class="attribute">class</span>=<span class="value">"<span class="variable">{{'done': task.completed, 'ongoing': !task.completed}}</span>"</span>&gt;</span>
       {task.description}
     <span class="tag">&lt;/<span class="title">li</span>&gt;</span>
   {/foreach}

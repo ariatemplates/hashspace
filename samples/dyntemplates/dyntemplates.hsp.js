@@ -4,9 +4,9 @@ var $set=require("hsp/$set");
 //  Direct MODIFICATIONS WILL BE LOST when the file is recompiled!  
 // ################################################################ 
 var test = require("hsp/rt").template(["ctxt"], function(n){
-  var _swapTemplate;try {_swapTemplate=swapTemplate} catch(e) {_swapTemplate=n.g('swapTemplate')};
-  var __s = {swapTemplate : typeof swapTemplate === 'undefined' ? n.g('swapTemplate') : swapTemplate};
-  return [__s,n.elt("div",0,0,0,[n.elt("a",{e1:[4,1,_swapTemplate]},{"href":"javascript:void(0)"},{"click":1},[n.$text(0,["Change template"])])]),n.cpt([null,"ctxt","view"],{e1:[1,1,"ctxt"]},{"ctxt":["",1]},0)];
+  var _swapTemplate,_ctxt;try {_swapTemplate=swapTemplate} catch(e) {_swapTemplate=n.g('swapTemplate')};try {_ctxt=ctxt} catch(e) {_ctxt=n.g('ctxt')};
+  var __s = {swapTemplate : typeof swapTemplate === 'undefined' ? n.g('swapTemplate') : swapTemplate, ctxt : typeof ctxt === 'undefined' ? n.g('ctxt') : ctxt};
+  return [__s,n.elt("div",0,0,0,[n.elt("a",{e1:[9,"swapTemplate()"]},{"href":"javascript:void(0)"},{"click":1},[n.$text(0,["Change template"])])]),n.cpt([null,"ctxt","view"],{e1:[9,"ctxt"]},{"ctxt":["",1]},0)];
 });
 
 
