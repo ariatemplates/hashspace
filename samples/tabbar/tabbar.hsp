@@ -43,7 +43,7 @@ var TabBarCtrl = klass({
     }
 });
 
-{template tabbar using ctrl:TabBarCtrl}
+<template tabbar using ctrl:TabBarCtrl>
   <div class="x-tabbar">
     <nav class="x-tabs">
         {foreach idx, tab in ctrl.content}
@@ -65,9 +65,9 @@ var TabBarCtrl = klass({
         <#ctrl.selectedTab.body />
     </div>
   </div>
-{/template}
+</template>
 
-{template test}
+<template test>
   {let showSubTabs=false, selection1=0, selection2=0}
   <#tabbar selection="{selection1}">
     <@tab label="Tab A">
@@ -87,7 +87,7 @@ var TabBarCtrl = klass({
     <input id="cb1" type="checkbox" model="{showSubTabs}"/>
     Show nested tabs in tab A
   </label>
-{/template}
+</template>
 
 // Needed by the playground application.
 // Update it, but do not remove it!

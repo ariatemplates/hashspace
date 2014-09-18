@@ -1,23 +1,23 @@
 var hsp=require("hsp/rt");
 
-{template item(text,value)}
+<template item(text,value)>
     {if value}
         <div>
             <div class="label">{text}</div>
             <div class="value">{value}</div>
         </div>
     {/if}
-{/template}
+</template>
 
 hsp.global.label=item;
 hsp.global.ln={personDetails:"Person details"};
 
-{template test(person)}
+<template test(person)>
     <div class="global" title="{ln.personDetails}">
         <#label text="First Name: " value="{person.firstName}"/>
         <#label text="Last Name: "  value="{person.lastName}"/>
     </div>
-{/template}
+</template>
 
 // Needed by the playground application.
 // Update it, but do not remove it!

@@ -1,6 +1,6 @@
 var klass=require("hsp/klass");
 
-{template todolist(todo)}
+<template todolist(todo)>
     <div>
         <h3>TODO...</h3>
         <ul>
@@ -13,7 +13,7 @@ var klass=require("hsp/klass");
             <button>{'Add #' + (todo.data.items.length + 1)}</button>
         </form>
     </div>
-{/template}
+</template>
 
 // todo controller
 var TodoCtl=klass({

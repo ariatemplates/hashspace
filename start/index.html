@@ -43,16 +43,16 @@ installed on your machine, though this is not necessary for in-browser template 
 <h2 id="first-template-and-controller">First template and controller</h2>
 <p>First, let&#39;s create a simple Hashspace template <code>Hello</code> and a controller:</p>
 <h4 id="-src-hello-hsp-"><code>/src/hello.hsp</code></h4>
-<pre><code class="lang-`">var HelloCtrl = require("./HelloCtrl");
+<pre><code class="lang-`"><span class="keyword">var</span> HelloCtrl = require(<span class="string">"./HelloCtrl"</span>);
 
-{template Hello using ctrl:HelloCtrl}
+<span class="xml"><span class="tag">&lt;<span class="title">template</span> <span class="attribute">Hello</span> <span class="attribute">using</span> <span class="attribute">ctrl:HelloCtrl</span>&gt;</span>
    <span class="tag">&lt;<span class="title">p</span>&gt;</span>Hello, {ctrl.name}!<span class="tag">&lt;/<span class="title">p</span>&gt;</span>
 
    <span class="tag">&lt;<span class="title">input</span> <span class="attribute">model</span>=<span class="value">"{ctrl.name}"</span>&gt;</span>
    <span class="tag">&lt;<span class="title">button</span> <span class="attribute">onclick</span>=<span class="value">"{ctrl.clear()}"</span>&gt;</span>Clear<span class="tag">&lt;/<span class="title">button</span>&gt;</span>
-{/template}
+<span class="tag">&lt;/<span class="title">template</span>&gt;</span>
 
-module.exports = Hello;</code></pre>
+module.exports = Hello;</span></code></pre>
 <h4 id="-src-helloctrl-js-"><code>/src/HelloCtrl.js</code></h4>
 <pre><code><span class="keyword">var</span> klass = <span class="keyword">require</span>(<span class="string">"hsp/klass"</span>);
 

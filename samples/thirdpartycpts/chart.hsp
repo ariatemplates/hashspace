@@ -36,11 +36,11 @@ var ChartCpt=klass({
   }
 });
 
-{template chart using c:ChartCpt}
+<template chart using c:ChartCpt>
   <canvas width="{c.width}" height="{c.height}"></canvas>
-{/template}
+</template>
 
-{template test(data)}
+<template test(data)>
   {let datasets=(data.ds=="d1")? d1 : d2}
   <#chart width="380" height="220" type="{data.type}" labels="{labels}" datasets="{datasets}"/>
   <div style="padding:15 0 0 30">
@@ -53,7 +53,7 @@ var ChartCpt=klass({
     <label for="rb3"><input id="rb3" type="radio" model="{data.ds}" value="d1"/> d1</label>&nbsp;
     <label for="rb4"><input id="rb4" type="radio" model="{data.ds}" value="d2"/> d2</label>
   </div>
-{/template}
+</template>
 
 
 // Needed by the playground application.

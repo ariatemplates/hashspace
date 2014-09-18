@@ -29,7 +29,7 @@ var DescriptionCtrl = Class({
     }
 });
 
-{template desc using ctrl:DescriptionCtrl}
+<template desc using ctrl:DescriptionCtrl>
     <div id="description">
         {if ctrl.sample}
             <div class="before"></div>
@@ -40,10 +40,10 @@ var DescriptionCtrl = Class({
             <div class="after"></div>
         {/if}
     </div>
-{/template}
+</template>
 
 
-{export template mainLayout(data, playground)}
+<export template mainLayout(data, playground)>
     <#sampleList data="{data}" playground="{playground}"/>
 
     <div class="hsp-sample {{'hsp-sample-full': data.navCollapsed}}" onclick="{hideNavHover(event, data)}">
@@ -67,7 +67,7 @@ var DescriptionCtrl = Class({
             </div>
         </div>
     </div>
-{/template}
+</template>
 
 function splitterReleased(position, data, playground) {
     data.splitterPos = position + "px";
@@ -101,7 +101,7 @@ function hideNavHover(event, data) {
     }
 }
 
-{template sampleList(data, playground)}
+<template sampleList(data, playground)>
     <div class="samples-list {{'samples-list-collapsed': data.navCollapsed}}"
         onclick="{hideNavHover(event, data)}">
 
@@ -127,9 +127,9 @@ function hideNavHover(event, data) {
             {/foreach}
         </div>
     </div>
-{/template}
+</template>
 
-{export template errorList(errors)}
+<export template errorList(errors)>
     {if errors && errors.length}
         <div class="errorlist">
             <ul>
@@ -152,4 +152,4 @@ function hideNavHover(event, data) {
             </ul>
         </div>
     {/if}
-{/template}
+</template>

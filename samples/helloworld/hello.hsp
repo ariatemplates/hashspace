@@ -1,9 +1,9 @@
 // edit me!
-{template hello(name)}
+<template hello(name)>
     <div class="msg">
         Hello {name}!
     </div>
-{/template}
+</template>
 
 // Needed by the playground application.
 // Update it, but do not remove it!

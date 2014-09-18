@@ -1,11 +1,11 @@
 var msg={text:""}, count=-1;
 
-{template message(msg)}
+<template message(msg)>
     <div title="click me!" onclick="{changeMessage()}" class="noTextSelection">
         {if msg.isWarning}<div class="warning">WARNING:&nbsp;</div>{/if}
         {msg.text}
     </div>
-{/template}
+</template>
 
 function changeMessage() {
     count++;
