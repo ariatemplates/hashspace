@@ -10812,25 +10812,7 @@ var SyntaxTree = klass({
      * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
      */
     __expression : function (index, blocks, out) {
-        var block = blocks[index];
-        if (block.category === "invalidexpression") {
-            this._logError("Invalid expression", block);
-            return index;
-        }
-
         return this.__text(index, blocks, out);
-    },
-
-    /**
-     * Catches invalid expressions.
-     * @param {Array} blocks the full list of blocks.
-     * @param {Integer} index the index of the block to manage.
-     * @param {Array} out the output as an array of Node.
-     * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
-     */
-    __invalidexpression : function (index, blocks, out) {
-        this._logError("Invalid expression", blocks[index]);
-        return index;
     },
 
     /**
@@ -10854,10 +10836,6 @@ var SyntaxTree = klass({
         out.push(node);
 
         var endFound = false, out2 = node.content1;
-
-        if (node.condition.type === "invalidexpression") {
-            this._logError("Invalid if condition", node.condition);
-        }
 
         //process the content of the if block, until one of the if end is found (i.e. endif, else or elseif), if any
         while (!endFound) {
