@@ -1,8 +1,6 @@
 var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 
-hsp.global.orderBy = require("hsp/rt/colutils").orderBy;
-
 <template test(d)>
 <div class="section2">
     <ol>
@@ -25,6 +23,5 @@ describe('repeater with global pipe functions', function() {
         expect(h("li").item(1).text()).to.equal("Foo");
 
         h.$dispose();
-        hsp.global.orderBy = undefined;
     });
 });

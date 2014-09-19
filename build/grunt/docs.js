@@ -35,7 +35,10 @@ module.exports = function(grunt) {
         'playground/**/*.css',
         'playground/**/*.hsp'
       ],
-      DOCS_SAMPLES_GLOB = [ 'samples/**/*' ],
+      DOCS_SAMPLES_GLOB = [
+        'samples/**/*',
+        '!samples/**/*.spec.js'
+      ],
 
       DOCS_TODOMVC_INDEX          = 'todomvc/index.html',
       DOCS_TODOMVC_HSP_GLOB       = ['todomvc/**/*.hsp'],

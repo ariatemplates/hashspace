@@ -1,7 +1,7 @@
 var hashTester = require('hsp/utils/hashtester');
-var sample = require('./hello.hsp');
+var sample = require('./nbrfield.hsp');
 
-describe('"Hello World" sample', function () {
+describe('"Number field" sample', function () {
 
     var h;
     beforeEach(function () {
@@ -13,7 +13,7 @@ describe('"Hello World" sample', function () {
         h.$dispose();
     });
 
-    it('should render "Hello World" from a template', function () {
-        expect(h('div.msg').text().replace(/^\s+|\s+$/g, '')).to.equal('Hello World!');
+    it('should render "Number field"', function () {
+        
     });
 });
