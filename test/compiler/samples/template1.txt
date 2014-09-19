@@ -1,27 +1,36 @@
 ##### Template:
+<script>
 var x="text1";
 function func() {var x="text2"};
+</script>
 
 <template hello1>
    Hello World!
 </template>
 
+<script>
 // comment
 function func2(z) {return z;}
+</script>
 
 <template hello1bis (arg1, arg2)>
 	Hello
 	Again!
 </template>
+<script>
 var z;
+</script>
 ##### Parsed Tree:
 
 [ 
-  { type: 'plaintext', value: 'var x=\"text1\";\nfunction func() {var x=\"text2\"};\n\n'},
+  { type: 'plaintext', value: '\nvar x=\"text1\";\nfunction func() {var x=\"text2\"};\n\n'},
+  { type: 'plaintext', value: '\n'},
   { type: 'template', name: 'hello1', args: [], content: [
     { type: 'text', value: 'Hello World!' } 
   ]},
+  { type: 'plaintext', value: '\n'},
   { type: 'plaintext', value: '\n// comment\nfunction func2(z) {return z;}\n\n'},
+  { type: 'plaintext', value: '\n'},
   { type: 'template', name: 'hello1bis', args: [ 'arg1', 'arg2' ], content: [
     { type: 'text', value: 'Hello Again!' } 
   ]}
@@ -30,11 +39,14 @@ var z;
 ##### Syntax Tree:
 
 [ 
-  { type: 'plaintext', value: 'var x=\"text1\";\nfunction func() {var x=\"text2\"};\n\n'},
+  { type: 'plaintext', value: '\nvar x=\"text1\";\nfunction func() {var x=\"text2\"};\n\n'},
+  { type: 'plaintext', value: '\n'},
   { type: 'template', name: 'hello1', args: [], content: [
     { type: 'text', value: 'Hello World!' } 
   ]},
+  { type: 'plaintext', value: '\n'},
   { type: 'plaintext', value: '\n// comment\nfunction func2(z) {return z;}\n\n'},
+  { type: 'plaintext', value: '\n'},
   { type: 'template', name: 'hello1bis', args: [ 'arg1', 'arg2' ], content: [
     { type: 'text', value: 'Hello Again!' } 
   ]}

@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +19,7 @@ var ht=require("hsp/utils/hashtester");
 function foo(arg1,arg2) {
     return arg1+arg2;
 }
+</script>
 
 <template test1(d)>
     <div class="content">Value: {d.person[d.pp]}</div>
@@ -49,6 +51,7 @@ function foo(arg1,arg2) {
     <input type="text" model="{d.person[d.pp]}">
 </template>
 
+<script>
 describe("Dynamic path expressions", function () {
     var C=".content";
 
@@ -221,3 +224,4 @@ describe("Dynamic path expressions", function () {
     });
 
 });
+</script>

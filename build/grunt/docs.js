@@ -409,7 +409,7 @@ module.exports = function(grunt) {
           process: function(content) {
             var compiled = renderer.renderString(content, "inline.js");
             if (compiled.serverErrors && compiled.serverErrors.length) {
-              grunt.fail.fatal("Hashspace compilation " + compiled.serverErrors[0].description);
+              grunt.fail.fatal("\r\nHashspace compilation of " + file + "\r\n" + compiled.serverErrors[0].description);
               return false;
             }
             return compiled.code;

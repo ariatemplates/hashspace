@@ -23,7 +23,7 @@ module.exports = function (grunt) {
       test: {
         options: {
           reporter: 'spec',
-          require: 'build/blanket'
+          require: 'build/blanket' // comment this line out to disable coverage when debugging mocha tests
         },
         src: [
           'test/compiler/**/*.js',
@@ -173,6 +173,7 @@ module.exports = function (grunt) {
       },
       unit: {
         singleRun: true
+        // logLevel: 'DEBUG' // uncomment for investigating hashspace precompilation issues
       },
       tdd: {
         singleRun: false,

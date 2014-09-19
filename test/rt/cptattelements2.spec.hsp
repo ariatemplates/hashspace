@@ -1,4 +1,4 @@
- 
+<script>
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,6 +36,7 @@ var ExpandCollapseController = klass({
         $set(this, "visible", false);
     }
 });
+</script>
 
 <template expandCollapse using c:ExpandCollapseController>
     {if c.visible}
@@ -52,7 +53,7 @@ var ExpandCollapseController = klass({
     </#expandCollapse>
 </template>
 
-
+<script>
 var LINK="a";
 var CONTENT=".content";
 
@@ -79,3 +80,4 @@ describe("Component attribute elements (2)", function () {
   });
 
 });
+</script>

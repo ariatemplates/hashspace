@@ -1,4 +1,4 @@
- 
+<script>
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,6 +56,7 @@ var TabBarCtrl = klass({
         }
     }
 });
+</script>
 
 <template tabbar using ctrl:TabBarCtrl>
   <div class="x-tabbar">
@@ -100,6 +101,7 @@ var TabBarCtrl = klass({
   </#tabbar>
 </template>
 
+<script>
 var TABS=".x-tab";
 var BODY=".x-tab-content";
 
@@ -168,3 +170,4 @@ describe("Component attribute elements (5)", function () {
     // TODO: support empty att template - and consider it generates an empty string..
 
 });
+</script>

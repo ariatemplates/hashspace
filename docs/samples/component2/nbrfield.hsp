@@ -1,3 +1,4 @@
+<script>
 var klass=require("hsp/klass");
 
 // Component controller
@@ -68,8 +69,12 @@ function getNumber(s) {
     if (!NBR_DIGITS.test(s)) return null;
     return Number(s);
 }
+</script>
 
+<script>
 // component template associated with the NbrField controller
+</script>
+
 <export template nbrfield using c:NbrField>
   <span class="nbrfield">
     <input type="text" model="{c.internalValue}"
@@ -78,7 +83,10 @@ function getNumber(s) {
   </span>
 </template>
 
+<script>
 // component usage
+</script>
+
 <template test(d)>
   Component #1: <#nbrfield value="{d.value1}" min="-10" max="1000"/><br/>
   Value in the data model: <span class="textValue">{d.value1}</span>
@@ -88,10 +96,11 @@ function getNumber(s) {
   Value in the data model: <span class="textValue">{d.value2}</span>
 </template>
 
-
+<script>
 // Needed by the playground application.
 // Update it, but do not remove it!
 module.exports = {
     template: test,
     data: [{ value1 : 123 }]
 };
+</script>

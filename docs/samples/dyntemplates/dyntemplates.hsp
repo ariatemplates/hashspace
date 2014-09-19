@@ -15,6 +15,7 @@
   </div>
 </template>
 
+<script>
 var model={
     view: tplA,
     msg: "Hello World",
@@ -33,3 +34,4 @@ module.exports = {
     template: test,
     data: [model]
 };
+</script>

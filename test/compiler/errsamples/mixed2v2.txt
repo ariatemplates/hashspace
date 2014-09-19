@@ -1,6 +1,5 @@
 ##### Template:
-<script>
-.var x=23;
+<script>.var x=23;
 function foo() {
     return x;
 }

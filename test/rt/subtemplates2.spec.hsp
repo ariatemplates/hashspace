@@ -1,4 +1,4 @@
-
+<script>
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 
 var ht=require("hsp/utils/hashtester"),
     klass=require("hsp/klass");
+</script>
 
 <template test1(c)>
     <div class="content">
@@ -61,21 +62,26 @@ var ht=require("hsp/utils/hashtester"),
     contentB2: {msg} 
 </template>
 
+<script>
 var C2Controller=klass({
     attributes:{
         "msg":{type:"string",defaultValue:"no msg",binding:"1-way"},
         "foo":{type:"string",defaultValue:"foo"}
     }
 });
+</script>
 
 <template contentC2 using c:C2Controller>
     contentC2: {c.msg} {c.foo} 
 </template>
 
+<script>
 var ctxt={
     tpl:contentA2,
     msg:"hello"
 }
+</script>
+
 <template test4(ctxt)>
     <div class="content">
         Before -
@@ -94,6 +100,7 @@ var ctxt={
     </div>
 </template>
 
+<script>
 describe("Dynamic template insertion", function () {
     it("validates dynamic insertion with no template argument", function() {
         var h=ht.newTestContext(), c={tpl:contentA};
@@ -266,3 +273,4 @@ describe("Dynamic template insertion", function () {
         h.$dispose();
     });
 });
+</script>

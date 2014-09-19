@@ -1,3 +1,4 @@
+<script>
 var klass=require("hsp/klass");
 
 function calculateNoOfPages(collectionSize, pageSize) {
@@ -42,6 +43,7 @@ var Pagination=klass({
        rebuildInternalModel(this);
     }
 });
+</script>
 
 <template pagination using p:Pagination>
     <ul class="pagination">
@@ -71,6 +73,7 @@ var Pagination=klass({
 
 </template>
 
+<script>
 var model = {
     active: 4,
     collectionSize: 99,
@@ -88,3 +91,4 @@ module.exports = {
     template: paginationTest,
     data: [model]
 };
+</script>

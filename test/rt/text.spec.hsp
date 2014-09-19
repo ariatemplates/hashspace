@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +16,7 @@
 
 var hsp=require("hsp/rt"),
     json=require("hsp/json");
+</script>
 
 <template hello1()>
     Hello World!
@@ -28,17 +30,23 @@ var hsp=require("hsp/rt"),
     Hello {person.firstName} {person.lastName}!
 </template>
 
+<script>
 // same as hello3 but with unbound variable on the lastName
+</script>
 <template hello4(person)>
     Hello {person.firstName} {:person.lastName}!
 </template>
 
+<script>
 // same as hello3 but with a string parameter
+</script>
 <template hello5(name)>
     Hello {name}!
 </template>
 
+<script>
 var globalValue="foo";
+</script>
 <template hello6()>
     {globalValue}
 </template>
@@ -47,6 +55,7 @@ var globalValue="foo";
     {concat(d.firstName,d.lastName)}
 </template>
 
+<script>
 function concat(x,y) {
     return x+"-"+y;
 }
@@ -55,6 +64,7 @@ function compare(x,y) {
     var r=(x===y);
     return r;
 }
+</script>
 
 <template hello8(d)>
     {if compare(d.firstName,d.lastName)}
@@ -62,12 +72,14 @@ function compare(x,y) {
     {/if}
 </template>
 
+<script>
 var globalValueInt=0;
+</script>
 <template hello9()>
     {globalValueInt}
 </template>
 
-
+<script>
 describe("Text Nodes", function () {
     var TEXT_NODE = 3;
 
@@ -249,3 +261,4 @@ describe("Text Nodes", function () {
 });
 
 // TODO test root node with multiple chile nodes
+</script>

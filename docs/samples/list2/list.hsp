@@ -1,3 +1,4 @@
+<script>
 var klass=require("hsp/klass");
 
 // simple option controller
@@ -34,8 +35,11 @@ var ListCtrl = klass({
     this.onselect({value:value});
   }
 });
+</script>
 
+<script>
 // simple list template
+</script>
 <template list using lc:ListCtrl>
   // content is the list of attribute sub-elements
   <div class="list {lc.class}">
@@ -60,7 +64,9 @@ var ListCtrl = klass({
   </div>
 </template>
 
+<script>
 // test template
+</script>
 <template test(d)>
   Click on an item to select it:
 
@@ -83,6 +89,7 @@ var ListCtrl = klass({
   {if d.selectedItem!==null}Last selected value: {d.selectedItem}{/if}
 </template>
 
+<script>
 var count=0, model={
   itemName: "item",
   items:["Kind of blue","Something else","Winter moon"]
@@ -109,3 +116,4 @@ module.exports = {
     template: test,
     data: [model]
 };
+</script>

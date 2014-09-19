@@ -1,4 +1,4 @@
-
+<script>
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,8 @@ PanelController = klass({
 });
 
 // sample panel template
+</script>
+
 <template panel using c:PanelController>
   <div class="panel">
     {if c.head}
@@ -100,11 +102,13 @@ PanelController = klass({
   </div>
 </template>
 
+<script>
 var TestCtl=klass({
       attributes:{
         "value":{type:"string",binding:"1-way"}
     }
 })
+</script>
 
 <template item using c:TestCtl>
     Value: {c.value}
@@ -116,6 +120,7 @@ var TestCtl=klass({
   </div>
 </template>
 
+<script>
 var HEAD=".panel .head";
 var BODY=".panel .body";
 
@@ -303,3 +308,4 @@ describe("Component attribute elements (1)", function () {
   // test that template attriubte can be created/deleted dynamically
 
 });
+</script>

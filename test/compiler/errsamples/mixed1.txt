@@ -1,8 +1,10 @@
 ##### Template:
+<script>
 var x=23;
 function foo() {
     return x;
 }
+</script>
 
 <template test(person)>
     <div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
@@ -10,8 +12,10 @@ function foo() {
     </div>
 </template>
 
+<script>
 function bar() {
     foo({blah:"hello",});
 }
+</script>
 
 ##### Errors:

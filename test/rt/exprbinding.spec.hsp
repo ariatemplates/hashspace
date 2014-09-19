@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +24,7 @@ function changeValueAndObject (data,val) {
 function changeValue (data,val) {
     $set(data.object,"value",val);
 }
+</script>
 
 <template test1(data) >
     <input class="in1" type="text" value="{data.object.value}" />
@@ -58,6 +60,7 @@ function changeValue (data,val) {
   </div>
 </template>
 
+<script>
 describe("Expression Bindings", function () {
     var INPUT1=".in1", INPUT2=".in2";
 
@@ -149,3 +152,4 @@ describe("Expression Bindings", function () {
         h.$dispose();
     });
 });
+</script>

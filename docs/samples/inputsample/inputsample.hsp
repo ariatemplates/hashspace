@@ -31,6 +31,7 @@
     </div>
 </template>
 
+<script>
 var d={comment:"edit me!", isChecked:false, selection:"B", dtype:"text"}
 
 // Needed by the playground application.
@@ -39,3 +40,4 @@ module.exports = {
     template: inputSample,
     data: [d]
 };
+</script>

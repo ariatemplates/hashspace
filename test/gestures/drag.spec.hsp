@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +21,7 @@
 require("hsp/gestures/drag").register();
 var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
+</script>
 
 <template test1(ctl)>
     <div title="test1" ondrag="{ctl.handleEvent(event)}" ondragstart="{ctl.handleEvent(event)}" ondragmove="{ctl.handleEvent(event)}" ondragcancel="{ctl.handleEvent(event)}">
@@ -27,6 +29,7 @@ var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     </div>
 </template>
 
+<script>
 describe("Drag gesture", function () {
 
     function validate(expected, result) {
@@ -119,3 +122,4 @@ describe("Drag gesture", function () {
     });
 
 });
+</script>

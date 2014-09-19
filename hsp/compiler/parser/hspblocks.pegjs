@@ -7,13 +7,25 @@
  * with hashspace constraints)
  * @see https://github.com/dmajda/pegjs
  */
-
 TemplateFile
-  = blocks:(TemplateBlock / TextBlock)* 
-  {return blocks;}
+  = blocks:(TemplateBlock / ScriptBlock / TopLevelWhitespace)*
+  {
+   return blocks;
+  }
+
+TopLevelWhitespace
+  = lines:(chars:WhiteSpace* eol:EOL {return chars.join("") + eol})+
+    {return {type:"plaintext", value:lines.join('')}}
+
+ScriptBlock "script block"
+  = (_ "<script>" eol1:EOL? content:TextBlock "</script>" _ eol2:(EOL / EOF))
+  {
+    content.value = (eol1 || "") + content.value + (eol2 || "");
+    return content;
+  }
 
 TextBlock
-  = lines:(!(_ ("<") _ "template") !(_ ("<") _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+
+  = lines:(!(_ ("<") ("template" / "/script")) !(_ ("<") _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+
   {return {type:"plaintext", value:lines.join('')}}
 
 TemplateBlock "template block"

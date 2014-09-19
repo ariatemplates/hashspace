@@ -1,4 +1,4 @@
-
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ var hsp=require("hsp/rt"),
     json=require("hsp/json"),
     ht=require("hsp/utils/hashtester"),
     klass=require("hsp/klass");
-
+</script>
 
 <template test1(person)>
     <div title="test1">
@@ -40,8 +40,9 @@ var hsp=require("hsp/rt"),
     <input type="text" value="{person.name}"/>
 </template>
 
-
+<script>
 var globalObject={value:"foo"};
+</script>
 <template test4()>
     <input type="text" value="{globalObject.value}"/>
 </template>
@@ -52,6 +53,7 @@ var globalObject={value:"foo"};
     </div>
 </template>
 
+<script>
 var TestCtl6=klass({
     attributes: {
         "selected" : { type : "boolean", defaultValue: false}
@@ -65,6 +67,7 @@ var TestCtl6=klass({
         this.label = (this.selected ? "checked" : "unchecked") + "(" + this.counter +")";
     }
 });
+</script>
 
 <template test6 using c:TestCtl6>
     // test onchange cross browser consitency
@@ -72,6 +75,7 @@ var TestCtl6=klass({
     <span class="label">{c.label}</span>
 </template>
 
+<script>
 describe("Element Nodes", function () {
     var ELEMENT_NODE=1;
     var TEXT_NODE=3;
@@ -217,3 +221,4 @@ describe("Element Nodes", function () {
     });
 
 });
+</script>

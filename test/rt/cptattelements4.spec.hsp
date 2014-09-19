@@ -1,4 +1,4 @@
- 
+<script>
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,6 +45,7 @@ var ListCtrl = klass({
         lastSelectionValue=value;
     }
 });
+</script>
 
 <template list using lc:ListCtrl>
     {if !lc.content} 
@@ -86,6 +87,7 @@ var ListCtrl = klass({
   {tab.title}
 </template>
 
+<script>
 var TabCtrl = klass({
   $init: function () {
     this.tabs = [{title:"Tab A", template: tabA},{title:"Tab B"}];
@@ -99,6 +101,7 @@ var TabCtrl = klass({
     }
   }
 });
+</script>
 
 <template tabs using c:TabCtrl>
   <ul class="nav nav-tabs">
@@ -115,6 +118,7 @@ var TabCtrl = klass({
   </ul>
 </template>
 
+<script>
 var EMPTY_MSG=".nodata";
 var OPTIONS="ul .opt";
 
@@ -236,3 +240,4 @@ describe("Component attribute elements (4)", function () {
     // TODO validate that parent is passed to controller $init
 
 });
+</script>

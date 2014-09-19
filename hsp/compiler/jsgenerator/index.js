@@ -53,7 +53,9 @@ exports.generate = function(res, template, fileName, dirPath, options) {
             res.codeFragments = templateWalker.templates;
         }
 
-        res.code = HEADER + out.join('\r\n');
+        // don't add any newlines when joining blocks;
+        // emit necessary newlines from the parser or template walker instead
+        res.code = HEADER + out.join('');
         res.errors = templateWalker.errors;
     } else {
         // Generate a JS script to show the errors when the generated file is loaded
@@ -159,7 +161,7 @@ function _generateLineMap (res, file) {
         }
     }
 
-    var nbrOfLinesInCompiledTemplate = 7; //all generated templates got fixed no of LOC
+    var nbrOfLinesInCompiledTemplate = 5; //all generated templates got fixed no of LOC
     var lineMap = [], pos = HEADER_SZ, template;
     var pos1 = -1; // position of the next template start
     var pos2 = -1; // position of the next template end

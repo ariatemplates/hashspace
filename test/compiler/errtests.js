@@ -40,7 +40,7 @@ describe('Template compilation errors: ', function () {
                 '\r\n',
                 'require("hsp/rt/log").error(',
                     '"SyntaxError: Unexpected token",',
-                    '{"type":"error","file":"mixed1","code":"    foo({blah:\\"hello\\",});","line":13,"column":22}',
+                    '{"type":"error","file":"mixed1","code":"    foo({blah:\\"hello\\",});","line":16,"column":22}',
                 ');\r\n'
         ].join('');
         assert.equal(r.code, s, "generated code");
@@ -50,19 +50,25 @@ describe('Template compilation errors: ', function () {
     it('tests mixed errors in template and JS script 2', function () {
         var sample = ut.getErrorSampleContent("mixed2");
         var r = compiler.compile(sample.template, "mixed2");
-      assert.equal(r.errors[0].line, 1, "error line 1");
+        assert.equal(r.errors[0].line, 2);
+    });
+
+    it('tests mixed errors in template and JS script 2 without newline', function () {
+        var sample = ut.getErrorSampleContent("mixed2v2");
+        var r = compiler.compile(sample.template, "mixed2v2");
+        assert.equal(r.errors[0].line, 1);
     });
 
     it('tests mixed errors in template and JS script 3', function () {
         var sample = ut.getErrorSampleContent("mixed3");
         var r = compiler.compile(sample.template, "mixed3");
-        assert.equal(r.errors[0].line, 8);
+        assert.equal(r.errors[0].line, 11);
     });
 
     it('tests mixed errors in template and JS script 4', function () {
         var sample = ut.getErrorSampleContent("mixed4");
         var r = compiler.compile(sample.template, "mixed4");
-        assert.equal(r.errors[0].line, 13);
+        assert.equal(r.errors[0].line, 18);
     });
 
 });

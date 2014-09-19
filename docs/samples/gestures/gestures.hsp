@@ -1,4 +1,6 @@
+<script>
 require('hsp/gestures/index').register();
+</script>
 
 <template gestures(msgList)>
     <div class="touchboard" style="height:200px; background: #27AAFC;text-align:center;"
@@ -19,6 +21,7 @@ require('hsp/gestures/index').register();
     </div>
 </template>
 
+<script>
 var eventLog = [];
 
 function addMsg(evt) {
@@ -36,3 +39,4 @@ module.exports = {
     template: gestures,
     data: [eventLog]
 };
+</script>

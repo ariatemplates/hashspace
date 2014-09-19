@@ -1,5 +1,7 @@
 ##### Template:
+<script>
 var nullValue = "null";
+</script>
 
 <template main()>
     before-{nullValue}-after

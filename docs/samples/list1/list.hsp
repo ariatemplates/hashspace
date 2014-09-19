@@ -1,3 +1,4 @@
+<script>
 var klass=require("hsp/klass");
 
 // simple list controller
@@ -12,8 +13,12 @@ var ListController = klass({
     "separator": {type:"template"}
   }
 });
+</script>
 
+<script>
 // simple list template
+</script>
+
 <template list using lc:ListController>
   // content is the list of attribute sub-elements
   <div class="list {lc.class}">
@@ -36,7 +41,9 @@ var ListController = klass({
   </div>
 </template>
 
+<script>
 // test template
+</script>
 <template test(d)>
   <#list head="Static list" class="listcpt">
     <@option>First {d.itemName}</@option>
@@ -60,6 +67,7 @@ var ListController = klass({
   </#list>
 </template>
 
+<script>
 var count=0, model={
   itemName: "item",
   preferredOption:"My favourite things",
@@ -87,3 +95,4 @@ module.exports = {
     template: test,
     data: [model]
 };
+</script>

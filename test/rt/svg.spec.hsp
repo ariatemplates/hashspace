@@ -1,6 +1,8 @@
+<script>
 var hsp = require("hsp/rt");
 var browser = require("hsp/rt/browser");
 var ht = require("hsp/utils/hashtester");
+</script>
 
 <template svgTest()>
     <svg>
@@ -8,6 +10,7 @@ var ht = require("hsp/utils/hashtester");
     </svg>
 </template>
 
+<script>
 describe('svg support', function() {
 
     it('should not break and log error in browsers that dont support svg', function() {
@@ -27,3 +30,4 @@ describe('svg support', function() {
         h.$dispose();
     });
 })
+</script>

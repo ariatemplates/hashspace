@@ -1,5 +1,7 @@
 ##### Template:
+<script>
 var person = {name : "World"};
+</script>
 <template hello()>
 	Hello {person.name}!
 </template>

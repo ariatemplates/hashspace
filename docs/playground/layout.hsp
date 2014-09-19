@@ -1,3 +1,4 @@
+<script>
 var splitter = require("./splitter.hsp.js");
 var plunkerExport = require("./plunker.js");
 
@@ -28,6 +29,7 @@ var DescriptionCtrl = Class({
         this.after = parts[1];
     }
 });
+</script>
 
 <template desc using ctrl:DescriptionCtrl>
     <div id="description">
@@ -69,6 +71,7 @@ var DescriptionCtrl = Class({
     </div>
 </template>
 
+<script>
 function splitterReleased(position, data, playground) {
     data.splitterPos = position + "px";
     editorResize(playground);
@@ -100,6 +103,7 @@ function hideNavHover(event, data) {
         data.navHover = false;
     }
 }
+</script>
 
 <template sampleList(data, playground)>
     <div class="samples-list {{'samples-list-collapsed': data.navCollapsed}}"

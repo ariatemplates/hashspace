@@ -1,4 +1,4 @@
-
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ var hsp=require("hsp/rt"),
     doc=require("hsp/rt/document"),
     ht=require("hsp/utils/hashtester"),
     klass=require("hsp/klass");
+</script>
 
 <template test1(label,names)>
     {foreach (name in names)}
@@ -81,10 +82,13 @@ var hsp=require("hsp/rt"),
     {/foreach}
 </template>
 
+<script>
 var items=[
     {value:"Iteam A"},
     {value:"Item B"}
 ];
+</script>
+
 <template test7>
     {foreach item in items}
         <div class="itm">
@@ -93,6 +97,7 @@ var items=[
     {/foreach}
 </template>
 
+<script>
 var Sorter=klass({
     $constructor:function(property) {
         this.ascending=true;
@@ -123,6 +128,7 @@ var Sorter=klass({
         return this.sort(array);
     }
 });
+</script>
 
 <template test8(d)>
     <div class="section2">
@@ -172,6 +178,7 @@ var Sorter=klass({
     </div>
 </template>
 
+<script>
 describe("ForEach Node", function () {
     function test1Count (arrayLength) {
         // return number of items produced by test 1
@@ -825,3 +832,4 @@ describe("ForEach Node", function () {
     });
     
 });
+</script>

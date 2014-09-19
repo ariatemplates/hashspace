@@ -1,6 +1,8 @@
+<script>
 var ht=require("hsp/utils/hashtester"), 
     log=require("hsp/rt/log"),
     $set=require("hsp/$set");
+</script>
 
 <template testContent(data)>
     <div class="foo1 foo2">
@@ -14,6 +16,7 @@ var ht=require("hsp/utils/hashtester"),
     </ul>
 </template>
 
+<script>
 function increaseCount(d,incr) {
     $set(d,"count",d.count+incr);
 }
@@ -133,3 +136,4 @@ describe("HashTester", function () {
         expect(log.getNbrOfLoggers()).to.equal(initialNbr);
     });
 });
+</script>

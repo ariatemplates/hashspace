@@ -1,4 +1,4 @@
-
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 var hsp=require("hsp/rt"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     json=require("hsp/json");
+</script>
 
 <template content(label, value)>
     {:label}: {value}
@@ -46,9 +47,11 @@ var hsp=require("hsp/rt"),
     <#content label="{person.firstName}" value="{:person.lastName}"/>
 </template>
 
+<script>
 function concat(a,b) {
     return a+": "+b;
 }
+</script>
 
 <template test4(person)>
     {concat(person.firstName, person.lastName)}
@@ -81,6 +84,7 @@ function concat(a,b) {
     <#field3 attributes="{{myvalue: d}}"/>
 </template>
 
+<script>
 describe("Sub-template insertion", function () {
     it("tests a simple insertion", function () {
         var dm = {
@@ -275,3 +279,4 @@ describe("Sub-template insertion", function () {
         n.$dispose();
     });
 });
+</script>

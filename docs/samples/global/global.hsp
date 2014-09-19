@@ -1,4 +1,6 @@
+<script>
 var hsp=require("hsp/rt");
+</script>
 
 <template item(text,value)>
     {if value}
@@ -9,8 +11,10 @@ var hsp=require("hsp/rt");
     {/if}
 </template>
 
+<script>
 hsp.global.label=item;
 hsp.global.ln={personDetails:"Person details"};
+</script>
 
 <template test(person)>
     <div class="global" title="{ln.personDetails}">
@@ -19,6 +23,7 @@ hsp.global.ln={personDetails:"Person details"};
     </div>
 </template>
 
+<script>
 // Needed by the playground application.
 // Update it, but do not remove it!
 module.exports = {
@@ -28,3 +33,4 @@ module.exports = {
         lastName:"Simpson"
     }]
 };
+</script>

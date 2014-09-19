@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +25,7 @@ var addItem = function (items) {
 var removeItem = function (items, index) {
    items.splice(index, 1);
 };
+</script>
 
 <template displayItem(itms, idx)>
     <li onclick="{removeItem(itms, 0)}">Remove #{idx}</li>
@@ -65,7 +67,7 @@ var removeItem = function (items, index) {
   </div>
 </template>
 
-
+<script>
 describe("Sub- and parent- template scope interactions", function () {
     it("validates property bubbling from sub-template to parent", function() {
         var h=ht.newTestContext();
@@ -129,4 +131,4 @@ describe("Sub- and parent- template scope interactions", function () {
         h.$dispose();
     });
 });
-
+</script>

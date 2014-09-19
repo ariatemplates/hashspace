@@ -1,3 +1,4 @@
+<script>
 var klass=require("hsp/klass");
 
 var CITIES={
@@ -41,6 +42,7 @@ var ClockController=klass({
 		this.cityName = CITIES[this.city].city;
 	}
 });
+</script>
 
 <template clock using c:ClockController>
 	// example from http://www.ractivejs.org/examples/clock/
@@ -75,8 +77,10 @@ var ClockController=klass({
 	<#clock city="TYO"/>
 </template>
 
+<script>
 // Needed by the playground application.
 // Update it, but do not remove it!
 module.exports = {
     template: demo
 };
+</script>

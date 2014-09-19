@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +21,7 @@
 require("hsp/gestures/doubleTap").register();
 var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
+</script>
 
 <template test1(ctl)>
     <div title="test1" ondoubletap="{ctl.handleEvent(event)}" ondoubletapstart="{ctl.handleEvent(event)}" ondoubletapcancel="{ctl.handleEvent(event)}">
@@ -27,6 +29,7 @@ var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     </div>
 </template>
 
+<script>
 describe("DoubleTap gesture", function () {
 
     function validate(expected, result) {
@@ -170,3 +173,4 @@ describe("DoubleTap gesture", function () {
     
 
 });
+</script>

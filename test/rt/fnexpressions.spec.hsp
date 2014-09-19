@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +23,7 @@ function concat(a,b) {
 function endText(a) {
     return "*"+a+"*";
 }
+</script>
 
 <template test1(d)>
     <div class="content" title="{d.fn(d.msg1,d.msg2)}">foo</div>
@@ -52,13 +54,16 @@ function endText(a) {
     <div class="content">{d.sub.fn(d.msg1,d.msg2)}</div>
 </template>
 
+<script>
 function InvalidModifier() {}
+</script>
 
 <template test7(d)>
     {let modifier=new InvalidModifier()}
     <div class="content">{d.msg|modifier}</div>
 </template>
 
+<script>
 describe("Function expressions", function () {
     var C=".content";
 
@@ -268,3 +273,4 @@ describe("Function expressions", function () {
     });
 
 });
+</script>

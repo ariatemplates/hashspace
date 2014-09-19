@@ -13,6 +13,7 @@
     </div>
 </template>
 
+<script>
 var msg={
     text:"Hello World",
     urgency:false
@@ -32,3 +33,4 @@ module.exports = {
     template: message,
     data: [msg]
 };
+</script>

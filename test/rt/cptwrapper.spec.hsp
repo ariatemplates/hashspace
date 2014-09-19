@@ -1,4 +1,4 @@
- 
+<script>
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -114,13 +114,16 @@ lib.NbrField = klass({
     this.onafterreset({oldValue:v1,newValue:v2});
   }
 })
+</script>
 
 <template nbrfield using c:lib.NbrField>
   <input type="text" model="{c.internalValue}" class="nbrfield {{'error': c.invalidValue, 'mandatory': c.mandatory}}"/>
   <input type="button" value="..." onclick="{c.resetField()}"/>
 </template>
 
+<script>
 lib.nbrfield=nbrfield;
+</script>
 
 <template test(d)>
   <input type="text" value="{d.value}"/>
@@ -133,6 +136,7 @@ lib.nbrfield=nbrfield;
   <#lib.nbrfield value="{d.value}" min="-10" max="10"/>
 </template>
 
+<script>
 var resetCount=0, lastResetArg=0, lastEvtType="";
 function notifyReset(arg,evt) {
   resetCount++;
@@ -160,11 +164,13 @@ var HelloCtrl = klass({
         "inputChecked" : { type : "boolean" /*, defaultValue: false*/}
     }
 });
+</script>
 
 <template test3 using ctrl:HelloCtrl>
    <input type="checkbox" model="{ctrl.inputChecked}">
 </template>
 
+<script>
 describe("Component Nodes", function () {
   var ELEMENT_NODE=1;
   var TEXT_NODE=3;
@@ -371,3 +377,4 @@ it("tests a component inside another template", function() {
   });
 
 });
+</script>

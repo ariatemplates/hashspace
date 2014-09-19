@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +21,7 @@
 require("hsp/gestures/longPress").register();
 var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
+</script>
 
 <template test1(ctl)>
     <div title="test1" onlongpress="{ctl.handleEvent(event)}" onlongpressstart="{ctl.handleEvent(event)}" onlongpresscancel="{ctl.handleEvent(event)}">
@@ -27,6 +29,7 @@ var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     </div>
 </template>
 
+<script>
 describe("LongPress gesture", function () {
     function validate(expected, result) {
         expect(expected.length).to.equal(result.length);
@@ -152,3 +155,4 @@ describe("LongPress gesture", function () {
     });
 
 });
+</script>

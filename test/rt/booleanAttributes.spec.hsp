@@ -1,11 +1,14 @@
+<script>
 var json=require("hsp/json");
 hsp=require("hsp/rt");
+</script>
 
 <template tpl(model)>
 <input type = "text" required = "{model.flag}">
 <input type = "radio" checked = "{model.flag2}">
 </template>
 
+<script>
 describe('boolean attributes', function () {
 
     it('should add / remove boolean attributes with truthy / falsy values', function () {
@@ -28,3 +31,4 @@ describe('boolean attributes', function () {
         n.$dispose();
     });
 });
+</script>

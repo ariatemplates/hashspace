@@ -1,4 +1,4 @@
-
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 
 var ht=require("hsp/utils/hashtester"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent;
+</script>
 
 <template test1(person,ctl)>
     <div title="test1" onclick="{ctl.handleClick()}">
@@ -41,14 +42,13 @@ var ht=require("hsp/utils/hashtester"),
     <img onclick="this.cbatt=123;return false;"/>
 </template>
 
-
+<script>
 var doClickCount = 0, doClickEvtType = "", doClickStrArg = "";
 function doClick (str, evt) {
     doClickCount++;
     doClickEvtType = evt.type;
     doClickStrArg = str;
 }
-
 
 describe("Event Handlers", function () {
     function test2SpanNode (n, idx) {
@@ -155,3 +155,4 @@ describe("Event Handlers", function () {
     });
 
 });
+</script>

@@ -1,4 +1,4 @@
-
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ var hsp=require("hsp/rt"),
 function globalHelper() {
     return true;
 }
+</script>
 
 <template test1>
     {if (globalHelper())}
@@ -33,6 +34,7 @@ function globalHelper() {
   <#test1 />
 </template>
 
+<script>
 describe("Templates using expressions with global references", function () {
 
     it("should actually access the reference", function () {
@@ -50,3 +52,4 @@ describe("Templates using expressions with global references", function () {
     });
 
 });
+</script>

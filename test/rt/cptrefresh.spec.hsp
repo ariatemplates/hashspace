@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +22,7 @@ var Cpt1 = klass({
     this.closed = true;
   }
 });
+</script>
 
 <template cpt1 using c:Cpt1>
 {if !c.closed}
@@ -33,7 +35,7 @@ var Cpt1 = klass({
   <#d.cpt />
 </template>
 
-
+<script>
 describe("Component refresh", function () {
     it("validates refresh with root if statement", function() {
         var h=ht.newTestContext(), d={cpt:cpt1};
@@ -56,3 +58,4 @@ describe("Component refresh", function () {
         h.$dispose();
     });
 });
+</script>

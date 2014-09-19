@@ -1,3 +1,4 @@
+<script>
 var klass=require("hsp/klass");
 
 function changeCase(s,arg) {
@@ -36,6 +37,7 @@ var Sorter=klass({
         this.ascending=!this.ascending;
     }
 })
+</script>
 
 <template sample(d)>
     <div class="section2">
@@ -60,6 +62,7 @@ var Sorter=klass({
     </div>
 </template>
 
+<script>
 var data={
     msg:"Hello Simpsons!",
     persons:[
@@ -78,3 +81,4 @@ module.exports = {
     template: sample,
     data: [data]
 };
+</script>

@@ -1,4 +1,4 @@
- 
+<script>
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ var hsp=require("hsp/rt"),
     klass=require("hsp/klass"),
     log=require("hsp/rt/log"),
     ht=require("hsp/utils/hashtester");
+</script>
 
 <template test1(d)>
     Some text
@@ -41,6 +42,7 @@ var hsp=require("hsp/rt"),
     {/foreach}
 </template>
 
+<script>
 describe("Log statement", function () {
   
     it("validates static log literal values", function() {
@@ -54,7 +56,7 @@ describe("Log statement", function () {
 
         var f=''+h.logs(0).file, fname="log.spec.hsp";
         expect(f.slice(-fname.length)).to.equal(fname);
-        expect(h.logs(0).line).to.equal(27);
+        expect(h.logs(0).line).to.equal(28);
         expect(h.logs(0).column).to.equal(9);
         
         h.logs.clear();
@@ -111,3 +113,4 @@ describe("Log statement", function () {
     });
 
 });
+</script>

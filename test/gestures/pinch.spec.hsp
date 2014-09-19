@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +21,7 @@
 require("hsp/gestures/pinch").register();
 var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     touchEventMap = require("hsp/gestures/touchEvent").touchEventMap;
+</script>
 
 <template test1(ctl)>
     <div title="test1" onpinch="{ctl.handleEvent(event)}" onpinchstart="{ctl.handleEvent(event)}" onpinchmove="{ctl.handleEvent(event)}" onpinchcancel="{ctl.handleEvent(event)}">
@@ -27,6 +29,7 @@ var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     </div>
 </template>
 
+<script>
 describe("Pinch gesture", function () {
 
     function validate(expected, result) {
@@ -215,3 +218,4 @@ describe("Pinch gesture", function () {
     });
 
 });
+</script>

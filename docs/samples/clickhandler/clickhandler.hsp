@@ -1,4 +1,6 @@
+<script>
 var msg={text:""}, count=-1;
+</script>
 
 <template message(msg)>
     <div title="click me!" onclick="{changeMessage()}" onselectstart="return false">
@@ -7,6 +9,7 @@ var msg={text:""}, count=-1;
     </div>
 </template>
 
+<script>
 function changeMessage() {
     count++;
     switch(count%3) {
@@ -36,3 +39,4 @@ module.exports = {
     template: message,
     data: [msg]
 };
+</script>

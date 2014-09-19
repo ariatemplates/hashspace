@@ -1,4 +1,4 @@
-
+<script>
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 
 var hsp=require("hsp/rt"),
     json=require("hsp/json");
+</script>
 
 <template test1(person)>
     {if (person.firstName)}
@@ -63,7 +64,7 @@ var hsp=require("hsp/rt"),
   {/if}
 </template>
 
-
+<script>
 describe("If Node", function () {
     var COMMENT_NODE = 8;
 
@@ -219,3 +220,4 @@ describe("If Node", function () {
     });
 
 });
+</script>

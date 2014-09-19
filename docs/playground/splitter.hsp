@@ -1,3 +1,4 @@
+<script>
 var Class = require("hsp/klass");
 
 var SplitterCtrl = Class({
@@ -71,11 +72,13 @@ var SplitterCtrl = Class({
         element.style[this.type === "vertical" ? "top" : "left"] = position + "px";
     }
 });
-
+</script>
 
 <template splitter using controller:SplitterCtrl>
     <div class="splitter" onmousedown="{controller.onMouseDown(event)}"></div>
     <div class="splitter-proxy {{'splitter-proxy-hidden': !controller.active}}"></div>
 </template>
 
+<script>
 module.exports = splitter;
+</script>

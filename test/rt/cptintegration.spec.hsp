@@ -1,4 +1,4 @@
-
+<script>
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,6 +40,7 @@ var TestCtrl1=klass({
     }
   }
 });
+</script>
 
 <template test1 using c:TestCtrl1>
   Hello
@@ -61,7 +62,7 @@ var TestCtrl1=klass({
   {/if}
 </template>
 
-
+<script>
 describe("External component integration", function () {
     beforeEach(function() {
         msg='';
@@ -120,3 +121,4 @@ describe("External component integration", function () {
     });
 
 });
+</script>

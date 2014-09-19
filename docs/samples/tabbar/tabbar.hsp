@@ -1,3 +1,4 @@
+<script>
 var klass = require("hsp/klass");
 
 var TabCtrl = klass({
@@ -42,6 +43,7 @@ var TabBarCtrl = klass({
         }
     }
 });
+</script>
 
 <template tabbar using ctrl:TabBarCtrl>
   <div class="x-tabbar">
@@ -89,8 +91,10 @@ var TabBarCtrl = klass({
   </label>
 </template>
 
+<script>
 // Needed by the playground application.
 // Update it, but do not remove it!
 module.exports = {
     template: test
 };
+</script>

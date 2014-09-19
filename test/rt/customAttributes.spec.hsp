@@ -1,5 +1,7 @@
+<script>
 var hsp = require("hsp/rt");
 var klass = klass=require("hsp/klass");
+</script>
 
 <template test1()>
     <div style="height: 20px" verybigdiv>
@@ -50,6 +52,7 @@ var klass = klass=require("hsp/klass");
     </div>
 </template>
 
+<script>
 describe("Custom attributes", function () {
 
     var status = null;
@@ -205,3 +208,4 @@ describe("Custom attributes", function () {
         expect(status).to.equal("Clean");
     });
 });
+</script>

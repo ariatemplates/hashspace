@@ -1,3 +1,4 @@
+<script>
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +18,7 @@ var hsp=require("hsp/rt"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent,
     json=require("hsp/json"),
     ht=require("hsp/utils/hashtester");
+</script>
 
 <template inputSample(data)>
     <div class="info section">All the following inputs are synchronized:</div>
@@ -54,6 +56,7 @@ var hsp=require("hsp/rt"),
     <div><input type="number" model="{model.value}"/></div>
 </template>
 
+<script>
 describe("Input Elements", function () {
     it("input model sync", function () {
         var v1 = "init value";
@@ -234,11 +237,13 @@ describe("Input Elements", function () {
         var n = html5NumberInput({value: 5});
     });
 });
+</script>
 
 <template test1(data)>
     <textarea rows="4" cols="40"  model="{data.text}"/>
 </template>
 
+<script>
 // normalize carriage returns to avoid OS discrepancies
 function normalizeCR(s) {
     return s.replace(/\r\n|[\r\n]/gi,"\n");
@@ -263,3 +268,4 @@ describe("Textarea Elements", function () {
         h.$dispose();
     });
 });
+</script>

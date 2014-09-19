@@ -19,21 +19,27 @@ describe('Block Parser: ', function () {
 
     it('tests testutils.getContent', function () {
         var tpl = ut.getSampleContent("template1").template;
-        var expectedCode = ['var x="text1";',
+        var expectedCode = ['<script>',
+                'var x="text1";',
                 'function func() {var x="text2"};',
+                '</script>',
                 '',
                 '<template hello1>',
                 '   Hello World!',
                 '</template>',
                 '',
+                '<script>',
                 '// comment',
                 'function func2(z) {return z;}',
+                '</script>',
                 '',
                 '<template hello1bis (arg1, arg2)>',
                 '\tHello',
                 '\tAgain!',
                 '</template>',
-                'var z;'].join("\n");
+                '<script>',
+                'var z;',
+                '</script>'].join("\n");
 
         var actualCode = tpl.replace(/\r/g, "");
         assertCodeTheSame(actualCode, expectedCode, "sample content");
@@ -52,6 +58,7 @@ describe('Block Parser: ', function () {
 
     var testFn = function () {
         var sample = ut.getSampleContent(this.name);
+
         var bl = parser.parse(sample.template);
         var skip = (sample.parsedTree && sample.parsedTree === "skip");
         if (!skip) {
@@ -68,7 +75,6 @@ describe('Block Parser: ', function () {
             includeSyntaxTree: true,
             bypassJSvalidation: true
         });
-
         skip = (sample.syntaxTree && sample.syntaxTree === "skip");
         if (!skip) {
             if (sample.syntaxTree) {
@@ -173,7 +179,7 @@ describe('Block Parser: ', function () {
         var actualCode = r.code.replace(/\r/g, "");
         assertCodeTheSame(actualCode, expectedCode, "template generated code");
 
-        var lm = [0, 6, 7, 8, 9, 9, 9, 16, 17, 18, 19, 20, 20, 20, 20, 27];
+        var lm = [0, 6, 7, 8, 9, 10, 11, 11, 11, 16, 17, 18, 19, 20, 21, 22, 22, 22, 22, 27, 28, 29];
         // console.log("Expected linemap");
         // console.log(lm);
         // console.log("Real linemap");
@@ -208,7 +214,7 @@ describe('Block Parser: ', function () {
         assertCodeTheSame(actualCode, expectedCode, "template generated code");
 
         // linemap should be the same as in commonJS mode test
-        var lm = [0, 6, 7, 8, 9, 9, 9, 16, 17, 18, 19, 20, 20, 20, 20, 27];
+        var lm = [0, 6, 7, 8, 9, 10, 11, 11, 11, 16, 17, 18, 19, 20, 21, 22, 22, 22, 22, 27, 28, 29];
         assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "", "line map comparison");
     });
 

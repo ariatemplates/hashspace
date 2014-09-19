@@ -13,6 +13,7 @@
   <a href="javascript:void(0)" onclick="{updateModel()}">Change Model</a>
 </template>
 
+<script>
 var model={
   part1:{
     part11: {msg: "Message 1.1"}
@@ -35,3 +36,4 @@ module.exports = {
     template: test,
     data: [model]
 };
+</script>
