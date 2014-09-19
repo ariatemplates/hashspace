@@ -32,6 +32,7 @@ var NumberTester = klass({
     },
     increment:function(nbr2) {
         this.number = this.number+nbr2;
+        return false;
     }
 });
 

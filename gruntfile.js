@@ -68,8 +68,8 @@ module.exports = function (grunt) {
           'hsp/**/*.js': ['commonjs'],
           'test/lib/*.js': ['commonjs'],
           'test/**/*.spec.js': ['commonjs'],
-          'test/**/*.spec.hsp': ['hsp', 'commonjs'],
-          'docs/samples/*/*.hsp': ['hsp', 'commonjs'],
+          'test/**/*.spec.hsp': ['hsp-compile', 'commonjs'],
+          'docs/samples/*/*.hsp': ['hsp-compile', 'commonjs'],
           'docs/samples/*/*.spec.js': ['commonjs'],
           'node_modules/jquery/dist/jquery.min.js': ['commonjs']
         },
