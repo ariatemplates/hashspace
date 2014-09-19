@@ -3703,7 +3703,7 @@ var ClassHandler = klass({
         newClasses = newClassesArr.join(' ');
 
         var currentClasses = this.nodeInstance.node.className;
-        var results = currentClasses? currentClasses.split(' '): [];
+        var results = currentClasses && currentClasses.split? currentClasses.split(' '): [];
         if (this.previousClasses) {
             var previousClassesArray = this.previousClasses.split(' ');
             for (var i = 0; i < previousClassesArray.length; i++) {

@@ -17,12 +17,13 @@ var test = require("hsp/rt").template(["nt"], function(n){
 // klass is a little utility to create a JS object constructor
 // from a simple JSON structure - main goals are to
 // to simplify prototypal inheritance and ease code reading
-var NumberTester=klass({
+var NumberTester = klass({
     $constructor:function() {
         $set(this, "number", 0);
     },
     increment:function(nbr2) {
         $set(this, "number", this.number+nbr2);
+        return false;
     }
 });
 

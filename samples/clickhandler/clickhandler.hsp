@@ -1,9 +1,9 @@
 var msg={text:""}, count=-1;
 
 <template message(msg)>
-    <div title="click me!" onclick="{changeMessage()}" class="noTextSelection">
-        {if msg.isWarning}<div class="warning">WARNING:&nbsp;</div>{/if}
-        {msg.text}
+    <div title="click me!" onclick="{changeMessage()}" onselectstart="return false">
+        {if msg.isWarning}<span class="warning">WARNING:&nbsp;</span>{/if}
+        <span>{msg.text}</span>
     </div>
 </template>
 
@@ -23,6 +23,9 @@ function changeMessage() {
             break;
     }
 }
+
+//export data to be available in test
+module.exports.msg = msg;
 
 // set a first message value
 changeMessage();

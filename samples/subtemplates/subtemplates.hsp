@@ -1,5 +1,5 @@
 
-{export template personList(persons)}
+<export template personList(persons)>
     <div class="subtemplates">
         {foreach p in persons}
             <#personDescription person="{p}"/>
@@ -9,7 +9,7 @@
     </div>
 </template>
 
-{export template personDescription(person)}
+<export template personDescription(person)>
     <div class="person">
         <#item label="First Name: " value="{person.firstName}"/>
         <#item label="Last Name: " value="{person.lastName}"/>

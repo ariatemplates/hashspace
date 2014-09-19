@@ -26,12 +26,13 @@ var klass=require("hsp/klass");
 // klass is a little utility to create a JS object constructor
 // from a simple JSON structure - main goals are to
 // to simplify prototypal inheritance and ease code reading
-var NumberTester=klass({
+var NumberTester = klass({
     $constructor:function() {
         this.number=0;
     },
     increment:function(nbr2) {
         this.number = this.number+nbr2;
+        return false;
     }
 });
 

@@ -29,14 +29,18 @@ var ChartCpt=klass({
   $refresh:function() {
     if (!this.chart) {
       var canvas=this.$getElement(0);
-      $set(this, "chart", new Chart(canvas.getContext("2d")));
+      if (canvas.getContext) {
+        $set(this, "chart", new Chart(canvas.getContext("2d")));
+      }
     }
-    if (this.type==="bar") {
-      this.chart.Bar({labels:this.labels,datasets:this.datasets},this.options);
-    } else if (this.type==="line") {
-      this.chart.Line({labels:this.labels,datasets:this.datasets},this.options);
-    } else {
-      log.error("[ChartCpt] Invalid type: "+this.type);
+    if (this.chart) {
+      if (this.type==="bar") {
+        this.chart.Bar({labels:this.labels,datasets:this.datasets},this.options);
+      } else if (this.type==="line") {
+        this.chart.Line({labels:this.labels,datasets:this.datasets},this.options);
+      } else {
+        log.error("[ChartCpt] Invalid type: "+this.type);
+      }
     }
   }
 });
