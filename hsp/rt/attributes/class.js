@@ -55,7 +55,7 @@ var ClassHandler = klass({
         this.previousClasses = newClasses;
         
         //Add generated className to the element (issue on IE8 with the class attribute?)
-        if (this.nodeNS) {
+        if (this.nodeInstance.nodeNS) {
             this.nodeInstance.node.setAttribute("class", results.join(' '));
         } else {
             this.nodeInstance.node.className = results.join(' ');

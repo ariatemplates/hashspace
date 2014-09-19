@@ -1,5 +1,6 @@
 var hashTester = require('hsp/utils/hashtester');
 var sample = require('./clock.hsp');
+var browser = require("hsp/rt/browser.js");
 
 describe('"Clock" sample', function () {
 
@@ -15,6 +16,11 @@ describe('"Clock" sample', function () {
     });
 
     it('should render "Clock"', function () {
-        
+        if (browser.supportsSvg()) {
+            var circles = h.container.querySelectorAll("circle");
+            for (var i = 0; i < circles.length; i++) {
+                expect(circles[i].className.baseVal).to.equal("clock-face");
+            }
+        }
     });
 });
