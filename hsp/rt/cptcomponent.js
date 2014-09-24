@@ -138,11 +138,7 @@ exports.$CptComponent = {
    *        must be used when a new instance is created to adapt to a path change
    */
   $dispose:function(localPropOnly) {
-    if (this.ctlWrapper) {
-      this.ctlWrapper.$dispose();
-      this.ctlWrapper=null;
-      this.controller=null;
-    }
+    this.$disposeCtlWrapper();
     this.ctlAttributes=null;
     this.cleanObjectProperties(localPropOnly);
     this.ctlConstuctor=null;
@@ -219,7 +215,7 @@ exports.$CptComponent = {
           // nm is a template attribute passed as text attribute
           if (this.tplAttributes && this.tplAttributes[nm]) {
             // already defined: raise an error
-            
+
             log.error(this+" Component attribute '" + nm + "' is defined multiple times - please check");
           } else {
             // create new tpl Attribute Text Node and add it to the tplAttributes collection

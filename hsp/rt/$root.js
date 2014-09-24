@@ -33,8 +33,8 @@ var CPT_TYPES={
 var DOCUMENT_FRAGMENT_NODE = 11;
 
 /**
- * Root node - created at the root of each template 
- * Contains the listeners requested by the child nodes 
+ * Root node - created at the root of each template
+ * Contains the listeners requested by the child nodes
  * Is replaced by the $CptNode (child class) when the template is inserted in another template
  */
 var $RootNode = klass({
@@ -51,7 +51,7 @@ var $RootNode = klass({
      * @param {Map} ctlInitAtts the init value of the controller attributes (optional) - e.g.
      * {value:'123',mandatory:true}
      */
-    $constructor : function (vscope, nodedefs, argnames, ctlWrapper, ctlInitAtts) {
+    $constructor : function(vscope, nodedefs, argnames, ctlWrapper, ctlInitAtts) {
         if (this.isInsertNode) {
             TNode.$constructor.call(this, this.exps);
         } else {
@@ -125,12 +125,16 @@ var $RootNode = klass({
             o.$dispose();
         }
         this.propObs=null;
+        this.$disposeCtlWrapper();
+        TNode.$dispose.call(this);
+    },
+
+    $disposeCtlWrapper: function() {
         if (this.ctlWrapper) {
             this.ctlWrapper.$dispose();
             this.ctlWrapper = null;
             this.controller = null;
         }
-        TNode.$dispose.call(this);
     },
 
     /**
@@ -318,6 +322,7 @@ var getObject = exports.getObject = function (path, scope) {
             o = o[path[i]];
         }
     }
+
     return o;
 };
 
@@ -338,7 +343,7 @@ var $CptNode = klass({
      * expression index associated to the event hanlder callback
      * @param {Array} children list of child node generators - correponding to pseudo components and attribute content
      */
-    $constructor : function (tplPath, exps, attcfg, ehcfg, children) {
+    $constructor : function(tplPath, exps, attcfg, ehcfg, children) {
         this.pathInfo=tplPath.slice(1).join("."); // debugging info
         this.info="[Component: #"+this.pathInfo+"]"; // debug info
         this.isCptNode = true;
@@ -411,7 +416,7 @@ var $CptNode = klass({
             ni.node2=node2;
 
             if (p.cptType==="$CptAttInsert") {
-                // this cpt is used to an insert another component passed as attribute 
+                // this cpt is used to an insert another component passed as attribute
                 ni.initCpt(po);
             } else {
                 // we are in a template or component cpt
@@ -425,7 +430,7 @@ var $CptNode = klass({
             // create an element to avoid generating other errors
             ni=this.createCptInstance("$CptAttInsert",parent);
         }
-        
+
         return ni;
     },
 
@@ -433,12 +438,12 @@ var $CptNode = klass({
      * Calculates the object referenced by the path and the component type
      * @return {Object} object with the following properties:
      *        pathObject: {Object} the object referenced by the path
-     *        cptType: {String} one of the following option: "$CptComponent", 
+     *        cptType: {String} one of the following option: "$CptComponent",
      *                 "$CptTemplate", "$CptAttInsert" or "InvalidComponent"
      */
     getPathData:function(path, vscope) {
-        // determine the type of this component: 
-        // - either a template - e.g. <#mytemplate foo="bar"/> 
+        // determine the type of this component:
+        // - either a template - e.g. <#mytemplate foo="bar"/>
         //   -> instance will extend $CptTemplate
         // - a component with controller - e.g. <#mycpt foo="bar"/>
         //   -> instance will extend $CptComponent
@@ -513,7 +518,7 @@ var $CptNode = klass({
             nd.appendChild(this.node2);
         }
     },
-    
+
     /**
      * Callback called when a controller attribute or a template attribute has changed
      */
@@ -599,12 +604,21 @@ var $CptNode = klass({
 
             if (tplChanged) {
                 // check if component nature changed from template to component or opposite
+
+                // Change might also be a different component ref, ie cpt1 -> cpt2
+                // let's dispose anything related to previous template
+                if (this.template.$dispose) {
+                    this.template.$dispose(true);
+                } else {
+                    // this.template might be only a reference to template closure function, not what it returns
+                    this.$disposeCtlWrapper();
+                }
                 this.template=tpl;
                 this.createChildNodeInstances();
             } else {
                 if (this.refreshAttributes) {
                     this.refreshAttributes();
-                    // for component and sub-templates the original vscope is substituted 
+                    // for component and sub-templates the original vscope is substituted
                     // to the one of the component- or sub-template
                     // so we need to revert to the parent scope to observe the correct objects
                     var vs=this.vscope;
@@ -668,7 +682,7 @@ var $CptNode = klass({
         var sz=pos.length;
 
         this._pathChgeCb = this.onPathChange.bind(this);
-    
+
         for (var i=0;sz>i;i++) {
             json.observe(pos[i], this._pathChgeCb);
         }
@@ -747,9 +761,9 @@ var $CptAttElement = klass({
     isCptAttElement : true,
 
     /**
-     * $CptAttElement generator 
+     * $CptAttElement generator
      */
-    $constructor : function (name, exps, attcfg, ehcfg, children) {
+    $constructor : function(name, exps, attcfg, ehcfg, children) {
         this.name = name;
         this.info = "[Component attribute element: @"+this.name+"]";
         this.tagName = "@"+name;
@@ -789,7 +803,7 @@ var $CptAttElement = klass({
                 if (p.ctlAttributes) {
                     attDef=p.ctlAttributes[this.name];
                 }
-                
+
                 if (!eltDef && !attDef) {
                     // invalid elt
                     log.error(this.info+" Element not supported by its parent component");
@@ -846,4 +860,3 @@ cptComponent.setDependency("$CptAttElement",$CptAttElement);
 exports.$RootNode = $RootNode;
 exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
-
