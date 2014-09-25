@@ -1,16 +1,17 @@
 ##### Template:
 <template test()>
-    <div data-foo="0"></div>
-    <div data-foo-bar="1"></div>
-    <div data:foo="2"></div>
-    <div data:foo:bar="3"></div>
+    <div foo=""></div>
+    <div foo="0"></div>
+    <div foo="abc"></div>
+    <div foo="{a.b}"></div>
+    <div foo="bar{a.b}"></div>
+    <div foo="bar{a.b"></div>
+    <#cpt fo$o="bar{a.b"></#cpt>
 </template>
 
 ##### Errors:
 [
-  {
-    "description": "Invalid HTML element syntax",
-    "line": 5,
-    "column": 5
-  }
+  {"description": "Invalid attribute value: \"bar{a.b\"", "line": 7, "column": 15},
+  {"description": "Invalid attribute name: \"fo$o\"", "line": 8, "column": 11},
+  {"description": "Invalid attribute value: \"bar{a.b\"", "line": 8, "column": 17}
 ]

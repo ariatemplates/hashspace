@@ -211,20 +211,48 @@ HTMLName
   {return first + next.join("");}
 
 HTMLAttName
-  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-")* endString:(":" end:([a-zA-Z] / [0-9] / "-")+ {return ":" + end.join("")})?
+  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-" / "_")* endString:(":" end:([a-zA-Z] / [0-9] / "-" / "_")+ {return ":" + end.join("")})? 
   // uppercase chars are considered as error in the parse post-processor
   {return first + next.join("") + (endString?endString:"");}
 
-HTMLAttribute
-  = name:HTMLAttName v:(_ "=" _ value:HTMLAttributeQuoted {return value;})?
-  {
-    return {type:"attribute", name:name, value:v, line:line(), column:column()}
-  }
+ HTMLAttribute
+  = attName:((n:HTMLAttName tail:HTMLAttributeStringChars* {return {name:n, tail:tail};}) / (n:HTMLAttributeStringChars+ {return {name:n.join('')};}))
+    v:(_ "=" _ value:HTMLAttributeQuoted tail:HTMLAttributeStringChars* {return {value:value, tail:tail};})?
+    v2:(_ "=" _ value:InvalidHTMLAttributeValueWithoutQuotes {return value;})?
+    &(S / EOL / ">" / "/")
+  {
+    var isValueValid = true;
+    for (var i = 0; v && v.value && i < v.value.length; i++) {
+      var item = v.value[i];
+      if (item.type === "error") {
+        isValueValid = false;
+      }
+    }
+    if (attName.tail && attName.tail.length === 0 && isValueValid && v2 == null && (v == null || v.tail && v.tail.length === 0)) {
+      return {type: "attribute", name:attName.name, value:v==null?"":v.value, line:line(), column:column()}
+    }
+    else {
+      var errors = [];
+      if (typeof attName.tail === "undefined" || attName.tail && attName.tail.length) {
+        errors.push({errorType: "name", value: attName.name + (attName.tail && attName.tail.length > 0?attName.tail.join(''):""), line: line(), column: column()});
+      }
+      if (!isValueValid) {
+        errors.push({errorType: "value", value: v.value});
+      }
+      if (v != null && v.tail && v.tail.length > 0) {
+        errors.push({errorType: "tail", value: v.value, tail: v.tail.join('')});
+      }
+      if (v2 != null && v2.value && v2.value.length > 0) {
+        errors.push({errorType: "invalidquotes", value: v2.value, line: v2.line, column: v2.column});
+      }
+      return {type: "invalidattribute", errors : errors};
+    }
+  }
 
 HTMLAttributeQuoted
-  = '"' value:(HTMLAttributeTextDoubleQuoted / ExpressionTextBlock)* '"'
+  = '"' value:(HTMLAttributeTextDoubleQuoted / ExpressionTextBlock / InvalidHTMLAttributeValueWithinDoubleQuotes)* '"'
     {return value;}
-  / "'" value:(HTMLAttributeTextSingleQuoted / ExpressionTextBlock)* "'"
+  / "'" value:(HTMLAttributeTextSingleQuoted / ExpressionTextBlock / InvalidHTMLAttributeValueWithinSingleQuotes)* "'"
     {return value;}
 
 HTMLAttributeTextDoubleQuoted
@@ -234,7 +262,7 @@ HTMLAttributeTextDoubleQuoted
       / EOL {return "\\n"}
       / [^{\"]
     )+
-  {return {type:"text", value:chars.join('')}}
+  {return {type:"text", value:chars.join(''), line:line(), column:column()}}
 
 HTMLAttributeTextSingleQuoted
   = chars:(
@@ -243,7 +271,22 @@ HTMLAttributeTextSingleQuoted
       / EOL {return "\\n"}
       / [^{\']
     )+
-  {return {type:"text", value:chars.join("")}}
+  {return {type:"text", value:chars.join(""), line:line(), column:column()}}
+
+InvalidHTMLAttributeValueWithinDoubleQuotes
+  = chars:[^\"\n\r]+
+  {return {type:"error", value:chars.join(''), line:line(), column:column()}}
+
+InvalidHTMLAttributeValueWithinSingleQuotes
+  = chars:[^'\n\r]+
+  {return {type:"error", value:chars.join(''), line:line(), column:column()}}
+
+InvalidHTMLAttributeValueWithoutQuotes
+  = chars:HTMLAttributeStringChars+
+  {return {value:chars.join(''), line:line(), column:column()}}
+
+HTMLAttributeStringChars
+ = [^=\t\v\f \u00A0\uFEFF\n\r/>]
 
 LogBlock
   = "{" _ "log " _ first:CoreExpText _ next:("," _ CoreExpText)* _"}" EOS?
