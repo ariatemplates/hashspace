@@ -82,6 +82,7 @@ var SyntaxTree = klass({
      * @param {Object} errdesc additional object (block, node, ...) which can contain additional info about the error (line/column number, code).
      */
     _logError : function (description, errdesc) {
+
         //TODO: errdesc is a bit vague
         var desc = {
             description : description
@@ -110,6 +111,16 @@ var SyntaxTree = klass({
             return exParser(block.value);
         } catch (e) {
             this._logError("Invalid expression: '" + block.value + "'", block);
+        }
+    },
+
+    /**
+     * Logs an error if the value of an event handler attribute is not a function expression.
+     */
+    _validateEventHandlerAttr : function(expAst, attribute) {
+        //verify that an event handler is a function call
+        if (expAst && isEventHandlerAttr(attribute.name) && expAst.v !== '(') {
+            this._logError("Event handler attribute only support function expressions", attribute.value[0]);
         }
     },
 
@@ -612,11 +623,52 @@ var SyntaxTree = klass({
 
         for (var i = 0; i < attributes.length; i++) {
             attribute = attributes[i];
-            var length = attribute.value? attribute.value.length: 0;
+           
+            //invalid attribute
+            if (attribute.type === "invalidattribute") {
+                for (var j = 0; j < attribute.errors.length; j++) {
+                    var error = attribute.errors[j];
+                    var msg = "Invalid attribute";
+                    if (error.errorType === "name") {
+                        msg = "Invalid attribute name: \"" + error.value + "\"";
+                    }
+                    else if (error.errorType === "value" || error.errorType === "tail") {
+                        var valueAsString = "";
+                        for (var k = 0; k < error.value.length; k++) {
+                            var errorBlock = error.value[k];
+                            if (k === 0) {
+                                error.line = errorBlock.line;
+                                error.column = errorBlock.column;
+                            }
+                            if (errorBlock.type === "expression") {
+                                valueAsString += "{" + errorBlock.value + "}";
+                                var expAst = this._validateExpressionBlock(errorBlock);
+                                this._validateEventHandlerAttr(expAst, attribute);
+                            }
+                            else {
+                                valueAsString += errorBlock.value;
+                            }
+                        }
+                        if (typeof error.tail === "undefined") {
+                            msg = "Invalid attribute value: \"" + valueAsString + "\"";
+                        }
+                        else {
+                            msg = "Attribute value \"" + valueAsString + "\" has trailing chars: " + error.tail;
+                        }
+                    }
+                    else if (error.errorType === "invalidquotes") {
+                        msg = "Missing quote(s) around attribute value: " + error.value;
+                    }
+                    this._logError(msg, error);
+                }
+                continue;
+            }
 
+            //valid attribute
+            var length = attribute.value.length;
             if (length === 0) {
                 // this case arises when the attribute is empty - so let's create an empty text node
-                if (attribute.value == null) {
+                if (attribute.value === "") {
                     // attribute has no value - e.g. autocomplete in an input element
                     outAttribute = {
                         name : attribute.name,
@@ -643,10 +695,7 @@ var SyntaxTree = klass({
                     outAttribute.name = attribute.name;
                     if (type === "expression") {
                         expAst = this._validateExpressionBlock(outAttribute);
-                        //verify that an event handler is a function call
-                        if (expAst && isEventHandlerAttr(attribute.name) && expAst.v !== '(') {
-                            this._logError("Event handler attribute only support function expressions", attribute.value[0]);
-                        }
+                        this._validateEventHandlerAttr(expAst, attribute);
                     }
                 } else {
                     this._logError("Invalid attribute type: " + type, attribute);
@@ -664,9 +713,7 @@ var SyntaxTree = klass({
                     blockValue = attribute.value[j];
                     if (blockValue.type === "expression") {
                         expAst = this._validateExpressionBlock(blockValue);
-                        if (expAst && isEventHandlerAttr(attribute.name) && expAst.v !== '(') {
-                            this._logError("Event handler attribute only support function expressions", attribute.value[0]);
-                        }
+                        this._validateEventHandlerAttr(expAst, attribute);
                     }
                 }
 

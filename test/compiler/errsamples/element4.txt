@@ -8,14 +8,8 @@
 ##### Errors:
 [
   {
-    "description": "Invalid HTML element syntax",
+    "description": "Attribute value \"Some text class=\" has trailing chars: foo\"",
     "line": 2,
-    "column": 5,
-    "code": "<div title=\"Some text class=\"foo\">"
-  },
-  {
-    "description": "End element </div> does not match any <div> element",
-    "line": 4,
-    "column": 5
+    "column": 17,
   }
 ]
