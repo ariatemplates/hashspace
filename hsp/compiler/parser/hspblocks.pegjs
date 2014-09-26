@@ -1,9 +1,9 @@
 /*
  * Partial grammar for hashspace that separates all statement or html element blocks
  * and return it as an Array
- * 
- * The last part of this file corresponds to fragments of the JavaScript grammar 
- * written by David Majda (minor modifications have been added to cope 
+ *
+ * The last part of this file corresponds to fragments of the JavaScript grammar
+ * written by David Majda (minor modifications have been added to cope
  * with hashspace constraints)
  * @see https://github.com/dmajda/pegjs
  */
@@ -26,7 +26,7 @@ TemplateBlock "template block"
 
 TemplateStart "template statement"
   = _ d1:("<") p:_ m:(("template") / (c:[a-zA-Z0-9]+ _ "template") {return c.join('')})
-    S+ name:Identifier args:(TemplateController / ArgumentsDefinition / invarg:InvalidTplArgs)? _ d2:(">")? EOL 
+    S+ name:Identifier args:(TemplateController / ArgumentsDefinition / invarg:InvalidTplArgs)? _ d2:(">")? EOL
   {
     var mod=""; // modifier (e.g. "export")
     if (m!=="template") {
@@ -56,7 +56,7 @@ TemplateController "controller"
   {return {ctl:ctl, ctlref:ref}}
 
 ArgumentsDefinition "arguments"
-  = _ "(" _ first:VarIdentifier? others:((_ "," _ arg:VarIdentifier) {return arg})* _ ")" 
+  = _ "(" _ first:VarIdentifier? others:((_ "," _ arg:VarIdentifier) {return arg})* _ ")"
   {var args = first ? [first] : []; if (others && others.length) args=args.concat(others);return args;}
 
 InvalidTplArgs
@@ -65,12 +65,12 @@ InvalidTplArgs
 
 TemplateEnd "template end statement"
   = _ "</template" _ ">" _ (EOL / EOF)
-  {return {type:"/template",line:line,column:column}}  
+  {return {type:"/template",line:line,column:column}}
 
 TemplateContent "template content"
-  = _ blocks:(  TplTextBlock 
+  = _ blocks:(  TplTextBlock
                 / CommentBlock / HTMLCommentBlock
-                / IfBlock / ElseIfBlock / ElseBlock / EndIfBlock 
+                / IfBlock / ElseIfBlock / ElseBlock / EndIfBlock
                 / ForeachBlock / EndForeachBlock
                 / HTMLElement / EndHTMLElement
                 / HspComponent / EndHspComponent
@@ -79,11 +79,11 @@ TemplateContent "template content"
                 / LogBlock
                 / ExpressionTextBlock
                 / InvalidHTMLElement
-                / InvalidBlock)* 
+                / InvalidBlock)*
   {return blocks}
 
 TplTextBlock "text"
-  = chars:(TplTextChar)+ 
+  = chars:(TplTextChar)+
   {return {type:"text", value:chars.join(''), line:line, column:column}}
 
 TplTextChar "text character"
@@ -110,7 +110,7 @@ IfBlock "if statement"
 IfCondWithBrackets
   = "(" expr:CoreExpText ")" {return expr}
 
-ElseIfBlock "elseif statement" 
+ElseIfBlock "elseif statement"
   = "{" _ "else " _ "if" _ expr:(IfCondWithBrackets / CoreExpText) _ "}" EOS?
   {return {type:"elseif", condition:expr, line:line, column:column}}
 
@@ -187,11 +187,11 @@ InvalidHTMLElement
   {return {type:"invalidelement", code:'<'+code.join(''), line:line, column:column}}
 
 HTMLName
-  = first:[a-z] next:([a-z] / [0-9] / "-")* 
+  = first:[a-z] next:([a-z] / [0-9] / "-")*
   {return first + next.join("");}
 
 HTMLAttName
-  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-")* endString:(":" end:([a-zA-Z] / [0-9] / "-")+ {return ":" + end.join("")})? 
+  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-")* endString:(":" end:([a-zA-Z] / [0-9] / "-")+ {return ":" + end.join("")})?
   // uppercase chars are considered as error in the parse post-processor
   {return first + next.join("") + endString;}
 
@@ -284,7 +284,7 @@ InvalidExpressionValue
 
 // White spaces
     // mandatory padding including line breaks
-S "white space" 
+S "white space"
   = empty:(WhiteSpace / "\u000D" / "\u000A")+
 
 _   // optional padding excluding line breaks
