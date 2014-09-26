@@ -174,7 +174,7 @@ describe("Function expressions", function () {
 
         // trigger if
         h.$set(d,"showEndText",true);
-        expect(h(C).text()).to.equal("[hello earth]! *123*");
+        expect(h(C).text()).to.equal("[hello earth]!\n            *123*");
 
         h.$dispose();
     });

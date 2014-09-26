@@ -70,53 +70,53 @@ describe("Input Elements", function () {
             }
         };
         var n = enterEmptiesFieldSample(object);
-        var input1 = n.childNodes[2];
-        var input2 = n.childNodes[4];
+        var input1 = n.node.querySelectorAll("input")[0];
+        var input2 = n.node.querySelectorAll("input")[1];
 
-        expect(input1.node.value).to.equal(v1);
-        expect(input2.node.value).to.equal(v1);
+        expect(input1.value).to.equal(v1);
+        expect(input2.value).to.equal(v1);
 
         // test with input 1
         var v2 = "new value";
-        input1.node.value = v2;
-        fireEvent("keydown", input1.node);
-        fireEvent("keyup", input1.node);
+        input1.value = v2;
+        fireEvent("keydown", input1);
+        fireEvent("keyup", input1);
         hsp.refresh();
 
         expect(object.value).to.equal(v2);
-        expect(input1.node.value).to.equal(v2);
-        expect(input2.node.value).to.equal(v2);
+        expect(input1.value).to.equal(v2);
+        expect(input2.value).to.equal(v2);
 
         expect(enterKeyDownCalled).to.equal(0);
-        fireEvent("keydown", input1.node, {keyCode: 13});
-        fireEvent("keyup", input1.node, {keyCode: 13});
+        fireEvent("keydown", input1, {keyCode: 13});
+        fireEvent("keyup", input1, {keyCode: 13});
         expect(enterKeyDownCalled).to.equal(1);
         hsp.refresh();
 
         expect(object.value).to.equal("");
-        expect(input1.node.value).to.equal("");
-        expect(input2.node.value).to.equal("");
+        expect(input1.value).to.equal("");
+        expect(input2.value).to.equal("");
 
         // test with input 2
         var v3 = "other value";
-        input2.node.value = v3;
-        fireEvent("keydown", input2.node);
-        fireEvent("keyup", input2.node);
+        input2.value = v3;
+        fireEvent("keydown", input2);
+        fireEvent("keyup", input2);
         hsp.refresh();
 
         expect(object.value).to.equal(v3);
-        expect(input1.node.value).to.equal(v3);
-        expect(input2.node.value).to.equal(v3);
+        expect(input1.value).to.equal(v3);
+        expect(input2.value).to.equal(v3);
 
         expect(enterKeyDownCalled).to.equal(1);
-        fireEvent("keydown", input2.node, {keyCode: 13});
-        fireEvent("keyup", input2.node, {keyCode: 13});
+        fireEvent("keydown", input2, {keyCode: 13});
+        fireEvent("keyup", input2, {keyCode: 13});
         expect(enterKeyDownCalled).to.equal(2);
         hsp.refresh();
 
         expect(object.value).to.equal("");
-        expect(input1.node.value).to.equal("");
-        expect(input2.node.value).to.equal("");
+        expect(input1.value).to.equal("");
+        expect(input2.value).to.equal("");
     });
 
     it("validates text elements", function () {
@@ -128,33 +128,33 @@ describe("Input Elements", function () {
         };
         var n = inputSample(d);
 
-        var input1 = n.childNodes[1].childNodes[1];
-        var input2 = n.childNodes[1].childNodes[4];
+        var input1 = n.node.querySelectorAll("input")[0];
+        var input2 = n.node.querySelectorAll("input")[1];
 
-        expect(input1.node.value).to.equal(v1);
-        expect(input2.node.value).to.equal(v1);
+        expect(input1.value).to.equal(v1);
+        expect(input2.value).to.equal(v1);
 
         // change value from the model
         var v2 = "foo";
         json.set(d, "comment", v2);
         hsp.refresh();
-        expect(input1.node.value).to.equal(v2);
-        expect(input2.node.value).to.equal(v2);
+        expect(input1.value).to.equal(v2);
+        expect(input2.value).to.equal(v2);
 
         // change the value from input1 (value attribute)
         var v3 = "bar2";
-        input1.node.value = v3;
-        fireEvent("keyup",input1.node); // to simulate change
-        expect(input1.node.value).to.equal(v3);
-        expect(input2.node.value).to.equal(v3);
+        input1.value = v3;
+        fireEvent("keyup",input1); // to simulate change
+        expect(input1.value).to.equal(v3);
+        expect(input2.value).to.equal(v3);
         expect(d.comment).to.equal(v3);
 
         // change the value from input2 (model attribute)
         var v4 = "blah";
-        input2.node.value = v4;
-        fireEvent("keyup",input2.node); // to simulate change
-        expect(input1.node.value).to.equal(v4);
-        expect(input2.node.value).to.equal(v4);
+        input2.value = v4;
+        fireEvent("keyup",input2); // to simulate change
+        expect(input1.value).to.equal(v4);
+        expect(input2.value).to.equal(v4);
         expect(d.comment).to.equal(v4);
 
         n.$dispose();
@@ -168,33 +168,33 @@ describe("Input Elements", function () {
         };
         var n = inputSample(d);
 
-        var cb1 = n.childNodes[2].childNodes[0];
-        var cb2 = n.childNodes[2].childNodes[3];
+        var cb1 = n.node.querySelector("#cb1");
+        var cb2 = n.node.querySelector("#cb2");
 
         // TODO: fix following lines in IE8
-        expect(cb1.node.checked).to.equal(true);
-        expect(cb2.node.checked).to.equal(true);
+        expect(cb1.checked).to.equal(true);
+        expect(cb2.checked).to.equal(true);
 
         // change from data model
         json.set(d, "isChecked", false);
         hsp.refresh();
-        expect(cb1.node.checked).to.equal(false);
-        expect(cb2.node.checked).to.equal(false);
+        expect(cb1.checked).to.equal(false);
+        expect(cb2.checked).to.equal(false);
         expect(d.isChecked).to.equal(false);
 
         // change from cb1 (value reference)
-        fireEvent("click",cb1.node);
-        if (cb1.node.checked) {
+        fireEvent("click",cb1);
+        if (cb1.checked) {
             // on firefox calling click doesn't trigger the onclick event!?
-            expect(cb1.node.checked).to.equal(true);
-            expect(cb2.node.checked).to.equal(true);
+            expect(cb1.checked).to.equal(true);
+            expect(cb2.checked).to.equal(true);
             expect(d.isChecked).to.equal(true);
         }
 
         // change from cb2 (model reference)
-        fireEvent("click",cb2.node);
-        expect(cb1.node.checked).to.equal(false);
-        expect(cb2.node.checked).to.equal(false);
+        fireEvent("click",cb2);
+        expect(cb1.checked).to.equal(false);
+        expect(cb2.checked).to.equal(false);
         expect(d.isChecked).to.equal(false);
 
         n.$dispose();
@@ -208,23 +208,23 @@ describe("Input Elements", function () {
         };
         var n = inputSample(d);
 
-        var rb1 = n.childNodes[3].childNodes[0];
-        var rb2 = n.childNodes[3].childNodes[3];
+        var rb1 = n.node.querySelector("#rb1");
+        var rb2 = n.node.querySelector("#rb2");
 
-        expect(rb1.node.checked).to.equal(false);
+        expect(rb1.checked).to.equal(false);
         // TODO fix next line in IE8
-        expect(rb2.node.checked).to.equal(true);
+        expect(rb2.checked).to.equal(true);
 
         // change from data model
         json.set(d, "selection", "C");
         hsp.refresh();
-        expect(rb1.node.checked).to.equal(false);
-        expect(rb2.node.checked).to.equal(false);
+        expect(rb1.checked).to.equal(false);
+        expect(rb2.checked).to.equal(false);
 
         // change from rb1
-        fireEvent("click",rb1.node);
-        expect(rb1.node.checked).to.equal(true);
-        expect(rb2.node.checked).to.equal(false);
+        fireEvent("click",rb1);
+        expect(rb1.checked).to.equal(true);
+        expect(rb2.checked).to.equal(false);
         expect(d.selection).to.equal("A");
 
         n.$dispose();

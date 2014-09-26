@@ -239,8 +239,8 @@ describe("Component Nodes", function () {
 
   it("tests a component template load", function() {
     var n=nbrfield();
-    var textInput=n.node.firstChild;
-    var button=n.node.childNodes[1];
+    var textInput=n.node.childNodes[1];
+    var button=n.node.childNodes[3];
     expect(textInput.nodeType).to.equal(ELEMENT_NODE);
     expect(textInput.attributes.type.value).to.equal("text");
     expect(textInput.value).to.equal("0");
@@ -281,9 +281,9 @@ it("tests a component inside another template", function() {
     var d={value:'42'};
     var n=test(d);
 
-    var textInput=n.node.firstChild;
-    var cptInput=n.node.childNodes[2];
-    var cptButton=n.node.childNodes[3];
+    var textInput=n.node.childNodes[1];
+    var cptInput=n.node.childNodes[5];
+    var cptButton=n.node.childNodes[7];
     expect(textInput.value).to.equal('42');
     expect(cptInput.value).to.equal('42');
 
@@ -326,7 +326,7 @@ it("tests a component inside another template", function() {
     var d={value:'42'};
     var n=test(d);
 
-    var cptButton=n.node.childNodes[3];
+    var cptButton=n.node.childNodes[7];
 
     fireEvent("click",cptButton);
     hsp.refresh();
@@ -343,7 +343,7 @@ it("tests a component inside another template", function() {
     isBrCbEmpty=false;
     var d={value:'42'};
     var n=test2(d);
-    var cptButton=n.node.childNodes[3];
+    var cptButton=n.node.childNodes[7];
 
     fireEvent("click",cptButton);
     hsp.refresh();

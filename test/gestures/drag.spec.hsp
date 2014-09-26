@@ -45,7 +45,8 @@ describe("Drag gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             isPrimary : true,
             touches : [{
                         clientX : 0,
@@ -56,7 +57,7 @@ describe("Drag gesture", function () {
                         clientY : 0
                     }]
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             isPrimary : true,
             touches : [{
                         clientX : 5,
@@ -67,7 +68,7 @@ describe("Drag gesture", function () {
                         clientY : 5
                     }]
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             isPrimary : false,
             touches : [{
                         clientX : 0,
@@ -94,23 +95,24 @@ describe("Drag gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             clientX : 0,
             clientY : 0
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 5,
             clientY : 5
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 10,
             clientY : 10
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 15,
             clientY : 15
         });
-        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+        fireEvent(touchEventMap.touchend, target, {
             clientX : 15,
             clientY : 15
         });

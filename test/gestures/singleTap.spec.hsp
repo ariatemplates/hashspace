@@ -54,7 +54,8 @@ describe("SingleTap gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             isPrimary : true,
             touches : [{
                         clientX : 0,
@@ -65,7 +66,7 @@ describe("SingleTap gesture", function () {
                         clientY : 0
                     }]
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             isPrimary : false,
             touches : [{
                         clientX : 0,
@@ -92,11 +93,12 @@ describe("SingleTap gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             clientX : 0,
             clientY : 0
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 100,
             clientY : 100
         });
@@ -113,15 +115,16 @@ describe("SingleTap gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             clientX : 0,
             clientY : 0
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 5,
             clientY : 5
         });
-        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+        fireEvent(touchEventMap.touchend, target, {
             clientX : 5,
             clientY : 5
         });
@@ -139,19 +142,20 @@ describe("SingleTap gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             clientX : 0,
             clientY : 0
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 5,
             clientY : 5
         });
-        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+        fireEvent(touchEventMap.touchend, target, {
             clientX : 5,
             clientY : 5
         });
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        fireEvent(touchEventMap.touchstart, target, {
             clientX : 5,
             clientY : 5
         });
@@ -168,15 +172,16 @@ describe("SingleTap gesture", function () {
             }
         };
         var n = test1(ctl);
-        fireEvent(touchEventMap.touchstart, n.node.firstChild, {
+        var target = n.node.querySelector("div");
+        fireEvent(touchEventMap.touchstart, target, {
             clientX : 0,
             clientY : 0
         });
-        fireEvent(touchEventMap.touchmove, n.node.firstChild, {
+        fireEvent(touchEventMap.touchmove, target, {
             clientX : 5,
             clientY : 5
         });
-        fireEvent(touchEventMap.touchend, n.node.firstChild, {
+        fireEvent(touchEventMap.touchend, target, {
             clientX : 5,
             clientY : 5
         });

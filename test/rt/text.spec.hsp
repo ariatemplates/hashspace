@@ -74,7 +74,7 @@ describe("Text Nodes", function () {
     it("checks hello world text node - without any parameter", function () {
         var n = hello1();
         expect(n.node.firstChild.nodeType).to.equal(TEXT_NODE);
-        expect(n.node.firstChild.nodeValue).to.equal("Hello World!");
+        expect(n.node.firstChild.nodeValue).to.equal("    Hello World!\n");
         n.$dispose();
     });
 
@@ -82,7 +82,7 @@ describe("Text Nodes", function () {
         var n = hello2({
             name : "Alexandre"
         });
-        expect(n.node.firstChild.nodeValue).to.equal("Hello Alexandre!");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Hello Alexandre!");
         n.$dispose();
     });
 
@@ -91,7 +91,7 @@ describe("Text Nodes", function () {
             firstName : "Miles",
             lastName : "Davis"
         });
-        expect(n.node.firstChild.nodeValue).to.equal("Hello Miles Davis!");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Hello Miles Davis!");
         n.$dispose();
     });
 
@@ -101,15 +101,15 @@ describe("Text Nodes", function () {
             lastName : "Kahneman"
         };
         var n = hello3(dm);
-        expect(n.node.firstChild.nodeValue).to.equal("Hello Daniel Kahneman!");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Hello Daniel Kahneman!");
         json.set(dm, "lastName", "Craig");
-        expect(n.node.firstChild.nodeValue).to.equal("Hello Daniel Kahneman!");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Hello Daniel Kahneman!");
         n.refresh();
-        expect(n.node.firstChild.nodeValue).to.equal("Hello Daniel Craig!");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Hello Daniel Craig!");
         json.set(dm, "firstName", "Mickey");
         json.set(dm, "lastName", "Mouse");
         n.refresh();
-        expect(n.node.firstChild.nodeValue).to.equal("Hello Mickey Mouse!");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Hello Mickey Mouse!");
         n.$dispose();
     });
 
@@ -125,14 +125,14 @@ describe("Text Nodes", function () {
         };
         var n2 = hello3(dm2);
 
-        expect(n1.node.firstChild.nodeValue).to.equal("Hello Daniel Kahneman!");
-        expect(n2.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!");
+        expect(n1.node.firstChild.nodeValue.trim()).to.equal("Hello Daniel Kahneman!");
+        expect(n2.node.firstChild.nodeValue.trim()).to.equal("Hello Charles Darwin!");
 
         json.set(dm2, "lastName", "Brown");
         hsp.refresh();
 
-        expect(n1.node.firstChild.nodeValue).to.equal("Hello Daniel Kahneman!");
-        expect(n2.node.firstChild.nodeValue).to.equal("Hello Charles Brown!");
+        expect(n1.node.firstChild.nodeValue.trim()).to.equal("Hello Daniel Kahneman!");
+        expect(n2.node.firstChild.nodeValue.trim()).to.equal("Hello Charles Brown!");
         n1.$dispose();
         n2.$dispose();
     });
@@ -146,15 +146,15 @@ describe("Text Nodes", function () {
         var n2 = hello3(dm);
         var n3 = hello4(dm);
 
-        expect(n1.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!");
-        expect(n2.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!");
-        expect(n3.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!");
+        expect(n1.node.firstChild.nodeValue.trim()).to.equal("Hello Charles Darwin!");
+        expect(n2.node.firstChild.nodeValue.trim()).to.equal("Hello Charles Darwin!");
+        expect(n3.node.firstChild.nodeValue.trim()).to.equal("Hello Charles Darwin!");
 
         json.set(dm, "lastName", "Brown");
         hsp.refresh();
-        expect(n1.node.firstChild.nodeValue).to.equal("Hello Charles Brown!");
-        expect(n2.node.firstChild.nodeValue).to.equal("Hello Charles Brown!");
-        expect(n3.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!"); // unbound case
+        expect(n1.node.firstChild.nodeValue.trim()).to.equal("Hello Charles Brown!");
+        expect(n2.node.firstChild.nodeValue.trim()).to.equal("Hello Charles Brown!");
+        expect(n3.node.firstChild.nodeValue.trim()).to.equal("Hello Charles Darwin!"); // unbound case
 
         n1.$dispose();
         n2.$dispose();
@@ -182,17 +182,17 @@ describe("Text Nodes", function () {
 
         // check that generator is not impacted by the $dispose call
         n = hello3(dm);
-        expect(n.node.firstChild.nodeValue).to.equal("Hello Charles Darwin!");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Hello Charles Darwin!");
         json.set(dm, "lastName", "Brown");
         hsp.refresh();
-        expect(n.node.firstChild.nodeValue).to.equal("Hello Charles Brown!");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Hello Charles Brown!");
         n.$dispose();
     });
 
     it("tests a template with a simple string parameter", function () {
         var n = hello5("Bart");
 
-        expect(n.node.firstChild.nodeValue).to.equal("Hello Bart!");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Hello Bart!");
         n.$dispose();
     });
 
@@ -200,7 +200,7 @@ describe("Text Nodes", function () {
         globalValue = "blah blah";
         var n = hello6();
 
-        expect(n.node.firstChild.nodeValue).to.equal("blah blah");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("blah blah");
         n.$dispose();
     });
 
@@ -208,7 +208,7 @@ describe("Text Nodes", function () {
         globalValueInt = 0;
         var n = hello9();
 
-        expect(n.node.firstChild.nodeValue).to.equal("0");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("0");
         n.$dispose();
     });
 
@@ -219,12 +219,12 @@ describe("Text Nodes", function () {
         };
         var n = hello7(d);
 
-        expect(n.node.firstChild.nodeValue).to.equal("Omer-Simpson");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Omer-Simpson");
 
         json.set(d, "firstName", "Marge");
         hsp.refresh();
 
-        expect(n.node.firstChild.nodeValue).to.equal("Marge-Simpson");
+        expect(n.node.firstChild.nodeValue.trim()).to.equal("Marge-Simpson");
 
         n.$dispose();
     });

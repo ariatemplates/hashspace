@@ -67,8 +67,8 @@ TemplateEnd "template end statement"
   = _ "</template" _ ">" _ (EOL / EOF)
   {return {type:"/template",line:line,column:column}}  
 
-TemplateContent "template content"
-  = _ blocks:(  TplTextBlock 
+TemplateContent "template content" // TODO: CSSClassExpression
+  = blocks:(  EOLBlock / TplTextBlock 
                 / CommentBlock / HTMLCommentBlock
                 / IfBlock / ElseIfBlock / ElseBlock / EndIfBlock 
                 / ForeachBlock / EndForeachBlock
@@ -89,41 +89,38 @@ TplTextBlock "text"
 TplTextChar "text character"
   = "\\{" {return "\u007B"}       // { = \u007B
   / "\\}" {return "\u007D"}       // } = \u007D
-  / "\\n" {return "\n"}
-  / EOL &TemplateEnd {return ""}  // ignore last EOL
-  / EOL _ {return " "}
   / "#" !(_ "\/template") {return "#"}
   / "\/" !"/" {return "/"}
   / "\\/" {return "/"}
   / "\\//" {return "//"}
   / "\\<" {return "<"}
-  / [^{#/<]
+  / [^{#/<\n\r\u2028\u2029]
 
 InvalidBlock
   = "{" chars:[^{}#]* "}"
   {return {type:"invalidblock", code:chars.join(''), line:line, column:column}}
 
 IfBlock "if statement"
-  = "{" _ "if " _ expr:(IfCondWithBrackets / CoreExpText) _ "}" EOS?
+  = "{" _ "if " _ expr:(IfCondWithBrackets / CoreExpText) _ "}"
   {return {type:"if", condition:expr, line:line, column:column}}
 
 IfCondWithBrackets
   = "(" expr:CoreExpText ")" {return expr}
 
 ElseIfBlock "elseif statement" 
-  = "{" _ "else " _ "if" _ expr:(IfCondWithBrackets / CoreExpText) _ "}" EOS?
+  = "{" _ "else " _ "if" _ expr:(IfCondWithBrackets / CoreExpText) _ "}"
   {return {type:"elseif", condition:expr, line:line, column:column}}
 
 ElseBlock
-  = "{" _ "else" _ "}" EOS?
+  = "{" _ "else" _ "}"
   {return {type:"else", line:line, column:column}}
 
 EndIfBlock
-  = "{" _ "/if" _ "}" EOS?
+  = "{" _ "/if" _ "}"
   {return {type:"endif", line:line, column:column}}
 
 CommentBlock
-  = _ "\/\/" chars:[^\r\n]* &EOL
+  = _ "\/\/" chars:[^\r\n]*
   {return {type:"comment", value:chars.join('')}}
 
 HTMLCommentBlock
@@ -137,7 +134,7 @@ HTMLCommentChar
     / [^>\-]
 
 ForeachBlock
-  = "{" _ "foreach " _ args:( ForeachArgs / ("(" _ a:ForeachArgs _ ")") {return a}) _ "}" EOS?
+  = "{" _ "foreach " _ args:( ForeachArgs / ("(" _ a:ForeachArgs _ ")") {return a}) _ "}"
   {return {type:"foreach", item:args.item, key:args.key, colref:args.colref, line:line, column:column}}
 
 ForeachArgs
@@ -156,30 +153,30 @@ EndForeachBlock
   {return {type:"endforeach", line:line, column:column}}
 
 HTMLElement
-  = "<" !(_ "template") name:HTMLName  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
+  = "<" !(_ "template") name:HTMLName  atts:HTMLElementAttributes? S? end:"/"? ">"
   {return {type:"element", name:name, closed:(end!==""), attributes:atts, line:line, column:column}}
 
 HTMLElementAttributes
   = atts:((S att:(HTMLAttribute)) {return att})*
 
 EndHTMLElement // TODO support comments inside Element
-  = "</" !(_ "template") name:HTMLName S? ">" EOS?
+  = "</" !(_ "template") name:HTMLName S? ">"
   {return {type:"endelement", name:name, line:line, column:column}}
 
 HspComponent
-  = "<#" ref:JSObjectRef  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
+  = "<#" ref:JSObjectRef  atts:HTMLElementAttributes? S? end:"/"? ">"
   {return {type:"component", ref:ref, closed:(end!==""), attributes:atts, line:line, column:column}}
 
 EndHspComponent
-  = "</#" ref:JSObjectRef S? ">" EOS?
+  = "</#" ref:JSObjectRef S? ">"
   {return {type:"endcomponent", ref:ref, line:line, column:column}}
 
 HspCptAttribute
-  = "<@" ref:VarIdentifier  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
+  = "<@" ref:VarIdentifier  atts:HTMLElementAttributes? S? end:"/"? ">"
   {return {type:"cptattribute", name:ref, closed:(end!==""), attributes:atts, line:line, column:column}}
 
 EndHspCptAttribute
-  = "</@" ref:VarIdentifier S? ">" EOS?
+  = "</@" ref:VarIdentifier S? ">"
   {return {type:"endcptattribute", name:ref, line:line, column:column}}
 
 InvalidHTMLElement
@@ -215,7 +212,7 @@ HTMLAttributeChar // TODO look at W3C specs
     / [^{\"]
 
 LogBlock
-  = "{" _ "log " _ first:CoreExpText _ next:("," _ CoreExpText)* _"}" EOS?
+  = "{" _ "log " _ first:CoreExpText _ next:("," _ CoreExpText)* _"}"
   {
     var exprs=[first];
     if (next) {
@@ -227,7 +224,7 @@ LogBlock
   }
 
 LetBlock
-  = "{" _ "let " _ first:CoreExpText __ next:("," __ CoreExpText)* "}" EOS?
+  = "{" _ "let " _ first:CoreExpText __ next:("," __ CoreExpText)* "}"
   {
     var asn=[first];
     if (next) {
@@ -282,6 +279,10 @@ InvalidExpressionValue
   = !("/template" _) chars:[^}]+
   {return {type:"invalidexpression", code:chars.join(''), line:line, column:column}}
 
+EOLBlock "End of line block"
+ = eol:EOL
+ {return {type:"eol", value:eol, line:line, column:column};}
+
 // White spaces
     // mandatory padding including line breaks
 S "white space" 
@@ -299,9 +300,6 @@ EOL "end of line"
   / "\r"
   / "\u2028" // line separator
   / "\u2029" // paragraph separator
-
-EOS "end of statement" //
-  = empty:(_ EOL _)
 
 EOF "end of file"
   = !.

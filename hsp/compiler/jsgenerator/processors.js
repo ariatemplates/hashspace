@@ -388,7 +388,7 @@ function formatTextBlock (node, nextExprIndex, walker) {
                                                                                 // (=args)
     for (var i = 0; i < content.length; i++) {
         item = content[i];
-        if (item.type === "text") {
+        if (item.type === "text" || item.type === "eol") {
             if (index % 2 === 0) {
                 // even index: arg must be a string
                 args[index] = '"' + escapeNewLines(item.value.replace(/"/g, "\\\"")) + '"';

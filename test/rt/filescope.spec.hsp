@@ -38,7 +38,7 @@ describe("Templates using expressions with global references", function () {
     it("should actually access the reference", function () {
         var h = ht.newTestContext();
         test1().render(h.container);
-        expect(h.container.childNodes[1].innerHTML).to.equal("I am here because of a global helper");
+        expect(h.container.childNodes[2].innerHTML).to.equal("I am here because of a global helper");
         h.$dispose();
     });
 

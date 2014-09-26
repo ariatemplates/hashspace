@@ -297,6 +297,43 @@ var SyntaxTree = klass({
     },
 
     /**
+     * Manages a End Of Line block
+     * @param {Array} blocks the full list of blocks.
+     * @param {Integer} index the index of the block to manage.
+     * @param {Array} out the output as an array of Node.
+     * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
+     */
+    __eol : function(index, blocks, out) {
+        return this.__text(index, blocks, out);
+    },
+
+    _skipWhitespaces: function(index, blocks, out) {
+        //Skips opening whitespace block and ending EOL block if the line is only made of blocks which don't generate DOM element or text
+        var toBeSkipped = true;
+        var nextIndex = index + 1;
+        while (nextIndex < blocks.length) {
+            var nextBlock = blocks[nextIndex];
+            if (!(nextBlock.type === "text" && nextBlock.value.match(/^(\s)+$/) ||
+                ["if", "elseif", "else", "endif", "comment", "foreach", "endforeach", "eol", "log", "let"].indexOf(nextBlock.type) > -1)) {
+                toBeSkipped = false;
+                break;
+            }
+            if (nextBlock.type === "eol") {
+                break;
+            }
+            nextIndex++;
+        }
+        if (index + 1 < blocks.length && toBeSkipped) {
+            if (blocks[index + 1].type === "text") {
+                blocks[index + 1].toBeSkipped = true;
+            }
+            if (blocks[nextIndex].type === "eol") {
+                blocks[nextIndex].toBeSkipped = true;
+            }
+        }
+    },
+
+    /**
      * Manages a text block: regroups adjacent text and expression blocks
      * @param {Array} blocks the full list of blocks.
      * @param {Integer} index the index of the block to manage.
@@ -306,18 +343,27 @@ var SyntaxTree = klass({
     __text : function (index, blocks, out) {
         var length = blocks.length, buffer = [];
 
+        if (index === 0) {
+            this._skipWhitespaces(-1, blocks, out);
+        }
+
         //Regroups adjacent text and expression blocks by looking at the next ones
         var nextIndex = index, goAhead = (length > nextIndex), block;
         while (goAhead) {
             block = blocks[nextIndex];
-            if (block.type === "text") {
+            if (block.type === "text" || block.type === "eol") {
                 if (block.value !== "") {
                     try {
-                      block.value = htmlEntitiesToUtf8(block.value);
-                      buffer.push(block);
+                        block.value = htmlEntitiesToUtf8(block.value);
+                        if (typeof block.toBeSkipped === "undefined") {
+                            buffer.push(block);
+                        }
                     } catch (e) {
-                      this._logError(e.message, block);
+                        this._logError(e.message, block);
                     }
+                }
+                if (block.type === "eol") {
+                    this._skipWhitespaces(nextIndex, blocks, out);
                 }
             } else if (block.type === "expression") {
                 //parse the expression to detect errors
@@ -338,7 +384,7 @@ var SyntaxTree = klass({
 
         //Manages the adjacent text and expression blocks found
         var node = null;
-        if (buffer.length === 1 && buffer[0].type === "text") {
+        if (buffer.length === 1 && (buffer[0].type === "text" || buffer[0].type === "eol")) {
             // only one text block
             node = new Node("text");
             node.value = buffer[0].value;
@@ -346,7 +392,7 @@ var SyntaxTree = klass({
             // if buffer is composed of only text expressions we concatenate them
             var onlyText=true;
             for (var i = 0; i < buffer.length; i++) {
-                if (buffer[i].type !== "text") {
+                if (buffer[i].type !== "text" && buffer[i].type !== "eol") {
                     onlyText = false;
                     break;
                 }
