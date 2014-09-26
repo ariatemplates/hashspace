@@ -1,0 +1,65 @@
+##### Template:
+<!-- this is a comment -->
+<template hello1>
+   Hello World!
+</template>
+
+
+<!-- this is
+yet another comment
+this time it's multiline
+-->
+<script>
+// comment
+function func2(z) {return z;}
+</script>
+
+<!--
+  -- this comment has some dashes and even <!-- in the content --
+  -->
+<template hello2>
+   Hello Again!
+</template>
+##### Parsed Tree:
+
+[
+  { type: 'toplevelcomment', value: ' this is a comment \n'},
+  { type: 'template', name: 'hello1', args: [], content: [
+    { type: 'text', value: 'Hello World!' }
+  ]},
+  { type: 'plaintext', value: '\n\n'},
+  { type: 'toplevelcomment', value: ' this is\nyet another comment\nthis time it\'s multiline\n\n'},
+  { type: 'plaintext', value: '\n// comment\nfunction func2(z) {return z;}\n\n'},
+  { type: 'plaintext', value: '\n'},
+  { type: 'toplevelcomment', value: '\n  -- this comment has some dashes and even <!-- in the content --\n  \n'},
+  { type: 'template', name: 'hello2', args: [], content: [
+    { type: 'text', value: 'Hello Again!' }
+  ]},
+]
+
+##### Syntax Tree:
+
+[
+  { type: 'plaintext', value: '\n'},
+  { type: 'template', name: 'hello1', args: [], content: [
+    { type: 'text', value: 'Hello World!' }
+  ]},
+  { type: 'plaintext', value: '\n\n'},
+  { type: 'plaintext', value: '\n\n\n\n'},
+  { type: 'plaintext', value: '\n// comment\nfunction func2(z) {return z;}\n\n'},
+  { type: 'plaintext', value: '\n'},
+  { type: 'plaintext', value: '\n\n\n'},
+  { type: 'template', name: 'hello2', args: [], content: [
+    { type: 'text', value: 'Hello Again!' }
+  ]},
+]
+
+##### Template Code 1
+hello1=[__s,
+  n.$text(0, ["Hello World!"])
+]
+
+##### Template Code 2
+hello2=[__s,
+  n.$text(0, ["Hello Again!"])
+]

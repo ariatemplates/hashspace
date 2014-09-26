@@ -64,9 +64,7 @@ var ListCtrl = klass({
   </div>
 </template>
 
-<script>
-// test template
-</script>
+<!-- test template -->
 <template test(d)>
   Click on an item to select it:
 

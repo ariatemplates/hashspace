@@ -1,6 +1,6 @@
-<script>
-// edit me!
-</script>
+<!--
+edit me!
+-->
 
 <template hello(name)>
     <div class="msg">

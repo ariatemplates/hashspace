@@ -2,9 +2,7 @@
 var klass=require("hsp/klass");
 </script>
 
-<script>
-// nt is an instance of NumberTester
-</script>
+<!-- nt is an instance of NumberTester -->
 <template test(nt)>
     <div>
         Number: <span class="textvalue">{nt.number}</span>

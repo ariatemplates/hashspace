@@ -9,9 +9,7 @@ var PanelController = klass({
 });
 </script>
 
-<script>
-// sample panel template
-</script>
+<!-- sample panel template -->
 <template panel using c:PanelController>
   <div class="panel">
     {if c.head}

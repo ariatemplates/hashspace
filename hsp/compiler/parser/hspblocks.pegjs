@@ -8,7 +8,7 @@
  * @see https://github.com/dmajda/pegjs
  */
 TemplateFile
-  = blocks:(TemplateBlock / ScriptBlock / TopLevelWhitespace)*
+  = blocks:(TemplateBlock / ScriptBlock / TopLevelCommentBlock / TopLevelWhitespace)*
   {
    return blocks;
   }
@@ -16,6 +16,14 @@ TemplateFile
 TopLevelWhitespace
   = lines:(chars:WhiteSpace* eol:EOL {return chars.join("") + eol})+
     {return {type:"plaintext", value:lines.join('')}}
+
+TopLevelCommentBlock "HTML comment"
+ = block:HTMLCommentBlock _ eol:(EOL / EOF)
+  {
+    block.type = "toplevelcomment"; // to differentiate it from a comment inside a template
+    block.value = block.value + (eol || "");
+    return block;
+  }
 
 ScriptBlock "script block"
   = (_ "<script>" eol1:EOL? content:TextBlock "</script>" _ eol2:(EOL / EOF))

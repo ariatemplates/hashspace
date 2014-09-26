@@ -265,6 +265,22 @@ var SyntaxTree = klass({
     },
 
     /**
+     * Manages a top level HTML-style, possibily multiline, comment block.
+     * @param {Array} blocks the full list of blocks.
+     * @param {Integer} index the index of the block to manage.
+     * @param {Array} out the output as an array of Node.
+     * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
+     */
+    __toplevelcomment : function (index, blocks, out) {
+        // let's just emit whitespace with as many newlines as the original comment had,
+        // so that we keep the 1:1 line mapping with the source
+        var node = new Node("plaintext"), block = blocks[index];
+        node.value = block.value.replace(/[^\r\n]/g, "");
+        out.push(node);
+        return index;
+    },
+
+    /**
      * Manages a log statement.
      * @param {Array} blocks the full list of blocks.
      * @param {Integer} index the index of the block to manage.

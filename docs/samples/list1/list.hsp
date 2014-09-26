@@ -15,10 +15,7 @@ var ListController = klass({
 });
 </script>
 
-<script>
-// simple list template
-</script>
-
+<!-- simple list template -->
 <template list using lc:ListController>
   // content is the list of attribute sub-elements
   <div class="list {lc.class}">
@@ -41,9 +38,7 @@ var ListController = klass({
   </div>
 </template>
 
-<script>
-// test template
-</script>
+<!-- test template -->
 <template test(d)>
   <#list head="Static list" class="listcpt">
     <@option>First {d.itemName}</@option>
