@@ -5,11 +5,21 @@ var compiler = require("../../hsp/compiler/compiler");
 var jsgenerator = require("../../hsp/compiler/jsgenerator");
 var ut = require("./utils/testutils");
 
+function assertCodeTheSame(s1, s2, helptext) {
+    var comparison = (ut.compareJSCode(s1, s2));
+    var isEqual = (comparison === "");
+    if (!isEqual) {
+        // let's call assert to have nice error message
+        // console.log(comparison); // first line of `comparison` also contains the info about first mismatch
+        assert.equal(s1, s2, helptext);
+    }
+}
+
 describe('Block Parser: ', function () {
 
     it('tests testutils.getContent', function () {
         var tpl = ut.getSampleContent("template1").template;
-        var s = ['var x="text1";',
+        var expectedCode = ['var x="text1";',
                 'function func() {var x="text2"};',
                 '',
                 '<template hello1>',
@@ -25,7 +35,8 @@ describe('Block Parser: ', function () {
                 '</template>',
                 'var z;'].join("\n");
 
-        assert.equal(tpl.replace(/\r/g, ""), s, "sample content");
+        var actualCode = tpl.replace(/\r/g, "");
+        assertCodeTheSame(actualCode, expectedCode, "sample content");
     });
 
     it('tests testutils.compareJSCode', function () {
@@ -137,7 +148,7 @@ describe('Block Parser: ', function () {
         var sample = ut.getSampleContent("template1");
         var r = compiler.compile(sample.template, "template1");
 
-        var s = [jsgenerator.HEADER,
+        var expectedCode = [jsgenerator.HEADER,
             'var x="text1";',
             'function func() {var x="text2"};',
             '',
@@ -146,7 +157,8 @@ describe('Block Parser: ', function () {
             '  return [__s,n.$text(0,["Hello World!"])];',
             '});',
             '',
-            '// comment', 'function func2(z) {return z;}',
+            '// comment',
+            'function func2(z) {return z;}',
             '',
             'var hello1bis = require("hsp/rt").template(["arg1","arg2"], function(n){',
             '  var __s = {};',
@@ -158,9 +170,15 @@ describe('Block Parser: ', function () {
         // console.log(s.length) // 587
         // console.log(r.code.length) // 591
         // assert.equal(r.code,s,"template generated code"); // strange issue with non visible characters
-        assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
+        var actualCode = r.code.replace(/\r/g, "");
+        assertCodeTheSame(actualCode, expectedCode, "template generated code");
 
         var lm = [0, 6, 7, 8, 9, 9, 9, 16, 17, 18, 19, 20, 20, 20, 20, 27];
+        // console.log("Expected linemap");
+        // console.log(lm);
+        // console.log("Real linemap");
+        // console.log(r.lineMap);
+        // console.log(r.code);
         assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "", "line map comparison");
     });
 
@@ -168,7 +186,7 @@ describe('Block Parser: ', function () {
         var sample = ut.getSampleContent("template1");
         var r = compiler.compile(sample.template, "template1", {mode:"global"});
 
-        var s = [jsgenerator.HEADER,
+        var expectedCode = [jsgenerator.HEADER,
             'var x="text1";',
             'function func() {var x="text2"};',
             '',
@@ -186,8 +204,10 @@ describe('Block Parser: ', function () {
             'var z;'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
-        assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
+        var actualCode = r.code.replace(/\r/g, "");
+        assertCodeTheSame(actualCode, expectedCode, "template generated code");
 
+        // linemap should be the same as in commonJS mode test
         var lm = [0, 6, 7, 8, 9, 9, 9, 16, 17, 18, 19, 20, 20, 20, 20, 27];
         assert.equal(ut.jsonContains(r.lineMap, lm, "lineMap"), "", "line map comparison");
     });
@@ -196,7 +216,7 @@ describe('Block Parser: ', function () {
         var sample = ut.getSampleContent("template1");
         var r = compiler.compile(sample.template, "template1", {mode:"global", globalRef:"foo"});
 
-        var s = [jsgenerator.HEADER,
+        var expectedCode = [jsgenerator.HEADER,
             'var x="text1";',
             'function func() {var x="text2"};',
             '',
@@ -214,34 +234,37 @@ describe('Block Parser: ', function () {
             'var z;'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
-        assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
+        var actualCode = r.code.replace(/\r/g, "");
+        assertCodeTheSame(actualCode, expectedCode, "template generated code");
     });
 
     it('validates full compiled template with export in commonJS mode', function () {
         var sample = ut.getSampleContent("template2");
         var r = compiler.compile(sample.template, "template2");
 
-        var s = ['var $set=require("hsp/$set"); ',
+        var expectedCode = ['var $set=require("hsp/$set"); ',
                 jsgenerator.HEADER, '',
                 'var hello4 = $set(exports, "hello4", require("hsp/rt").template([], function(n){',
                 '  var __s = {};',
                 '  return [__s, n.$text(0,["Hello World!"])];', '}));'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
-        assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
+        var actualCode = r.code.replace(/\r/g, "");
+        assertCodeTheSame(actualCode, expectedCode, "template generated code");
     });
 
     it('validates full compiled template with export in global variable mode', function () {
         var sample = ut.getSampleContent("template2");
         var r = compiler.compile(sample.template, "template2", {mode:"global"});
 
-        var s = [jsgenerator.HEADER, '',
+        var expectedCode = [jsgenerator.HEADER, '',
                 'var hello4 = hsp.template([], function(n){',
                 '  var __s = {};',
                 '  return [__s, n.$text(0,["Hello World!"])];', '});'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
-        assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code");
+        var actualCode = r.code.replace(/\r/g, "");
+        assertCodeTheSame(actualCode, expectedCode, "template generated code");
     });
 
     it('should raise an error when an invalid mode is used', function () {
@@ -255,21 +278,22 @@ describe('Block Parser: ', function () {
         var sample = ut.getSampleContent("component2");
         var r = compiler.compile(sample.template, "component2");
 
-        var s = [jsgenerator.HEADER,
+        var expectedCode = [jsgenerator.HEADER,
             '',
             'var mycomponent = require("hsp/rt").template({ctl:[foo,"foo","ComponentController"],ref:"c"}, function(n){',
             '  var __s = {};',
             '  return [__s, n.$text(0,["some text..."])];', '});'].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
-        assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code for components");
+        var actualCode = r.code.replace(/\r/g, "");
+        assertCodeTheSame(actualCode, expectedCode, "template generated code for components");
     });
 
     it('validates full compiled template using components', function () {
         var sample = ut.getSampleContent("component5");
         var r = compiler.compile(sample.template, "component5");
 
-        var s = [
+        var expectedCode = [
                 jsgenerator.HEADER,
                 '',
                 'var test = require("hsp/rt").template([], function(n){',
@@ -281,6 +305,7 @@ describe('Block Parser: ', function () {
         ].join("\n");
 
         assert.equal(r.errors.length, 0, "no compilation error");
-        assert.equal(ut.compareJSCode(r.code.replace(/\r/g, ""), s), "", "template generated code for components");
+        var actualCode = r.code.replace(/\r/g, "");
+        assertCodeTheSame(actualCode, expectedCode, "template generated code for components");
     });
 });
