@@ -612,11 +612,11 @@ var SyntaxTree = klass({
 
         for (var i = 0; i < attributes.length; i++) {
             attribute = attributes[i];
-            var length = attribute.value.length;
+            var length = attribute.value? attribute.value.length: 0;
 
             if (length === 0) {
                 // this case arises when the attribute is empty - so let's create an empty text node
-                if (attribute.value === '') {
+                if (attribute.value == null) {
                     // attribute has no value - e.g. autocomplete in an input element
                     outAttribute = {
                         name : attribute.name,

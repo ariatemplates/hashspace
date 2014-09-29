@@ -40,7 +40,7 @@ TemplateBlock "template block"
   = start:TemplateStart content:TemplateContent? end:TemplateEnd?
   {
     start.content=content;
-    if (end) {start.closed=true;start.endLine=end.line;};
+    if (end) {start.closed=true;start.endLine=end.line};
     return start;
   }
 
@@ -56,18 +56,18 @@ TemplateStart "template statement"
       if (mod) {
         mod+=" ";
       }
-      return {type:"invalidtemplate", line:line, column:column, code: d1+p+mod+"template "+name+" "+args.invalidTplArg+d2}
+      return {type:"invalidtemplate", line:line(), column:column(), code: d1+p+mod+"template "+name+" "+args.invalidTplArg}
     } else {
       if ((d1 === "<" && d2 !==">")) {
         // inconsistant delimiters
-        return {type:"invalidtemplate", line:line, column:column, code: d1+p+mod+"template "+name+" "+args.invalidTplArg+d2}
+        return {type:"invalidtemplate", line:line(), column:column(), code: d1+p+mod+"template "+name+" "+args.invalidTplArg}
       }
 
       if (args && args.ctl && args.constructor!==Array) {
         // this template uses a controller
-        return {type:"template", name:name, mod:mod, controller:args.ctl, controllerRef: args.ctlref, line:line, column:column}
+        return {type:"template", name:name, mod:mod, controller:args.ctl, controllerRef: args.ctlref, line:line(), column:column()}
       }
-      return {type:"template", name:name, mod:mod, args:(args==='')? []:args, line:line, column:column}
+      return {type:"template", name:name, mod:mod, args:(args== null)? []:args, line:line(), column:column()}
     }
   }
 
@@ -85,7 +85,7 @@ InvalidTplArgs
 
 TemplateEnd "template end statement"
   = _ "</template" _ ">" _ (EOL / EOF)
-  {return {type:"/template",line:line,column:column}}
+  {return {type:"/template",line:line(),column:column()}}
 
 TemplateContent "template content"
   = _ blocks:(  TplTextBlock
@@ -104,7 +104,7 @@ TemplateContent "template content"
 
 TplTextBlock "text"
   = chars:(TplTextChar)+
-  {return {type:"text", value:chars.join(''), line:line, column:column}}
+  {return {type:"text", value:chars.join(''), line:line(), column:column()}}
 
 TplTextChar "text character"
   = "\\{" {return "\u007B"}       // { = \u007B
@@ -121,26 +121,26 @@ TplTextChar "text character"
 
 InvalidBlock
   = "{" chars:[^{}#]* "}"
-  {return {type:"invalidblock", code:chars.join(''), line:line, column:column}}
+  {return {type:"invalidblock", code:chars.join(''), line:line(), column:column()}}
 
 IfBlock "if statement"
   = "{" _ "if " _ expr:(IfCondWithBrackets / CoreExpText) _ "}" EOS?
-  {return {type:"if", condition:expr, line:line, column:column}}
+  {return {type:"if", condition:expr, line:line(), column:column()}}
 
 IfCondWithBrackets
   = "(" expr:CoreExpText ")" {return expr}
 
 ElseIfBlock "elseif statement"
   = "{" _ "else " _ "if" _ expr:(IfCondWithBrackets / CoreExpText) _ "}" EOS?
-  {return {type:"elseif", condition:expr, line:line, column:column}}
+  {return {type:"elseif", condition:expr, line:line(), column:column()}}
 
 ElseBlock
   = "{" _ "else" _ "}" EOS?
-  {return {type:"else", line:line, column:column}}
+  {return {type:"else", line:line(), column:column()}}
 
 EndIfBlock
   = "{" _ "/if" _ "}" EOS?
-  {return {type:"endif", line:line, column:column}}
+  {return {type:"endif", line:line(), column:column()}}
 
 CommentBlock
   = _ "\/\/" chars:[^\r\n]* &EOL
@@ -158,7 +158,7 @@ HTMLCommentChar
 
 ForeachBlock
   = "{" _ "foreach " _ args:( ForeachArgs / ("(" _ a:ForeachArgs _ ")") {return a}) _ "}" EOS?
-  {return {type:"foreach", item:args.item, key:args.key, colref:args.colref, line:line, column:column}}
+  {return {type:"foreach", item:args.item, key:args.key, colref:args.colref, line:line(), column:column()}}
 
 ForeachArgs
   = ForeachArgs1 / ForeachArgs2
@@ -173,38 +173,38 @@ ForeachArgs2
 
 EndForeachBlock
   = "{" _ "/foreach" _ "}"
-  {return {type:"endforeach", line:line, column:column}}
+  {return {type:"endforeach", line:line(), column:column()}}
 
 HTMLElement
   = "<" !(_ "template") name:HTMLName  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
-  {return {type:"element", name:name, closed:(end!==""), attributes:atts, line:line, column:column}}
+  {return {type:"element", name:name, closed:(end!=null), attributes:atts, line:line(), column:column()}}
 
 HTMLElementAttributes
   = atts:((S att:(HTMLAttribute)) {return att})*
 
 EndHTMLElement // TODO support comments inside Element
   = "</" !(_ "template") name:HTMLName S? ">" EOS?
-  {return {type:"endelement", name:name, line:line, column:column}}
+  {return {type:"endelement", name:name, line:line(), column:column()}}
 
 HspComponent
   = "<#" ref:JSObjectRef  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
-  {return {type:"component", ref:ref, closed:(end!==""), attributes:atts, line:line, column:column}}
+  {return {type:"component", ref:ref, closed:(end!=null), attributes:atts, line:line(), column:column()}}
 
 EndHspComponent
   = "</#" ref:JSObjectRef S? ">" EOS?
-  {return {type:"endcomponent", ref:ref, line:line, column:column}}
+  {return {type:"endcomponent", ref:ref, line:line(), column:column()}}
 
 HspCptAttribute
   = "<@" ref:VarIdentifier  atts:HTMLElementAttributes? S? end:"/"? ">" EOS?
-  {return {type:"cptattribute", name:ref, closed:(end!==""), attributes:atts, line:line, column:column}}
+  {return {type:"cptattribute", name:ref, closed:(end!=null), attributes:atts, line:line(), column:column()}}
 
 EndHspCptAttribute
   = "</@" ref:VarIdentifier S? ">" EOS?
-  {return {type:"endcptattribute", name:ref, line:line, column:column}}
+  {return {type:"endcptattribute", name:ref, line:line(), column:column()}}
 
 InvalidHTMLElement
   = "<" !(_ "/template" _ ">") code:[^\r\n]* EOL
-  {return {type:"invalidelement", code:'<'+code.join(''), line:line, column:column}}
+  {return {type:"invalidelement", code:'<'+code.join(''), line:line(), column:column()}}
 
 HTMLName
   = first:[a-z] next:([a-z] / [0-9] / "-")*
@@ -213,12 +213,12 @@ HTMLName
 HTMLAttName
   = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-")* endString:(":" end:([a-zA-Z] / [0-9] / "-")+ {return ":" + end.join("")})?
   // uppercase chars are considered as error in the parse post-processor
-  {return first + next.join("") + endString;}
+  {return first + next.join("") + (endString?endString:"");}
 
 HTMLAttribute
   = name:HTMLAttName v:(_ "=" _ "\"" value:HTMLAttributeValue "\"" {return value;})?
   {
-    return {type:"attribute", name:name, value:v, line:line, column:column}
+    return {type:"attribute", name:name, value:v, line:line(), column:column()}
   }
 
 HTMLAttributeValue
@@ -243,7 +243,7 @@ LogBlock
         exprs.push(next[i][2]);
       }
     }
-    return {type:"log", exprs:exprs, line:line, column:column};
+    return {type:"log", exprs:exprs, line:line(), column:column()};
   }
 
 LetBlock
@@ -255,7 +255,7 @@ LetBlock
         asn.push(next[i][2]);
       }
     }
-    return {type:"let",assignments:asn, line:line, column:column}
+    return {type:"let",assignments:asn, line:line(), column:column()}
   }
 
 CoreExpText
@@ -268,8 +268,8 @@ CoreExpText
         return {
             "category": "jsexptext",
             "value": c.join(''),
-            "line": line,
-            "column": column
+            "line": line(),
+            "column": column()
         };
      }
 
@@ -289,9 +289,9 @@ ExpressionTextBlock
   = "{" ubflag:":"? __ e:CoreExpText "}"
   {
     var r={};
-    r.bound=(ubflag.length==0);
-    r.line=line;
-    r.column=column;
+    r.bound=(ubflag == null);
+    r.line=line();
+    r.column=column();
     r.type="expression";
     r.category="jsexptext";
     r.value = e.value;
@@ -300,7 +300,7 @@ ExpressionTextBlock
 
 InvalidExpressionValue
   = !("/template" _) chars:[^}]+
-  {return {type:"invalidexpression", code:chars.join(''), line:line, column:column}}
+  {return {type:"invalidexpression", code:chars.join(''), line:line(), column:column()}}
 
 // White spaces
     // mandatory padding including line breaks
