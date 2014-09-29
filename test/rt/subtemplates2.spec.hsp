@@ -64,7 +64,7 @@ var ht=require("hsp/utils/hashtester"),
 
 <script>
 var C2Controller=klass({
-    attributes:{
+    $attributes:{
         "msg":{type:"string",defaultValue:"no msg",binding:"1-way"},
         "foo":{type:"string",defaultValue:"foo"}
     }

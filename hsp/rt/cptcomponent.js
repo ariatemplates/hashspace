@@ -65,8 +65,8 @@ exports.$CptComponent = {
       this.ctlConstuctor=this.template.controllerConstructor;
     }
     var ctlProto=this.ctlConstuctor.prototype;
-    this.ctlAttributes=ctlProto.attributes;
-    this.ctlElements=ctlProto.elements;
+    this.ctlAttributes=ctlProto.$attributes;
+    this.ctlElements=ctlProto.$elements;
 
     // load template arguments
     this.loadCptAttElements();
@@ -74,10 +74,10 @@ exports.$CptComponent = {
     // load child elements before processing the template
     var cptArgs={
       nodeInstance:this,
-      attributes:{},
-      content:null
+      $attributes:{},
+      $content:null
     };
-    var attributes=cptArgs.attributes, att;
+    var attributes=cptArgs.$attributes, att;
 
     if (this.atts) {
       // some attributes have been passed to this instance - so we push them to cptArgs
@@ -104,7 +104,7 @@ exports.$CptComponent = {
       }
     }
     if (this.childElements) {
-      cptArgs.content=this.getControllerContent();
+      cptArgs.$content=this.getControllerContent();
     }
     return cptArgs;
   },
@@ -219,7 +219,7 @@ exports.$CptComponent = {
           // nm is a template attribute passed as text attribute
           if (this.tplAttributes && this.tplAttributes[nm]) {
             // already defined: raise an error
-            
+
             log.error(this+" Component attribute '" + nm + "' is defined multiple times - please check");
           } else {
             // create new tpl Attribute Text Node and add it to the tplAttributes collection
@@ -442,7 +442,7 @@ exports.$CptComponent = {
               this.initChildComponents();
           }
           // Change content of the controller
-          json.set(this.controller,"content",this.getControllerContent());
+          json.set(this.controller,"$content",this.getControllerContent());
 
           this.edirty=false;
       }
@@ -461,12 +461,12 @@ exports.$CptComponent = {
   refreshAttributes : function () {
     var atts = this.atts, att, ctlAtt, eh = this.eh, ctl = this.controller, v;
     var vs = this.isCptAttElement? this.vscope : this.parent.vscope;
-    if (atts && ctl && ctl.attributes) {
+    if (atts && ctl && ctl.$attributes) {
       // this template has a controller
       // let's propagate the new attribute values to the controller attributes
       for (var i = 0, sz = this.atts.length; sz > i; i++) {
         att = atts[i];
-        ctlAtt = ctl.attributes[att.name];
+        ctlAtt = ctl.$attributes[att.name];
         // propagate changes for 1- and 2-way bound attributes
         if (ctlAtt.type!=="template" && ctlAtt._binding !== 0) {
           v = att.getValue(eh, vs, null);

@@ -20,7 +20,7 @@ function rebuildInternalModel(ctl) {
 }
 
 var Pagination=klass({
-    attributes: {
+    $attributes: {
       "collectionsize":{type:"int", defaultValue:0, binding:"1-way"},
       "pagesize":{type:"int", defaultValue:10, binding:"1-way"},
       "activepage":{type:"int", defaultValue:0, binding:"2-way"},
@@ -36,10 +36,10 @@ var Pagination=klass({
           this.onpageselect({pageNumber:this.activepage});
         }
     },
-    onCollectionsizeChange: function() {
+    $onCollectionsizeChange: function() {
         rebuildInternalModel(this);
     },
-    onPagesizeChange: function() {
+    $onPagesizeChange: function() {
        rebuildInternalModel(this);
     }
 });
@@ -69,7 +69,7 @@ var Pagination=klass({
     Last page selection  <i> - from event</i>: <span class="textValue">{model.lastSelectedPage}</span>
   </div>
   <#pagination activepage="{model.active}" collectionsize="{model.collectionSize}"
-    pagesize="{model.pageSize}" onpageselect="{updateSelection(event.pageNumber)}"/>
+    pagesize="{model.pageSize}" onpageselect="{updateSelection($event.pageNumber)}"/>
 
 </template>
 

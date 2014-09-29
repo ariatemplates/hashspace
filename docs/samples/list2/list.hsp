@@ -3,7 +3,7 @@ var klass=require("hsp/klass");
 
 // simple option controller
 var OptionCtrl = klass({
-  attributes: {
+  $attributes: {
     "value":{type:"string",binding:"1-way"},
     "label":{type:"template"}
   },
@@ -15,18 +15,18 @@ var OptionCtrl = klass({
 
 // simple list controller
 var ListCtrl = klass({
-  attributes: {
+  $attributes: {
     "class":{type:"string",binding:"1-way"},
     "onselect":{type:"callback"},
     "head":{type:"template"}
   },
-  elements: {
+  $elements: {
     "option": {type:"component",controller:OptionCtrl},
     "separator": {type:"template"}
   },
   select:function (value) {
     // select
-    var c=this.content;
+    var c=this.$content;
     for (var i=0,sz=c.length;sz>i;i++) {
       if (c[i].tagName==="@option") {
         c[i].selected = c[i].value===value;
@@ -46,11 +46,11 @@ var ListCtrl = klass({
     {if lc.head}
       <div class="head"><#lc.head/></div>
     {/if}
-    {if !lc.content}
+    {if !lc.$content}
       <span class="nodata">Empty list</span>
     {else}
       <ul class="noTextSelection">
-        {foreach idx,itm in lc.content}
+        {foreach idx,itm in lc.$content}
           {if itm.tagName==="@option"}
             <li class="opt" onclick="{lc.select(itm.value)}">
               <span class="item {{'highlight':itm.selected}}"><#itm.label/></span>
@@ -68,12 +68,12 @@ var ListCtrl = klass({
 <template test(d)>
   Click on an item to select it:
 
-  <#list head="Static list" class="listcpt" onselect="{showSelection(event.value)}">
+  <#list head="Static list" class="listcpt" onselect="{showSelection($event.value)}">
     <@option value="A" label="First {d.itemName}"/>
     <@option value="B">Second {d.itemName}</@option>
   </#list>
 
-  <#list class="listcpt" onselect="{showSelection(event.value)}">
+  <#list class="listcpt" onselect="{showSelection($event.value)}">
     <@head>
       Dynamic list:
       <a href="javascript:void(0)" onclick="{empty()}">Empty</a> -

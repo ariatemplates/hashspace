@@ -1,6 +1,6 @@
 ##### Template:
 <template test(person)>
-    <img onclick="foo{doClick('blah',event,)}bar"/>
+    <img onclick="foo{doClick('blah',$event,)}bar"/>
 </template>
 
 ##### Errors:
@@ -11,7 +11,7 @@
     "column": 10
   },
   {
-    "description": "Invalid expression: 'doClick('blah',event,)'",
+    "description": "Invalid expression: 'doClick('blah',$event,)'",
     "line": 2,
     "column": 22
   }

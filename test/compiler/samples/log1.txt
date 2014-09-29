@@ -1,7 +1,7 @@
 ##### Template:
 <template test(person)>
 	Hello
-  {log "here", person, scope}
+  {log "here", person, $scope}
   World
 </template>
 
@@ -16,7 +16,7 @@
         "exprs": [
           {
             "category": "jsexptext",
-            "value": '"here", person, scope',
+            "value": '"here", person, $scope',
             "line": 3,
             "column": 8
           },
@@ -44,7 +44,7 @@
         "exprs": [
           {
             "category": "jsexptext",
-            "value": '"here", person, scope',
+            "value": '"here", person, $scope',
             "line": 3,
             "column": 8
           }
@@ -59,6 +59,6 @@
 ##### Template Code
 test=[__s,
   n.$text(0,["Hello "]),
-  n.log({e1:[9,"\"here\", person, scope"]},'log1','',3,3),
+  n.log({e1:[9,"\"here\", person, $scope"]},'log1','',3,3),
   n.$text(0,["World"])
 ]

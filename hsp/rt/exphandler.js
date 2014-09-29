@@ -85,7 +85,7 @@ var ExpHandler = klass({
      */
     createSubScope: function(ref) {
         var vs = Object.create(ref);
-        vs["scope"] = vs;
+        vs["$scope"] = vs;
         vs["+parent"] = ref;
         return vs;
     }
@@ -126,7 +126,7 @@ var PrattExpr = klass({
         var cbScope = Object.create(vscope);
         //create a throw-away scope to expose additional identifiers to
         //callback expression
-        cbScope.event = evt;
+        cbScope.$event = evt;
 
         return this.getValue(cbScope, eh);
     },

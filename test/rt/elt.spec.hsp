@@ -55,7 +55,7 @@ var globalObject={value:"foo"};
 
 <script>
 var TestCtl6=klass({
-    attributes: {
+    $attributes: {
         "selected" : { type : "boolean", defaultValue: false}
     },
     $init:function() {

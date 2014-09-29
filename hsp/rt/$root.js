@@ -228,7 +228,7 @@ var $RootNode = klass({
      * @param {any} argvalue the argument value
      */
     updateArgument : function (argidx, argvalue) {
-        json.set(this.vscope["scope"], this.argNames[argidx], argvalue);
+        json.set(this.vscope["$scope"], this.argNames[argidx], argvalue);
     },
 
     /**

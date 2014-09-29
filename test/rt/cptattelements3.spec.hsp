@@ -20,18 +20,18 @@ var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 
 var ListController = klass({
-    elements: {
+    $elements: {
         option: {type:"template"} //, maxOccurence:1 ?
     }
 });
 </script>
 
 <template list using lc:ListController>
-    {if !lc.content} 
+    {if !lc.$content} 
         <span class="nodata">Empty list</span>
     {else}
         <ul class="">
-            {foreach itm in lc.content}
+            {foreach itm in lc.$content}
                 {if itm.tagName==="@option"}
                     <li class="opt"><#itm/></li> // +introduce onclick
                 {/if}

@@ -82,7 +82,7 @@ function getDefaultAttValue (attcfg) {
 }
 
 /**
- * CptWrapper class CptWrapper objects create, initializae and observe components to detect changes on their properties
+ * CptWrapper class CptWrapper objects create, initialize and observe components to detect changes on their properties
  * (or attributes) and call their onAttributeChange() or onPropertyChange() methods Such observers are necessary to
  * avoid having component observing themselves. This way, component can change their own properties through json.set()
  * without recursively being called because of their own changes This is performed by detecting if changes occur in the
@@ -104,7 +104,7 @@ var CptWrapper = klass({
             this.needsRefresh = true;
 
             // update attribute values for simpler processing
-            var atts = this.cpt.attributes, att, bnd;
+            var atts = this.cpt.$attributes, att, bnd;
             if (atts) {
                 for (var k in atts) {
                     att = atts[k];
@@ -178,7 +178,7 @@ var CptWrapper = klass({
             return;
         }
         this.initialized = true;
-        var cpt = this.cpt, atts = cpt.attributes;
+        var cpt = this.cpt, atts = cpt.$attributes;
         if (!cpt) {
             return; // just in case
         }
@@ -292,8 +292,8 @@ var CptWrapper = klass({
         var callControllerCb = true; // true if the onXXXChange() callback must be called on the controller
 
         var att, isAttributeChange = false;
-        if (cpt.attributes) {
-            att = cpt.attributes[nm];
+        if (cpt.$attributes) {
+            att = cpt.$attributes[nm];
             isAttributeChange = (att !== undefined);
             if (isAttributeChange) {
                 // adapt type if applicable
@@ -334,7 +334,7 @@ var CptWrapper = klass({
                     cbnm=att.onchange;
                 }
                 if (!cbnm) {
-                    cbnm = ["on", nm.charAt(0).toUpperCase(), nm.slice(1), "Change"].join('');
+                    cbnm = ["$on", nm.charAt(0).toUpperCase(), nm.slice(1), "Change"].join('');
                 }
 
                 if (cpt[cbnm]) {
@@ -383,7 +383,7 @@ var CptWrapper = klass({
 /**
  * Create a Component wrapper and initialize it correctly according to the attributes passed as arguments
  * @param {Object} cptArgs the component arguments
- *      e.g. { nodeInstance:x, attributes:{att1:{}, att2:{}}, content:[] }
+ *      e.g. { nodeInstance:x, $attributes:{att1:{}, att2:{}}, $content:[] }
  */
 function createCptWrapper(Ctl, cptArgs) {
     var cw = new CptWrapper(Ctl), att, t, v; // will also create a new controller instance
@@ -391,18 +391,18 @@ function createCptWrapper(Ctl, cptArgs) {
         var cpt=cw.cpt, ni=cptArgs.nodeInstance;
         if (ni.isCptComponent || ni.isCptAttElement) {
             // set the nodeInstance reference on the component
-            var attributes=cptArgs.attributes, content=cptArgs.content;
+            var $attributes=cptArgs.$attributes, $content=cptArgs.$content;
             cw.nodeInstance = ni;
             cw.cpt.nodeInstance = ni;
 
-            if (attributes) {
-                for (var k in attributes) {
-                    
+            if ($attributes) {
+                for (var k in $attributes) {
+
                     // set the template attribute value on the component instance
-                    if (attributes.hasOwnProperty(k)) {
-                        att=cw.cpt.attributes[k];
+                    if ($attributes.hasOwnProperty(k)) {
+                        att=cw.cpt.$attributes[k];
                         t=att.type;
-                        v=attributes[k];
+                        v=$attributes[k];
 
                         if (t && ATTRIBUTE_TYPES[t]) {
                             // in case of invalid type an error should already have been logged
@@ -414,12 +414,12 @@ function createCptWrapper(Ctl, cptArgs) {
                 }
             }
 
-            if (content) {
-                if (cpt.content) {
-                  log.error(ni+" Component controller cannot use 'content' for another property than child attribute elements");
+            if ($content) {
+                if (cpt.$content) {
+                  log.error(ni+" Component controller cannot use '$content' for another property than child attribute elements");
                 } else {
                   // create the content property on the component instance
-                  json.set(cpt,"content",content);
+                  json.set(cpt,"$content",$content);
                 }
             }
         }

@@ -4,13 +4,13 @@ require('hsp/gestures/index').register();
 
 <template gestures(msgList)>
     <div class="touchboard" style="height:200px; background: #27AAFC;text-align:center;"
-    	ontap="{addMsg(event)}" ontapstart="{addMsg(event)}" ontapcancel="{addMsg(event)}"
-        onlongpress="{addMsg(event)}" onlongpressstart="{addMsg(event)}" onlongpresscancel="{addMsg(event)}"
-        onsingletap="{addMsg(event)}" onsingletapstart="{addMsg(event)}" onsingletapcancel="{addMsg(event)}"
-        ondoubletap="{addMsg(event)}" ondoubletapstart="{addMsg(event)}" ondoubletapcancel="{addMsg(event)}"
-        onswipe="{addMsg(event)}" onswipestart="{addMsg(event)}" onswipemove="{addMsg(event)}" onswipecancel="{addMsg(event)}"
-        ondrag="{addMsg(event)}" ondragstart="{addMsg(event)}" ondragmove="{addMsg(event)}" ondragcancel="{addMsg(event)}"
-        onpinch="{addMsg(event)}" onpinchstart="{addMsg(event)}" onpinchmove="{addMsg(event)}" onpinchcancel="{addMsg(event)}">
+    	ontap="{addMsg($event)}" ontapstart="{addMsg($event)}" ontapcancel="{addMsg($event)}"
+        onlongpress="{addMsg($event)}" onlongpressstart="{addMsg($event)}" onlongpresscancel="{addMsg($event)}"
+        onsingletap="{addMsg($event)}" onsingletapstart="{addMsg($event)}" onsingletapcancel="{addMsg($event)}"
+        ondoubletap="{addMsg($event)}" ondoubletapstart="{addMsg($event)}" ondoubletapcancel="{addMsg($event)}"
+        onswipe="{addMsg($event)}" onswipestart="{addMsg($event)}" onswipemove="{addMsg($event)}" onswipecancel="{addMsg($event)}"
+        ondrag="{addMsg($event)}" ondragstart="{addMsg($event)}" ondragmove="{addMsg($event)}" ondragcancel="{addMsg($event)}"
+        onpinch="{addMsg($event)}" onpinchstart="{addMsg($event)}" onpinchmove="{addMsg($event)}" onpinchcancel="{addMsg($event)}">
     	<h1>TOUCH ME</h1>
     </div>
     <div class="msglist" style="min-height: 50px;">

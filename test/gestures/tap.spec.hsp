@@ -24,10 +24,10 @@ var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
 </script>
 
 <template test1(ctl)>
-    <div title="test1" ontap="{ctl.handleTap(event)}" ontapstart="{ctl.handleTap(event)}" ontapcancel="{ctl.handleTap(event)}">
+    <div title="test1" ontap="{ctl.handleTap($event)}" ontapstart="{ctl.handleTap($event)}" ontapcancel="{ctl.handleTap($event)}">
         Hello!
     </div>
-    <div title="test2" ontap="{ctl.handleTap(event)}" ontapstart="{ctl.handleTap(event)}" ontapcancel="{ctl.handleTap(event)}">
+    <div title="test2" ontap="{ctl.handleTap($event)}" ontapstart="{ctl.handleTap($event)}" ontapcancel="{ctl.handleTap($event)}">
         Hello!
     </div>
 </template>

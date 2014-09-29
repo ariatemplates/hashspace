@@ -20,7 +20,7 @@ var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 
 var ExpandCollapseController = klass({
-    attributes: {
+    $attributes: {
         body: {
             type: "template",
             defaultContent: true

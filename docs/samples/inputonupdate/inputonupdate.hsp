@@ -1,17 +1,17 @@
 <template inputOnupdate(data)>
     <div class="info2">Input field with a standard timer of 500ms:</div>
     <div class="section">
-        <input type="text" model="{data.comment}" onupdate="{data.updateHandler(event)}"/><br/>
+        <input type="text" model="{data.comment}" onupdate="{data.updateHandler($event)}"/><br/>
         <span>Oninput result: {data.delayed}</span>
     </div>
     <div class="info2">Input field with a longer timer of 2000ms:</div>
     <div class="section">
-        <input type="text" model="{data.comment2}" onupdate="{data.updateHandler2(event)}" update-timeout="2000"/><br/>
+        <input type="text" model="{data.comment2}" onupdate="{data.updateHandler2($event)}" update-timeout="2000"/><br/>
         <span>Oninput result: {data.delayed2}</span>
     </div>
     <div class="info2">Textarea with a standard timer of 500ms:</div>
     <div class="section">
-        <textarea rows="4" cols="40" model="{data.comment3}" onupdate="{data.updateHandler3(event)}"/><br/>
+        <textarea rows="4" cols="40" model="{data.comment3}" onupdate="{data.updateHandler3($event)}"/><br/>
         <span>Oninput result: {data.delayed3}</span>
     </div>
 </template>

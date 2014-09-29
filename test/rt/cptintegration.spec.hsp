@@ -20,13 +20,13 @@ var klass=require("hsp/klass"),
 
 var msg='', refreshCount=0;
 var TestCtrl1=klass({
-  attributes:{
+  $attributes:{
     "value":{type:"string",binding:"2-way"}
   },
   $init:function() {
 
   },
-  onValueChange:function(newValue,oldValue) {
+  $onValueChange:function(newValue,oldValue) {
     var div=this.$getElement(1);
     if (div) {
       div.title=this.value;

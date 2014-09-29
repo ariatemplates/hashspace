@@ -14,7 +14,7 @@ var d2 = [
 ];
 
 var ChartCpt=klass({
-  attributes:{
+  $attributes:{
     width:{type:"int",binding:"1-way",defaultValue:100},
     height:{type:"int",binding:"1-way",defaultValue:100},
     type:{type:"string",binding:"1-way",defaultValue:"line"},

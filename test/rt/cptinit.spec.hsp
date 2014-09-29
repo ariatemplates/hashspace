@@ -18,7 +18,7 @@ var klass=require("hsp/klass"),
     ht=require("hsp/utils/hashtester");
 
 var TestCtrl=klass({
-  attributes:{
+  $attributes:{
     "value":{type:"string",binding:"1-way"},
     "oninit":{type:"callback"}
   },

@@ -55,7 +55,7 @@ var NodeGenerator = klass({
                 argNames.push(nm);
             }
         }
-        vs["scope"] = vs; // self reference (used for variables - cf. expression handler)
+        vs["$scope"] = vs; // self reference (used for variables - cf. expression handler)
 
         var root = null;
         if (tplctxt.$constructor && tplctxt.$constructor === $CptNode) {

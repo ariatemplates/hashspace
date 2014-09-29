@@ -1,8 +1,8 @@
 ##### Template:
 <template test(path, ctl, person)>
 	<img src="http://someting.com/{path}" onclick="{ctl.handleClick()}"/>
-	<img onclick="{ctl.handleClick(path, person.name, "literal arg", event)}"/>
-	<img onclick="{doClick('blah',event)}"/>
+	<img onclick="{ctl.handleClick(path, person.name, "literal arg", $event)}"/>
+	<img onclick="{doClick('blah',$event)}"/>
 </template>
 
 ##### Parsed Tree
@@ -19,12 +19,12 @@ test=[__s,
             {"click":2}
     ),
     n.elt(	"img", 
-            {e1:[9,"ctl.handleClick(path, person.name, \"literal arg\", event)"]} ,
+            {e1:[9,"ctl.handleClick(path, person.name, \"literal arg\", $event)"]} ,
             0,
             {"click":1}
     ),
     n.elt(	"img", 
-            {e1:[9,"doClick('blah',event)"]},
+            {e1:[9,"doClick('blah',$event)"]},
             0,
             {"click":1}
     )
