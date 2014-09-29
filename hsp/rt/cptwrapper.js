@@ -45,7 +45,7 @@ var ATTRIBUTE_TYPES = {
     "string" : {
         defaultValue : '',
         convert : function (v, attcfg) {
-            return v + '';
+            return v != null? v + '': v;
         }
     },
     "object" : {
