@@ -2,7 +2,7 @@ This example shows how to trace data that are used in a template. It also shows 
 
 [#output]
 
-As you can see logs can be generated from a template through the **{log}** statement. It supports multiple arguments that are automatically concatenated as one string. The first level of object properties and array items are automatically displayed, so that all objects accessible at a template position can be discovered through **{log scope}**
+As you can see logs can be generated from a template through the **{log}** statement. It supports multiple arguments that are automatically concatenated as one string. The first level of object properties and array items are automatically displayed, so that all objects accessible at a template position can be discovered through **{log $scope}**
 
 The **{log}** statement will automatically create a new log when one of the log argument changes.
 

@@ -3,7 +3,7 @@ var klass=require("hsp/klass");
 
 // Component controller
 var NbrField = klass({
-  attributes:{
+  $attributes:{
     "value":{type:"float",defaultValue:0,binding:"2-way"},
     "defaultvalue":{type:"float",defaultValue:0},
     "min":{type:"float",defaultValue:-Number.MAX_VALUE,binding:"1-way"},
@@ -23,22 +23,22 @@ var NbrField = klass({
    * attribute change handlers - notify the controller that an external object
    * (template or host) updated the value attribute
    */
-  onValueChange:function(newValue,oldValue) {
+  $onValueChange:function(newValue,oldValue) {
     var n=getNumber(newValue);
     this.internalValue = n!==null? n : 0;
     this.checkValidity();
   },
-  onMinChange:function(newValue,oldValue) {
+  $onMinChange:function(newValue,oldValue) {
     this.checkValidity();
   },
-  onMaxChange:function(newValue,oldValue) {
+  $onMaxChange:function(newValue,oldValue) {
     this.checkValidity();
   },
   /**
    * property change handler - notify the controller that the template
    * changed an internal property
    */
-  onInternalValueChange:function(newValue,oldValue) {
+  $onInternalValueChange:function(newValue,oldValue) {
     // validate and expose as attribute if ok
     this.value = this.checkValidity()? parseInt(this.internalValue,10) : this.defaultvalue;
   },

@@ -5,9 +5,9 @@ var klass=require("hsp/klass"),
     json=require("hsp/json");
 
 // Simple component controller used to test binding types
-var Cpt1 = klass({ 
-  attributes:{ 
-    value:{type:"int",defaultValue:0,binding:"2-way"}, 
+var Cpt1 = klass({
+  $attributes:{
+    value:{type:"int",defaultValue:0,binding:"2-way"},
     max:{type:"int",defaultValue:1000,binding:"1-way"},
     defaultvalue:{type:"int",defaultValue:0,binding:"none"} // used in case of error
   },
@@ -15,18 +15,18 @@ var Cpt1 = klass({
     this.onMaxChangeCount=0;
     this.onDefaultValueChangeCount=0;
   },
-  onValueChange:function(newValue,oldValue) {
+  $onValueChange:function(newValue,oldValue) {
     if (this.value>this.max) {
       json.set(this,"value",this.defaultvalue)
     }
   },
-  onMaxChange:function(newValue,oldValue) {
+  $onMaxChange:function(newValue,oldValue) {
     this.onMaxChangeCount++;
     if (this.value>this.max) {
       json.set(this,"value",this.defaultvalue)
     }
   },
-  onDefaultvalueChange:function(newValue,oldValue) {
+  $onDefaultvalueChange:function(newValue,oldValue) {
     this.onDefaultValueChangeCount++;
   }
 });
@@ -45,8 +45,8 @@ var Cpt1 = klass({
 
 <script>
 var checks=[], lastInitValue=null, dataValue=null;
-var Cpt2 = klass({ 
-  attributes:{ 
+var Cpt2 = klass({
+  $attributes:{
     value:{type:"string", binding:"2-way",onchange:"check"},
     initvalue:{type:"int",defaultValue:0,binding:"none"},
     data:{type:"object",defaultValue:{foo:"bar"},binding:"1-way"}
@@ -55,7 +55,7 @@ var Cpt2 = klass({
     lastInitValue=this.initvalue;
     dataValue=this.data;
   },
-  onDataChange:function() {
+  $onDataChange:function() {
     dataValue=this.data;
   },
   check:function(newValue,oldValue) {
@@ -96,7 +96,7 @@ describe("Component attributes binding", function () {
     var valueInput=n.node.childNodes[3];
     var maxInput=n.node.childNodes[4];
     var defaultInput=n.node.childNodes[5];
-    
+
     expect(cptInput.value).to.equal("2");
     expect(valueInput.value).to.equal("2");
 
@@ -160,7 +160,7 @@ describe("Component attributes binding", function () {
 
     expect(checks.length).to.equal(2);
     expect(checks[1].n).to.equal("c");
-    
+
     n.$dispose();
   });
 
@@ -171,7 +171,7 @@ describe("Component attributes binding", function () {
     var n=test2(d);
     expect(lastInitValue).to.equal(10);
     expect(dataValue.foo).to.equal("bar"); // default object validation
-    
+
     n.$dispose();
   });
 

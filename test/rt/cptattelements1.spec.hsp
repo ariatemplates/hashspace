@@ -19,7 +19,7 @@ var klass=require("hsp/klass"),
 
 // sample controller
 PanelController = klass({
-  attributes: {
+  $attributes: {
     "expanded":{type:"boolean",binding:"2-way"},
     "head":{type:"template"},
     "body":{type:"template", defaultContent:true}
@@ -104,7 +104,7 @@ PanelController = klass({
 
 <script>
 var TestCtl=klass({
-      attributes:{
+      $attributes:{
         "value":{type:"string",binding:"1-way"}
     }
 })

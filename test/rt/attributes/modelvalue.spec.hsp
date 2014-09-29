@@ -48,8 +48,8 @@ var hsp=require("hsp/rt"),
 <template enterEmptiesFieldSample(object)>
     <div class="info section">Please type a command and press enter.</div>
     <pre>{object.commandsHistory}</pre>
-    <input type="text" value="{object.value}" onkeydown="{object.keydown(event)}" placeholder="Your command"><br>
-    <input type="text" value="{object.value}" onkeydown="{object.keydown(event)}" placeholder="Your command"><br>
+    <input type="text" value="{object.value}" onkeydown="{object.keydown($event)}" placeholder="Your command"><br>
+    <input type="text" value="{object.value}" onkeydown="{object.keydown($event)}" placeholder="Your command"><br>
 </template>
 
 <template html5NumberInput(model)>

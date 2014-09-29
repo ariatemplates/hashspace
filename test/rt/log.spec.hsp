@@ -38,13 +38,13 @@ var hsp=require("hsp/rt"),
 
 <template test3(cities)>
     {foreach idx,city in cities}
-        {log idx+":", scope}
+        {log idx+":", $scope}
     {/foreach}
 </template>
 
 <script>
 describe("Log statement", function () {
-  
+
     it("validates static log literal values", function() {
         var h=ht.newTestContext();
         test1({value:123}).render(h.container);
@@ -58,7 +58,7 @@ describe("Log statement", function () {
         expect(f.slice(-fname.length)).to.equal(fname);
         expect(h.logs(0).line).to.equal(28);
         expect(h.logs(0).column).to.equal(9);
-        
+
         h.logs.clear();
         h.$dispose();
     });
@@ -98,15 +98,15 @@ describe("Log statement", function () {
         test3(cities).render(h.container);
 
         expect(h.logs().length).to.equal(3);
-        expect(h.logs(0).message).to.equal('0: {cities:Array[3], city:Object, city_isfirst:true, city_islast:false, idx:0, scope:Object}');
-        expect(h.logs(1).message).to.equal('1: {cities:Array[3], city:Object, city_isfirst:false, city_islast:false, idx:1, scope:Object}');
-        expect(h.logs(2).message).to.equal('2: {cities:Array[3], city:Object, city_isfirst:false, city_islast:true, idx:2, scope:Object}');
+        expect(h.logs(0).message).to.equal('0: {$scope:Object, cities:Array[3], city:Object, city_isfirst:true, city_islast:false, idx:0}');
+        expect(h.logs(1).message).to.equal('1: {$scope:Object, cities:Array[3], city:Object, city_isfirst:false, city_islast:false, idx:1}');
+        expect(h.logs(2).message).to.equal('2: {$scope:Object, cities:Array[3], city:Object, city_isfirst:false, city_islast:true, idx:2}');
         h.logs.clear();
 
         h.$set(cities,1,{name:"Los Angeles", code: "LAX"});
 
         expect(h.logs().length).to.equal(1);
-        expect(h.logs(0).message).to.equal('1: {cities:Array[3], city:Object, city_isfirst:false, city_islast:false, idx:1, scope:Object}');
+        expect(h.logs(0).message).to.equal('1: {$scope:Object, cities:Array[3], city:Object, city_isfirst:false, city_islast:false, idx:1}');
 
         h.logs.clear();
         h.$dispose();

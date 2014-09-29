@@ -42,7 +42,7 @@ module.exports = Hello;
 var klass = require("hsp/klass");
 
 var HelloCtrl = klass({
-    attributes: {
+    $attributes: {
         "name" : { type : "string" }
     },
     clear : function () {

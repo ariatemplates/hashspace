@@ -9,6 +9,6 @@ This component exposes 4 public attributes and 2 internal values (*internalValue
 - the *value* attribute should be propagated to the field only if valid
 - the *isValid* property has to change depending on the *internalValue* and on the attribute values, etc.
 
-To manage these internal constraints the controller can implement onXxxChange() methods that will be automatically called when properties or bound attributes are updated
+To manage these internal constraints the controller can implement $onXxxChange() methods that will be automatically called when properties or bound attributes are updated
 
 It is important to note that **change handlers are not called when changes are performed by the controller itself** - i.e. **if a controller property is changed in a change handler, the change handler of the corresponding property will not be called**. This allows avoiding infinite loops and strange side effects.

@@ -48,7 +48,7 @@ var klass = require("hsp/klass");
 var HelloCtrl = klass({
     // declaring "name" attribute so that we can pass it
     // when instantiating a template via `Hello({name:"World"})`
-    attributes: {
+    $attributes: {
         "name" : { type : "string" }
     },
     clear : function () {

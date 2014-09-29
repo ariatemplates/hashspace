@@ -24,7 +24,7 @@ var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
 </script>
 
 <template test1(ctl)>
-    <div title="test1" onlongpress="{ctl.handleEvent(event)}" onlongpressstart="{ctl.handleEvent(event)}" onlongpresscancel="{ctl.handleEvent(event)}">
+    <div title="test1" onlongpress="{ctl.handleEvent($event)}" onlongpressstart="{ctl.handleEvent($event)}" onlongpresscancel="{ctl.handleEvent($event)}">
         Hello!
     </div>
 </template>

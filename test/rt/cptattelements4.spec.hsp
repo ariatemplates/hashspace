@@ -23,7 +23,7 @@ var hsp=require("hsp/rt"),
 var lastListCtrl=null, optionInitCount=0;
 
 var OptionCtrl = klass({
-    attributes:{
+    $attributes:{
         "value":{type:"string", binding:"1-way"},
         "label":{type:"template"}
     },
@@ -35,7 +35,7 @@ var OptionCtrl = klass({
 
 var lastSelectionValue=null;
 var ListCtrl = klass({
-    elements: {
+    $elements: {
         "option": {type:"component",controller:OptionCtrl}
     },
     $init: function(parent) {
@@ -48,11 +48,11 @@ var ListCtrl = klass({
 </script>
 
 <template list using lc:ListCtrl>
-    {if !lc.content} 
+    {if !lc.$content} 
         <span class="nodata">Empty list</span>
     {else}
         <ul class="list">
-            {foreach itm in lc.content}
+            {foreach itm in lc.$content}
                 {if itm.tagName==="@option"}
                     <li class="opt" onclick="{lc.select(itm.value)}"><#itm.label/></li>
                 {/if}
@@ -112,7 +112,7 @@ var TabCtrl = klass({
       {else}
         {tab.title}
      {/if}
-     &nbsp;/&nbsp;<a class="close" onclick="{c.removeTab(event, index)}">&times;</a>
+     &nbsp;/&nbsp;<a class="close" onclick="{c.removeTab($event, index)}">&times;</a>
     </a></li>
   {/foreach}
   </ul>

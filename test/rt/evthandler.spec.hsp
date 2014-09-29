@@ -26,14 +26,14 @@ var ht=require("hsp/utils/hashtester"),
 
 <template test2(label,names,ctl)>
     {foreach key,name in names}
-        <span onclick="{ctl.handleClick(name,key,'literal arg',event)}">
+        <span onclick="{ctl.handleClick(name,key,'literal arg',$event)}">
             {:label} {key}: {:name}
         </span>
     {/foreach}
 </template>
 
 <template test3(person)>
-    <div title="test3" onclick="{doClick('blah',event)}">
+    <div title="test3" onclick="{doClick('blah',$event)}">
         Hello {person.name}!
     </div>
 </template>

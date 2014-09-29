@@ -24,7 +24,7 @@ var fireEvent=require("hsp/utils/eventgenerator").fireEvent,
 </script>
 
 <template test1(ctl)>
-    <div title="test1" onpinch="{ctl.handleEvent(event)}" onpinchstart="{ctl.handleEvent(event)}" onpinchmove="{ctl.handleEvent(event)}" onpinchcancel="{ctl.handleEvent(event)}">
+    <div title="test1" onpinch="{ctl.handleEvent($event)}" onpinchstart="{ctl.handleEvent($event)}" onpinchmove="{ctl.handleEvent($event)}" onpinchcancel="{ctl.handleEvent($event)}">
         Hello!
     </div>
 </template>

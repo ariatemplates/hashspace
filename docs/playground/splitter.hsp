@@ -2,7 +2,7 @@
 var Class = require("hsp/klass");
 
 var SplitterCtrl = Class({
-    attributes: {
+    $attributes: {
         "type": { type: "string", defaultValue: "horizontal" },
         "size": { type: "int", defaultValue: 3 },
         "onrelease": { type: "callback" }
@@ -75,7 +75,7 @@ var SplitterCtrl = Class({
 </script>
 
 <template splitter using controller:SplitterCtrl>
-    <div class="splitter" onmousedown="{controller.onMouseDown(event)}"></div>
+    <div class="splitter" onmousedown="{controller.onMouseDown($event)}"></div>
     <div class="splitter-proxy {{'splitter-proxy-hidden': !controller.active}}"></div>
 </template>
 

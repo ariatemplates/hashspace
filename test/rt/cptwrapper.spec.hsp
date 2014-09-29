@@ -34,7 +34,7 @@ var lastNewMinValue=null, isBrCbEmpty=false;
 var lib={};
 // sample controller
 lib.NbrField = klass({ 
-  attributes: {
+  $attributes: {
     "defaultvalue":0, 
     "value":{type:"float",defaultValue:0,binding:"2-way"},
     "min":{type:"float",defaultValue:-Number.MAX_VALUE,binding:"1-way"},
@@ -61,18 +61,18 @@ lib.NbrField = klass({
    * attribute change handlers
    * notify the controller that an external object (template or host) updated the value attribute
    */
-  onValueChange:function(newValue,oldValue) {
+  $onValueChange:function(newValue,oldValue) {
     var n=getNumber(newValue);
     json.set(this,"internalValue",n!==null? n : 0); 
     this.checkValidity(); 
   },
 
-  onMinChange:function(newValue,oldValue) {
+  $onMinChange:function(newValue,oldValue) {
     lastNewMinValue=newValue;
     this.checkValidity(); 
   },
 
-  onMaxChange:function(newValue,oldValue) {
+  $onMaxChange:function(newValue,oldValue) {
     var n=getNumber(newValue);
     json.set(this,"max",n!==null? n : Number.MAX_VALUE); 
     this.checkValidity(); 
@@ -82,7 +82,7 @@ lib.NbrField = klass({
    * property change handler
    * notify the controller that the template changed an internal property 
    */ 
-  onInternalValueChange:function(newValue,oldValue) { 
+  $onInternalValueChange:function(newValue,oldValue) { 
     // validate and expose as attribute if ok
     json.set(this,"value",this.checkValidity()? this.internalValue : this.defaultvalue); 
   }, 
@@ -127,8 +127,8 @@ lib.nbrfield=nbrfield;
 
 <template test(d)>
   <input type="text" value="{d.value}"/>
-  <#lib.nbrfield value="{d.value}" min="-10" max="10" onbeforereset="{notifyReset(123,event)}" 
-  onafterreset="{notifyReset2(event.type,event)}"/>
+  <#lib.nbrfield value="{d.value}" min="-10" max="10" onbeforereset="{notifyReset(123,$event)}" 
+  onafterreset="{notifyReset2($event.type,$event)}"/>
 </template>
 
 <template test2(d)>
@@ -151,7 +151,7 @@ function notifyReset2(type,evt) {
 }
 
 var TypedCtl=klass({
-  attributes:{
+  $attributes:{
     attint:{type:"int",defaultValue:42},
     attfloat:{type:"float",defaultValue:'12.3'},
     attstring:{type:"string",defaultValue:123},
@@ -160,7 +160,7 @@ var TypedCtl=klass({
 });
 
 var HelloCtrl = klass({
-    attributes: {
+    $attributes: {
         "inputChecked" : { type : "boolean" /*, defaultValue: false*/}
     }
 });
@@ -187,7 +187,7 @@ describe("Component Nodes", function () {
     expect(c.internalValue).to.equal(42);
 
     // test internal binding conversion
-    expect(c.attributes.value._binding).to.equal(2);
+    expect(c.$attributes.value._binding).to.equal(2);
     
     json.set(c,"internalValue",12);
     expect(c.value).to.equal(12);
