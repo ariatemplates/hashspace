@@ -1,0 +1,39 @@
+<template inputOnupdate(data)>
+    <div class="info2">Input field with a standard timer of 500ms:</div>
+    <div class="section">
+        <input type="text" model="{data.comment}" onupdate="{data.updateHandler(event)}"/><br/>
+        <span>Oninput result: {data.delayed}</span>
+    </div>
+    <div class="info2">Input field with a longer timer of 2000ms:</div>
+    <div class="section">
+        <input type="text" model="{data.comment2}" onupdate="{data.updateHandler2(event)}" update-timeout="2000"/><br/>
+        <span>Oninput result: {data.delayed2}</span>
+    </div>
+    <div class="info2">Textarea with a standard timer of 500ms:</div>
+    <div class="section">
+        <textarea rows="4" cols="40" model="{data.comment3}" onupdate="{data.updateHandler3(event)}"/><br/>
+        <span>Oninput result: {data.delayed3}</span>
+    </div>
+</template>
+
+<script>
+var d={comment:"Edit me and wait!", delayed:"",
+updateHandler: function(event) {
+    this.delayed = event.target.value;
+},
+comment2:"Edit me and wait more!", delayed2:"",
+updateHandler2: function(event) {
+    this.delayed2 = event.target.value;
+},
+comment3:"Edit me and wait!", delayed3:"",
+updateHandler3: function(event) {
+    this.delayed3 = event.target.value;
+}};
+
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: inputOnupdate,
+    data: [d]
+};
+</script>

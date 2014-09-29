@@ -27,6 +27,8 @@ var ClassHandler = require('./attributes/class');
 hsp.registerCustomAttributes("class", ClassHandler);
 var ModelValueHandler = require('./attributes/modelvalue');
 hsp.registerCustomAttributes(["model", "value"], ModelValueHandler, 0, ["input", "textarea"]);
+var OnUpdateHandler = require('./attributes/onupdate');
+hsp.registerCustomAttributes(["onupdate", "update-timeout"], OnUpdateHandler, 0, ["input", "textarea"]);
 
 var booleanAttributes = {
     async: true,
@@ -211,7 +213,7 @@ var EltNode = klass({
                 var customHandlers = hsp.getCustomAttributeHandlers(fullEvtType, this.tag);
                 if (customHandlers && customHandlers.length > 0) {
                     for (var j = 0; j < customHandlers.length; j++) {
-                        var handlerInstance = this._createCustomAttributeHandler(fullEvtType, customHandlers[j], this.handleEvent.bind(this)).instance;
+                        var handlerInstance = this._createCustomAttributeHandler(fullEvtType, customHandlers[j]).instance;
                         if (handlerInstance.$setValue) {
                             handlerInstance.$setValue(fullEvtType, fullEvtType);
                         }
@@ -278,10 +280,9 @@ var EltNode = klass({
      * Creates a custom attribute handler.
      * @param {String} name the name of the custom attributes.
      * @param {Object} customHandler the handler retrieved from the global repository.
-     * @param {Function} callback the callback function passed to the handler instance.
      * @return {Object} the full handler created.
      */
-    _createCustomAttributeHandler: function (name, customHandler, callback) {
+    _createCustomAttributeHandler: function (name, customHandler) {
         var entry = null;
         if (typeof this._custAttrHandlers[name] == "undefined") {
             this._custAttrHandlers[name] = [];
@@ -299,7 +300,7 @@ var EltNode = klass({
         }
         //Instantiates the handler and associate it to all attributes of the group
         if (!alreadyInstantiated) {
-            entry = {klass: customHandler.handler, instance: new customHandler.handler(this, callback)};
+            entry = {klass: customHandler.handler, instance: new customHandler.handler(this, this.handleEvent.bind(this))};
             for (var l = 0; l < customHandler.names.length; l++) {
                 if (typeof this._custAttrHandlers[customHandler.names[l]] == "undefined") {
                     this._custAttrHandlers[customHandler.names[l]] = [];

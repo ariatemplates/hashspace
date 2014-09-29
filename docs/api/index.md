@@ -351,7 +351,7 @@ Because of the space which always gets _inserted between the expressions_, it do
 It is possible to specify functions to adapt the value of an expression to the desired display, but also to provide them with arguments or to combine them through piped expressions.
 
 e.g.
-```{some.expression|modifier1:arg2:arg3|modifier2}```
+``` {some.expression|modifier1:arg2:arg3|modifier2} ```
 
 There are two ways to use modifiers:
 
@@ -448,6 +448,18 @@ __Example:__
 ```html
 <div ontap="{ontapHandler(event)}" ontapstart="{ontapHandler(event)}" ontapcancel="{ontapHandler(event)}"></div>
 ```
+
+---
+
+#### onupdate event for `input` and `textarea`
+The engine adds a special event on <inut> and <texarea> elements. It is fired 1s after a user stops typing in a field.
+
+__Example:__
+
+```html
+<input onupdate="{updateHandler(event)}"/>
+```
+
 
 ## Interfaces
 
