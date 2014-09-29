@@ -88,13 +88,25 @@ module.exports = function (grunt) {
           'SL_Chrome': {
             base: 'SauceLabs',
             browserName: 'chrome',
+            platform: 'Windows 7',
+            version: '37'
+          },
+          'SL_Chrome_Beta': {
+            base: 'SauceLabs',
+            browserName: 'chrome',
             platform: 'Linux',
-            version: '35'
+            version: 'beta'
           },
           'SL_Firefox': {
             base: 'SauceLabs',
             browserName: 'firefox',
             platform: 'Linux'
+          },
+          'SL_Firefox_Beta': {
+            base: 'SauceLabs',
+            browserName: 'firefox',
+            platform: 'Linux',
+            version: 'beta'
           },
           'SL_Safari_6': {
             base: 'SauceLabs',
@@ -135,8 +147,8 @@ module.exports = function (grunt) {
           'SL_iOS_6': {
             base: 'SauceLabs',
             browserName: 'iphone',
-            platform: 'OS X 10.8',
-            version: '6.1'
+            platform: 'OS X 10.9',
+            version: '6.0'
           },
           'SL_iOS_7': {
             base: 'SauceLabs',
@@ -167,6 +179,12 @@ module.exports = function (grunt) {
             browserName: 'ANDROID',
             platform: 'Linux',
             version: '4.3'
+          },
+          'SL_Android_4.4': {
+            base: 'SauceLabs',
+            browserName: 'ANDROID',
+            platform: 'Linux',
+            version: '4.4'
           }
         }
         //logLevel: 'LOG_INFO'
@@ -200,7 +218,7 @@ module.exports = function (grunt) {
         singleRun: true,
         browserNoActivityTimeout: 0,
         captureTimeout: 0,
-        browsers: ['SL_Chrome', 'SL_IE_8', 'SL_IE_9', 'SL_Safari_7', 'SL_Android_4.3'],
+        browsers: ['SL_Chrome', 'SL_IE_8', 'SL_IE_9', 'SL_Safari_7', 'SL_Android_4.4'],
         reporters: process.env.TRAVIS_PULL_REQUEST !== 'false' ? ['dots'] : ['dots', 'saucelabs']
       },
       ci2: {
@@ -212,7 +230,19 @@ module.exports = function (grunt) {
         singleRun: true,
         browserNoActivityTimeout: 0,
         captureTimeout: 0,
-        browsers: ['SL_iOS_7', 'SL_Firefox', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6'],
+        browsers: ['SL_Firefox', 'SL_iOS_7', 'SL_IE_10', 'SL_IE_11', 'SL_Safari_6', 'SL_Android_4.2'],
+        reporters: process.env.TRAVIS_PULL_REQUEST !== 'false' ? ['dots'] : ['dots', 'saucelabs']
+      },
+      ci3: {
+        sauceLabs: {
+          startConnect: false,
+          tunnelIdentifier: process.env.TRAVIS_JOB_NUMBER
+        },
+        transports: ['xhr-polling'],
+        singleRun: true,
+        browserNoActivityTimeout: 0,
+        captureTimeout: 0,
+        browsers: ['SL_Firefox_Beta', 'SL_Chrome_Beta', 'SL_Android_4.0', 'SL_Android_4.1', 'SL_Android_4.3'],
         reporters: process.env.TRAVIS_PULL_REQUEST !== 'false' ? ['dots'] : ['dots', 'saucelabs']
       },
       sauce: {
@@ -379,7 +409,7 @@ module.exports = function (grunt) {
   grunt.registerTask('package', ['peg', 'browserify', 'atpackager:uglify','atpackager:runtime','uglify']);
   grunt.registerTask('mocha', ['peg', 'inittests', 'mochaTest', 'finalizetests']);
   grunt.registerTask('test', ['checkStyle', 'jscs', 'mocha', 'karma:unit']);
-  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci1', 'karma:ci2', 'package', 'karma:coverage']);
+  grunt.registerTask('ci', ['checkStyle', 'jscs', 'mocha', 'karma:ci1', 'karma:ci2', 'karma:ci3', 'package', 'karma:coverage']);
   grunt.registerTask('release', ['docs:release']);
   grunt.registerTask('tddrt', ['hspserver','watch']);
   grunt.registerTask('default', ['docs:playground']);
