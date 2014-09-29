@@ -112,6 +112,24 @@ var EltNode = klass({
     },
 
     /**
+     * Create a node instance referencing the current node as base class Create as well the DOM element that will be
+     * appended to the parent node DOM element
+     * @return {TNode} the new node instance
+     */
+    createNodeInstance : function (parent) {
+        var ni = TNode.createNodeInstance.call(this, parent);
+        if (ni._allCustAttrHandlers) {
+            for (var i = 0; i < ni._allCustAttrHandlers.length; i++) {
+                var handler = ni._allCustAttrHandlers[i].instance;
+                if (handler.$onContentRefresh) {
+                    handler.$onContentRefresh();
+                }
+            }
+        }
+        return ni;
+    },
+
+    /**
      * Create the DOM node element
      */
     createNode : function () {
@@ -240,11 +258,20 @@ var EltNode = klass({
      * Refresh the node
      */
     refresh : function () {
+        var cdirtybackup = this.cdirty;
         if (this.adirty) {
             // attributes are dirty
             this.refreshAttributes();
         }
         TNode.refresh.call(this);
+        if (cdirtybackup && this._allCustAttrHandlers) {
+            for (var i = 0; i < this._allCustAttrHandlers.length; i++) {
+                var handler = this._allCustAttrHandlers[i].instance;
+                if (handler.$onContentRefresh) {
+                    handler.$onContentRefresh();
+                }
+            }
+        }
     },
 
     /**

@@ -1,6 +1,7 @@
 <script>
 var hsp = require("hsp/rt");
 var klass = klass=require("hsp/klass");
+var $set = require('hsp/$set');
 </script>
 
 <template test1()>
@@ -49,6 +50,12 @@ var klass = klass=require("hsp/klass");
             <button customButton/>
             <input customButton/>
         </span>
+    </div>
+</template>
+
+<template test8(d)>
+    <div style="height: 20px" childca>
+        <span>{d.value}</span>
     </div>
 </template>
 
@@ -117,10 +124,18 @@ describe("Custom attributes", function () {
         }
     });
 
+    var handleContentCount = 0;
+    var customChildHandler = klass({
+        $onContentRefresh: function() {
+            handleContentCount++;
+        }
+    });
+
     hsp.registerCustomAttributes("verybigdiv", customHandler, 2);
     hsp.registerCustomAttributes("customheightdiv", customHandler);
     hsp.registerCustomAttributes(["customone", "customtwo"], groupHandler);
     hsp.registerCustomAttributes("customButton", customButtonHandler, 0, ["button"]);
+    hsp.registerCustomAttributes("childca", customChildHandler);
 
     it("tests a simple custom attribute", function () {
         var n = test1();
@@ -206,6 +221,25 @@ describe("Custom attributes", function () {
         expect(n.node.firstChild.style.height).to.equal("90px");
         n.$dispose();
         expect(status).to.equal("Clean");
+    });
+
+    it("tests content changes", function() {
+        handleContentCount = 0;
+        var data = {
+            value: "a"
+        }
+        var n = test8(data);
+        var content = n.node.querySelector("span");
+        expect(handleContentCount).to.equal(1);
+        expect(content.innerHTML).to.equal("a");
+
+        $set(data, "value", "b");
+        hsp.refresh();
+
+        expect(handleContentCount).to.equal(2);
+        expect(content.innerHTML).to.equal("b");
+
+        n.$dispose();
     });
 });
 </script>
