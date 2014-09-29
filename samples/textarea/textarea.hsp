@@ -11,6 +11,7 @@
     <a href="javascript:void(0)" onclick="{changeText(data)}">Change text</a>
 </template>
 
+<script>
 var d={
     // Frog by Donna Shepherd
     text:"    @..@\n   (----)\n  ( >__< )\n ^^ ~~ ^^"
@@ -31,3 +32,4 @@ module.exports = {
     template: sample,
     data: [d]
 };
+</script>

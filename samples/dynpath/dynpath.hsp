@@ -18,6 +18,7 @@
     <a href="javascript:void(0)" onclick="{swapC()}">Show/Hide columns C</a>
 </template>
 
+<script>
 // create dummy data
 var list=[], count=5;
 for (var i=0;count>i;i++) {
@@ -57,3 +58,4 @@ module.exports = {
     template: grid,
     data: [model]
 };
+</script>

@@ -1,9 +1,12 @@
+<script>
 var klass=require("hsp/klass");
+</script>
 
 <template elapsedTime(timer)>
     Seconds Elapsed: {timer.secondsElapsed}
 </template>
 
+<script>
 // klass is a little utility to create a JS object constructor
 // from a simple JSON structure - main goals are to
 // to simplify prototypal inheritance and ease code reading
@@ -28,3 +31,4 @@ module.exports = {
         return [new Timer()];
     }
 };
+</script>

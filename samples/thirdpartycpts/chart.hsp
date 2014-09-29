@@ -1,3 +1,4 @@
+<script>
 var klass=require("hsp/klass"), log=require("hsp/rt/log");
 
 var labels=["January","February","March","April","May","June","July"];
@@ -39,6 +40,7 @@ var ChartCpt=klass({
     }
   }
 });
+</script>
 
 <template chart using c:ChartCpt>
   <canvas width="{c.width}" height="{c.height}"></canvas>
@@ -59,7 +61,7 @@ var ChartCpt=klass({
   </div>
 </template>
 
-
+<script>
 // Needed by the playground application.
 // Update it, but do not remove it!
 module.exports = {
@@ -69,3 +71,4 @@ module.exports = {
       ds:"d1"
     }]
 };
+</script>

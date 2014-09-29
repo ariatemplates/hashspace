@@ -1,13 +1,18 @@
-// edit me!
+<!--
+edit me!
+-->
+
 <template hello(name)>
     <div class="msg">
         Hello {name}!
     </div>
 </template>
 
+<script>
 // Needed by the playground application.
 // Update it, but do not remove it!
 module.exports = {
   template: hello,
   data: ["World"]
 };
+</script>

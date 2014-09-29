@@ -116,7 +116,9 @@ exports.generate = function(res, template, fileName, dirPath, options) {
             res.codeFragments = templateWalker.templates;
         }
 
-        res.code = HEADER + out.join('\r\n');
+        // don't add any newlines when joining blocks;
+        // emit necessary newlines from the parser or template walker instead
+        res.code = HEADER + out.join('');
         res.errors = templateWalker.errors;
     } else {
         // Generate a JS script to show the errors when the generated file is loaded
@@ -222,7 +224,7 @@ function _generateLineMap (res, file) {
         }
     }
 
-    var nbrOfLinesInCompiledTemplate = 7; //all generated templates got fixed no of LOC
+    var nbrOfLinesInCompiledTemplate = 5; //all generated templates got fixed no of LOC
     var lineMap = [], pos = HEADER_SZ, template;
     var pos1 = -1; // position of the next template start
     var pos2 = -1; // position of the next template end
@@ -984,6 +986,9 @@ module.exports = (function(){
     parse: function(input, startRule) {
       var parseFunctions = {
         "TemplateFile": parse_TemplateFile,
+        "TopLevelWhitespace": parse_TopLevelWhitespace,
+        "TopLevelCommentBlock": parse_TopLevelCommentBlock,
+        "ScriptBlock": parse_ScriptBlock,
         "TextBlock": parse_TextBlock,
         "TemplateBlock": parse_TemplateBlock,
         "TemplateStart": parse_TemplateStart,
@@ -1197,20 +1202,276 @@ module.exports = (function(){
         result0 = [];
         result1 = parse_TemplateBlock();
         if (result1 === null) {
-          result1 = parse_TextBlock();
+          result1 = parse_ScriptBlock();
+          if (result1 === null) {
+            result1 = parse_TopLevelCommentBlock();
+            if (result1 === null) {
+              result1 = parse_TopLevelWhitespace();
+            }
+          }
         }
         while (result1 !== null) {
           result0.push(result1);
           result1 = parse_TemplateBlock();
           if (result1 === null) {
-            result1 = parse_TextBlock();
+            result1 = parse_ScriptBlock();
+            if (result1 === null) {
+              result1 = parse_TopLevelCommentBlock();
+              if (result1 === null) {
+                result1 = parse_TopLevelWhitespace();
+              }
+            }
           }
         }
         if (result0 !== null) {
-          result0 = (function(offset, line, column, blocks) {return blocks;})(pos0.offset, pos0.line, pos0.column, result0);
+          result0 = (function(offset, line, column, blocks) {
+           return blocks;
+          })(pos0.offset, pos0.line, pos0.column, result0);
         }
         if (result0 === null) {
           pos = clone(pos0);
+        }
+        
+        cache[cacheKey] = {
+          nextPos: clone(pos),
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_TopLevelWhitespace() {
+        var cacheKey = "TopLevelWhitespace@" + pos.offset;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = clone(cachedResult.nextPos);
+          return cachedResult.result;
+        }
+        
+        var result0, result1, result2;
+        var pos0, pos1, pos2;
+        
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        pos2 = clone(pos);
+        result1 = [];
+        result2 = parse_WhiteSpace();
+        while (result2 !== null) {
+          result1.push(result2);
+          result2 = parse_WhiteSpace();
+        }
+        if (result1 !== null) {
+          result2 = parse_EOL();
+          if (result2 !== null) {
+            result1 = [result1, result2];
+          } else {
+            result1 = null;
+            pos = clone(pos2);
+          }
+        } else {
+          result1 = null;
+          pos = clone(pos2);
+        }
+        if (result1 !== null) {
+          result1 = (function(offset, line, column, chars, eol) {return chars.join("") + eol})(pos1.offset, pos1.line, pos1.column, result1[0], result1[1]);
+        }
+        if (result1 === null) {
+          pos = clone(pos1);
+        }
+        if (result1 !== null) {
+          result0 = [];
+          while (result1 !== null) {
+            result0.push(result1);
+            pos1 = clone(pos);
+            pos2 = clone(pos);
+            result1 = [];
+            result2 = parse_WhiteSpace();
+            while (result2 !== null) {
+              result1.push(result2);
+              result2 = parse_WhiteSpace();
+            }
+            if (result1 !== null) {
+              result2 = parse_EOL();
+              if (result2 !== null) {
+                result1 = [result1, result2];
+              } else {
+                result1 = null;
+                pos = clone(pos2);
+              }
+            } else {
+              result1 = null;
+              pos = clone(pos2);
+            }
+            if (result1 !== null) {
+              result1 = (function(offset, line, column, chars, eol) {return chars.join("") + eol})(pos1.offset, pos1.line, pos1.column, result1[0], result1[1]);
+            }
+            if (result1 === null) {
+              pos = clone(pos1);
+            }
+          }
+        } else {
+          result0 = null;
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, lines) {return {type:"plaintext", value:lines.join('')}})(pos0.offset, pos0.line, pos0.column, result0);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        
+        cache[cacheKey] = {
+          nextPos: clone(pos),
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_TopLevelCommentBlock() {
+        var cacheKey = "TopLevelCommentBlock@" + pos.offset;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = clone(cachedResult.nextPos);
+          return cachedResult.result;
+        }
+        
+        var result0, result1, result2;
+        var pos0, pos1;
+        
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse_HTMLCommentBlock();
+        if (result0 !== null) {
+          result1 = parse__();
+          if (result1 !== null) {
+            result2 = parse_EOL();
+            if (result2 === null) {
+              result2 = parse_EOF();
+            }
+            if (result2 !== null) {
+              result0 = [result0, result1, result2];
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, block, eol) {
+            block.type = "toplevelcomment"; // to differentiate it from a comment inside a template
+            block.value = block.value + (eol || "");
+            return block;
+          })(pos0.offset, pos0.line, pos0.column, result0[0], result0[2]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("HTML comment");
+        }
+        
+        cache[cacheKey] = {
+          nextPos: clone(pos),
+          result:  result0
+        };
+        return result0;
+      }
+      
+      function parse_ScriptBlock() {
+        var cacheKey = "ScriptBlock@" + pos.offset;
+        var cachedResult = cache[cacheKey];
+        if (cachedResult) {
+          pos = clone(cachedResult.nextPos);
+          return cachedResult.result;
+        }
+        
+        var result0, result1, result2, result3, result4, result5, result6;
+        var pos0, pos1;
+        
+        reportFailures++;
+        pos0 = clone(pos);
+        pos1 = clone(pos);
+        result0 = parse__();
+        if (result0 !== null) {
+          if (input.substr(pos.offset, 8) === "<script>") {
+            result1 = "<script>";
+            advance(pos, 8);
+          } else {
+            result1 = null;
+            if (reportFailures === 0) {
+              matchFailed("\"<script>\"");
+            }
+          }
+          if (result1 !== null) {
+            result2 = parse_EOL();
+            result2 = result2 !== null ? result2 : "";
+            if (result2 !== null) {
+              result3 = parse_TextBlock();
+              if (result3 !== null) {
+                if (input.substr(pos.offset, 9) === "</script>") {
+                  result4 = "</script>";
+                  advance(pos, 9);
+                } else {
+                  result4 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"</script>\"");
+                  }
+                }
+                if (result4 !== null) {
+                  result5 = parse__();
+                  if (result5 !== null) {
+                    result6 = parse_EOL();
+                    if (result6 === null) {
+                      result6 = parse_EOF();
+                    }
+                    if (result6 !== null) {
+                      result0 = [result0, result1, result2, result3, result4, result5, result6];
+                    } else {
+                      result0 = null;
+                      pos = clone(pos1);
+                    }
+                  } else {
+                    result0 = null;
+                    pos = clone(pos1);
+                  }
+                } else {
+                  result0 = null;
+                  pos = clone(pos1);
+                }
+              } else {
+                result0 = null;
+                pos = clone(pos1);
+              }
+            } else {
+              result0 = null;
+              pos = clone(pos1);
+            }
+          } else {
+            result0 = null;
+            pos = clone(pos1);
+          }
+        } else {
+          result0 = null;
+          pos = clone(pos1);
+        }
+        if (result0 !== null) {
+          result0 = (function(offset, line, column, eol1, content, eol2) {
+            content.value = (eol1 || "") + content.value + (eol2 || "");
+            return content;
+          })(pos0.offset, pos0.line, pos0.column, result0[2], result0[3], result0[6]);
+        }
+        if (result0 === null) {
+          pos = clone(pos0);
+        }
+        reportFailures--;
+        if (reportFailures === 0 && result0 === null) {
+          matchFailed("script block");
         }
         
         cache[cacheKey] = {
@@ -1249,23 +1510,28 @@ module.exports = (function(){
             }
           }
           if (result2 !== null) {
-            result3 = parse__();
-            if (result3 !== null) {
-              if (input.substr(pos.offset, 8) === "template") {
-                result4 = "template";
-                advance(pos, 8);
+            if (input.substr(pos.offset, 8) === "template") {
+              result3 = "template";
+              advance(pos, 8);
+            } else {
+              result3 = null;
+              if (reportFailures === 0) {
+                matchFailed("\"template\"");
+              }
+            }
+            if (result3 === null) {
+              if (input.substr(pos.offset, 7) === "/script") {
+                result3 = "/script";
+                advance(pos, 7);
               } else {
-                result4 = null;
+                result3 = null;
                 if (reportFailures === 0) {
-                  matchFailed("\"template\"");
+                  matchFailed("\"/script\"");
                 }
               }
-              if (result4 !== null) {
-                result1 = [result1, result2, result3, result4];
-              } else {
-                result1 = null;
-                pos = clone(pos4);
-              }
+            }
+            if (result3 !== null) {
+              result1 = [result1, result2, result3];
             } else {
               result1 = null;
               pos = clone(pos4);
@@ -1494,23 +1760,28 @@ module.exports = (function(){
                 }
               }
               if (result2 !== null) {
-                result3 = parse__();
-                if (result3 !== null) {
-                  if (input.substr(pos.offset, 8) === "template") {
-                    result4 = "template";
-                    advance(pos, 8);
+                if (input.substr(pos.offset, 8) === "template") {
+                  result3 = "template";
+                  advance(pos, 8);
+                } else {
+                  result3 = null;
+                  if (reportFailures === 0) {
+                    matchFailed("\"template\"");
+                  }
+                }
+                if (result3 === null) {
+                  if (input.substr(pos.offset, 7) === "/script") {
+                    result3 = "/script";
+                    advance(pos, 7);
                   } else {
-                    result4 = null;
+                    result3 = null;
                     if (reportFailures === 0) {
-                      matchFailed("\"template\"");
+                      matchFailed("\"/script\"");
                     }
                   }
-                  if (result4 !== null) {
-                    result1 = [result1, result2, result3, result4];
-                  } else {
-                    result1 = null;
-                    pos = clone(pos4);
-                  }
+                }
+                if (result3 !== null) {
+                  result1 = [result1, result2, result3];
                 } else {
                   result1 = null;
                   pos = clone(pos4);
@@ -10716,6 +10987,22 @@ var SyntaxTree = klass({
     __plaintext : function (index, blocks, out) {
         var node = new Node("plaintext"), block = blocks[index];
         node.value = block.value;
+        out.push(node);
+        return index;
+    },
+
+    /**
+     * Manages a top level HTML-style, possibily multiline, comment block.
+     * @param {Array} blocks the full list of blocks.
+     * @param {Integer} index the index of the block to manage.
+     * @param {Array} out the output as an array of Node.
+     * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
+     */
+    __toplevelcomment : function (index, blocks, out) {
+        // let's just emit whitespace with as many newlines as the original comment had,
+        // so that we keep the 1:1 line mapping with the source
+        var node = new Node("plaintext"), block = blocks[index];
+        node.value = block.value.replace(/[^\r\n]/g, "");
         out.push(node);
         return index;
     },

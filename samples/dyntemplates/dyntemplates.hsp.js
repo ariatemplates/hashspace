@@ -9,15 +9,11 @@ var test = require("hsp/rt").template(["ctxt"], function(n){
   return [__s,n.elt("div",0,0,0,[n.elt("a",{e1:[9,"swapTemplate()"]},{"href":"javascript:void(0)"},{"click":1},[n.$text(0,["Change template"])])]),n.cpt([null,"ctxt","view"],{e1:[9,"ctxt"]},{"ctxt":["",1]},0)];
 });
 
-
-
 var tplA = require("hsp/rt").template(["ctxt"], function(n){
   var _ctxt;try {_ctxt=ctxt} catch(e) {_ctxt=n.g('ctxt')};
   var __s = {ctxt : typeof ctxt === 'undefined' ? n.g('ctxt') : ctxt};
   return [__s,n.elt("div",0,{"class":"msg"},0,[n.$text({e1:[9,"ctxt.msg"]},["A: ",1," "])])];
 });
-
-
 
 var tplB = require("hsp/rt").template(["ctxt"], function(n){
   var _ctxt;try {_ctxt=ctxt} catch(e) {_ctxt=n.g('ctxt')};

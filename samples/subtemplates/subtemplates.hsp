@@ -25,6 +25,7 @@
     {/if}
 </template>
 
+<script>
 var persons=[
     {firstName:"Homer",lastName:"Simpsons"},
     {firstName:"Marge",lastName:"Simpsons"},
@@ -40,3 +41,4 @@ module.exports = {
     template: personList,
     data: [persons]
 };
+</script>

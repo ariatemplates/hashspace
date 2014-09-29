@@ -20,6 +20,7 @@
     </div>
 </template>
 
+<script>
 var persons=[
     {firstName:"Homer",lastName:"Simpsons"},
     {firstName:"Marge",lastName:"Simpsons"},
@@ -59,3 +60,4 @@ module.exports = {
     template: list,
     data: [persons]
 };
+</script>

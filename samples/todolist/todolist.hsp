@@ -1,4 +1,6 @@
+<script>
 var klass=require("hsp/klass");
+</script>
 
 <template todolist(todo)>
     <div>
@@ -15,6 +17,7 @@ var klass=require("hsp/klass");
     </div>
 </template>
 
+<script>
 // todo controller
 var TodoCtl=klass({
     $constructor:function() {
@@ -41,3 +44,4 @@ module.exports = {
     template: todolist,
     data: [ctrl]
 };
+</script>

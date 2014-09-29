@@ -1,3 +1,4 @@
+<script>
 var klass=require("hsp/klass");
 
 var PanelController = klass({
@@ -6,8 +7,9 @@ var PanelController = klass({
     "body":{type:"template",defaultContent:true}
   }
 });
+</script>
 
-// sample panel template
+<!-- sample panel template -->
 <template panel using c:PanelController>
   <div class="panel">
     {if c.head}
@@ -32,6 +34,7 @@ var PanelController = klass({
   </#panel>
 </template>
 
+<script>
 var model={text:"Hello World"}, count=0;
 
 function update(incr) {
@@ -45,3 +48,4 @@ module.exports = {
     template: test,
     data: [model]
 };
+</script>

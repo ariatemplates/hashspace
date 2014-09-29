@@ -14,6 +14,7 @@
     </div>
 </template>
 
+<script>
 function toggleDetails(person) {
     person.showdetails = !person.showdetails;
 }
@@ -34,3 +35,4 @@ module.exports = {
     template: people,
     data: [d]
 };
+</script>

@@ -1,4 +1,6 @@
+<script>
 var log=require("hsp/rt/log");
+</script>
 
 <template test(cities, logs)>
   {log "top-level:",scope}
@@ -24,6 +26,7 @@ var log=require("hsp/rt/log");
   </div>
 </template>
 
+<script>
 // register new logger
 var logs=[];
 log.addLogger(function(msg) {
@@ -56,3 +59,4 @@ module.exports = {
     template: test,
     data: [cities, logs]
 };
+</script>
