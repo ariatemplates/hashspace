@@ -75,7 +75,8 @@ module.exports = function (grunt) {
                     "beforeEach" : false,
                     "after" : false,
                     "afterEach" : false,
-                    "expect" : false
+                    "expect" : false,
+                    "sinon": false
                 }
             }
         }

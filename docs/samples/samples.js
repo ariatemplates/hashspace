@@ -126,6 +126,13 @@ module.exports = [{
                         main : true
                     }]
         }, {
+            title : "Input fields: onupdate event",
+            folder : "inputonupdate",
+            files : [{
+                        src : "inputonupdate.hsp",
+                        main : true
+                    }]
+        }, {
             category:"Components",
         }, {
             title : "Basic components: sub-templates",
