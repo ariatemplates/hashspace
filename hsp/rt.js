@@ -214,6 +214,7 @@ var customAttributesRegistry = [];
  *  - $setValue(name, stringValue): called each time the attribute value changed, including when the initial value is set.
  *  - $setValueFromExp(name, expresionValues): called each time the attribute is refreshed, including when the initial value is set.
  *  - $onAttributesRefresh(): called at the end of the attributes'refresh process, i.e. once all attributes have their new value.
+ *  - $onContentRefresh(): called when the content of the node holding the custom attribute has been refreshed.
  *  - $handleEvent(event): called when an event for which the custom attribute registered for is fired.
  *  - $dispose(): used to dispose the handler instance. 
  *  It is instanciated on each element node with one of the custom attributes.
