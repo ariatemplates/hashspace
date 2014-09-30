@@ -94,6 +94,15 @@ describe('getValue', function () {
         expect(expression('obj[foo.bar("s" + "th")]').getValue({obj: {STH: 'else'}, foo: {bar: function(sth) {return sth.toUpperCase(); }}})).to.equal('else');
     });
 
+    it('should evaluate functions with correct scope', function () {
+        var foo = function () {
+            return this;
+        };
+        expect(expression('foo()').getValue({
+            foo : foo
+        })).to.be(foo());
+    });
+
     it('should allow chained function calls', function() {
         expect(expression('foo().bar()').getValue({
             foo: function () {

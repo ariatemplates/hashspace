@@ -50,7 +50,7 @@ var BINARY_OPERATORS = {
     '||': function (scope, left, right) { return left || right; },
     '&&': function (scope, left, right) { return left && right; },
     '(': function (scope, left, right) { //function call on a scope
-        return left.apply(left, right);
+        return left.apply(null, right);
     },
     'new': function (scope, constrFunc, args) { //constructor invocation
         var inst = Object.create(constrFunc.prototype);
