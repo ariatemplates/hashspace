@@ -5419,6 +5419,23 @@
                 TNode.$dispose.call(this);
             },
             /**
+     * Create a node instance referencing the current node as base class Create as well the DOM element that will be
+     * appended to the parent node DOM element
+     * @return {TNode} the new node instance
+     */
+            createNodeInstance: function(parent) {
+                var ni = TNode.createNodeInstance.call(this, parent);
+                if (ni._allCustAttrHandlers) {
+                    for (var i = 0; i < ni._allCustAttrHandlers.length; i++) {
+                        var handler = ni._allCustAttrHandlers[i].instance;
+                        if (handler.$onContentRefresh) {
+                            handler.$onContentRefresh();
+                        }
+                    }
+                }
+                return ni;
+            },
+            /**
      * Create the DOM node element
      */
             createNode: function() {
@@ -5541,11 +5558,20 @@
      * Refresh the node
      */
             refresh: function() {
+                var cdirtybackup = this.cdirty;
                 if (this.adirty) {
                     // attributes are dirty
                     this.refreshAttributes();
                 }
                 TNode.refresh.call(this);
+                if (cdirtybackup && this._allCustAttrHandlers) {
+                    for (var i = 0; i < this._allCustAttrHandlers.length; i++) {
+                        var handler = this._allCustAttrHandlers[i].instance;
+                        if (handler.$onContentRefresh) {
+                            handler.$onContentRefresh();
+                        }
+                    }
+                }
             },
             /**
      * Creates a custom attribute handler.
@@ -6075,6 +6101,7 @@
  *  - $setValue(name, stringValue): called each time the attribute value changed, including when the initial value is set.
  *  - $setValueFromExp(name, expresionValues): called each time the attribute is refreshed, including when the initial value is set.
  *  - $onAttributesRefresh(): called at the end of the attributes'refresh process, i.e. once all attributes have their new value.
+ *  - $onContentRefresh(): called when the content of the node holding the custom attribute has been refreshed.
  *  - $handleEvent(event): called when an event for which the custom attribute registered for is fired.
  *  - $dispose(): used to dispose the handler instance. 
  *  It is instanciated on each element node with one of the custom attributes.
