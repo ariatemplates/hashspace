@@ -141,6 +141,23 @@ describe('determining observable pairs', function () {
                     [scope.sort, null]
                 ]);
         });
+
+        it('should report runtime errors for pipes where function is undefined', function () {
+            var scope = {foo: ""};
+            expect(function () {
+                observable(p('foo|bar'), scope);
+            }).to.throwError(function(err){
+                expect(err.message).to.eql('bar is not defined');
+            });
+
+            var scope = {foo: ""};
+            expect(function () {
+                observable(p('foo|bar.baz'), scope);
+            }).to.throwError(function(err){
+                expect(err.message).to.eql('bar is not defined');
+            });
+
+        });
     });
 
     describe('array literals', function () {

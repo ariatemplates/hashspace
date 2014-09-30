@@ -132,6 +132,10 @@ var PrattExpr = klass({
     },
 
     getObservablePairs : function (eh, vscope) {
-        return this.bound ? exobservable(this.ast, vscope) : null;
+        try {
+            return this.bound ? exobservable(this.ast, vscope) : null;
+        } catch (e) {
+            log.warning("Error evaluating expression '" + this.exptext + "': " + e.message);
+        }
     }
 });
