@@ -137,6 +137,7 @@ Simply require the template file, and specify the <code>div</code> reference to 
     &lt;/div&gt;
   {/<span class="keyword">if</span>}
 &lt;/div&gt;</code></pre>
+<p>Note that elements attributes values must be enclosed, either in single or double quotes.</p>
 <hr>
 <h4 id="logs-log-myvar-">Logs <code>{log myvar}</code></h4>
 <p>Logs the given values.</p>
@@ -194,7 +195,8 @@ Simply require the template file, and specify the <code>div</code> reference to 
 <hr>
 <h4 id="sub-template-calls-mytemplate-attr1-hello-">Sub-template calls <code>&lt;#mytemplate attr1=&quot;hello&quot; /&gt;</code></h4>
 <p>Full syntax looks like this: <code>&lt;#subTemplateReference param1=&quot;param1Value param2=&quot;param2Value&quot;/&gt;</code> or <code>&lt;#subTemplateReference param1=&quot;param1Value param2=&quot;param2Value&quot;&gt; ... &lt;/#subTemplateReference&gt;</code>.</p>
-<p>It is intended to look like a standard HTML element in use: it is an element with a name and attributes, and that can be used with or without any child elements.</p>
+<p>It is intended to look like a standard HTML element in use: it is an element with a name and attributes, and that can be used with or without any child elements.
+Like HTML elements, attributes values must be enclosed using either single or double quotes.</p>
 <p>The above means mainly two important things:</p>
 <ul>
 <li>parameters of the template (equivalent of element attributes) are <strong>passed by name</strong>, not by position</li>
