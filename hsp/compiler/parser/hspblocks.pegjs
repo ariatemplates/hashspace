@@ -216,23 +216,34 @@ HTMLAttName
   {return first + next.join("") + (endString?endString:"");}
 
 HTMLAttribute
-  = name:HTMLAttName v:(_ "=" _ "\"" value:HTMLAttributeValue "\"" {return value;})?
+  = name:HTMLAttName v:(_ "=" _ value:HTMLAttributeQuoted {return value;})?
   {
     return {type:"attribute", name:name, value:v, line:line(), column:column()}
   }
 
-HTMLAttributeValue
-  = (HTMLAttributeText / ExpressionTextBlock)*
+HTMLAttributeQuoted
+  = '"' value:(HTMLAttributeTextDoubleQuoted / ExpressionTextBlock)* '"'
+    {return value;}
+  / "'" value:(HTMLAttributeTextSingleQuoted / ExpressionTextBlock)* "'"
+    {return value;}
 
-HTMLAttributeText
-  = chars:HTMLAttributeChar+
+HTMLAttributeTextDoubleQuoted
+  = chars:(
+      "\\{" {return "\u007B"}  // { = \u007B
+      / "\\\"" {return "\""}
+      / EOL {return "\\n"}
+      / [^{\"]
+    )+
   {return {type:"text", value:chars.join('')}}
 
-HTMLAttributeChar // TODO look at W3C specs
-  =   "\\{" {return "\u007B"}  // { = \u007B
-    / "\\\"" {return "\""}
-    / EOL {return "\\n"}
-    / [^{\"]
+HTMLAttributeTextSingleQuoted
+  = chars:(
+      "\\{" {return "\u007B"}  // { = \u007B
+      / "\\\'" {return "\'"}
+      / EOL {return "\\n"}
+      / [^{\']
+    )+
+  {return {type:"text", value:chars.join("")}}
 
 LogBlock
   = "{" _ "log " _ first:CoreExpText _ next:("," _ CoreExpText)* _"}" EOS?

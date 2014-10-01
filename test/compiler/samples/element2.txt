@@ -1,6 +1,6 @@
 ##### Template:
 <template test(person)>
-	<div title="Some text">
+	<div title='Title for {person.name}'>
 		<b>Some text in <span class="test">bold</span></b>
 		<input type="text" value="{person.name}"/>
 	</div>
@@ -14,28 +14,30 @@
     "name": "test",
     "args": ["person"],
     "content": [
-    	{type:"element", name:"div", closed:false, attributes:[
-    		{type:"attribute", name:"title", value:[{type:"text", value:"Some text"}]}
-    	]},
-    	{type:"element", name:"b", closed:false, attributes:[]},
-    	{"type": "text","value": "Some text in "},
-    	{type:"element", name:"span", closed:false, attributes:[
-    		{type:"attribute", name:"class", value:[{type:"text", value:"test"}]}
-    	]},
-    	{"type": "text","value": "bold"},
-    	{"type": "endelement",name:"span"},
-		{"type": "endelement",name:"b"},
-		{type:"element", name:"input", closed:true, attributes:[
-    		{type:"attribute", name:"type", value:[{type:"text", value:"text"}]},
-    		{type:"attribute", name:"value", value:[{type:"expression", "category": "jsexptext", "value":"person.name"}]}
-    	]},
-    	{"type": "endelement",name:"div"}
+      {type:"element", name:"div", closed:false, attributes:[
+        {"type": "attribute", "name": "title", "value": [
+          {"type": "text", "value": "Title for "},
+          {"type": "expression", "category": "jsexptext", "value": "person.name"}
+        ]}
+      ]},
+      {type:"element", name:"b", closed:false, attributes:[]},
+      {"type": "text","value": "Some text in "},
+      {type:"element", name:"span", closed:false, attributes:[
+        {type:"attribute", name:"class", value:[{type:"text", value:"test"}]}
+      ]},
+      {"type": "text","value": "bold"},
+      {"type": "endelement",name:"span"},
+    {"type": "endelement",name:"b"},
+    {type:"element", name:"input", closed:true, attributes:[
+        {type:"attribute", name:"type", value:[{type:"text", value:"text"}]},
+        {type:"attribute", name:"value", value:[{type:"expression", "category": "jsexptext", "value":"person.name"}]}
+      ]},
+      {"type": "endelement",name:"div"}
     ]
   }
 ]
 
 ##### Syntax Tree
-
 [
   {
     "type": "template",
@@ -43,45 +45,49 @@
     "args": ["person"],
     "content": [
       {type:"element", name:"div", closed:false, attributes:[
-          	{name:"title", type:"text", value:"Some text"}
+            {"name": "title", "type": "textblock", "content": [
+              {"type": "text", "value": "Title for "},
+              {"type": "expression", "category": "jsexptext", "value": "person.name"}
+            ]}
       ],"content": [
-			{type:"element", name:"b", closed:false, attributes:[],"content": [
-				{"type": "text","value": "Some text in "},
-				{type:"element", name:"span", closed:false, attributes:[
-          			{name:"class", type:"text", value:"test"}
-      			],"content": [
-      				{"type": "text","value": "bold"}
-      			]}
-			]},
-			{type:"element", name:"input", closed:true, content:[], attributes:[
-          		{name:"type", type:"text", value:"text"},
-          		{name:"value", type:"expression", "category": "jsexptext", "value":"person.name"}
-          	]}
+            {type:"element", name:"b", closed:false, attributes:[],"content": [
+                {"type": "text","value": "Some text in "},
+                {type:"element", name:"span", closed:false, attributes:[
+                    {name:"class", type:"text", value:"test"}
+                ],"content": [
+                    {"type": "text","value": "bold"}
+                ]}
+            ]},
+            {type:"element", name:"input", closed:true, content:[], attributes:[
+                {name:"type", type:"text", value:"text"},
+                {name:"value", type:"expression", "category": "jsexptext", "value":"person.name"}
+            ]}
       ]}
     ]
   }
 ]
 
+
 ##### Template Code
 test=[__s,
-	n.elt(	"div", 
-			0,
-			{"title":"Some text"},
-			0,[
-				n.elt("b",0,0,0,[
-					n.$text(0,["Some text in "]),
-					n.elt(	"span", 
-						0,
-						{"class":"test"},
-						0,[
-							n.$text(0,["bold"])
-					])
-				]),
-				n.elt("input", 
-					{e1:[9,"person.name"]},
-					{"type":"text", "value":["",1]},
-					0
-				)
-			]
-	)
+    n.elt(  "div",
+            {e1:[9,"person.name"]},
+            {"title":["Title for ",1]},
+            0,[
+                n.elt("b",0,0,0,[
+                    n.$text(0,["Some text in "]),
+                    n.elt(  "span",
+                            0,
+                            {"class":"test"},
+                            0,[
+                                n.$text(0,["bold"])
+                        ])
+                    ]),
+                    n.elt(  "input",
+                            {e1:[9,"person.name"]},
+                            {"type":"text","value":["",1]},
+                            0
+                    )
+            ]
+    )
 ]
