@@ -9,7 +9,7 @@
 ##### Errors:
 [
   {"description": "Missing quote(s) around attribute value: 5", "line": 2, "column": 14},
-  {"description": "Missing quote(s) around attribute value: 5\"", "line": 3, "column": 14},
-  {"description": "Missing quote(s) around attribute value: \"5", "line": 4, "column": 14},
+  {"description": "Missing quote(s) around attribute value: 5\\\"", "line": 3, "column": 14},
+  {"description": "Missing quote(s) around attribute value: \\\"5", "line": 4, "column": 14},
   {"description": "Missing quote(s) around attribute value: {bar}", "line": 5, "column": 14}
 ]

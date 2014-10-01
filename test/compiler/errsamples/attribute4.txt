@@ -6,8 +6,8 @@
 
 ##### Errors:
 [
-  {"description": "Invalid attribute name: \"f$oo\"", "line": 2, "column": 10},
+  {"description": "Invalid attribute name: \\\"f$oo\\\"", "line": 2, "column": 10},
   {"description": "Invalid expression: 'a.b.'", "line": 2, "column": 19},
-  {"description": "Invalid attribute value: \"foo{a.b.}A{\"", "line": 2, "column": 16},
-  {"description": "Attribute value \"bar\" has trailing chars: baz", "line": 3, "column": 15}
+  {"description": "Invalid attribute value: \\\"foo{a.b.}A{\\\"", "line": 2, "column": 16},
+  {"description": "Attribute value \\\"bar\\\" has trailing chars: baz", "line": 3, "column": 15}
 ]

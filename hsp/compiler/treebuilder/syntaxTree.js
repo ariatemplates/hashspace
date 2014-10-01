@@ -630,7 +630,7 @@ var SyntaxTree = klass({
                     var error = attribute.errors[j];
                     var msg = "Invalid attribute";
                     if (error.errorType === "name") {
-                        msg = "Invalid attribute name: \"" + error.value + "\"";
+                        msg = "Invalid attribute name: \\\"" + error.value + "\\\"";
                     }
                     else if (error.errorType === "value" || error.errorType === "tail") {
                         var valueAsString = "";
@@ -650,14 +650,14 @@ var SyntaxTree = klass({
                             }
                         }
                         if (typeof error.tail === "undefined") {
-                            msg = "Invalid attribute value: \"" + valueAsString + "\"";
+                            msg = "Invalid attribute value: \\\"" + valueAsString + "\\\"";
                         }
                         else {
-                            msg = "Attribute value \"" + valueAsString + "\" has trailing chars: " + error.tail;
+                            msg = "Attribute value \\\"" + valueAsString + "\\\" has trailing chars: " + error.tail;
                         }
                     }
                     else if (error.errorType === "invalidquotes") {
-                        msg = "Missing quote(s) around attribute value: " + error.value;
+                        msg = "Missing quote(s) around attribute value: " + error.value.replace("\"", "\\\"");
                     }
                     this._logError(msg, error);
                 }
