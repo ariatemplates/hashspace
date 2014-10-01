@@ -11,7 +11,7 @@
 
 ##### Errors:
 [
-  {"description": "Invalid attribute value: \"bar{a.b\"", "line": 7, "column": 15},
-  {"description": "Invalid attribute name: \"fo$o\"", "line": 8, "column": 11},
-  {"description": "Invalid attribute value: \"bar{a.b\"", "line": 8, "column": 17}
+  {"description": "Invalid attribute value: \\\"bar{a.b\\\"", "line": 7, "column": 15},
+  {"description": "Invalid attribute name: \\\"fo$o\\\"", "line": 8, "column": 11},
+  {"description": "Invalid attribute value: \\\"bar{a.b\\\"", "line": 8, "column": 17}
 ]

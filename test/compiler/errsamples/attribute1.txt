@@ -12,9 +12,9 @@
 
 ##### Errors:
 [
-  {"description": "Invalid attribute name: \"data:\"", "line": 7, "column": 10},
-  {"description": "Invalid attribute name: \"data:foo:bar\"", "line": 8, "column": 11},
-  {"description": "Invalid attribute name: \"$foo\"", "line": 8, "column": 28},
-  {"description": "Invalid attribute name: \"$foo%^\"", "line": 9, "column": 12},
-  {"description": "Invalid attribute name: \"?bar;\"", "line": 9, "column": 31}
+  {"description": "Invalid attribute name: \\\"data:\\\"", "line": 7, "column": 10},
+  {"description": "Invalid attribute name: \\\"data:foo:bar\\\"", "line": 8, "column": 11},
+  {"description": "Invalid attribute name: \\\"$foo\\\"", "line": 8, "column": 28},
+  {"description": "Invalid attribute name: \\\"$foo%^\\\"", "line": 9, "column": 12},
+  {"description": "Invalid attribute name: \\\"?bar;\\\"", "line": 9, "column": 31}
 ]

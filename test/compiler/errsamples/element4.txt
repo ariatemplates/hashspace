@@ -8,7 +8,7 @@
 ##### Errors:
 [
   {
-    "description": "Attribute value \"Some text class=\" has trailing chars: foo\"",
+    "description": "Attribute value \\\"Some text class=\\\" has trailing chars: foo\"",
     "line": 2,
     "column": 17,
   }
