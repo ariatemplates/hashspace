@@ -133,6 +133,8 @@ For more information on expressions and statements, please refer to their corres
 
 ```
 
+Note that elements attributes values must be enclosed, either in single or double quotes.
+
 ---
 
 #### Logs `{log myvar}`
@@ -219,6 +221,7 @@ Controllers are just a specific kind of class whose features are focused on inte
 Full syntax looks like this: `<#subTemplateReference param1="param1Value param2="param2Value"/>` or `<#subTemplateReference param1="param1Value param2="param2Value"> ... </#subTemplateReference>`.
 
 It is intended to look like a standard HTML element in use: it is an element with a name and attributes, and that can be used with or without any child elements.
+Like HTML elements, attributes values must be enclosed using either single or double quotes.
 
 The above means mainly two important things:
 

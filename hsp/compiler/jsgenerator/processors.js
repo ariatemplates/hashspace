@@ -248,7 +248,7 @@ function elementOrComponent (node, walker) {
 
             type = attribute.type;
             if (type === "text") {
-                list.push('"' + attributeName + '":"' + attribute.value + '"');
+                list.push('"' + attributeName + '":"' + attribute.value.replace(/"/g, "\\\"") + '"');
             } else if (type === "expression") {
                 var expr = formatExpression(attribute, exprIndex, walker);
                 exprIndex = expr.nextIndex;
