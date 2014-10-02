@@ -1,0 +1,172 @@
+<script>
+var klass = require("hsp/klass"),
+    hsp=require("hsp/rt"),
+    json=require("hsp/json");
+
+var logs = [];
+var wrongLogs = [];
+
+var data = {
+    shown1 : false,
+    shown2 : true,
+    arr : [{v : 1}, {v : 2}, {v : 3}]
+};
+
+
+var counter = 0;
+
+var PlaceholderCtrl = klass({
+    $init : function() {
+        this.id = counter;
+        counter++;
+    },
+    $refresh : function() {},
+
+    $onDOMInsert : function () {
+        if (document.getElementById("__hsp_ph" + this.id)){
+            logs.push(this.id);
+        } else {
+            wrongLogs.push(this.id);
+        }
+    }
+});
+
+var clear = function () {
+      logs = [];
+      wrongLogs = [];
+}
+
+</script>
+
+<template placeholder using c:PlaceholderCtrl>
+    <div id="__hsp_ph{c.id}">{c.id}</div>
+</template>
+
+
+
+<template testTemplateOne(d)>
+  <#placeholder />
+  {if d.shown1}
+    <#placeholder />
+  {/if}
+  {if d.shown2}
+    <#placeholder />
+  {/if}
+</template>
+
+<template testTemplateTwo(d)>
+  {foreach a in data.arr}
+      <#placeholder />
+  {/foreach}
+</template>
+
+
+<script>
+
+describe("Component Nodes", function () {
+    var elementOne, elementTwo;
+
+    before(function () {
+        elementOne = document.createElement("div");
+        document.body.appendChild(elementOne);
+        elementTwo = document.createElement("div");
+        document.body.appendChild(elementTwo);
+    });
+
+    after(function () {
+        document.body.removeChild(elementOne);
+        elementOne = null;
+        document.body.removeChild(elementTwo);
+        elementTwo = null;
+    });
+
+    it("$onDOMInsert is not called before rendering", function() {
+        json.set(data, "shown1", true);
+        json.set(data, "shown2", false);
+        hsp.refresh();
+        expect(logs).to.eql([]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        data.arr.splice(1, 1, {v : 10});
+        expect(wrongLogs).to.eql([]);
+        hsp.refresh();
+        expect(logs).to.eql([]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+    });
+
+    it("$onDOMInsert is called upon rendering", function() {
+        testTemplateOne(data).render(elementOne);
+        expect(logs).to.eql([0, 1]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        testTemplateTwo(data).render(elementTwo);
+        expect(logs).to.eql([2, 3, 4]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+    });
+
+    it("$onDOMInsert is called when $if node is refreshed", function() {
+        json.set(data, "shown1", false);
+        json.set(data, "shown2", true);
+        hsp.refresh();
+        json.set(data, "shown1", true);
+        hsp.refresh();
+        expect(logs).to.eql([5, 6]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        json.set(data, "shown1", false);
+        hsp.refresh();
+        expect(logs).to.eql([]);
+        expect(wrongLogs).to.eql([]);
+    });
+
+    it("$onDOMInsert is called when $foreach node is refreshed", function() {
+        data.arr.push({v : 6});
+        hsp.refresh();
+        expect(logs).to.eql([7]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        data.arr.pop();
+        hsp.refresh();
+        expect(logs).to.eql([]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        data.arr.splice(2, 0);
+        hsp.refresh();
+        expect(logs).to.eql([]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        data.arr.splice(2, 0, {v : 3}, {v : 9});
+        hsp.refresh();
+        expect(logs).to.eql([8, 9]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        data.arr = [];
+        hsp.refresh();
+        expect(logs).to.eql([]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        data.arr.splice(0, 0, {v : 3}, {v : 9});
+        hsp.refresh();
+        expect(logs).to.eql([10, 11]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+    });
+});
+
+
+
+
+
+
+</script>

@@ -21,21 +21,21 @@ var hsp=require("hsp/rt"),
     cpt=require("hsp/rt/cptwrapper"),
     ht=require("hsp/utils/hashtester");
 
-// transform a string to a number 
-var NBR_DIGITS=/^(\-|\.|\+)?\d+(\.)?(\d+)?$/; 
-function getNumber(s) { 
-    s=""+s; 
-    if (!NBR_DIGITS.test(s)) return null; 
-    return Number(s); 
+// transform a string to a number
+var NBR_DIGITS=/^(\-|\.|\+)?\d+(\.)?(\d+)?$/;
+function getNumber(s) {
+    s=""+s;
+    if (!NBR_DIGITS.test(s)) return null;
+    return Number(s);
 }
 
 var lastNewMinValue=null, isBrCbEmpty=false;
 
 var lib={};
 // sample controller
-lib.NbrField = klass({ 
+lib.NbrField = klass({
   attributes: {
-    "defaultvalue":0, 
+    "defaultvalue":0,
     "value":{type:"float",defaultValue:0,binding:"2-way"},
     "min":{type:"float",defaultValue:-Number.MAX_VALUE,binding:"1-way"},
     "max":Number.MAX_VALUE,
@@ -43,7 +43,7 @@ lib.NbrField = klass({
     "onafterreset":{type:"callback"}
   },
 
-  $init:function() { 
+  $init:function() {
     this.internalValue=this.value;  // bound to value
     this.isValid=true;              // bound to internalValue, min and max
     this.checkValidity();
@@ -53,51 +53,51 @@ lib.NbrField = klass({
     this.isValid=null;
   },
 
-  $afterRender: function() {
+  $onDOMInsert: function() {
     json.set(this,"value", this.value*2);
   },
 
-  /** 
+  /**
    * attribute change handlers
    * notify the controller that an external object (template or host) updated the value attribute
    */
   onValueChange:function(newValue,oldValue) {
     var n=getNumber(newValue);
-    json.set(this,"internalValue",n!==null? n : 0); 
-    this.checkValidity(); 
+    json.set(this,"internalValue",n!==null? n : 0);
+    this.checkValidity();
   },
 
   onMinChange:function(newValue,oldValue) {
     lastNewMinValue=newValue;
-    this.checkValidity(); 
+    this.checkValidity();
   },
 
   onMaxChange:function(newValue,oldValue) {
     var n=getNumber(newValue);
-    json.set(this,"max",n!==null? n : Number.MAX_VALUE); 
-    this.checkValidity(); 
+    json.set(this,"max",n!==null? n : Number.MAX_VALUE);
+    this.checkValidity();
   },
 
-  /** 
+  /**
    * property change handler
-   * notify the controller that the template changed an internal property 
-   */ 
-  onInternalValueChange:function(newValue,oldValue) { 
+   * notify the controller that the template changed an internal property
+   */
+  onInternalValueChange:function(newValue,oldValue) {
     // validate and expose as attribute if ok
-    json.set(this,"value",this.checkValidity()? this.internalValue : this.defaultvalue); 
-  }, 
+    json.set(this,"value",this.checkValidity()? this.internalValue : this.defaultvalue);
+  },
 
-  /** 
-   * Check if the internal value is valid and update the isValid property accordingly 
-   */ 
-  checkValidity:function() { 
-    var n=getNumber(this.internalValue); 
-    var v=(n===null)? false : (n>=this.min) && (n<=this.max); 
+  /**
+   * Check if the internal value is valid and update the isValid property accordingly
+   */
+  checkValidity:function() {
+    var n=getNumber(this.internalValue);
+    var v=(n===null)? false : (n>=this.min) && (n<=this.max);
     if (n!==null) {
       this.internalValue=n; // to have a number type
     }
-    json.set(this,"isValid",v); 
-    return v; 
+    json.set(this,"isValid",v);
+    return v;
   },
   /**
    * Reset the field value
@@ -127,7 +127,7 @@ lib.nbrfield=nbrfield;
 
 <template test(d)>
   <input type="text" value="{d.value}"/>
-  <#lib.nbrfield value="{d.value}" min="-10" max="10" onbeforereset="{notifyReset(123,event)}" 
+  <#lib.nbrfield value="{d.value}" min="-10" max="10" onbeforereset="{notifyReset(123,event)}"
   onafterreset="{notifyReset2(event.type,event)}"/>
 </template>
 
@@ -188,7 +188,7 @@ describe("Component Nodes", function () {
 
     // test internal binding conversion
     expect(c.attributes.value._binding).to.equal(2);
-    
+
     json.set(c,"internalValue",12);
     expect(c.value).to.equal(12);
     expect(c.isValid).to.equal(true);
@@ -319,7 +319,7 @@ it("tests a component inside another template", function() {
 
     expect(textInput.value).to.equal('0');
     expect(cptInput.value).to.equal('0');
-    
+
     n.$dispose();
   });
 
@@ -354,10 +354,10 @@ it("tests a component inside another template", function() {
     fireEvent("click",cptButton);
     hsp.refresh();
 
-    expect(isBrCbEmpty).to.equal(true); 
+    expect(isBrCbEmpty).to.equal(true);
   });
 
-  it("tests a component $afterRender callback", function() {
+  it("tests a component $onDOMInsert callback", function() {
     var d={value:'42'};
     var h=ht.newTestContext();
     test(d).render(h.container);
