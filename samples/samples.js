@@ -233,6 +233,19 @@ module.exports = [
     "sample": require('/samples/textarea/textarea.hsp.js')
   },
   {
+    "title": "Input fields: onupdate event",
+    "folder": "inputonupdate",
+    "files": [
+      {
+        "src": "inputonupdate.hsp",
+        "main": true,
+        "text": "<template inputOnupdate(data)>\n    <div class=\"info2\">Input field with a standard timer of 500ms:</div>\n    <div class=\"section\">\n        <input type=\"text\" model=\"{data.comment}\" onupdate=\"{data.updateHandler(event)}\"/><br/>\n        <span>Oninput result: {data.delayed}</span>\n    </div>\n    <div class=\"info2\">Input field with a longer timer of 2000ms:</div>\n    <div class=\"section\">\n        <input type=\"text\" model=\"{data.comment2}\" onupdate=\"{data.updateHandler2(event)}\" update-timeout=\"2000\"/><br/>\n        <span>Oninput result: {data.delayed2}</span>\n    </div>\n    <div class=\"info2\">Textarea with a standard timer of 500ms:</div>\n    <div class=\"section\">\n        <textarea rows=\"4\" cols=\"40\" model=\"{data.comment3}\" onupdate=\"{data.updateHandler3(event)}\"/><br/>\n        <span>Oninput result: {data.delayed3}</span>\n    </div>\n</template>\n\n<script>\nvar d={comment:\"Edit me and wait!\", delayed:\"\",\nupdateHandler: function(event) {\n    this.delayed = event.target.value;\n},\ncomment2:\"Edit me and wait more!\", delayed2:\"\",\nupdateHandler2: function(event) {\n    this.delayed2 = event.target.value;\n},\ncomment3:\"Edit me and wait!\", delayed3:\"\",\nupdateHandler3: function(event) {\n    this.delayed3 = event.target.value;\n}};\n\n// Needed by the playground application.\n// Update it, but do not remove it!\nmodule.exports = {\n    template: inputOnupdate,\n    data: [d]\n};\n</script>\n"
+      }
+    ],
+    "description": "<p>Hashspace manages a custom event handler on input and textarea elements: <strong>onupdate</strong>. It is fired after a certain duration after the content of the field has been changed, and the timer is restarted each time the content is changed.<br>By default, the timer duration is 500ms. It can be changed by defining a <strong>update-timeout</strong> attribute.</p>\n<p>The following examples show the custom event handler in action:</p>\n[#output]\n\n",
+    "sample": require('/samples/inputonupdate/inputonupdate.hsp.js')
+  },
+  {
     "category": "Components"
   },
   {

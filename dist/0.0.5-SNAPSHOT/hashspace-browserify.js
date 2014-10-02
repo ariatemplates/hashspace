@@ -1770,7 +1770,7 @@ function createShortcut (tagName, tagConstructor) {
     };
 }
 
-},{"./es5":2,"./klass":9,"./rt/$foreach":12,"./rt/$if":13,"./rt/$let":14,"./rt/$log":15,"./rt/$root":16,"./rt/$text":17,"./rt/colutils":21,"./rt/cptwrapper":25,"./rt/eltnode":27,"./rt/log":29}],12:[function(require,module,exports){
+},{"./es5":2,"./klass":9,"./rt/$foreach":12,"./rt/$if":13,"./rt/$let":14,"./rt/$log":15,"./rt/$root":16,"./rt/$text":17,"./rt/colutils":22,"./rt/cptwrapper":26,"./rt/eltnode":28,"./rt/log":30}],12:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2352,7 +2352,7 @@ var $ItemNode = klass({
 
 module.exports = $ForEachNode;
 
-},{"../json":8,"../klass":9,"./document":26,"./log":29,"./tnode":30}],13:[function(require,module,exports){
+},{"../json":8,"../klass":9,"./document":27,"./log":30,"./tnode":31}],13:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2544,7 +2544,7 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"../klass":9,"./document":26,"./tnode":30}],14:[function(require,module,exports){
+},{"../klass":9,"./document":27,"./tnode":31}],14:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -2624,7 +2624,7 @@ var LetNode = klass({
 module.exports=LetNode;
 
 
-},{"../$set":1,"../expressions/manipulator":5,"../klass":9,"./document":26,"./tnode":30}],15:[function(require,module,exports){
+},{"../$set":1,"../expressions/manipulator":5,"../klass":9,"./document":27,"./tnode":31}],15:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -2717,7 +2717,7 @@ var LogNode = klass({
 module.exports=LogNode;
 
 
-},{"../klass":9,"./document":26,"./log":29,"./tnode":30}],16:[function(require,module,exports){
+},{"../klass":9,"./document":27,"./log":30,"./tnode":31}],16:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3568,7 +3568,7 @@ exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
 
 
-},{"../json":8,"../klass":9,"../propobserver":10,"./cptattinsert":22,"./cptcomponent":23,"./cpttemplate":24,"./document":26,"./log":29,"./tnode":30}],17:[function(require,module,exports){
+},{"../json":8,"../klass":9,"../propobserver":10,"./cptattinsert":23,"./cptcomponent":24,"./cpttemplate":25,"./document":27,"./log":30,"./tnode":31}],17:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3662,7 +3662,7 @@ var $TextNode = klass({
 });
 
 module.exports = $TextNode;
-},{"../klass":9,"./document":26,"./tnode":30}],18:[function(require,module,exports){
+},{"../klass":9,"./document":27,"./tnode":31}],18:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -3826,6 +3826,79 @@ module.exports = ModelValueHandler;
  * limitations under the License.
  */
 
+var klass = require("../../klass");
+
+var OnUpdateHandler = klass({
+    ONUPDATE_TIMER : 500,
+
+    $constructor : function (nodeInstance, callback) {
+        this.callback = callback;
+        this._inputEvents = ["input", "keyup", "change"];
+        nodeInstance.addEventListeners(this._inputEvents);
+        this.timerValue = this.ONUPDATE_TIMER;
+        this.timerId = null;
+        this.nodeInstance = nodeInstance;
+    },
+
+    $setValue: function(name, value) {
+        if (name === "update-timeout") {
+            var valueAsNumber = parseInt(value);
+            if (!isNaN(valueAsNumber)) {
+                this.timerValue = valueAsNumber;
+            }
+        }
+    },
+
+    $handleEvent : function (event) {
+        if (this._inputEvents.indexOf(event.type) > -1) {
+            this._clearTimer();
+            var _this = this;
+            this.timerId = setTimeout(function () {
+                _this._onUpdateFinalize(event);
+            }, this.timerValue);
+        }
+    },
+
+    _onUpdateFinalize: function(event) {
+        var eventCopy = {};
+        for (var i in event) {
+            eventCopy[i] = event[i];
+        }
+        eventCopy.type = "update";
+        eventCopy.target = this.nodeInstance.node;
+        this.callback(eventCopy);
+    },
+
+    _clearTimer: function() {
+        if (this.timerId) {
+            clearTimeout(this.timerId);
+            this.timerId = null;
+        }
+    },
+
+    $dispose: function() {
+        this._clearTimer();
+    }
+});
+
+module.exports = OnUpdateHandler;
+
+},{"../../klass":9}],21:[function(require,module,exports){
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 /**
  * Checks if a given browser supports svg
  * Based on //http://stackoverflow.com/questions/9689310/which-svg-support-detection-method-is-best
@@ -3841,7 +3914,7 @@ function supportsSvg() {
  * Most importantly it contains feature-detection logic.
  */
 module.exports.supportsSvg = supportsSvg;
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -4034,7 +4107,7 @@ exports.setGlobal = function(global) {
     global.Sorter=Sorter;
 };
 
-},{"../$set":1,"../klass":9,"./log":29}],22:[function(require,module,exports){
+},{"../$set":1,"../klass":9,"./log":30}],23:[function(require,module,exports){
 var doc = require("./document");
 
 /**
@@ -4086,7 +4159,7 @@ module.exports.$CptAttInsert = {
   }
 };
 
-},{"./document":26}],23:[function(require,module,exports){
+},{"./document":27}],24:[function(require,module,exports){
 var json = require("../json"),
     log = require("./log"),
     doc = require("./document"),
@@ -4572,7 +4645,7 @@ exports.$CptComponent = {
   }
 };
 
-},{"../json":8,"./$text":17,"./cptwrapper":25,"./document":26,"./log":29}],24:[function(require,module,exports){
+},{"../json":8,"./$text":17,"./cptwrapper":26,"./document":27,"./log":30}],25:[function(require,module,exports){
 var json = require("../json"),
     doc = require("./document");
 
@@ -4663,7 +4736,7 @@ module.exports.$CptTemplate = {
   }
 };
 
-},{"../json":8,"./document":26}],25:[function(require,module,exports){
+},{"../json":8,"./document":27}],26:[function(require,module,exports){
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5096,7 +5169,7 @@ function createCptWrapper(Ctl, cptArgs) {
 exports.CptWrapper = CptWrapper;
 exports.createCptWrapper=createCptWrapper;
 
-},{"../json":8,"../klass":9,"./log":29}],26:[function(require,module,exports){
+},{"../json":8,"../klass":9,"./log":30}],27:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5153,7 +5226,7 @@ if (doc.createEventObject) {
     };
 }
 
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5183,6 +5256,8 @@ var ClassHandler = require('./attributes/class');
 hsp.registerCustomAttributes("class", ClassHandler);
 var ModelValueHandler = require('./attributes/modelvalue');
 hsp.registerCustomAttributes(["model", "value"], ModelValueHandler, 0, ["input", "textarea"]);
+var OnUpdateHandler = require('./attributes/onupdate');
+hsp.registerCustomAttributes(["onupdate", "update-timeout"], OnUpdateHandler, 0, ["input", "textarea"]);
 
 var booleanAttributes = {
     async: true,
@@ -5367,7 +5442,7 @@ var EltNode = klass({
                 var customHandlers = hsp.getCustomAttributeHandlers(fullEvtType, this.tag);
                 if (customHandlers && customHandlers.length > 0) {
                     for (var j = 0; j < customHandlers.length; j++) {
-                        var handlerInstance = this._createCustomAttributeHandler(fullEvtType, customHandlers[j], this.handleEvent.bind(this)).instance;
+                        var handlerInstance = this._createCustomAttributeHandler(fullEvtType, customHandlers[j]).instance;
                         if (handlerInstance.$setValue) {
                             handlerInstance.$setValue(fullEvtType, fullEvtType);
                         }
@@ -5434,10 +5509,9 @@ var EltNode = klass({
      * Creates a custom attribute handler.
      * @param {String} name the name of the custom attributes.
      * @param {Object} customHandler the handler retrieved from the global repository.
-     * @param {Function} callback the callback function passed to the handler instance.
      * @return {Object} the full handler created.
      */
-    _createCustomAttributeHandler: function (name, customHandler, callback) {
+    _createCustomAttributeHandler: function (name, customHandler) {
         var entry = null;
         if (typeof this._custAttrHandlers[name] == "undefined") {
             this._custAttrHandlers[name] = [];
@@ -5455,7 +5529,7 @@ var EltNode = klass({
         }
         //Instantiates the handler and associate it to all attributes of the group
         if (!alreadyInstantiated) {
-            entry = {klass: customHandler.handler, instance: new customHandler.handler(this, callback)};
+            entry = {klass: customHandler.handler, instance: new customHandler.handler(this, this.handleEvent.bind(this))};
             for (var l = 0; l < customHandler.names.length; l++) {
                 if (typeof this._custAttrHandlers[customHandler.names[l]] == "undefined") {
                     this._custAttrHandlers[customHandler.names[l]] = [];
@@ -5619,7 +5693,7 @@ var EltNode = klass({
 
 module.exports = EltNode;
 
-},{"../klass":9,"../rt":11,"./attributes/class":18,"./attributes/modelvalue":19,"./browser":20,"./document":26,"./log":29,"./tnode":30}],28:[function(require,module,exports){
+},{"../klass":9,"../rt":11,"./attributes/class":18,"./attributes/modelvalue":19,"./attributes/onupdate":20,"./browser":21,"./document":27,"./log":30,"./tnode":31}],29:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5758,7 +5832,7 @@ var PrattExpr = klass({
     }
 });
 
-},{"../expressions/manipulator":5,"../expressions/observable":6,"../expressions/parser":7,"../klass":9,"./log":29}],29:[function(require,module,exports){
+},{"../expressions/manipulator":5,"../expressions/observable":6,"../expressions/parser":7,"../klass":9,"./log":30}],30:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -6067,7 +6141,7 @@ function formatValue(v,depth) {
 
 module.exports = log;
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -6606,4 +6680,4 @@ module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;
 
-},{"../klass":9,"../rt":11,"./exphandler":28,"./log":29}]},{},[11])
+},{"../klass":9,"../rt":11,"./exphandler":29,"./log":30}]},{},[11])

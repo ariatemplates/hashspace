@@ -15220,9 +15220,9 @@ define(function (require, exports, module) {
 
   /**
    * Decodes the next base 64 VLQ value from the given string and returns the
-   * value and the rest of the string.
+   * value and the rest of the string via the out parameter.
    */
-  exports.decode = function base64VLQ_decode(aStr) {
+  exports.decode = function base64VLQ_decode(aStr, aOutParam) {
     var i = 0;
     var strLen = aStr.length;
     var result = 0;
@@ -15240,10 +15240,8 @@ define(function (require, exports, module) {
       shift += VLQ_BASE_SHIFT;
     } while (continuation);
 
-    return {
-      value: fromVLQSigned(result),
-      rest: aStr.slice(i)
-    };
+    aOutParam.value = fromVLQSigned(result);
+    aOutParam.rest = aStr.slice(i);
   };
 
 });
@@ -15555,6 +15553,12 @@ define(function (require, exports, module) {
     }
   });
 
+  SourceMapConsumer.prototype._nextCharIsMappingSeparator =
+    function SourceMapConsumer_nextCharIsMappingSeparator(aStr) {
+      var c = aStr.charAt(0);
+      return c === ";" || c === ",";
+    };
+
   /**
    * Parse the mappings in a string in to a data structure which we can easily
    * query (the ordered arrays in the `this.__generatedMappings` and
@@ -15568,10 +15572,9 @@ define(function (require, exports, module) {
       var previousOriginalColumn = 0;
       var previousSource = 0;
       var previousName = 0;
-      var mappingSeparator = /^[,;]/;
       var str = aStr;
+      var temp = {};
       var mapping;
-      var temp;
 
       while (str.length > 0) {
         if (str.charAt(0) === ';') {
@@ -15587,41 +15590,41 @@ define(function (require, exports, module) {
           mapping.generatedLine = generatedLine;
 
           // Generated column.
-          temp = base64VLQ.decode(str);
+          base64VLQ.decode(str, temp);
           mapping.generatedColumn = previousGeneratedColumn + temp.value;
           previousGeneratedColumn = mapping.generatedColumn;
           str = temp.rest;
 
-          if (str.length > 0 && !mappingSeparator.test(str.charAt(0))) {
+          if (str.length > 0 && !this._nextCharIsMappingSeparator(str)) {
             // Original source.
-            temp = base64VLQ.decode(str);
+            base64VLQ.decode(str, temp);
             mapping.source = this._sources.at(previousSource + temp.value);
             previousSource += temp.value;
             str = temp.rest;
-            if (str.length === 0 || mappingSeparator.test(str.charAt(0))) {
+            if (str.length === 0 || this._nextCharIsMappingSeparator(str)) {
               throw new Error('Found a source, but no line and column');
             }
 
             // Original line.
-            temp = base64VLQ.decode(str);
+            base64VLQ.decode(str, temp);
             mapping.originalLine = previousOriginalLine + temp.value;
             previousOriginalLine = mapping.originalLine;
             // Lines are stored 0-based
             mapping.originalLine += 1;
             str = temp.rest;
-            if (str.length === 0 || mappingSeparator.test(str.charAt(0))) {
+            if (str.length === 0 || this._nextCharIsMappingSeparator(str)) {
               throw new Error('Found a source and line, but no column');
             }
 
             // Original column.
-            temp = base64VLQ.decode(str);
+            base64VLQ.decode(str, temp);
             mapping.originalColumn = previousOriginalColumn + temp.value;
             previousOriginalColumn = mapping.originalColumn;
             str = temp.rest;
 
-            if (str.length > 0 && !mappingSeparator.test(str.charAt(0))) {
+            if (str.length > 0 && !this._nextCharIsMappingSeparator(str)) {
               // Original name.
-              temp = base64VLQ.decode(str);
+              base64VLQ.decode(str, temp);
               mapping.name = this._names.at(previousName + temp.value);
               previousName += temp.value;
               str = temp.rest;
@@ -16062,9 +16065,7 @@ define(function (require, exports, module) {
             }
             mapping.originalLine = original.line;
             mapping.originalColumn = original.column;
-            if (original.name != null && mapping.name != null) {
-              // Only use the identifier name if it's an identifier
-              // in both SourceMaps
+            if (original.name != null) {
               mapping.name = original.name;
             }
           }

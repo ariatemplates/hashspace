@@ -5312,7 +5312,72 @@
         });
         module.exports = ModelValueHandler;
     });
-    define("hsp/rt/eltnode.js", [ "../klass", "./browser", "./document", "./tnode", "../rt", "./log", "./attributes/class", "./attributes/modelvalue" ], function(module, global) {
+    define("hsp/rt/attributes/onupdate.js", [ "../../klass" ], function(module, global) {
+        var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
+        /*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+        var klass = require("../../klass");
+        var OnUpdateHandler = klass({
+            ONUPDATE_TIMER: 500,
+            $constructor: function(nodeInstance, callback) {
+                this.callback = callback;
+                this._inputEvents = [ "input", "keyup", "change" ];
+                nodeInstance.addEventListeners(this._inputEvents);
+                this.timerValue = this.ONUPDATE_TIMER;
+                this.timerId = null;
+                this.nodeInstance = nodeInstance;
+            },
+            $setValue: function(name, value) {
+                if (name === "update-timeout") {
+                    var valueAsNumber = parseInt(value);
+                    if (!isNaN(valueAsNumber)) {
+                        this.timerValue = valueAsNumber;
+                    }
+                }
+            },
+            $handleEvent: function(event) {
+                if (this._inputEvents.indexOf(event.type) > -1) {
+                    this._clearTimer();
+                    var _this = this;
+                    this.timerId = setTimeout(function() {
+                        _this._onUpdateFinalize(event);
+                    }, this.timerValue);
+                }
+            },
+            _onUpdateFinalize: function(event) {
+                var eventCopy = {};
+                for (var i in event) {
+                    eventCopy[i] = event[i];
+                }
+                eventCopy.type = "update";
+                eventCopy.target = this.nodeInstance.node;
+                this.callback(eventCopy);
+            },
+            _clearTimer: function() {
+                if (this.timerId) {
+                    clearTimeout(this.timerId);
+                    this.timerId = null;
+                }
+            },
+            $dispose: function() {
+                this._clearTimer();
+            }
+        });
+        module.exports = OnUpdateHandler;
+    });
+    define("hsp/rt/eltnode.js", [ "../klass", "./browser", "./document", "./tnode", "../rt", "./log", "./attributes/class", "./attributes/modelvalue", "./attributes/onupdate" ], function(module, global) {
         var require = module.require, exports = module.exports, __filename = module.filename, __dirname = module.dirname;
         /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5340,6 +5405,8 @@
         hsp.registerCustomAttributes("class", ClassHandler);
         var ModelValueHandler = require("./attributes/modelvalue");
         hsp.registerCustomAttributes([ "model", "value" ], ModelValueHandler, 0, [ "input", "textarea" ]);
+        var OnUpdateHandler = require("./attributes/onupdate");
+        hsp.registerCustomAttributes([ "onupdate", "update-timeout" ], OnUpdateHandler, 0, [ "input", "textarea" ]);
         var booleanAttributes = {
             async: true,
             autofocus: true,
@@ -5514,7 +5581,7 @@
                         var customHandlers = hsp.getCustomAttributeHandlers(fullEvtType, this.tag);
                         if (customHandlers && customHandlers.length > 0) {
                             for (var j = 0; j < customHandlers.length; j++) {
-                                var handlerInstance = this._createCustomAttributeHandler(fullEvtType, customHandlers[j], this.handleEvent.bind(this)).instance;
+                                var handlerInstance = this._createCustomAttributeHandler(fullEvtType, customHandlers[j]).instance;
                                 if (handlerInstance.$setValue) {
                                     handlerInstance.$setValue(fullEvtType, fullEvtType);
                                 }
@@ -5577,10 +5644,9 @@
      * Creates a custom attribute handler.
      * @param {String} name the name of the custom attributes.
      * @param {Object} customHandler the handler retrieved from the global repository.
-     * @param {Function} callback the callback function passed to the handler instance.
      * @return {Object} the full handler created.
      */
-            _createCustomAttributeHandler: function(name, customHandler, callback) {
+            _createCustomAttributeHandler: function(name, customHandler) {
                 var entry = null;
                 if (typeof this._custAttrHandlers[name] == "undefined") {
                     this._custAttrHandlers[name] = [];
@@ -5600,7 +5666,7 @@
                 if (!alreadyInstantiated) {
                     entry = {
                         klass: customHandler.handler,
-                        instance: new customHandler.handler(this, callback)
+                        instance: new customHandler.handler(this, this.handleEvent.bind(this))
                     };
                     for (var l = 0; l < customHandler.names.length; l++) {
                         if (typeof this._custAttrHandlers[customHandler.names[l]] == "undefined") {
