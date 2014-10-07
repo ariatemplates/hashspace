@@ -1,0 +1,425 @@
+<script>
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var hsp=require("hsp/rt"),
+    fireEvent=require("hsp/utils/eventgenerator").fireEvent,
+    json=require("hsp/json"),
+    ht=require("hsp/utils/hashtester");
+</script>
+
+<template selectSample(data)>
+    <div id="container">
+        <div class="info section">All the following inputs are synchronized:</div>
+        <div class="section">
+            <div>
+                Select #1:
+                <select name="select1" value="{data.value}">
+                    {foreach item in data.options}
+                    <option value="{item.value}" disabled="{item.disabled}">{item.label}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div>
+                Select #2:
+                <select name="select2" model="{data.value}">
+                    {foreach item in data.options}
+                    <option value="{item.value}">{item.label}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div>
+                Select #3:
+                <select name="select3" value="{data.value3}" model="{data.model3}">
+                    {foreach item in data.options}
+                    <option value="{item.value}">{item.label}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div>
+                Select #4:
+                <select name="select4" model="{data.model4}" value="{data.value4}">
+                    {foreach item in data.options}
+                    <option value="{item.value}">{item.label}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div>
+                Select #5:
+                <select name="select5" model="{data.value5}">
+                    {foreach item in data.options5}
+                    <option>{item.label}</option>
+                    {/foreach}
+                </select>
+            </div>
+            <div>
+                Select #6:
+                <select name="select6" model="{data.value6}">
+                    <option value="one">One</option>
+                    <option value="two" selected>Two</option>
+                    <option value="three">Three</option>
+                    <option value="four">Four</option>
+                </select>
+            </div>
+            <div>
+                <!-- be sure that a not bound select works -->
+                Select #7:
+                <select name="select7">
+                    <option value="one">One</option>
+                    <option value="two" selected>Two</option>
+                    <option value="three">Three</option>
+                    <option value="four">Four</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<script>
+describe("Select elements", function () {
+    var data = {
+        value: "two",
+        value3: "one",
+        model3: "two",
+        value4: "one",
+        model4: "two",
+        value5: "Two",
+        value6: "",
+        options : [
+            {
+                value: "one",
+                label: "One"
+            },
+            {
+                value: "two",
+                label: "Two"
+            },
+            {
+                value: "three",
+                label: "Three"
+            },
+            {
+                value: "four",
+                label: "Four"
+            }
+        ],
+        options5 : [
+               {
+                   label: "One"
+               },
+               {
+                   label: "Two"
+               },
+               {
+                   label: "Three"
+               },
+               {
+                   label: "Four"
+               }
+           ]
+    };
+    var sampleNode = selectSample(data).node;
+    var container = sampleNode.childNodes[0];
+    var selects = container.getElementsByTagName("select");
+    var select1 = selects[0];
+    var select2 = selects[1];
+    var select3 = selects[2];
+    var select4 = selects[3];
+    var select5 = selects[4];
+    var select6 = selects[5];
+    var select7 = selects[6];
+
+    var resetValue = function (value, resetOptions, cb) {
+        if (resetOptions) {
+            data.options = [
+                {
+                    value: "one",
+                    label: "One"
+                },
+                {
+                    value: "two",
+                    label: "Two"
+                },
+                {
+                    value: "three",
+                    label: "Three"
+                },
+                {
+                    value: "four",
+                    label: "Four"
+               }
+            ];
+            hsp.refresh();
+        }
+        data.value = value;
+        hsp.refresh();
+    };
+
+
+    it("should manage initial values", function () {
+            expect(data.value).to.equal("two");
+            expect(select1.value).to.equal("two");
+            expect(select2.value).to.equal("two");
+
+            expect(data.model3).to.equal("two");
+            expect(data.value3).to.equal("one"); // Not bound as model exist
+
+            expect(data.model4).to.equal("two");
+            expect(data.value4).to.equal("one"); // Not bound as model exist
+
+            expect(data.value5).to.equal("Two");
+            expect(select5.value).to.equal("Two");
+
+            expect(data.value6).to.equal("two");
+            expect(select6.value).to.equal("two");
+
+            expect(select7.value).to.equal("two");
+
+    });
+
+    it("should be synchronised when model changes", function () {
+
+	        json.set(data, "value", "three");
+	        hsp.refresh();
+
+	        expect(select1.value).to.equal("three");
+	        expect(select2.value).to.equal("three");
+    });
+
+    it("should be synchronised when select value changes", function () {
+
+        // Simulate user change
+        select1.value = "four";
+        fireEvent("change", select1);
+        hsp.refresh();
+
+        expect(select1.value).to.equal("four");
+        expect(select2.value).to.equal("four");
+        expect(data.value).to.equal("four");
+
+        // Check the same thing if the model attribute is changed
+        select2.value = "one";
+        fireEvent("change", select2);
+        hsp.refresh();
+
+        expect(select1.value).to.equal("one");
+        expect(select2.value).to.equal("one");
+        expect(data.value).to.equal("one");
+
+    });
+
+    it("should manage concurrent value and model in attributes", function () {
+        // Initial values, model should be considered first
+        expect(select3.value).to.equal("two");
+        expect(data.model3).to.equal("two");
+        expect(data.value3).to.equal("one"); // Is not changed, as model is the bound one
+
+        expect(select4.value).to.equal("two");
+        expect(data.model4).to.equal("two");
+        expect(data.value4).to.equal("one"); // Is not changed, as model is the bound one
+
+        // Test the model change
+        json.set(data, "model3", "three");
+        json.set(data, "model4", "three");
+        hsp.refresh();
+
+        expect(select3.value).to.equal("three");
+        expect(data.model3).to.equal("three");
+        expect(data.value3).to.equal("one"); // Is not changed, as model is the bound one
+
+        expect(select4.value).to.equal("three");
+        expect(data.model4).to.equal("three");
+        expect(data.value4).to.equal("one"); // Is not changed, as model is the bound one
+
+        // Test the value change (should have no impact, as model is the bound value)
+        json.set(data, "value3", "four");
+        json.set(data, "value4", "four");
+        hsp.refresh();
+
+        expect(select3.value).to.equal("three");
+        expect(data.model3).to.equal("three"); // Is not changed, as model is the bound one
+        expect(data.value3).to.equal("four");
+
+        expect(select4.value).to.equal("three");
+        expect(data.model4).to.equal("three"); // Is not changed, as model is the bound one
+        expect(data.value4).to.equal("four");
+
+
+    });
+
+    it("should manage invalid values", function () {
+
+        resetValue("two", true);
+
+        // Set a wrong value in the datamodel
+        json.set(data, "value", "five");
+        hsp.refresh();
+
+		expect(data.value).to.equal("two");
+		expect(select1.value).to.equal("two");
+		expect(select2.value).to.equal("two");
+
+    });
+
+    it("should manage options changes with valid value in select", function () {
+
+        resetValue("two", true);
+
+        // Test with options containing 'two'
+        json.set(data, "options", [
+        {
+            value: "one bis",
+            label: "One bis"
+        },
+        {
+            value: "two",
+            label: "Two"
+        },
+        {
+            value: "three bis",
+            label: "Three bis"
+        },
+        {
+            value: "four bis",
+            label: "four bis"
+        }
+        ]);
+        hsp.refresh();
+
+		expect(data.value).to.equal("two");
+		expect(select1.value).to.equal("two");
+		expect(select2.value).to.equal("two");
+
+    });
+
+    it("should manage options changes with invalid value in select", function () {
+
+        resetValue("two", true);
+
+        // Test with options containing 'two'
+        json.set(data, "options", [
+        {
+            value: "one bis",
+            label: "One bis"
+        },
+        {
+            value: "two bis",
+            label: "Two bis"
+        },
+        {
+            value: "three bis",
+            label: "Three bis"
+        },
+        {
+            value: "four bis",
+            label: "four bis"
+        }
+        ]);
+        select1.debug = true;
+
+        hsp.refresh();
+
+        expect(data.value).to.equal("one bis");
+        expect(select1.value).to.equal("one bis");
+        expect(select2.value).to.equal("one bis");
+
+    });
+
+    it("should manage option removal", function () {
+
+        resetValue("two", true);
+
+        // Removing the "one"
+        data.options.splice(2, 1);
+        data.options.splice(0, 1);
+        hsp.refresh();
+
+        expect(data.value).to.equal("two");
+        expect(select1.value).to.equal("two");
+        expect(select2.value).to.equal("two");
+    });
+
+    it("should manage selected option removal", function () {
+
+        resetValue("two", true);
+
+        // Removing the "two" value
+        data.options.splice(1, 1);
+        hsp.refresh();
+
+        expect(data.value).to.equal("one");
+        expect(select1.value).to.equal("one");
+        expect(select2.value).to.equal("one");
+    });
+
+    it("should manage options without value", function () {
+
+        json.set(data, "value5", "Three");
+        hsp.refresh();
+
+        expect(data.value5).to.equal("Three");
+        expect(select5.value).to.equal("Three");
+
+        // Simulate user change
+        //select5.value = "Four" => can't be used this time as this doesn't work on IE if options have no values,
+        select5.selectedIndex = 3;
+        fireEvent("change", select5);
+        hsp.refresh();
+
+        expect(select5.value).to.equal("Four");
+        expect(data.value5).to.equal("Four");
+
+    });
+
+    it("should work when not bound", function () {
+        // Simulate user change
+        select7.value = "three";
+        fireEvent("change", select7);
+        hsp.refresh();
+
+        expect(select7.value).to.equal("three");
+    });
+
+    it("should manage disabled options", function () {
+
+        resetValue("two", true);
+
+        data.options[0].disabled = true;
+        hsp.refresh();
+
+        // An disabled value can be set by the data model
+        // For instance, two selects can be have the same list of options with different "disabled" strategy
+        // so the select custom handler can't decide by itself what to do
+        json.set(data, "value", "one");
+        hsp.refresh();
+
+        expect(data.value).to.equal("one");
+        expect(select1.value).to.equal("one");
+        expect(select2.value).to.equal("one");
+
+        // Set the selected value to disabled
+        data.options[0].disabled = true;
+
+        hsp.refresh();
+
+        expect(data.value).to.equal("one");
+        expect(select1.value).to.equal("one");
+        expect(select2.value).to.equal("one");
+
+    });
+
+});
+</script>

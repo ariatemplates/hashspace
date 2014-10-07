@@ -148,6 +148,7 @@ describe("Input Elements", function () {
         var v3 = "bar2";
         input1.node.value = v3;
         fireEvent("keyup",input1.node); // to simulate change
+        hsp.refresh();
         expect(input1.node.value).to.equal(v3);
         expect(input2.node.value).to.equal(v3);
         expect(d.comment).to.equal(v3);
@@ -156,6 +157,7 @@ describe("Input Elements", function () {
         var v4 = "blah";
         input2.node.value = v4;
         fireEvent("keyup",input2.node); // to simulate change
+        hsp.refresh();
         expect(input1.node.value).to.equal(v4);
         expect(input2.node.value).to.equal(v4);
         expect(d.comment).to.equal(v4);
@@ -187,6 +189,7 @@ describe("Input Elements", function () {
 
         // change from cb1 (value reference)
         fireEvent("click",cb1.node);
+        hsp.refresh();
         if (cb1.node.checked) {
             // on firefox calling click doesn't trigger the onclick event!?
             expect(cb1.node.checked).to.equal(true);
@@ -196,6 +199,7 @@ describe("Input Elements", function () {
 
         // change from cb2 (model reference)
         fireEvent("click",cb2.node);
+        hsp.refresh();
         expect(cb1.node.checked).to.equal(false);
         expect(cb2.node.checked).to.equal(false);
         expect(d.isChecked).to.equal(false);
@@ -259,7 +263,7 @@ describe("Textarea Elements", function () {
 
         // change value from the DOM
         h("textarea").type("AAA\nBBB\nCCC");
-        expect(normalizeCR(model.text)).to.equal("AAA\nBBB\nCCC"); 
+        expect(normalizeCR(model.text)).to.equal("AAA\nBBB\nCCC");
 
         // change value from the model
         h.$set(model,"text","Hello\nWorld!");

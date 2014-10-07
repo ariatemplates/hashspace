@@ -27,6 +27,8 @@ var ClassHandler = require('./attributes/class');
 hsp.registerCustomAttributes("class", ClassHandler);
 var ModelValueHandler = require('./attributes/modelvalue');
 hsp.registerCustomAttributes(["model", "value"], ModelValueHandler, 0, ["input", "textarea"]);
+var SelectHandler = require('./attributes/select');
+hsp.registerCustomAttributes(["model", "value"], SelectHandler, 0, ["select"]);
 var OnUpdateHandler = require('./attributes/onupdate');
 hsp.registerCustomAttributes(["onupdate", "update-timeout"], OnUpdateHandler, 0, ["input", "textarea"]);
 
@@ -251,7 +253,11 @@ var EltNode = klass({
             }
         }
         if (result === false) {
-            event.preventDefault();
+            if (event.preventDefault) {
+                event.preventDefault();
+            } else {
+                event.returnValue = false;
+            }
         }
         return result;
     },
@@ -385,6 +391,23 @@ var EltNode = klass({
     /** API methods for custom attributes **/
 
     /**
+     * Get the attribute value in the data model.
+     * @param {String} name the name of the attribute
+     * @return {String} the value of the attribute.
+     */
+    getAttributeValueInModel: function (name) {
+        if (this._custAttrData[name]) {
+            var exprIndex = this._custAttrData[name].exprIndex;
+            if (this.eh && typeof exprIndex !== "undefined") {
+                var expression = this.eh.getExpr(exprIndex);
+                if (expression.getValue) {
+                    return expression.getValue(this.vscope, this.eh);
+                }
+            }
+        }
+        return null;
+    },
+    /**
      * Sets the attribute value in the data model.
      * @param {String} name the name of the attribute
      * @param {String} value the value of the attribute.
@@ -399,8 +422,6 @@ var EltNode = klass({
                     var currentValue = expression.getValue(this.vscope, this.eh);
                     if (value !== currentValue) {
                         expression.setValue(this.vscope, value);
-                        // force refresh to resync other fields linked to the same data immediately
-                        hsp.refresh();
                         return true;
                     }
                 }
@@ -436,10 +457,9 @@ var EltNode = klass({
     getAncestorByCustomAttribute: function(name) {
         var parent = this.parent;
         while (parent) {
-            if (parent._custAttrHandlers[name]) {
+            if (parent._custAttrHandlers && parent._custAttrHandlers[name]) {
                 break;
-            }
-            else {
+            } else {
                 parent = parent.parent;
             }
         }
@@ -454,8 +474,10 @@ var EltNode = klass({
     getCustomAttributeHandlers: function(name) {
         var result = [];
         var handlers = this._custAttrHandlers[name];
-        for (var i = 0; i < handlers.length; i++) {
-            result.push(handlers[i].instance);
+        if (handlers) {
+            for (var i = 0; i < handlers.length; i++) {
+                result.push(handlers[i].instance);
+            }
         }
         return result;
     }

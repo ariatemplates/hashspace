@@ -29,7 +29,7 @@ var OnUpdateHandler = klass({
 
     $setValue: function(name, value) {
         if (name === "update-timeout") {
-            var valueAsNumber = parseInt(value);
+            var valueAsNumber = parseInt(value, 10);
             if (!isNaN(valueAsNumber)) {
                 this.timerValue = valueAsNumber;
             }

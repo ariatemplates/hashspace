@@ -1,3 +1,4 @@
+var hsp=require("hsp/rt");
 var sample = require('./inputonupdate.hsp');
 var fireEvent = require("hsp/utils/eventgenerator").fireEvent;
 
@@ -21,6 +22,7 @@ describe('"Input onupdate" sample', function () {
         expect(span.innerHTML).to.equal("Oninput result: ");
         input.value = "a";
         fireEvent("keyup", input);
+        hsp.refresh();
 
         clock.tick(300);
         expect(span.innerHTML).to.equal("Oninput result: ");
@@ -39,6 +41,7 @@ describe('"Input onupdate" sample', function () {
         expect(span.innerHTML).to.equal("Oninput result: ");
         input.value = "a";
         fireEvent("keyup", input);
+        hsp.refresh();
 
         clock.tick(1500);
         expect(span.innerHTML).to.equal("Oninput result: ");
@@ -57,6 +60,7 @@ describe('"Input onupdate" sample', function () {
         expect(span.innerHTML).to.equal("Oninput result: ");
         textarea.value = "a";
         fireEvent("keyup", textarea);
+        hsp.refresh();
 
         clock.tick(300);
         expect(span.innerHTML).to.equal("Oninput result: ");
