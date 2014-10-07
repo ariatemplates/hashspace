@@ -1610,6 +1610,13 @@
  * limitations under the License.
  */
         var evaluator = require("./evaluator");
+        var evaluatorNotNull = function(tree, scope) {
+            var result = evaluator(tree, scope);
+            if (result == null) {
+                throw new Error(tree.v + " is not defined");
+            }
+            return result;
+        };
         /**
  * Get all the observable pairs for a given expression. Observable pairs
  * are usually input to model-change-observing utilities (ex. Object.observe).
@@ -1684,17 +1691,14 @@
                 partialResult = getObservablePairs(tree.l, scope);
                 if (tree.v === "(") {
                     // function call on an object
-                    partialResult = partialResult.concat([ [ evaluator(tree.l, scope), null ] ]);
+                    partialResult = partialResult.concat([ [ evaluatorNotNull(tree.l, scope), null ] ]);
                 } else if (tree.v === "|") {
                     // pipe operator is similar to function calls
                     partialResult = partialResult.concat(getObservablePairs(tree.r, scope));
-                    if (tree.r.v === ".") {
-                        // pipe is a function defined on an object
-                        partialResult = partialResult.concat([ [ evaluator(tree.r.l, scope), null ] ]);
-                    } else {
-                        // pipe is a function defined on a scope
-                        partialResult = partialResult.concat([ [ evaluator(tree.r, scope), null ] ]);
-                    }
+                    var obj = tree.r.v === "." ? tree.r.l : // pipe is a function defined on an object
+                    tree.r;
+                    // pipe is a function defined on a scope
+                    partialResult = partialResult.concat([ [ evaluatorNotNull(obj, scope), null ] ]);
                 } else {
                     partialResult = partialResult.concat(getObservablePairs(tree.r, scope));
                 }
@@ -1887,7 +1891,11 @@
                 return this.getValue(cbScope, eh);
             },
             getObservablePairs: function(eh, vscope) {
-                return this.bound ? exobservable(this.ast, vscope) : null;
+                try {
+                    return this.bound ? exobservable(this.ast, vscope) : null;
+                } catch (e) {
+                    log.warning("Error evaluating expression '" + this.exptext + "': " + e.message);
+                }
             }
         });
     });
