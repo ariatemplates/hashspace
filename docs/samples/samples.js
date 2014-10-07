@@ -119,6 +119,13 @@ module.exports = [{
                         main : true
                     }]
         }, {
+            title : "Select fields and options elements with bi-directional bindings",
+            folder : "selectsample",
+            files : [{
+                        src : "selectsample.hsp",
+                        main : true
+                    }]
+        }, {
             title : "Multi-line inputs: textarea elements",
             folder : "textarea",
             files : [{

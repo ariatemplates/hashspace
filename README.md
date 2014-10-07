@@ -66,6 +66,8 @@ To work on the playground the most simple option is to open 2 terminal windows:
 - one running `grunt docs:playground` to build the playground and launch the webserver
 - another one running `grunt docs:watch` to watch the file changes and copy the changed files to the hashspace-gh-pages folder that is referenced by the webserver launched in the first terminal
 
+Then you can use `http://localhost:8000?dev=true` in your favorite browser to get the development version of hashspace
+
 [key_features_blog]: http://ariatemplates.com/blog/2012/11/key-features-for-client-side-templates/
 [todomvc]: http://addyosmani.github.com/todomvc/
 [angular]:http://angularjs.org/

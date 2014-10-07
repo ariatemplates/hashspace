@@ -213,13 +213,13 @@ var TNode = klass({
             this.adirty = false; // adirty should not be set to false anywhere else unless updateObjectObservers is not required
         }
         if (this.cdirty) {
+            this.cdirty = false;
             var cn = this.childNodes;
             if (cn) {
                 for (var i = 0, sz = cn.length; sz > i; i++) {
                     cn[i].refresh();
                 }
             }
-            this.cdirty = false;
         }
     },
 
@@ -358,7 +358,7 @@ var TNode = klass({
                 } else if (nd===n1) {
                     process=true;
                 }
-                
+
             }
         }
         return null;
