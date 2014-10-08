@@ -1,0 +1,14 @@
+<p>Hashspace listens to the change event of the select elements in order to synchronize its value with the data referenced through the value or model expression.
+The options can also be bound, and changing the options list can impact the select value.</p>
+<p>For example, in the following select, we can add or remove the fourth option.</p>
+<ul>
+<li>If we try to set the data model value to &#39;four&#39; when the option doesn&#39;t exist, the select value and the data model will remain unchanged,</li>
+<li>If we remove the option &#39;four&#39; when this one is selected, the value will be set automatically to the first one.</li>
+</ul>
+[#output]
+<p><strong>Note:</strong></p>
+<ul>
+<li>An invalid value (not existing in its options) can&#39;t be set in the data model.</li>
+<li>The options list can be change completely. In this case, a valid select value will be kept, otherwise, the first one will be selected.</li>
+</ul>
+

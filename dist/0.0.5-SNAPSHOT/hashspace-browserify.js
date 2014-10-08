@@ -1779,7 +1779,7 @@ function createShortcut (tagName, tagConstructor) {
     };
 }
 
-},{"./es5":2,"./klass":9,"./rt/$foreach":12,"./rt/$if":13,"./rt/$let":14,"./rt/$log":15,"./rt/$root":16,"./rt/$text":17,"./rt/colutils":22,"./rt/cptwrapper":26,"./rt/eltnode":28,"./rt/log":30}],12:[function(require,module,exports){
+},{"./es5":2,"./klass":9,"./rt/$foreach":12,"./rt/$if":13,"./rt/$let":14,"./rt/$log":15,"./rt/$root":16,"./rt/$text":17,"./rt/colutils":23,"./rt/cptwrapper":27,"./rt/eltnode":29,"./rt/log":31}],12:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2361,7 +2361,7 @@ var $ItemNode = klass({
 
 module.exports = $ForEachNode;
 
-},{"../json":8,"../klass":9,"./document":27,"./log":30,"./tnode":31}],13:[function(require,module,exports){
+},{"../json":8,"../klass":9,"./document":28,"./log":31,"./tnode":32}],13:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -2553,7 +2553,7 @@ var $IfNode = klass({
 });
 
 module.exports = $IfNode;
-},{"../klass":9,"./document":27,"./tnode":31}],14:[function(require,module,exports){
+},{"../klass":9,"./document":28,"./tnode":32}],14:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -2633,7 +2633,7 @@ var LetNode = klass({
 module.exports=LetNode;
 
 
-},{"../$set":1,"../expressions/manipulator":5,"../klass":9,"./document":27,"./tnode":31}],15:[function(require,module,exports){
+},{"../$set":1,"../expressions/manipulator":5,"../klass":9,"./document":28,"./tnode":32}],15:[function(require,module,exports){
 
 /*
  * Copyright 2014 Amadeus s.a.s.
@@ -2726,7 +2726,7 @@ var LogNode = klass({
 module.exports=LogNode;
 
 
-},{"../klass":9,"./document":27,"./log":30,"./tnode":31}],16:[function(require,module,exports){
+},{"../klass":9,"./document":28,"./log":31,"./tnode":32}],16:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3577,7 +3577,7 @@ exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
 
 
-},{"../json":8,"../klass":9,"../propobserver":10,"./cptattinsert":23,"./cptcomponent":24,"./cpttemplate":25,"./document":27,"./log":30,"./tnode":31}],17:[function(require,module,exports){
+},{"../json":8,"../klass":9,"../propobserver":10,"./cptattinsert":24,"./cptcomponent":25,"./cpttemplate":26,"./document":28,"./log":31,"./tnode":32}],17:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -3671,7 +3671,7 @@ var $TextNode = klass({
 });
 
 module.exports = $TextNode;
-},{"../klass":9,"./document":27,"./tnode":31}],18:[function(require,module,exports){
+},{"../klass":9,"./document":28,"./tnode":32}],18:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -3851,7 +3851,7 @@ var OnUpdateHandler = klass({
 
     $setValue: function(name, value) {
         if (name === "update-timeout") {
-            var valueAsNumber = parseInt(value);
+            var valueAsNumber = parseInt(value, 10);
             if (!isNaN(valueAsNumber)) {
                 this.timerValue = valueAsNumber;
             }
@@ -3909,6 +3909,126 @@ module.exports = OnUpdateHandler;
  */
 
 /**
+ * Get the option value depending on its attributes or inner text
+ */
+var _getOptionValue = function(optionNode) {
+    var value = optionNode.getAttribute("value");
+    if (value == null) {
+        value = optionNode.getAttribute("label");
+        if (value == null) {
+            value = optionNode.innerText || optionNode.textContent;
+        }
+        optionNode.setAttribute("value", value); // To avoid issues on IE
+    }
+
+    return value;
+};
+
+/**
+ * Get the selected value of a select
+ */
+var _getSelectedValue = function(selectNode) {
+    var options = selectNode.getElementsByTagName("option");
+    var selectedIndex = selectNode.selectedIndex;
+    return selectedIndex > 0 ? _getOptionValue(options[selectedIndex]) : selectNode.value;
+};
+
+var klass = require("../../klass");
+
+var SelectHandler = klass({
+    $constructor : function (nodeInstance) {
+        this.nodeInstance = nodeInstance;
+        this.node = nodeInstance.node;
+        this._lastValues = {};
+        this._selectEvents = ["change"];
+        nodeInstance.addEventListeners(this._selectEvents);
+    },
+
+    $setValue: function (name, value) {
+        // Model changes, the value is stored in order to prioritize 'model' on 'value'
+        if (name == "model" || name == "value") {
+            this._lastValues[name] = value;
+        }
+    },
+
+    $onAttributesRefresh: function() {
+        var lastValues = this._lastValues;
+        var _boundName = this._boundName = lastValues["model"] == null ? "value" : "model";
+        var lastValue = lastValues[_boundName];
+        if (this._refreshDone && lastValue != _getSelectedValue(this.node)) {
+            this._synchronize();
+        }
+    },
+
+    $onContentRefresh: function() {
+        this._synchronize();
+        this._refreshDone = true;
+    },
+
+    $handleEvent : function (evt) {
+        // Change event, the model value must be handle
+        if (this._selectEvents.indexOf(evt.type) > -1) {
+            var value = _getSelectedValue(this.node);
+            var nodeInstance = this.nodeInstance;
+            var isSet = nodeInstance.setAttributeValueInModel("model", value);
+            if (!isSet) {
+                nodeInstance.setAttributeValueInModel("value", value);
+            }
+        }
+    },
+
+
+    /**
+     * Synchronize the select value with the model,
+     * the model value is set to the select first,
+     * if it fails, the model value will be updated with the select value
+     */
+    _synchronize : function() {
+        var _boundName = this._boundName;
+        var _boundValue = this.nodeInstance.getAttributeValueInModel(_boundName);
+        var node = this.node;
+
+        // First, try to change the select value with the data model one
+        if (_getSelectedValue(node) != _boundValue) {
+            var selectedIndex = -1;
+            var options = node.getElementsByTagName("option");
+            for(var i = 0; i < options.length; i++) {
+                var option = options[i];
+                if (_getOptionValue(option) == _boundValue) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+
+            if (selectedIndex != -1) {
+                node.selectedIndex = selectedIndex;
+            } else {
+                // Value not available in the options list, so the model needs to be synchronized
+                this.nodeInstance.setAttributeValueInModel(_boundName, _getSelectedValue(node));
+            }
+        }
+    }
+
+});
+
+module.exports = SelectHandler;
+},{"../../klass":9}],22:[function(require,module,exports){
+/*
+ * Copyright 2014 Amadeus s.a.s.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * Checks if a given browser supports svg
  * Based on //http://stackoverflow.com/questions/9689310/which-svg-support-detection-method-is-best
  * @returns {boolean}
@@ -3923,7 +4043,7 @@ function supportsSvg() {
  * Most importantly it contains feature-detection logic.
  */
 module.exports.supportsSvg = supportsSvg;
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -4116,7 +4236,7 @@ exports.setGlobal = function(global) {
     global.Sorter=Sorter;
 };
 
-},{"../$set":1,"../klass":9,"./log":30}],23:[function(require,module,exports){
+},{"../$set":1,"../klass":9,"./log":31}],24:[function(require,module,exports){
 var doc = require("./document");
 
 /**
@@ -4168,7 +4288,7 @@ module.exports.$CptAttInsert = {
   }
 };
 
-},{"./document":27}],24:[function(require,module,exports){
+},{"./document":28}],25:[function(require,module,exports){
 var json = require("../json"),
     log = require("./log"),
     doc = require("./document"),
@@ -4654,7 +4774,7 @@ exports.$CptComponent = {
   }
 };
 
-},{"../json":8,"./$text":17,"./cptwrapper":26,"./document":27,"./log":30}],25:[function(require,module,exports){
+},{"../json":8,"./$text":17,"./cptwrapper":27,"./document":28,"./log":31}],26:[function(require,module,exports){
 var json = require("../json"),
     doc = require("./document");
 
@@ -4745,7 +4865,7 @@ module.exports.$CptTemplate = {
   }
 };
 
-},{"../json":8,"./document":27}],26:[function(require,module,exports){
+},{"../json":8,"./document":28}],27:[function(require,module,exports){
 /*
  * Copyright 2013 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5178,7 +5298,7 @@ function createCptWrapper(Ctl, cptArgs) {
 exports.CptWrapper = CptWrapper;
 exports.createCptWrapper=createCptWrapper;
 
-},{"../json":8,"../klass":9,"./log":30}],27:[function(require,module,exports){
+},{"../json":8,"../klass":9,"./log":31}],28:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5235,7 +5355,7 @@ if (doc.createEventObject) {
     };
 }
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -5265,6 +5385,8 @@ var ClassHandler = require('./attributes/class');
 hsp.registerCustomAttributes("class", ClassHandler);
 var ModelValueHandler = require('./attributes/modelvalue');
 hsp.registerCustomAttributes(["model", "value"], ModelValueHandler, 0, ["input", "textarea"]);
+var SelectHandler = require('./attributes/select');
+hsp.registerCustomAttributes(["model", "value"], SelectHandler, 0, ["select"]);
 var OnUpdateHandler = require('./attributes/onupdate');
 hsp.registerCustomAttributes(["onupdate", "update-timeout"], OnUpdateHandler, 0, ["input", "textarea"]);
 
@@ -5489,7 +5611,11 @@ var EltNode = klass({
             }
         }
         if (result === false) {
-            event.preventDefault();
+            if (event.preventDefault) {
+                event.preventDefault();
+            } else {
+                event.returnValue = false;
+            }
         }
         return result;
     },
@@ -5623,6 +5749,23 @@ var EltNode = klass({
     /** API methods for custom attributes **/
 
     /**
+     * Get the attribute value in the data model.
+     * @param {String} name the name of the attribute
+     * @return {String} the value of the attribute.
+     */
+    getAttributeValueInModel: function (name) {
+        if (this._custAttrData[name]) {
+            var exprIndex = this._custAttrData[name].exprIndex;
+            if (this.eh && typeof exprIndex !== "undefined") {
+                var expression = this.eh.getExpr(exprIndex);
+                if (expression.getValue) {
+                    return expression.getValue(this.vscope, this.eh);
+                }
+            }
+        }
+        return null;
+    },
+    /**
      * Sets the attribute value in the data model.
      * @param {String} name the name of the attribute
      * @param {String} value the value of the attribute.
@@ -5637,8 +5780,6 @@ var EltNode = klass({
                     var currentValue = expression.getValue(this.vscope, this.eh);
                     if (value !== currentValue) {
                         expression.setValue(this.vscope, value);
-                        // force refresh to resync other fields linked to the same data immediately
-                        hsp.refresh();
                         return true;
                     }
                 }
@@ -5674,10 +5815,9 @@ var EltNode = klass({
     getAncestorByCustomAttribute: function(name) {
         var parent = this.parent;
         while (parent) {
-            if (parent._custAttrHandlers[name]) {
+            if (parent._custAttrHandlers && parent._custAttrHandlers[name]) {
                 break;
-            }
-            else {
+            } else {
                 parent = parent.parent;
             }
         }
@@ -5692,8 +5832,10 @@ var EltNode = klass({
     getCustomAttributeHandlers: function(name) {
         var result = [];
         var handlers = this._custAttrHandlers[name];
-        for (var i = 0; i < handlers.length; i++) {
-            result.push(handlers[i].instance);
+        if (handlers) {
+            for (var i = 0; i < handlers.length; i++) {
+                result.push(handlers[i].instance);
+            }
         }
         return result;
     }
@@ -5702,7 +5844,7 @@ var EltNode = klass({
 
 module.exports = EltNode;
 
-},{"../klass":9,"../rt":11,"./attributes/class":18,"./attributes/modelvalue":19,"./attributes/onupdate":20,"./browser":21,"./document":27,"./log":30,"./tnode":31}],29:[function(require,module,exports){
+},{"../klass":9,"../rt":11,"./attributes/class":18,"./attributes/modelvalue":19,"./attributes/onupdate":20,"./attributes/select":21,"./browser":22,"./document":28,"./log":31,"./tnode":32}],30:[function(require,module,exports){
 /*
  * Copyright 2012 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -5845,7 +5987,7 @@ var PrattExpr = klass({
     }
 });
 
-},{"../expressions/manipulator":5,"../expressions/observable":6,"../expressions/parser":7,"../klass":9,"./log":30}],30:[function(require,module,exports){
+},{"../expressions/manipulator":5,"../expressions/observable":6,"../expressions/parser":7,"../klass":9,"./log":31}],31:[function(require,module,exports){
 /*
  * Copyright 2014 Amadeus s.a.s.
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -6154,7 +6296,7 @@ function formatValue(v,depth) {
 
 module.exports = log;
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 
 /*
  * Copyright 2012 Amadeus s.a.s.
@@ -6370,13 +6512,13 @@ var TNode = klass({
             this.adirty = false; // adirty should not be set to false anywhere else unless updateObjectObservers is not required
         }
         if (this.cdirty) {
+            this.cdirty = false;
             var cn = this.childNodes;
             if (cn) {
                 for (var i = 0, sz = cn.length; sz > i; i++) {
                     cn[i].refresh();
                 }
             }
-            this.cdirty = false;
         }
     },
 
@@ -6515,7 +6657,7 @@ var TNode = klass({
                 } else if (nd===n1) {
                     process=true;
                 }
-                
+
             }
         }
         return null;
@@ -6693,4 +6835,4 @@ module.exports.TNode = TNode;
 module.exports.TSimpleAtt = TSimpleAtt;
 module.exports.TExpAtt = TExpAtt;
 
-},{"../klass":9,"../rt":11,"./exphandler":29,"./log":30}]},{},[11])
+},{"../klass":9,"../rt":11,"./exphandler":30,"./log":31}]},{},[11])

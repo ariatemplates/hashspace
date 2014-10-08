@@ -220,6 +220,19 @@ module.exports = [
     "sample": require('/samples/inputsample/inputsample.hsp.js')
   },
   {
+    "title": "Select fields and options elements with bi-directional bindings",
+    "folder": "selectsample",
+    "files": [
+      {
+        "src": "selectsample.hsp",
+        "main": true,
+        "text": "<template selectSample(data)>\n    <div class=\"info2\">The following select and its options are synchronized:</div>\n    <div class=\"section\">\n        Select with bound value:\n        <select model=\"{data.selectedValue}\" style=\"width:100px\">\n            {foreach item in data.options}\n            <option value=\"{item.value}\">{item.label}</option>\n            {/foreach}\n        </select>\n    </div>\n    <div class=\"section\">\n        The selected value is <span class=\"info\">{data.selectedValue}</span>,\n        the selected text is <span class=\"info\">{getSelectedText(data.selectedValue)}</span>\n    </div>\n    <div class=\"info2\">You can add or remove options, and select one by changing the data model value:</div>\n    <div class=\"section\">\n        <button onclick=\"{addOption('four', 'Four')}\">Add option 'four'</button>\n        <button onclick=\"{selectOption('four')}\">Select option 'four'</button>\n        <button onclick=\"{removeOption('four')}\">Remove option 'four'</button>\n    </div>\n</template>\n\n<script>\nvar d={\n    selectedValue:\"two\",\n    options : [\n        {\n            value: \"one\",\n            label: \"One\"\n        },\n        {\n            value: \"two\",\n            label: \"Two\"\n        },\n        {\n            value: \"three\",\n            label: \"Three\"\n        }\n    ]\n};\n\n// Needed by the playground application.\n// Update it, but do not remove it!\nmodule.exports = {\n    template: selectSample,\n    data: [d]\n};\n\nvar getSelectedText = function(value) {\n    var options = d.options;\n    for(var i = 0; i < options.length; i++) {\n        var option = options[i];\n        if (option.value == value) {\n            return option.label;\n        }\n    }\n    return \"no selection\";\n}\nvar addOption = function(value, label) {\n    var options = d.options;\n    for(var i = 0; i < options.length; i++) {\n        var option = options[i];\n        if (option.value == value) {\n            return;\n        }\n    }\n    options.push({value: value, label: label});\n};\n\nvar selectOption = function(value) {\n    d.selectedValue = value;\n};\n\nvar removeOption = function(value) {\n    var options = d.options;\n    for(var i = 0; i < options.length; i++) {\n        var option = options[i];\n        if (option.value == value) {\n            options.splice(i, 1);\n            return;\n        }\n    }\n};\n</script>"
+      }
+    ],
+    "description": "<p>Hashspace listens to the change event of the select elements in order to synchronize its value with the data referenced through the value or model expression.\nThe options can also be bound, and changing the options list can impact the select value.</p>\n<p>For example, in the following select, we can add or remove the fourth option.</p>\n<ul>\n<li>If we try to set the data model value to &#39;four&#39; when the option doesn&#39;t exist, the select value and the data model will remain unchanged,</li>\n<li>If we remove the option &#39;four&#39; when this one is selected, the value will be set automatically to the first one.</li>\n</ul>\n[#output]\n<p><strong>Note:</strong></p>\n<ul>\n<li>An invalid value (not existing in its options) can&#39;t be set in the data model.</li>\n<li>The options list can be change completely. In this case, a valid select value will be kept, otherwise, the first one will be selected.</li>\n</ul>\n\n",
+    "sample": require('/samples/selectsample/selectsample.hsp.js')
+  },
+  {
     "title": "Multi-line inputs: textarea elements",
     "folder": "textarea",
     "files": [

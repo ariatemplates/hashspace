@@ -1,0 +1,84 @@
+<template selectSample(data)>
+    <div class="info2">The following select and its options are synchronized:</div>
+    <div class="section">
+        Select with bound value:
+        <select model="{data.selectedValue}" style="width:100px">
+            {foreach item in data.options}
+            <option value="{item.value}">{item.label}</option>
+            {/foreach}
+        </select>
+    </div>
+    <div class="section">
+        The selected value is <span class="info">{data.selectedValue}</span>,
+        the selected text is <span class="info">{getSelectedText(data.selectedValue)}</span>
+    </div>
+    <div class="info2">You can add or remove options, and select one by changing the data model value:</div>
+    <div class="section">
+        <button onclick="{addOption('four', 'Four')}">Add option 'four'</button>
+        <button onclick="{selectOption('four')}">Select option 'four'</button>
+        <button onclick="{removeOption('four')}">Remove option 'four'</button>
+    </div>
+</template>
+
+<script>
+var d={
+    selectedValue:"two",
+    options : [
+        {
+            value: "one",
+            label: "One"
+        },
+        {
+            value: "two",
+            label: "Two"
+        },
+        {
+            value: "three",
+            label: "Three"
+        }
+    ]
+};
+
+// Needed by the playground application.
+// Update it, but do not remove it!
+module.exports = {
+    template: selectSample,
+    data: [d]
+};
+
+var getSelectedText = function(value) {
+    var options = d.options;
+    for(var i = 0; i < options.length; i++) {
+        var option = options[i];
+        if (option.value == value) {
+            return option.label;
+        }
+    }
+    return "no selection";
+}
+var addOption = function(value, label) {
+    var options = d.options;
+    for(var i = 0; i < options.length; i++) {
+        var option = options[i];
+        if (option.value == value) {
+            return;
+        }
+    }
+    options.push({value: value, label: label});
+};
+
+var selectOption = function(value) {
+    d.selectedValue = value;
+};
+
+var removeOption = function(value) {
+    var options = d.options;
+    for(var i = 0; i < options.length; i++) {
+        var option = options[i];
+        if (option.value == value) {
+            options.splice(i, 1);
+            return;
+        }
+    }
+};
+</script>
