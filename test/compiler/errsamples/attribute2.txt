@@ -1,5 +1,5 @@
 ##### Template:
-<template test()>
+<template id="test">
     <div foo=""></div>
     <div foo="0"></div>
     <div foo="abc"></div>

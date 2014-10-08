@@ -1,5 +1,5 @@
 ##### Template:
-<template test(scope)>
+<template id="test" args="scope">
     Hello World!
 </template>
 

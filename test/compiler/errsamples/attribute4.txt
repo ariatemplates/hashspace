@@ -1,5 +1,5 @@
 ##### Template:
-<template test()>
+<template id="test">
     <div f$oo="foo{a.b.}A{"></div>
     <div foo="bar"baz></div>
 </template>

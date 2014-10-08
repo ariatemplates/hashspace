@@ -18,13 +18,13 @@ var ht=require("hsp/utils/hashtester"),
     fireEvent=require("hsp/utils/eventgenerator").fireEvent;
 </script>
 
-<template test1(person,ctl)>
+<template id="test1" args="person,ctl">
     <div title="test1" onclick="{ctl.handleClick()}">
         Hello {person.name}!
     </div>
 </template>
 
-<template test2(label,names,ctl)>
+<template id="test2" args="label,names,ctl">
     {foreach key,name in names}
         <span onclick="{ctl.handleClick(name,key,'literal arg',$event)}">
             {:label} {key}: {:name}
@@ -32,13 +32,13 @@ var ht=require("hsp/utils/hashtester"),
     {/foreach}
 </template>
 
-<template test3(person)>
+<template id="test3" args="person">
     <div title="test3" onclick="{doClick('blah',$event)}">
         Hello {person.name}!
     </div>
 </template>
 
-<template test4()>
+<template id="test4">
     <img onclick="this.cbatt=123;return false;"/>
 </template>
 

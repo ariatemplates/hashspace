@@ -29,7 +29,7 @@ PanelController = klass({
 // sample panel template
 </script>
 
-<template panel using c:PanelController>
+<template id="panel" ctrl="PanelController as c">
   <div class="panel">
     {if c.head}
       <div class="head">
@@ -45,7 +45,7 @@ PanelController = klass({
   </div>
 </template>
 
-<template test1(m)>
+<template id="test1" args="m">
   Sample panel:
   <#panel>
     <@body>
@@ -54,39 +54,39 @@ PanelController = klass({
   </#panel>
 </template>
 
-<template test2()>
+<template id="test2">
   Sample panel:
   <#panel body="Hello World!"/>
 </template>
 
-<template test3(m)>
+<template id="test3" args="m">
   Sample panel:
   <#panel body="{m.text}!"/>
 </template>
 
-<template test4(m)>
+<template id="test4" args="m">
   Sample panel:
   <#panel>{m.text}!</#panel>
 </template>
 
-<template test5(m)>
+<template id="test5" args="m">
   Sample panel:
   <#m.panel><@body>{m.text}!</@body></#m.panel>
 </template>
 
-<template test6(m)>
+<template id="test6" args="m">
   Sample panel:
   <#m.panel>{m.text}!!!</#m.panel>
 </template>
 
-<template test7(m)>
+<template id="test7" args="m">
   Sample panel:
   <#m.panel>
   {if true}{m.text}!{/if} <hr/> {m.text} <a>Update model</a>
   </#m.panel>
 </template>
 
-<template test8(m)>
+<template id="test8" args="m">
   Sample panel:
   <#m.panel>
     {if true}{m.text}!{/if}
@@ -94,7 +94,7 @@ PanelController = klass({
   </#m.panel>
 </template>
 
-<template panel2 using c:PanelController>
+<template id="panel2" ctrl="PanelController as c">
   <div class="panel">
     <div class="body">
       Body content: <#c.body/>
@@ -110,11 +110,11 @@ var TestCtl=klass({
 })
 </script>
 
-<template item using c:TestCtl>
+<template id="item" ctrl="TestCtl as c">
     Value: {c.value}
 </template>
 
-<template test7(m)>
+<template id="test7" args="m">
   <div class="content">
     <#item value="{m.prop.value}"/>
   </div>

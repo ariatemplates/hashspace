@@ -1,4 +1,4 @@
-<template inputSample(data)>
+<template id="inputSample" args="data">
     <div class="info2">All the following inputs are synchronized:</div>
     <div class="section">
         Comment #1: <input type="text" value="{data.comment}"/><br/>

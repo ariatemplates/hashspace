@@ -1,5 +1,5 @@
 ##### Template:
-<template hello(name)>
+<template id="hello" args="name">
 	Hello {name}!
 </template>
 
@@ -8,7 +8,7 @@
   {
     "type": "template",
     "name": "hello",
-    "mod": "",
+    "modifier": null,
     "args": [
       "name"
     ],

@@ -88,12 +88,15 @@ var SyntaxTree = klass({
             description : description
         };
         if (errdesc) {
-            if (errdesc.line) {
+            if (errdesc.line) { // Integers
                 desc.line = errdesc.line;
                 desc.column = errdesc.column;
             }
-            if (errdesc.code) {
+            if (errdesc.code) { // String
                 desc.code = errdesc.code;
+            }
+            if (errdesc.suberrors) { // Array of String
+                desc.suberrors = errdesc.suberrors;
             }
         }
         this.errors.push(desc);
@@ -230,15 +233,12 @@ var SyntaxTree = klass({
                 }
             }
         }
-        node.isExport = block.mod === "export";
+        node.isExport = (block.modifier !== null && block.modifier.type === "export");
+        node.isExportModule = (block.modifier !== null && block.modifier.type === "export-module");
         node.startLine = block.line;
         node.endLine = block.endLine;
         node.content = [];
         out.push(node);
-
-        if (block.mod !== '' && block.mod !== "export") {
-            this._logError("Invalid template template modifier: " + block.mod, blocks[index]);
-        }
 
         if (!block.closed) {
             this._logError("Missing end template statement", block);

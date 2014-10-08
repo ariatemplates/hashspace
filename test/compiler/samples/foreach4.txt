@@ -1,5 +1,5 @@
 ##### Template:
-<template test>
+<template id="test">
   {foreach itm in items}
     {itm}
   {/foreach}

@@ -1,5 +1,5 @@
 ##### Template:
-<template test(things)>
+<template id="test" args="things">
   Foreach test:
   {thing} - {/foreach}
 </template>

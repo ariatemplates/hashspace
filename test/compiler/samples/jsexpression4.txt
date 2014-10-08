@@ -1,5 +1,5 @@
 ##### Template:
-<template test(value)>
+<template id="test" args="value">
   {(value=="a")+2}
 </template>
 

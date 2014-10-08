@@ -4,7 +4,7 @@ var x="text1";
 function func() {var x="text2"};
 </script>
 
-<template hello1>
+<template id="hello1">
    Hello World!
 </template>
 
@@ -13,7 +13,7 @@ function func() {var x="text2"};
 function func2(z) {return z;}
 </script>
 
-<template hello1bis (arg1, arg2)>
+<template id="hello1bis" args="arg1, arg2">
 	Hello
 	Again!
 </template>

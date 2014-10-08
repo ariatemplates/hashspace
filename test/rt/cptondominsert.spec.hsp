@@ -45,13 +45,13 @@ var clear = function () {
 
 </script>
 
-<template placeholder using c:PlaceholderCtrl>
+<template id="placeholder" ctrl="PlaceholderCtrl as c">
     <div id="__hsp_ph{c.id}">{c.id}</div>
 </template>
 
 
 
-<template testTemplateOne(d)>
+<template id="testTemplateOne" args="d">
   <#placeholder />
   {if d.shown1}
     <#placeholder />
@@ -61,7 +61,7 @@ var clear = function () {
   {/if}
 </template>
 
-<template testTemplateTwo(d)>
+<template id="testTemplateTwo" args="d">
   {foreach a in d.arr}
       <#placeholder />
   {/foreach}

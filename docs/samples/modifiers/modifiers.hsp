@@ -39,7 +39,7 @@ var Sorter=klass({
 })
 </script>
 
-<template sample(d)>
+<template id="sample" args="d">
     <div class="section2">
         Message in capital letters:
         <span class="textvalue">{d.msg|changeCase:"upper"}</span><br/>

@@ -28,11 +28,11 @@ var TestCtrl=klass({
 });
 </script>
 
-<template cpt using c:TestCtrl>
+<template id="cpt" ctrl="TestCtrl as c">
     <div class="cpt">{c.value}</div>
 </template>
 
-<template test1(d)>
+<template id="test1" args="d">
       {if d.show}
           <div class="foo">
               <#cpt value="{d.getValue()}" oninit="{d.update()}"/>
@@ -40,7 +40,7 @@ var TestCtrl=klass({
       {/if}
 </template>
 
-<template test2(items)>
+<template id="test2" args="items">
       {foreach itm in items}
           <div class="foo">
               <#cpt value="{itm.getValue()}" oninit="{itm.update()}"/>
@@ -48,17 +48,17 @@ var TestCtrl=klass({
       {/foreach}
 </template>
 
-<template tpA>
+<template id="tpA">
   AA
 </template>
 
-<template tpB(data)>
+<template id="tpB" args="data">
   <div class="foo">
       <#cpt value="{data.getValue()}" oninit="{data.update()}"/>
   </div>
 </template>
 
-<template test3(ctxt,d)>
+<template id="test3" args="ctxt,d">
     <#ctxt.tpl data="{d}"/>
 </template>
 

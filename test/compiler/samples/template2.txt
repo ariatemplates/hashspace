@@ -1,6 +1,6 @@
 ##### Template:
 
-<export template hello4()>
+<template export id="hello4">
    Hello World!
 </template>
 
@@ -8,7 +8,7 @@
 
 [ 
   { type: 'plaintext', value: '\n'},
-  { type: 'template', name: 'hello4', mod:'export', args: [], content: [
+  { type: 'template', name: 'hello4', modifier: {type:'export', exportName: null}, args: [], content: [
     { type: 'text', value: 'Hello World!' } 
   ]}
 ]

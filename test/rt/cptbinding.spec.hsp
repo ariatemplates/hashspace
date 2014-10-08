@@ -32,11 +32,11 @@ var Cpt1 = klass({
 });
 </script>
 
-<template cpt1 using c:Cpt1>
+<template id="cpt1" ctrl="Cpt1 as c">
   <input type="text" value="{c.value}"/>
 </template>
 
-<template test(d)>
+<template id="test" args="d">
   <#cpt1 value="{d.value}" max="{d.max}" defaultvalue="{d.defaultvalue}"/>
   <input type="text" value="{d.value}"/>
   <input type="text" value="{d.max}"/>
@@ -64,15 +64,15 @@ var Cpt2 = klass({
 });
 </script>
 
-<template cpt2 using c:Cpt2>
+<template id="cpt2" ctrl="Cpt2 as c">
   <input type="text" value="{c.value}"/>
 </template>
 
-<template test2(d)>
+<template id="test2" args="d">
   <#cpt2 value="{d.value}" initvalue="10"/>
 </template>
 
-<template test3(d)>
+<template id="test3" args="d">
   <#cpt2 value="{d.value}" data="{d.data}"/>
 </template>
 

@@ -1,4 +1,4 @@
-<template selectSample(data)>
+<template id="selectSample" args="data">
     <div class="info2">The following select and its options are synchronized:</div>
     <div class="section">
         Select with bound value:

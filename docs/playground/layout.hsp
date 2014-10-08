@@ -31,7 +31,7 @@ var DescriptionCtrl = Class({
 });
 </script>
 
-<template desc using ctrl:DescriptionCtrl>
+<template id="desc" ctrl="DescriptionCtrl as ctrl">
     <div id="description">
         {if ctrl.sample}
             <div class="before"></div>
@@ -45,7 +45,7 @@ var DescriptionCtrl = Class({
 </template>
 
 
-<export template mainLayout(data, playground)>
+<template export id="mainLayout" args="data, playground">
     <#sampleList data="{data}" playground="{playground}"/>
 
     <div class="hsp-sample {{'hsp-sample-full': data.navCollapsed}}" onclick="{hideNavHover($event, data)}">
@@ -105,7 +105,7 @@ function hideNavHover(event, data) {
 }
 </script>
 
-<template sampleList(data, playground)>
+<template id="sampleList" args="data, playground">
     <div class="samples-list {{'samples-list-collapsed': data.navCollapsed}}"
         onclick="{hideNavHover($event, data)}">
 
@@ -133,7 +133,7 @@ function hideNavHover(event, data) {
     </div>
 </template>
 
-<export template errorList(errors)>
+<template export id="errorList" args="errors">
     {if errors && errors.length}
         <div class="errorlist">
             <ul>

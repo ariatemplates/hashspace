@@ -1,5 +1,5 @@
 ##### Template:
-<template test>
+<template id="test">
    {if true} Boolean {/if}
    {if 123.4} Number {/if}
    {if ('ok')} String1 {/if}

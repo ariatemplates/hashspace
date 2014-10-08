@@ -21,7 +21,7 @@ var hsp=require("hsp/rt"),
     klass=require("hsp/klass");
 </script>
 
-<template test1(label,names)>
+<template id="test1" args="label,names">
     {foreach (name in names)}
         <span class="name">
             {label} {name_key}: {name} ({:name.length} chars)
@@ -32,7 +32,7 @@ var hsp=require("hsp/rt"),
     {/foreach}
 </template>
 
-<template test2(ds)>
+<template id="test2" args="ds">
     {foreach idx,person in ds.persons}
         Person #{idx}: {person.firstName} {person.lastName}
         {if (person_isfirst)}
@@ -44,13 +44,13 @@ var hsp=require("hsp/rt"),
     {/foreach}
 </template>
 
-<template test3(things) >
+<template id="test3" args="things" >
     {foreach (oneThing in things)}
         {oneThing}
     {/foreach}
 </template>
 
-<template test4(things)>
+<template id="test4" args="things">
     {foreach oneThing in things}
         {if oneThing_isfirst}
             First
@@ -66,13 +66,13 @@ var hsp=require("hsp/rt"),
     {/foreach}
 </template>
 
-<template test5(persons) >
+<template id="test5" args="persons" >
     {foreach person in persons}
         {person.name}
     {/foreach}
 </template>
 
-<template test6(itemsList)>
+<template id="test6" args="itemsList">
     {foreach item in itemsList}
         {if item.edit}
             <input type="text" value="{item.value}">
@@ -89,7 +89,7 @@ var items=[
 ];
 </script>
 
-<template test7>
+<template id="test7">
     {foreach item in items}
         <div class="itm">
             {item.value}
@@ -130,7 +130,7 @@ var Sorter=klass({
 });
 </script>
 
-<template test8(d)>
+<template id="test8" args="d">
     <div class="section2">
         {let fnSorter=new Sorter("firstName")}
         <ol>
@@ -146,7 +146,7 @@ var Sorter=klass({
     </div>
 </template>
 
-<template test9(d,ppName)>
+<template id="test9" args="d,ppName">
     <div class="section2">
         {let fnSorter=new Sorter("firstName")}
         <ol>
@@ -162,7 +162,7 @@ var Sorter=klass({
     </div>
 </template>
 
-<template test10(d)>
+<template id="test10" args="d">
     <div class="section2">
         {let nameSort=new Sorter("firstName")}
         <ol>

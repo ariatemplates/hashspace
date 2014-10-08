@@ -1,6 +1,6 @@
 ##### Template:
 <!-- this is a comment -->
-<template hello1>
+<template id="hello1">
    Hello World!
 </template>
 
@@ -17,7 +17,7 @@ function func2(z) {return z;}
 <!--
   -- this comment has some dashes and even <!-- in the content --
   -->
-<template hello2>
+<template id="hello2">
    Hello Again!
 </template>
 ##### Parsed Tree:

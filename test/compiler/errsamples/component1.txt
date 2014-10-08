@@ -1,5 +1,5 @@
 ##### Template:
-<template test(person)>
+<template id="test" args="person">
     <#lib.panel title="Some text">
         foo bar
     </#lib.pan>

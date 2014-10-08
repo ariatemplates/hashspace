@@ -1,5 +1,5 @@
 ##### Template:
-<template test(label, passengers)>
+<template id="test" args="label, passengers">
   {foreach k,name in passengers.names}
     {if name_isfirst}
       \<\<

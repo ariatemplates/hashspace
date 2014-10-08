@@ -19,17 +19,17 @@ var hsp=require("hsp/rt"),
     json=require("hsp/json");
 </script>
 
-<template content(label, value)>
+<template id="content" args="label, value">
     {:label}: {value}
 </template>
 
-<template test1(person)>
+<template id="test1" args="person">
     Before
     <#content label="First Name" value="{person.firstName}"/>
     After
 </template>
 
-<template nameDetails(person)>
+<template id="nameDetails" args="person">
     <#content value="{person.lastName}" label="Last Name"/>
     {if (person.firstName)}
         , 
@@ -37,11 +37,11 @@ var hsp=require("hsp/rt"),
     {/if}
 </template>
 
-<template test2(p)>
+<template id="test2" args="p">
     <#nameDetails person="{p}"/>
 </template>
 
-<template test3(person, label)>
+<template id="test3" args="person, label">
     // inserted template also has a label argument
     {label}
     <#content label="{person.firstName}" value="{:person.lastName}"/>
@@ -53,34 +53,34 @@ function concat(a,b) {
 }
 </script>
 
-<template test4(person)>
+<template id="test4" args="person">
     {concat(person.firstName, person.lastName)}
 </template>
 
-<template field(label,value)>
+<template id="field" args="label,value">
     {label}
     <input type="text" value="{value}"/>
 </template>
 
-<template test5(d)>
+<template id="test5" args="d">
     <#field label="Enter some text" value="{d.text}"/>
 </template>
 
-<template field2(attributes)>
+<template id="field2" args="attributes">
     Enter some text: 
     <input type="text" value="{attributes.value}"/>
 </template>
 
-<template test6(d)>
+<template id="test6" args="d">
     <#field2 attributes="{d.attributes}"/>
 </template>
 
-<template field3(attributes)>
+<template id="field3" args="attributes">
     Enter some text: 
     <input type="text" value="{attributes.myvalue.value}"/>
 </template>
 
-<template test7(d)>
+<template id="test7" args="d">
     <#field3 attributes="{{myvalue: d}}"/>
 </template>
 

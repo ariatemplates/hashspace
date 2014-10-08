@@ -47,7 +47,7 @@ var ListCtrl = klass({
 });
 </script>
 
-<template list using lc:ListCtrl>
+<template id="list" ctrl="ListCtrl as lc">
     {if !lc.$content} 
         <span class="nodata">Empty list</span>
     {else}
@@ -61,21 +61,21 @@ var ListCtrl = klass({
     {/if}
 </template>
 
-<template test1()>
+<template id="test1">
     <#list>
         <@option value="A" label="First"/>
         <@option value="B">Second</@option>
     </#list>
 </template>
 
-<template test2(d)>
+<template id="test2" args="d">
     <#list>
         <@option value="A{d.suffix}" label="First {d.txt}"/>
         <@option value="B{d.suffix}">Second {d.txt}</@option>
     </#list>
 </template>
 
-<template test3(d)>
+<template id="test3" args="d">
     <#list>
         {foreach idx,itm in d.items}
             <@option value="{idx}">{idx+1}. {itm}</@option>
@@ -83,7 +83,7 @@ var ListCtrl = klass({
     </#list>
 </template>
 
-<template tabA(tab)>
+<template id="tabA" args="tab">
   {tab.title}
 </template>
 
@@ -103,7 +103,7 @@ var TabCtrl = klass({
 });
 </script>
 
-<template tabs using c:TabCtrl>
+<template id="tabs" ctrl="TabCtrl as c">
   <ul class="nav nav-tabs">
   {foreach index,tab in c.tabs}
     <li><a href="#">

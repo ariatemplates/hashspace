@@ -1,5 +1,5 @@
 ##### Template:
-<template test(foo,_bar)
+<template id="test" args="foo,_bar"
     blah
 </template>
 
@@ -9,6 +9,10 @@
     "description": "Invalid template declaration",
     "line": 1,
     "column": 1,
-    "code": "<template test (foo,_bar)"
+    "code": '<template id="test" args="foo,_bar" blah',
+    "suberrors" : [
+      "missing closing brace for <template",
+      "invalid template attribute: blah"
+    ]
   }
 ]

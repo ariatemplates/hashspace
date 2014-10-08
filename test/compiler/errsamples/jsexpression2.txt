@@ -1,5 +1,5 @@
 ##### Template:
-<template test(x,y)>
+<template id="test" args="x,y">
     {if !(x++ && y--)}
         Hello
     {/if}

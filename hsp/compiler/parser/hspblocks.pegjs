@@ -13,7 +13,7 @@ TemplateFile
    return blocks;
   }
 
-TopLevelWhitespace
+TopLevelWhitespace "whitespace"
   = lines:(chars:WhiteSpace* eol:EOL {return chars.join("") + eol})+
     {return {type:"plaintext", value:lines.join('')}}
 
@@ -26,14 +26,14 @@ TopLevelCommentBlock "HTML comment"
   }
 
 ScriptBlock "script block"
-  = (_ "<script>" eol1:EOL? content:TextBlock "</script>" _ eol2:(EOL / EOF))
+  = (_ "<script>" eol1:EOL? content:ScriptContentBlock "</script>" _ eol2:(EOL / EOF))
   {
     content.value = (eol1 || "") + content.value + (eol2 || "");
     return content;
   }
 
-TextBlock
-  = lines:(!(_ ("<") ("template" / "/script")) !(_ ("<") _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+
+ScriptContentBlock
+  = lines:(!(_ "</script") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+
   {return {type:"plaintext", value:lines.join('')}}
 
 TemplateBlock "template block"
@@ -45,43 +45,181 @@ TemplateBlock "template block"
   }
 
 TemplateStart "template statement"
-  = _ d1:("<") p:_ m:(("template") / (c:[a-zA-Z0-9]+ _ "template") {return c.join('')})
-    S+ name:Identifier args:(TemplateController / ArgumentsDefinition / invarg:InvalidTplArgs)? _ d2:(">")? EOL
+  = _ "<template" parsedAtts:TemplateElementAttributes? _ closing:(">")? _ EOL
   {
-    var mod=""; // modifier (e.g. "export")
-    if (m!=="template") {
-      mod=m;
-    }
-    if (args && args.invalidTplArg) {
-      if (mod) {
-        mod+=" ";
-      }
-      return {type:"invalidtemplate", line:line(), column:column(), code: d1+p+mod+"template "+name+" "+args.invalidTplArg}
-    } else {
-      if ((d1 === "<" && d2 !==">")) {
-        // inconsistant delimiters
-        return {type:"invalidtemplate", line:line(), column:column(), code: d1+p+mod+"template "+name+" "+args.invalidTplArg}
-      }
+    var errors = [];
+    var attNamesCount = {};  // count attributes to avoid duplicates
+    var attMap = {};        // { attrib1 : ..., attrib2: ...}
+    var acceptedAttribs = ['id', 'args', 'ctrl', 'export', 'export-module'];
 
-      if (args && args.ctl && args.constructor!==Array) {
-        // this template uses a controller
-        return {type:"template", name:name, mod:mod, controller:args.ctl, controllerRef: args.ctlref, line:line(), column:column()}
-      }
-      return {type:"template", name:name, mod:mod, args:(args== null)? []:args, line:line(), column:column()}
+    var code = "<template";  // to be used in error messages
+
+    var templateId = null;
+    var modifier = null;
+    var controller = null;
+    var controllerRef = null;
+    var args = [];
+
+    for (var i = 0; i < parsedAtts.length; i++) {
+        var att = parsedAtts[i];
+
+        if (att.type == "invalidtplarg") {
+            errors.push("unexpected character: '" + att.invalidTplArg + "'");
+            code += att.invalidTplArg;
+        } else if (att.type == "invalidattribute") {
+            for (var k = 0; k < att.errors.length; k++) {
+                // att.errors foreach, line, column
+                var err = att.errors[k];
+                if (err.errorType == "name") {
+                    errors.push("invalid attribute name: unexpected character '" + err.value + "'");
+                } else if (err.errorType = "tail") {
+                    errors.push("unexpected character '" + err.tail + "' found at the end of attribute value");
+                } else {
+                    errors.push("invalid attribute: " + err.type + ":" + err.value);
+                }
+            }
+            code += " " + att.code;
+        } else {
+            var attName = att.name;
+            attNamesCount[attName] = (attNamesCount[attName] || 0) + 1 ;
+            attMap[attName] = att ;
+
+            var codeChunk = " " + att.name;
+            if (att.type == "attribute") {
+                if (att.value && att.value[0]) {
+                    codeChunk += ('="' + att.value[0].value + '"');
+                }
+                code += codeChunk;
+            } else if (att.type == "tpl-arguments") {
+                code += " " + att.name + '="' + att.args.join(",")+ '"';
+            }
+        }
     }
+
+    if (!closing) {
+        errors.push("missing closing brace for <template");
+    } else {
+        code += ">";
+    }
+
+    for (var attName in attNamesCount) {
+        // prevent <template unknown-attribute="value">
+        if (acceptedAttribs.indexOf(attName) == -1) {
+            errors.push("invalid template attribute: " + attName);
+        }
+
+        // prevent <template id="foo" id="bar">
+        if (attNamesCount[attName] > 1) {
+            errors.push("duplicated template attribute: " + attName);
+        }
+    }
+
+    // each template needs a unique id; uniqueness is checked at later stage
+    if (!attMap ["id"] ) {
+        errors.push("missing mandatory template id");
+    } else {
+        templateId = attMap["id"].value[0].value;
+    }
+
+    // 'ctrl' and 'args' do not make sense together
+    if (attMap["ctrl"] && attMap["args"]) {
+        errors.push("a template can not have both 'args' and 'ctrl' attributes");
+    }
+
+    // if 'args' or 'ctrl' have type === 'attribute', they were matched using standard HTML attrib matching rule
+    // instead of the specialized rules for maching 'args' / 'ctrl' (TemplateCtrlAttribute / TemplateArgsAttribute)
+    // => that means the value provided was invalid
+    if (attMap["args"]) {
+        if (attMap["args"].type !== "tpl-arguments") {
+            var value = attMap["args"].value;
+            if (typeof value == "object") {
+                value = value[0].value;
+            } else {
+                value = "[empty value]";
+            }
+            errors.push("invalid value of 'args' attribute: " + value);
+        } else {
+            args = attMap["args"].args;
+        }
+    }
+
+    if (attMap["ctrl"]) {
+        if (attMap["ctrl"].type !== "tpl-controller") {
+            var value = attMap["ctrl"].value;
+            if (typeof value == "object") {
+                value = value[0].value; // TODO value can be "" or [] or [0].value
+            } else {
+                value = "[empty value]";
+            }
+            errors.push("invalid value of 'ctrl' attribute: " + value);
+        } else {
+            controller = attMap["ctrl"].controller;
+            controllerRef = attMap["ctrl"].controllerRef;
+        }
+    }
+
+    // export also has to be either empty, or contain a valid identifier, which can not clash with
+    // an id of another template (checked at later stage)
+    if (attMap["export"] && attMap["export-module"]) {
+        errors.push("a template can not have both 'export' and 'export-module' attributes");
+    }
+
+    // prevent 'export-module="foo"' which doesn't make sense and may confuse users
+    if (attMap["export-module"] && attMap["export-module"].value) {
+        errors.push("the 'export-module' attribute must not have a value");
+    }
+
+    if (attMap["export"]) {
+        var exportedValue = attMap["export"].value;
+        if (Array.isArray(exportedValue) && exportedValue.length > 0) {
+            exportedValue = exportedValue[0].value;
+        } else {
+            exportedValue = null;
+        }
+        modifier = {
+            type : "export",
+            exportName : exportedValue
+        };
+    } else if (attMap["export-module"]) {
+        modifier = {
+            type: "export-module"
+        }
+    }
+
+    if (errors && errors.length > 0) {
+        return {type:"invalidtemplate", suberrors:errors, code:code, line:line(), column:column()/*, parsedAtts:parsedAtts*/}
+    }
+
+    return {type:"template", name:templateId, controller:controller, controllerRef:controllerRef, args:args,
+      modifier:modifier, /*attributes:parsedAtts,*/ line:line(), column:column()}
   }
 
-TemplateController "controller"
-  = S+ "using" S+ ref:Identifier _ ":" _ ctl:JSObjectRef
-  {return {ctl:ctl, ctlref:ref}}
+TemplateElementAttributes // modeled after HTMLElementAttributes
+  = atts:( (S att:(TemplateAttribute)){return att} / att:InvalidTplArgs {return att})*
 
-ArgumentsDefinition "arguments"
-  = _ "(" _ first:VarIdentifier? others:((_ "," _ arg:VarIdentifier) {return arg})* _ ")"
-  {var args = first ? [first] : []; if (others && others.length) args=args.concat(others);return args;}
+TemplateAttribute // equivalent to HTMLAttribute
+  = TemplateCtrlAttribute / TemplateArgsAttribute / HTMLAttribute
+
+// TemplateCtrlAttribute and TemplateArgsAttribute are modeled after HTMLAttribute
+TemplateCtrlAttribute "template controller definition"
+  = "ctrl" _ "=" _ "\"" _ ctrl:JSObjectRef _ "as" _ ref:Identifier _ "\""
+  {
+    return {type:"tpl-controller", name:"ctrl", controller:ctrl, controllerRef:ref, line:line(), column:column()}
+  }
+
+TemplateArgsAttribute "template arguments"
+  = "args" _ "=" _ "\"" _ first:VarIdentifier? others:((_ "," _ arg:VarIdentifier) {return arg})* _ "\""
+  {
+    var args = first ? [first] : [];
+    if (others && others.length > 0) {
+      args = args.concat(others);
+    }
+    return {type:"tpl-arguments", name:"args", args:args, line:line(), column:column()}
+  }
 
 InvalidTplArgs
   = _ !">" chars:[^\n\r]+ &EOL
-  {return {invalidTplArg:chars.join('')}}
+  {return {type:"invalidtplarg", invalidTplArg:chars.join('')}}
 
 TemplateEnd "template end statement"
   = _ "</template" _ ">" _ (EOL / EOF)
@@ -211,16 +349,19 @@ HTMLName
   {return first + next.join("");}
 
 HTMLAttName
-  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-" / "_")* endString:(":" end:([a-zA-Z] / [0-9] / "-" / "_")+ {return ":" + end.join("")})? 
+  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-" / "_")* endString:(":" end:([a-zA-Z] / [0-9] / "-" / "_")+ {return ":" + end.join("")})?
   // uppercase chars are considered as error in the parse post-processor
   {return first + next.join("") + (endString?endString:"");}
 
- HTMLAttribute
-  = attName:((n:HTMLAttName tail:HTMLAttributeStringChars* {return {name:n, tail:tail};}) / (n:HTMLAttributeStringChars+ {return {name:n.join('')};}))
-    v:(_ "=" _ value:HTMLAttributeQuoted tail:HTMLAttributeStringChars* {return {value:value, tail:tail};})?
+HTMLAttribute
+  = !"<" attName:(
+      (n:HTMLAttName tail:HTMLAttributeStringChars* {return {name:n, tail:tail};})
+      /(n2:HTMLAttributeStringChars+ {return {name:n2.join('')};})
+    )
+    v:(_ "=" _ value:HTMLAttributeQuoted tail:HTMLAttributeStringChars* {return {value:value, tail:tail};})?
     v2:(_ "=" _ value:InvalidHTMLAttributeValueWithoutQuotes {return value;})?
-    &(S / EOL / ">" / "/")
-  {
+    &(S / EOL / ">" / "/")
+  {
     var isValueValid = true;
     for (var i = 0; v && v.value && i < v.value.length; i++) {
       var item = v.value[i];
@@ -245,9 +386,18 @@ HTMLAttName
       if (v2 != null && v2.value && v2.value.length > 0) {
         errors.push({errorType: "invalidquotes", value: v2.value, line: v2.line, column: v2.column});
       }
-      return {type: "invalidattribute", errors : errors};
+      var code = attName.name;
+      if (v) {
+        code += '="' + v.value[0].value + '"';
+        if (v.tail) {
+            code += v.tail.join('');
+        }
+      } else if (v2) {
+        code += v2.value;
+      }
+      return {type: "invalidattribute", code:code, errors : errors};
     }
-  }
+  }
 
 HTMLAttributeQuoted
   = '"' value:(HTMLAttributeTextDoubleQuoted / ExpressionTextBlock / InvalidHTMLAttributeValueWithinDoubleQuotes)* '"'
@@ -274,12 +424,12 @@ HTMLAttributeTextSingleQuoted
   {return {type:"text", value:chars.join(""), line:line(), column:column()}}
 
 InvalidHTMLAttributeValueWithinDoubleQuotes
-  = chars:[^\"\n\r]+
-  {return {type:"error", value:chars.join(''), line:line(), column:column()}}
+  = chars:[^\"\n\r]+
+  {return {type:"error", value:chars.join(''), line:line(), column:column()}}
 
 InvalidHTMLAttributeValueWithinSingleQuotes
-  = chars:[^'\n\r]+
-  {return {type:"error", value:chars.join(''), line:line(), column:column()}}
+  = chars:[^'\n\r]+
+  {return {type:"error", value:chars.join(''), line:line(), column:column()}}
 
 InvalidHTMLAttributeValueWithoutQuotes
   = chars:HTMLAttributeStringChars+

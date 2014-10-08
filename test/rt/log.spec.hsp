@@ -21,7 +21,7 @@ var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 </script>
 
-<template test1(d)>
+<template id="test1" args="d">
     Some text
     <div class="foo">
         Blah
@@ -29,14 +29,14 @@ var hsp=require("hsp/rt"),
     </div>
 </template>
 
-<template test2(d)>
+<template id="test2" args="d">
     <div class="foo">
         ...
         {log d.value1, d.value2}
     </div>
 </template>
 
-<template test3(cities)>
+<template id="test3" args="cities">
     {foreach idx,city in cities}
         {log idx+":", $scope}
     {/foreach}

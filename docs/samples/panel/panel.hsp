@@ -10,7 +10,7 @@ var PanelController = klass({
 </script>
 
 <!-- sample panel template -->
-<template panel using c:PanelController>
+<template id="panel" ctrl="PanelController as c">
   <div class="panel">
     {if c.head}
       <div class="head"> <#c.head/> </div>
@@ -21,7 +21,7 @@ var PanelController = klass({
   </div>
 </template>
 
-<template test(m)>
+<template id="test" args="m">
   <#panel body="Panel A (headless): {m.text}"/>
 
   <#panel head="Panel B ({m.text}!)">

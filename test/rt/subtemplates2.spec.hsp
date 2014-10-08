@@ -18,7 +18,7 @@ var ht=require("hsp/utils/hashtester"),
     klass=require("hsp/klass");
 </script>
 
-<template test1(c)>
+<template id="test1" args="c">
     <div class="content">
         Before -
         <#c.tpl/> 
@@ -26,19 +26,19 @@ var ht=require("hsp/utils/hashtester"),
     </div>
 </template>
 
-<template contentA>
+<template id="contentA">
     This is contentA 
 </template>
 
-<template contentB>
+<template id="contentB">
     This is contentB 
 </template>
 
-<template contentC>
+<template id="contentC">
     This is contentC 
 </template>
 
-<template test2(c)>
+<template id="test2" args="c">
     <div class="content">
         Before -
         <#c.a.b.tpl/> 
@@ -46,7 +46,7 @@ var ht=require("hsp/utils/hashtester"),
     </div>
 </template>
 
-<template test3(c)>
+<template id="test3" args="c">
     <div class="content">
         Before -
         <#c.tpl msg="{c.txt}"/> 
@@ -54,11 +54,11 @@ var ht=require("hsp/utils/hashtester"),
     </div>
 </template>
 
-<template contentA2(msg)>
+<template id="contentA2" args="msg">
     contentA2: {msg} 
 </template>
 
-<template contentB2(msg)>
+<template id="contentB2" args="msg">
     contentB2: {msg} 
 </template>
 
@@ -71,7 +71,7 @@ var C2Controller=klass({
 });
 </script>
 
-<template contentC2 using c:C2Controller>
+<template id="contentC2" ctrl="C2Controller as c">
     contentC2: {c.msg} {c.foo} 
 </template>
 
@@ -82,7 +82,7 @@ var ctxt={
 }
 </script>
 
-<template test4(ctxt)>
+<template id="test4" args="ctxt">
     <div class="content">
         Before -
         <#ctxt.tpl msg="{ctxt.msg}"/> 
@@ -90,7 +90,7 @@ var ctxt={
     </div>
 </template>
 
-<template test5(c)>
+<template id="test5" args="c">
     {let x=c.a}
     <div class="content">
         {let y=x.b}

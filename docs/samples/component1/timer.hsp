@@ -19,11 +19,11 @@ var Timer=klass({
 });
 </script>
 
-<template timer using t:Timer>
+<template id="timer" ctrl="Timer as t">
     Elapsed time: {t.secondsElapsed}s
 </template>
 
-<template test>
+<template id="test">
   Sample showing two timer instances with different init values:<br/>
   <#timer/> <br/>
   <#timer initvalue="10"/>

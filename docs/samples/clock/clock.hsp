@@ -44,7 +44,7 @@ var ClockController=klass({
 });
 </script>
 
-<template clock using c:ClockController>
+<template id="clock" ctrl="ClockController as c">
 	// example from http://www.ractivejs.org/examples/clock/
 	<div class="square">
 		<svg viewBox="0 0 100 100">
@@ -71,7 +71,7 @@ var ClockController=klass({
 	</div>
 </template>
 
-<template demo>
+<template id="demo">
 	<#clock city="SFO"/>
 	<#clock city="PAR"/>
 	<#clock city="TYO"/>

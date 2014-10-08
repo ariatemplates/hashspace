@@ -1,6 +1,6 @@
 ##### Template:
 
-<template nbrfield using c:lib.NbrField>
+<template id="nbrfield" ctrl="lib.NbrField as c">
   <input type="text" model="{c.fieldValue}" class="nbrfield {{'error': c.invalidValue, 'mandatory': c.attributes.mandatory}}"/>
   <input type="button" value="..." onclick="{c.resetField()}"/>
 </template>

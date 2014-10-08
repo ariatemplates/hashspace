@@ -1,5 +1,5 @@
 ##### Template:
-<template hello(world)>
+<template id="hello" args="world">
 	Hello // comment 1
 	World!
 	{if (world)} // comment 2

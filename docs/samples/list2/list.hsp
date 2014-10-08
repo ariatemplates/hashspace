@@ -40,7 +40,7 @@ var ListCtrl = klass({
 <script>
 // simple list template
 </script>
-<template list using lc:ListCtrl>
+<template id="list" ctrl="ListCtrl as lc">
   // content is the list of attribute sub-elements
   <div class="list {lc.class}">
     {if lc.head}
@@ -65,7 +65,7 @@ var ListCtrl = klass({
 </template>
 
 <!-- test template -->
-<template test(d)>
+<template id="test" args="d">
   Click on an item to select it:
 
   <#list head="Static list" class="listcpt" onselect="{showSelection($event.value)}">

@@ -1,15 +1,15 @@
-<template test(ctxt)>
+<template id="test" args="ctxt">
   <div><a href="javascript:void(0)" onclick="{swapTemplate()}">Change template</a></div>
   <#ctxt.view ctxt="{ctxt}"/>
 </template>
 
-<template tplA(ctxt)>
+<template id="tplA" args="ctxt">
   <div class="msg">
     A: {ctxt.msg}
   </div>
 </template>
 
-<template tplB(ctxt)>
+<template id="tplB" args="ctxt">
   <div class="msg">
     B: {ctxt.msg2}
   </div>

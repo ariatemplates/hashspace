@@ -2,7 +2,7 @@
 edit me!
 -->
 
-<template hello(name)>
+<template id="hello" args="name">
     <div class="msg">
         Hello {name}!
     </div>

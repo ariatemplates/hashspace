@@ -20,7 +20,7 @@ var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 </script>
 
-<template selectSample(data)>
+<template id="selectSample" args="data">
     <div id="container">
         <div class="info section">All the following inputs are synchronized:</div>
         <div class="section">

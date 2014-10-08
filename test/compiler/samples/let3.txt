@@ -1,5 +1,5 @@
 ##### Template:
-<template test(foo)>
+<template id="test" args="foo">
   <div class="foo">
     // Some comment
     {let aVarName = new Foo(), anotherName = new foo.Bar()}

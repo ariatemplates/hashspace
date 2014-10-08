@@ -38,7 +38,7 @@ var ExpandCollapseController = klass({
 });
 </script>
 
-<template expandCollapse using c:ExpandCollapseController>
+<template id="expandCollapse" ctrl="ExpandCollapseController as c">
     {if c.visible}
         <a onclick="{c.hide()}">Hide</a><br/>
         <#c.body />
@@ -47,7 +47,7 @@ var ExpandCollapseController = klass({
     {/if}
 </template>
 
-<template test(data)>
+<template id="test" args="data">
     <#expandCollapse>
         <span class="content">My content</span>
     </#expandCollapse>

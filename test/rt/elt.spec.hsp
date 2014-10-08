@@ -21,13 +21,13 @@ var hsp=require("hsp/rt"),
     klass=require("hsp/klass");
 </script>
 
-<template test1(person)>
+<template id="test1" args="person">
     <div title="test1">
         Hello {person.name}!
     </div>
 </template>
 
-<template test2(person)>
+<template id="test2" args="person">
     <div title="test2" class="t2 {person.gender}" tabIndex="{person.idx}">
         {person.firstName} / {person.lastName} 
         [ <span class="{person.ffLevel}">
@@ -36,18 +36,18 @@ var hsp=require("hsp/rt"),
     </div>
 </template>
 
-<template test3(person)>
+<template id="test3" args="person">
     <input type="text" value="{person.name}"/>
 </template>
 
 <script>
 var globalObject={value:"foo"};
 </script>
-<template test4()>
+<template id="test4">
     <input type="text" value="{globalObject.value}"/>
 </template>
 
-<template test5(name)>
+<template id="test5" args="name">
     <div style="color:red;">
         Hello {name}!
     </div>
@@ -69,7 +69,7 @@ var TestCtl6=klass({
 });
 </script>
 
-<template test6 using c:TestCtl6>
+<template id="test6" ctrl="TestCtl6 as c">
     // test onchange cross browser consitency
     <input type="checkbox" model="{c.selected}" onchange="{c.processChange()}">
     <span class="label">{c.label}</span>

@@ -20,7 +20,7 @@ var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 </script>
 
-<template inputSample(data)>
+<template id="inputSample" args="data">
     <div class="info section">All the following inputs are synchronized:</div>
     <div class="section">
         Comment #1: <input id="1" type="text" value="{data.comment}"/><br/>
@@ -45,14 +45,14 @@ var hsp=require("hsp/rt"),
     </div>
 </template>
 
-<template enterEmptiesFieldSample(object)>
+<template id="enterEmptiesFieldSample" args="object">
     <div class="info section">Please type a command and press enter.</div>
     <pre>{object.commandsHistory}</pre>
     <input type="text" value="{object.value}" onkeydown="{object.keydown($event)}" placeholder="Your command"><br>
     <input type="text" value="{object.value}" onkeydown="{object.keydown($event)}" placeholder="Your command"><br>
 </template>
 
-<template html5NumberInput(model)>
+<template id="html5NumberInput" args="model">
     <div><input type="number" model="{model.value}"/></div>
 </template>
 
@@ -243,7 +243,7 @@ describe("Input Elements", function () {
 });
 </script>
 
-<template test1(data)>
+<template id="test1" args="data">
     <textarea rows="4" cols="40"  model="{data.text}"/>
 </template>
 

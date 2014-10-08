@@ -1,5 +1,5 @@
 ##### Template:
-<template test(msg)>
+<template id="test" args="msg">
 	<div class="{msg.category} {{'warning':msg.urgent}} msg">
     Hello World
   </div>

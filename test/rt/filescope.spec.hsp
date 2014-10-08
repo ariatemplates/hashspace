@@ -23,13 +23,13 @@ function globalHelper() {
 }
 </script>
 
-<template test1>
+<template id="test1">
     {if (globalHelper())}
         <div class="test">I am here because of a global helper</div>
     {/if}
 </template>
 
-<template test2>
+<template id="test2">
   <#test1 />
   <#test1 />
 </template>

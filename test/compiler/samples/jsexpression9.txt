@@ -1,5 +1,5 @@
 ##### Template:
-<template hello(person,property)>
+<template id="hello" args="person,property">
   {person[person.name].foo}
 </template>
 

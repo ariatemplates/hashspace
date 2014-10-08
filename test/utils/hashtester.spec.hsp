@@ -4,7 +4,7 @@ var ht=require("hsp/utils/hashtester"),
     $set=require("hsp/$set");
 </script>
 
-<template testContent(data)>
+<template id="testContent" args="data">
     <div class="foo1 foo2">
         <span class="sometext" title="Hello World!">Here is some text</span>
         <span class="count" onclick="{increaseCount(data,1)}" ondblclick="{increaseCount(data,5)}">{data.count}</span>

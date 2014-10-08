@@ -2,7 +2,7 @@
 var msg={text:""}, count=-1;
 </script>
 
-<template message(msg)>
+<template id="message" args="msg">
     <div title="click me!" onclick="{changeMessage()}" onselectstart="return false">
         {if msg.isWarning}<span class="warning">WARNING:&nbsp;</span>{/if}
         <span>{msg.text}</span>

@@ -1,6 +1,6 @@
 ##### Template:
 
-<template test(d)>
+<template id="test" args="d">
   <#lib.nbrfield objliteral="{{value: d.value, min: 10, max: "10", reset: notifyReset(123)}}"/>
 </template>
 

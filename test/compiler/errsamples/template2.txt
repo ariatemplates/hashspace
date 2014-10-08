@@ -1,5 +1,5 @@
 ##### Template:
-<template hello(foo)>
+<template id="hello" args="foo">
     {foo.bar} Hello World!
 
 ##### Errors:

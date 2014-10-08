@@ -1,6 +1,6 @@
 ##### Template:
 
-<template mycomponent using c:foo.ComponentController>
+<template id="mycomponent" ctrl="foo.ComponentController as c">
   some text...
 </template>
 
@@ -10,7 +10,7 @@
   {
     "type": "template",
     "name": "mycomponent",
-    "mod": "",
+    "modifier": null,
     "controller": {
       "category": "objectref",
       "path": ["foo","ComponentController"],
