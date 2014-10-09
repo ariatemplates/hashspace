@@ -486,6 +486,8 @@ When a component template is instantiated, a new instance of its controller is c
 
 Then, in order to be displayed for the first time, an internal refresh occurs, followed by the execution of `$refresh()` if defined.
 
+When the component markup has been appended to the real DOM, method `$onDOMIInsert` is called.
+
 A the end of the life cycle, when the component is not needed anymore, the `$dipose()` method, if defined, is executed.
 
 ---
