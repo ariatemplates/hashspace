@@ -139,7 +139,15 @@ function hideNavHover(event, data) {
             <ul>
                 {foreach error in errors}
                 <li>
-                    <div class="{error.type}"> {error.message} </div>
+                    {if error.messages}
+                        <div class="{error.type}">
+                        {foreach msg in error.messages}
+                            {msg}<br>
+                        {/foreach}
+                        </div>
+                    {else if error.message}
+                        <div class="{error.type}"> {error.message} </div>
+                    {/if}
                     {if error.line || error.file}
                         <div class="ctxt">
                             [{error.file}]

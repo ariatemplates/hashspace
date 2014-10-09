@@ -94,7 +94,7 @@ module.exports = function(grunt) {
     files: [
       {
         expand: true,
-        src: [ GH_PAGES_PATH + 'playground/*-all.js' ]
+        src: [ GH_PAGES_PATH + 'playground/*-all.js' ] // make it [] if you want to debug not minified files
       }
     ]
   };
