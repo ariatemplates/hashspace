@@ -3,7 +3,7 @@ var log=require("hsp/rt/log");
 </script>
 
 <template test(cities, logs)>
-  {log "top-level:",scope}
+  {log "top-level:",$scope}
   <a href="javascript:void(0)" onclick="{increaseList()}">Increase list</a> -
   <a href="javascript:void(0)" onclick="{decreaseList()}">Decrease list</a> -
   <a href="javascript:void(0)" onclick="{clearLogs()}">Clear logs</a>

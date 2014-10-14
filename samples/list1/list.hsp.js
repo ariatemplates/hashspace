@@ -8,12 +8,12 @@ var klass=require("hsp/klass");
 
 // simple list controller
 var ListController = klass({
-  attributes: {
+  $attributes: {
     "class":{type:"string",binding:"1-way"},
     "onclick":{type:"callback"},
     "head":{type:"template"}
   },
-  elements: {
+  $elements: {
     "option": {type:"template"},
     "separator": {type:"template"}
   }
@@ -24,7 +24,7 @@ var ListController = klass({
 var list = require("hsp/rt").template({ctl:[ListController,"ListController"],ref:"lc"}, function(n){
   var _lc,_itm,_itm_isfirst,_itm_islast;try {_lc=lc} catch(e) {_lc=n.g('lc')};try {_itm=itm} catch(e) {_itm=n.g('itm')};try {_itm_isfirst=itm_isfirst} catch(e) {_itm_isfirst=n.g('itm_isfirst')};try {_itm_islast=itm_islast} catch(e) {_itm_islast=n.g('itm_islast')};
   var __s = {lc : typeof lc === 'undefined' ? n.g('lc') : lc, itm : typeof itm === 'undefined' ? n.g('itm') : itm, itm_isfirst : typeof itm_isfirst === 'undefined' ? n.g('itm_isfirst') : itm_isfirst, itm_islast : typeof itm_islast === 'undefined' ? n.g('itm_islast') : itm_islast};
-  return [__s,n.$text(0,[" "]),n.elt("div",{e1:[9,"lc.class"]},{"class":["list ",1]},0,[n.$if({e1:[9,"lc.head"]},1,[n.elt("div",0,{"class":"head"},0,[n.cpt([null,"lc","head"],0,0,0)])]),n.$if({e1:[9,"!lc.content"]},1,[n.elt("span",0,{"class":"nodata"},0,[n.$text(0,["Empty list"])])],[n.elt("ul",0,{"class":"noTextSelection"},0,[n.$foreach({e1:[9,"lc.content"]},"idx","itm",0,1,[n.$if({e1:[9,"itm.tagName===\"@option\""]},1,[n.elt("li",0,{"class":"opt"},0,[n.cpt([null,"itm"],0,0,0)])],[n.$if({e1:[9,"itm.tagName===\"@separator\" &&  !itm_isfirst && !itm_islast"]},1,[n.elt("hr",0,0,0)])])]),n.$text(0,[" "])])])])];
+  return [__s,n.$text(0,[" "]),n.elt("div",{e1:[9,"lc.class"]},{"class":["list ",1]},0,[n.$if({e1:[9,"lc.head"]},1,[n.elt("div",0,{"class":"head"},0,[n.cpt([null,"lc","head"],0,0,0)])]),n.$if({e1:[9,"!lc.$content"]},1,[n.elt("span",0,{"class":"nodata"},0,[n.$text(0,["Empty list"])])],[n.elt("ul",0,{"class":"noTextSelection"},0,[n.$foreach({e1:[9,"lc.$content"]},"idx","itm",0,1,[n.$if({e1:[9,"itm.tagName===\"@option\""]},1,[n.elt("li",0,{"class":"opt"},0,[n.cpt([null,"itm"],0,0,0)])],[n.$if({e1:[9,"itm.tagName===\"@separator\" &&  !itm_isfirst && !itm_islast"]},1,[n.elt("hr",0,0,0)])])]),n.$text(0,[" "])])])])];
 });
 
 

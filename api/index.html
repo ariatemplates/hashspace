@@ -153,7 +153,7 @@ Simply require the template file, and specify the <code>div</code> reference to 
 <li><code>column</code>: the column number in which the statement appears on the line</li>
 </ul>
 <pre><code class="lang-cs">&lt;template example()&gt;
-  {log scope}
+  {log $scope}
 &lt;/template&gt;</code></pre>
 <hr>
 <h4 id="scoped-variables-let-myvar-1-2-3-">Scoped variables <code>{let myvar = [1, 2, 3]}</code></h4>
@@ -202,11 +202,11 @@ Like HTML elements, attributes values must be enclosed using either single or do
 <li>parameters of the template (equivalent of element attributes) are <strong>passed by name</strong>, not by position</li>
 <li>it not only instantiates the template but also renders it automatically in a DOM element inserted exactly where the statement is used</li>
 </ul>
-<p>There is also an additional subtlety regarding the passing of the parameters. As said, they are passed by name, so if you use <code>&lt;tplref arg1=&quot;...&quot; /&gt;</code> for a template defined like this <code>&lt;template(whatever, arg1)&gt;</code>, <code>arg1</code> will be properly passed, wherever it is defined in the parameters list. However the actual subtlety resides in the <strong>first</strong> parameter of the function: if it doesn&#39;t match any attribute name, it is not left <code>undefined</code> as one could think. Instead, it refers to an object built from the attribute/value pairs. In our little example, <code>whatever</code> would refer to an object like this: <code>{arg1: &quot;...&quot;}</code>. This is implicitely due to the internal way hashspace is managing components instantiation (components are discussed later in this documentation).</p>
+<p>There is also an additional subtlety regarding the passing of the parameters. As said, they are passed by name, so if you use <code>&lt;tplref arg1=&quot;...&quot; /&gt;</code> for a template defined like this <code>&lt;template(whatever, arg1)&gt;</code>, <code>arg1</code> will be properly passed, wherever it is defined in the parameters list. However the actual subtlety resides in the <strong>first</strong> parameter of the function: if it doesn&#39;t match any attribute name, it is not left <code>undefined</code> as one could think. Instead, it refers to an object built from the attribute/value pairs. In our little example, <code>whatever</code> would refer to an object like this: <code>{arg1: &quot;...&quot;}</code>. This is implicitly due to the internal way hashspace is managing components instantiation (components are discussed later in this documentation).</p>
 <p><strong>Reference</strong>:</p>
 <p>Note also that the statement is not expecting a simple template name, it takes a reference to it. The syntax limits it to be a simple reference access (which means that it can&#39;t be returned by a function call, that the ternary operator can&#39;t be used, etc.)</p>
 <p><strong>Using a template as a container</strong>:</p>
-<p>Using a template as a container with child elements is only useful if you have to pass <code>template</code> attributes&#39; values to the subtemplate. It is not oftenly used, and you might prefer implement here a <a href="#interfaces">component</a> instead.</p>
+<p>Using a template as a container with child elements is only useful if you have to pass <code>template</code> attributes&#39; values to the subtemplate. It is not often used, and you might prefer implement here a <a href="#interfaces">component</a> instead.</p>
 <hr>
 <h4 id="component-calls-mycpt-attr-hello-">Component calls <code>&lt;#mycpt attr=&quot;hello&quot; /&gt;</code></h4>
 <p>Instantiating a component is more or less defined like a template could be instantiated. The syntax remains the same.</p>
@@ -266,12 +266,12 @@ Please refer to their specific <a href="#elements">section</a> for more informat
 <p>In both cases the rest of the arguments have to be separated by colons in the expression as shown in the previous snippet.</p>
 <p>In order to avoid side effects, you must pay attention in modifying and returning <strong>a copy</strong> of the original value passed as argument, and not the original value itself.</p>
 <h2 id="special-html-element-attributes">Special HTML element attributes</h2>
-<h4 id="event-handlers-onclick-a-b-dothis-event-mydata-">Event handlers <code>onclick=&quot;{a.b.doThis(event, mydata)}&quot;</code></h4>
+<h4 id="event-handlers-onclick-a-b-dothis-event-mydata-">Event handlers <code>onclick=&quot;{a.b.doThis($event, mydata)}&quot;</code></h4>
 <p>Event handler attributes of HTML elements accept function expressions.</p>
 <p>This means that instead of giving a piece of JavaScript code to be executed in the global environment, you can use the standard call mechanisms, in the environment of the current module (file).</p>
-<p>Event handlers have a particularity though: in your function call, you can pass the <code>event</code> object to your handler function. This <code>event</code> object is implicitly available in the context of your expression, but it is not automatically passed, so you need to explicitly pass it if you want to have it available in your function.</p>
+<p>Event handlers have a particularity though: in your function call, you can pass the <code>$event</code> object to your handler function. This <code>$event</code> object is implicitly available in the context of your expression, but it is not automatically passed, so you need to explicitly pass it if you want to have it available in your function.</p>
 <pre><code class="lang-cs">&lt;template example()&gt;
-  &lt;span onclick=<span class="string">"{handler(event)}"</span>&gt;Click me&lt;/span&gt;
+  &lt;span onclick=<span class="string">"{handler($event)}"</span>&gt;Click me&lt;/span&gt;
 &lt;/template&gt;
 
 function handler(<span class="keyword">event</span>) {
@@ -338,7 +338,7 @@ so that the select value and the data model will always be synchronized.</p>
 <hr>
 <h5 id="attributes">Attributes</h5>
 <p>Defines the attributes of the controller, also considered as the attributes of the component.</p>
-<p>In the <em>klass</em> definition of the controller, a specific property called <code>attributes</code> is used to define the attributes of the controller/component. It allows you to define the public API of the controller itself.</p>
+<p>In the <em>klass</em> definition of the controller, a specific property called <code>$attributes</code> is used to define the attributes of the controller/component. It allows you to define the public API of the controller itself.</p>
 <p>It expects a map of attribute names (the keys) with their definitions (the values).</p>
 <p>Here are the properties used to define a single attribute:</p>
 <ul>
@@ -353,7 +353,7 @@ so that the select value and the data model will always be synchronized.</p>
 <ul>
 <li><p><strong>Basic types</strong></p>
 <p>The basic types attributes, to be declared when defining your component class:</p>
-<pre><code class="lang-json">attributes: {
+<pre><code class="lang-json">$attributes: {
   &quot;count&quot;: { type: &quot;int&quot;, defaultValue: 0 },
   &quot;price&quot;: { type: &quot;float&quot;, defaultValue: 19.90 },
   &quot;active&quot;: { type: &quot;boolean&quot;, defaultValue: true },
@@ -369,7 +369,7 @@ so that the select value and the data model will always be synchronized.</p>
 </li>
 <li><p><strong>Callback type</strong></p>
 <p>We also support <code>callback</code> attributes. They are especially useful to be associated with you r component external events based API.</p>
-<pre><code class="lang-json">attributes: {
+<pre><code class="lang-json">$attributes: {
   onclick: { type: &quot;callback&quot; },
   onselect: { type: &quot;callback&quot; }
 }</code></pre>
@@ -397,7 +397,7 @@ so that the select value and the data model will always be synchronized.</p>
 <p>Last type of supported attribute is <code>template</code>. Those attributes are references to an existing template definition, or even inline template code to be used from within the component.</p>
 <p>Let&#39;s consider this component definition:</p>
 <pre><code class="lang-javascript"><span class="keyword">var</span> MyCpt = klass({
-  attributes: {
+  $attributes: {
     header: { type: <span class="string">"template"</span> },
     body: { type: <span class="string">"template"</span>, defaultcontent: <span class="literal">true</span> }
   }
@@ -445,7 +445,7 @@ so that the select value and the data model will always be synchronized.</p>
 <li>doing none: this is the <em>none</em> option</li>
 </ul>
 <p><strong>Example:</strong></p>
-<pre><code class="lang-json">attributes: {
+<pre><code class="lang-json">$attributes: {
   attr: {type: &quot;string&quot;, defaultValue: &quot;&quot;, binding: &quot;2-way&quot;}
 }</code></pre>
 <hr>
@@ -456,7 +456,7 @@ so that the select value and the data model will always be synchronized.</p>
   &lt;@header&gt;This is my header&lt;/@header&gt; &lt;!-- Can't do that with template attribute --&gt;
 &lt;/#mycpt&gt;</code></pre>
 <p>Elements are here to address this lack. They are somehow smarter <code>template</code> attributes. With them, you have the ability to use them as collections (or iterative elements).</p>
-<pre><code class="lang-json">elements: {
+<pre><code class="lang-json">$elements: {
   option: { type: &quot;template&quot; }
 }</code></pre>
 <pre><code class="lang-cs">&lt;<span class="preprocessor">#mylist&gt;</span>
@@ -516,20 +516,20 @@ so that the select value and the data model will always be synchronized.</p>
   &lt;hr /&gt;
 &lt;/template&gt;</code></pre>
 <hr>
-<h5 id="on-lt-attribute-gt-change-newvalue-oldvalue-">on&lt;Attribute&gt;Change(newValue, oldValue)</h5>
+<h5 id="-on-lt-attribute-gt-change-newvalue-oldvalue-">$on&lt;Attribute&gt;Change(newValue, oldValue)</h5>
 <p>User methods whose names follow a specific pattern, used to react to change events triggered by attributes.</p>
 <p>When a property&#39;s value changes, <strong>and if the property is bound in at least one way</strong>, the engine automatically calls - if defined - a method of the controller whose name is built from the name of the property:</p>
 <ul>
 <li>the name of the property is taken and its first letter is upper cased, the rest is left untouched</li>
-<li>the function must then be named like this: <code>&quot;on&quot; + transformedName + &quot;Change&quot;</code></li>
+<li>the function must then be named like this: <code>&quot;$on&quot; + transformedName + &quot;Change&quot;</code></li>
 </ul>
 <p>Now, let&#39;s talk quickly about what is a property change. A property&#39;s value is said to have changed when the reference associated to the property has changed, nothing more. That means that all inplace transformations are not taken into account, since the property will still refer to the same object.</p>
 <p><strong>Important note</strong>: any property change occurring in a change handler doesn&#39;t trigger any change event. That means that no change handler for any property will be called. This is done to prevent a possible automatic infinite recursive call to the current change handler (either directly or by some sorts of side-effects).</p>
 <pre><code class="lang-javascript"><span class="keyword">var</span> Controller = klass({
-  attributes: {
+  $attributes: {
     text: {type: <span class="string">"string"</span>, binding: <span class="string">"1-way"</span>}
   },
-  onTextChange: <span class="keyword">function</span>(newValue, oldValue) {
+  $onTextChange: <span class="keyword">function</span>(newValue, oldValue) {
     <span class="comment">// ...</span>
   },
 });</code></pre>

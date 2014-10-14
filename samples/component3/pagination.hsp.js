@@ -25,7 +25,7 @@ function rebuildInternalModel(ctl) {
 }
 
 var Pagination=klass({
-    attributes: {
+    $attributes: {
       "collectionsize":{type:"int", defaultValue:0, binding:"1-way"},
       "pagesize":{type:"int", defaultValue:10, binding:"1-way"},
       "activepage":{type:"int", defaultValue:0, binding:"2-way"},
@@ -41,10 +41,10 @@ var Pagination=klass({
           this.onpageselect({pageNumber:this.activepage});
         }
     },
-    onCollectionsizeChange: function() {
+    $onCollectionsizeChange: function() {
         rebuildInternalModel(this);
     },
-    onPagesizeChange: function() {
+    $onPagesizeChange: function() {
        rebuildInternalModel(this);
     }
 });
@@ -57,9 +57,9 @@ var pagination = require("hsp/rt").template({ctl:[Pagination,"Pagination"],ref:"
 });
 
 var paginationTest = require("hsp/rt").template(["model"], function(n){
-  var _model,_updateSelection,_event,_pagination;try {_model=model} catch(e) {_model=n.g('model')};try {_updateSelection=updateSelection} catch(e) {_updateSelection=n.g('updateSelection')};try {_event=event} catch(e) {_event=n.g('event')};try {_pagination=pagination} catch(e) {_pagination=n.g('pagination')};
-  var __s = {model : typeof model === 'undefined' ? n.g('model') : model, updateSelection : typeof updateSelection === 'undefined' ? n.g('updateSelection') : updateSelection, event : typeof event === 'undefined' ? n.g('event') : event, pagination : typeof pagination === 'undefined' ? n.g('pagination') : pagination};
-  return [__s,n.elt("div",0,{"class":"section3"},0,[n.elt("label",0,{"class":"fieldlabel"},0,[n.$text(0,["Active page: "])]),n.elt("input",{e1:[9,"model.active"]},{"type":"number","model":["",1]},0),n.elt("br",0,0,0),n.elt("label",0,{"class":"fieldlabel"},0,[n.$text(0,["Collection size: "])]),n.elt("input",{e1:[9,"model.collectionSize"]},{"type":"number","model":["",1]},0),n.elt("br",0,0,0),n.elt("label",0,{"class":"fieldlabel"},0,[n.$text(0,["Page size: "])]),n.elt("input",{e1:[9,"model.pageSize"]},{"type":"number","model":["",1]},0),n.elt("br",0,0,0),n.$text(0,["Last page selection  "]),n.elt("i",0,0,0,[n.$text(0,[" - from event"])]),n.$text(0,[": "]),n.elt("span",0,{"class":"textValue"},0,[n.$text({e1:[9,"model.lastSelectedPage"]},["",1])])]),n.cpt([_pagination,"pagination"],{e1:[9,"model.active"],e2:[9,"model.collectionSize"],e3:[9,"model.pageSize"],e4:[9,"updateSelection(event.pageNumber)"]},{"activepage":["",1],"collectionsize":["",2],"pagesize":["",3]},{"pageselect":4})];
+  var _model,_updateSelection,_$event,_pagination;try {_model=model} catch(e) {_model=n.g('model')};try {_updateSelection=updateSelection} catch(e) {_updateSelection=n.g('updateSelection')};try {_$event=$event} catch(e) {_$event=n.g('$event')};try {_pagination=pagination} catch(e) {_pagination=n.g('pagination')};
+  var __s = {model : typeof model === 'undefined' ? n.g('model') : model, updateSelection : typeof updateSelection === 'undefined' ? n.g('updateSelection') : updateSelection, $event : typeof $event === 'undefined' ? n.g('$event') : $event, pagination : typeof pagination === 'undefined' ? n.g('pagination') : pagination};
+  return [__s,n.elt("div",0,{"class":"section3"},0,[n.elt("label",0,{"class":"fieldlabel"},0,[n.$text(0,["Active page: "])]),n.elt("input",{e1:[9,"model.active"]},{"type":"number","model":["",1]},0),n.elt("br",0,0,0),n.elt("label",0,{"class":"fieldlabel"},0,[n.$text(0,["Collection size: "])]),n.elt("input",{e1:[9,"model.collectionSize"]},{"type":"number","model":["",1]},0),n.elt("br",0,0,0),n.elt("label",0,{"class":"fieldlabel"},0,[n.$text(0,["Page size: "])]),n.elt("input",{e1:[9,"model.pageSize"]},{"type":"number","model":["",1]},0),n.elt("br",0,0,0),n.$text(0,["Last page selection  "]),n.elt("i",0,0,0,[n.$text(0,[" - from event"])]),n.$text(0,[": "]),n.elt("span",0,{"class":"textValue"},0,[n.$text({e1:[9,"model.lastSelectedPage"]},["",1])])]),n.cpt([_pagination,"pagination"],{e1:[9,"model.active"],e2:[9,"model.collectionSize"],e3:[9,"model.pageSize"],e4:[9,"updateSelection($event.pageNumber)"]},{"activepage":["",1],"collectionsize":["",2],"pagesize":["",3]},{"pageselect":4})];
 });
 
 

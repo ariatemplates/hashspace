@@ -7,7 +7,7 @@ var $set=require("hsp/$set");
 var klass=require("hsp/klass");
 
 var PanelController = klass({
-  attributes: {
+  $attributes: {
     "head":{type:"template"},
     "body":{type:"template",defaultContent:true}
   }

@@ -8,7 +8,7 @@ var klass=require("hsp/klass");
 
 // klass is a utility to create JS objects with constructors & prototypes
 var Timer=klass({
-    attributes: {
+    $attributes: {
       initvalue:{type:"int",defaultValue:0,binding:"none"}
     },
     $init:function() {

@@ -7,7 +7,7 @@ var $set=require("hsp/$set");
 var klass = require("hsp/klass");
 
 var TabCtrl = klass({
-    attributes: {
+    $attributes: {
         label: { type: "template" },
         body: { type: "template", defaultContent: true }
     },
@@ -21,11 +21,11 @@ var TabCtrl = klass({
 });
 
 var TabBarCtrl = klass({
-    attributes: {
+    $attributes: {
         "class": { type: "string" },
         "selection": { type: "int", defaultValue: 0, binding: "2-way" }
     },
-    elements: {
+    $elements: {
         "tab": { type: "component", controller: TabCtrl }
     },
     $init: function() {
@@ -36,13 +36,13 @@ var TabBarCtrl = klass({
             return;
         }
         // unselect previous tab
-        if (this.selection>=0 && this.selection<this.content.length) {
-            $set(this.content[this.selection], "selected", false);
+        if (this.selection>=0 && this.selection<this.$content.length) {
+            $set(this.$content[this.selection], "selected", false);
         }
         // select new tab
-        if (idx>=0 && idx<this.content.length) {
+        if (idx>=0 && idx<this.$content.length) {
             $set(this, "selection", idx);
-            var tab=this.content[idx];
+            var tab=this.$content[idx];
             $set(tab, "selected", true);
             $set(this, "selectedTab", tab);
         }
@@ -53,7 +53,7 @@ var TabBarCtrl = klass({
 var tabbar = require("hsp/rt").template({ctl:[TabBarCtrl,"TabBarCtrl"],ref:"ctrl"}, function(n){
   var _ctrl,_tab,_idx,_tab_islast;try {_ctrl=ctrl} catch(e) {_ctrl=n.g('ctrl')};try {_tab=tab} catch(e) {_tab=n.g('tab')};try {_idx=idx} catch(e) {_idx=n.g('idx')};try {_tab_islast=tab_islast} catch(e) {_tab_islast=n.g('tab_islast')};
   var __s = {ctrl : typeof ctrl === 'undefined' ? n.g('ctrl') : ctrl, tab : typeof tab === 'undefined' ? n.g('tab') : tab, idx : typeof idx === 'undefined' ? n.g('idx') : idx, tab_islast : typeof tab_islast === 'undefined' ? n.g('tab_islast') : tab_islast};
-  return [__s,n.elt("div",0,{"class":"x-tabbar"},0,[n.elt("nav",0,{"class":"x-tabs"},0,[n.$foreach({e1:[9,"ctrl.content"]},"idx","tab",0,1,[n.$if({e1:[9,"tab.selected"]},1,[n.elt("span",0,{"class":"x-tab x-tab-selected"},0,[n.cpt([null,"tab","label"],0,0,0)])],[n.elt("a",{e1:[9,"ctrl.select(idx)"]},{"class":"x-tab","href":"javascript:void(0)"},{"click":1},[n.cpt([null,"tab","label"],0,0,0)])]),n.$if({e1:[9,"!tab_islast"]},1,[n.$text(0,["   "])])]),n.$text(0,[" "])]),n.elt("div",0,{"class":"x-tab-content"},0,[n.cpt([null,"ctrl","selectedTab","body"],0,0,0)])])];
+  return [__s,n.elt("div",0,{"class":"x-tabbar"},0,[n.elt("nav",0,{"class":"x-tabs"},0,[n.$foreach({e1:[9,"ctrl.$content"]},"idx","tab",0,1,[n.$if({e1:[9,"tab.selected"]},1,[n.elt("span",0,{"class":"x-tab x-tab-selected"},0,[n.cpt([null,"tab","label"],0,0,0)])],[n.elt("a",{e1:[9,"ctrl.select(idx)"]},{"class":"x-tab","href":"javascript:void(0)"},{"click":1},[n.cpt([null,"tab","label"],0,0,0)])]),n.$if({e1:[9,"!tab_islast"]},1,[n.$text(0,["   "])])]),n.$text(0,[" "])]),n.elt("div",0,{"class":"x-tab-content"},0,[n.cpt([null,"ctrl","selectedTab","body"],0,0,0)])])];
 });
 
 var test = require("hsp/rt").template([], function(n){

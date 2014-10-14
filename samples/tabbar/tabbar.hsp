@@ -2,7 +2,7 @@
 var klass = require("hsp/klass");
 
 var TabCtrl = klass({
-    attributes: {
+    $attributes: {
         label: { type: "template" },
         body: { type: "template", defaultContent: true }
     },
@@ -16,11 +16,11 @@ var TabCtrl = klass({
 });
 
 var TabBarCtrl = klass({
-    attributes: {
+    $attributes: {
         "class": { type: "string" },
         "selection": { type: "int", defaultValue: 0, binding: "2-way" }
     },
-    elements: {
+    $elements: {
         "tab": { type: "component", controller: TabCtrl }
     },
     $init: function() {
@@ -31,13 +31,13 @@ var TabBarCtrl = klass({
             return;
         }
         // unselect previous tab
-        if (this.selection>=0 && this.selection<this.content.length) {
-            this.content[this.selection].selected=false;
+        if (this.selection>=0 && this.selection<this.$content.length) {
+            this.$content[this.selection].selected=false;
         }
         // select new tab
-        if (idx>=0 && idx<this.content.length) {
+        if (idx>=0 && idx<this.$content.length) {
             this.selection=idx;
-            var tab=this.content[idx];
+            var tab=this.$content[idx];
             tab.selected=true;
             this.selectedTab=tab;
         }
@@ -48,7 +48,7 @@ var TabBarCtrl = klass({
 <template tabbar using ctrl:TabBarCtrl>
   <div class="x-tabbar">
     <nav class="x-tabs">
-        {foreach idx, tab in ctrl.content}
+        {foreach idx, tab in ctrl.$content}
             {if tab.selected}
                 <span class="x-tab x-tab-selected">
                     <#tab.label/>

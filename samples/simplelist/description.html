@@ -5,6 +5,6 @@
 </ul>
 [#output]
 <p>This example also shows that event handlers can get contextual parameters - such as the person argument in the <em>toggleDetails</em> function - which greatly simplifies event handler callbacks. Similarly, it is possible to pass the event object to the event handler by using the <em>event</em> keyword as one of the callback arguments (note that the event can be passed at any argument position). In this example it would look like this:</p>
-<p><code>onclick=&quot;{toggleDetails(p,event)}&quot;</code>  </p>
+<p><code>onclick=&quot;{toggleDetails(p,$event)}&quot;</code>  </p>
 <p>Last but not least, the event handler can stop the default behaviour by returning <em>false</em> - this behaviour is shown in the todo list example.</p>
 

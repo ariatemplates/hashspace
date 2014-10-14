@@ -3,12 +3,12 @@ var klass=require("hsp/klass");
 
 // simple list controller
 var ListController = klass({
-  attributes: {
+  $attributes: {
     "class":{type:"string",binding:"1-way"},
     "onclick":{type:"callback"},
     "head":{type:"template"}
   },
-  elements: {
+  $elements: {
     "option": {type:"template"},
     "separator": {type:"template"}
   }
@@ -22,11 +22,11 @@ var ListController = klass({
     {if lc.head}
       <div class="head"><#lc.head/></div>
     {/if}
-    {if !lc.content}
+    {if !lc.$content}
         <span class="nodata">Empty list</span>
     {else}
         <ul class="noTextSelection">
-            {foreach idx,itm in lc.content}
+            {foreach idx,itm in lc.$content}
                 {if itm.tagName==="@option"}
                     <li class="opt"><#itm/></li>
                 {else if itm.tagName==="@separator" &&  !itm_isfirst && !itm_islast}

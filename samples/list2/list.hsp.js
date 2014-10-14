@@ -8,7 +8,7 @@ var klass=require("hsp/klass");
 
 // simple option controller
 var OptionCtrl = klass({
-  attributes: {
+  $attributes: {
     "value":{type:"string",binding:"1-way"},
     "label":{type:"template"}
   },
@@ -20,18 +20,18 @@ var OptionCtrl = klass({
 
 // simple list controller
 var ListCtrl = klass({
-  attributes: {
+  $attributes: {
     "class":{type:"string",binding:"1-way"},
     "onselect":{type:"callback"},
     "head":{type:"template"}
   },
-  elements: {
+  $elements: {
     "option": {type:"component",controller:OptionCtrl},
     "separator": {type:"template"}
   },
   select:function (value) {
     // select
-    var c=this.content;
+    var c=this.$content;
     for (var i=0,sz=c.length;sz>i;i++) {
       if (c[i].tagName==="@option") {
         $set(c[i], "selected", c[i].value===value);
@@ -48,14 +48,14 @@ var ListCtrl = klass({
 var list = require("hsp/rt").template({ctl:[ListCtrl,"ListCtrl"],ref:"lc"}, function(n){
   var _lc,_itm,_itm_isfirst,_itm_islast;try {_lc=lc} catch(e) {_lc=n.g('lc')};try {_itm=itm} catch(e) {_itm=n.g('itm')};try {_itm_isfirst=itm_isfirst} catch(e) {_itm_isfirst=n.g('itm_isfirst')};try {_itm_islast=itm_islast} catch(e) {_itm_islast=n.g('itm_islast')};
   var __s = {lc : typeof lc === 'undefined' ? n.g('lc') : lc, itm : typeof itm === 'undefined' ? n.g('itm') : itm, itm_isfirst : typeof itm_isfirst === 'undefined' ? n.g('itm_isfirst') : itm_isfirst, itm_islast : typeof itm_islast === 'undefined' ? n.g('itm_islast') : itm_islast};
-  return [__s,n.$text(0,[" "]),n.elt("div",{e1:[9,"lc.class"]},{"class":["list ",1]},0,[n.$if({e1:[9,"lc.head"]},1,[n.elt("div",0,{"class":"head"},0,[n.cpt([null,"lc","head"],0,0,0)])]),n.$if({e1:[9,"!lc.content"]},1,[n.elt("span",0,{"class":"nodata"},0,[n.$text(0,["Empty list"])])],[n.elt("ul",0,{"class":"noTextSelection"},0,[n.$foreach({e1:[9,"lc.content"]},"idx","itm",0,1,[n.$if({e1:[9,"itm.tagName===\"@option\""]},1,[n.elt("li",{e1:[9,"lc.select(itm.value)"]},{"class":"opt"},{"click":1},[n.elt("span",{e1:[9,"{'highlight':itm.selected}"]},{"class":["item ",1]},0,[n.cpt([null,"itm","label"],0,0,0)])])],[n.$if({e1:[9,"itm.tagName===\"@separator\" &&  !itm_isfirst && !itm_islast"]},1,[n.elt("hr",0,0,0)])])]),n.$text(0,[" "])])])])];
+  return [__s,n.$text(0,[" "]),n.elt("div",{e1:[9,"lc.class"]},{"class":["list ",1]},0,[n.$if({e1:[9,"lc.head"]},1,[n.elt("div",0,{"class":"head"},0,[n.cpt([null,"lc","head"],0,0,0)])]),n.$if({e1:[9,"!lc.$content"]},1,[n.elt("span",0,{"class":"nodata"},0,[n.$text(0,["Empty list"])])],[n.elt("ul",0,{"class":"noTextSelection"},0,[n.$foreach({e1:[9,"lc.$content"]},"idx","itm",0,1,[n.$if({e1:[9,"itm.tagName===\"@option\""]},1,[n.elt("li",{e1:[9,"lc.select(itm.value)"]},{"class":"opt"},{"click":1},[n.elt("span",{e1:[9,"{'highlight':itm.selected}"]},{"class":["item ",1]},0,[n.cpt([null,"itm","label"],0,0,0)])])],[n.$if({e1:[9,"itm.tagName===\"@separator\" &&  !itm_isfirst && !itm_islast"]},1,[n.elt("hr",0,0,0)])])]),n.$text(0,[" "])])])])];
 });
 
 
 var test = require("hsp/rt").template(["d"], function(n){
-  var _showSelection,_event,_d,_list,_empty,_update,_idx,_itm;try {_showSelection=showSelection} catch(e) {_showSelection=n.g('showSelection')};try {_event=event} catch(e) {_event=n.g('event')};try {_d=d} catch(e) {_d=n.g('d')};try {_list=list} catch(e) {_list=n.g('list')};try {_empty=empty} catch(e) {_empty=n.g('empty')};try {_update=update} catch(e) {_update=n.g('update')};try {_idx=idx} catch(e) {_idx=n.g('idx')};try {_itm=itm} catch(e) {_itm=n.g('itm')};
-  var __s = {showSelection : typeof showSelection === 'undefined' ? n.g('showSelection') : showSelection, event : typeof event === 'undefined' ? n.g('event') : event, d : typeof d === 'undefined' ? n.g('d') : d, list : typeof list === 'undefined' ? n.g('list') : list, empty : typeof empty === 'undefined' ? n.g('empty') : empty, update : typeof update === 'undefined' ? n.g('update') : update, idx : typeof idx === 'undefined' ? n.g('idx') : idx, itm : typeof itm === 'undefined' ? n.g('itm') : itm};
-  return [__s,n.$text(0,["Click on an item to select it:  "]),n.cpt([_list,"list"],{e1:[9,"showSelection(event.value)"]},{"head":"Static list","class":"listcpt"},{"select":1},[n.catt("option",{e1:[9,"d.itemName"]},{"value":"A","label":["First ",1]},0),n.catt("option",0,{"value":"B"},0,[n.$text({e1:[9,"d.itemName"]},["Second ",1])])]),n.$text(0,[" "]),n.cpt([_list,"list"],{e1:[9,"showSelection(event.value)"]},{"class":"listcpt"},{"select":1},[n.catt("head",0,0,0,[n.$text(0,["Dynamic list: "]),n.elt("a",{e1:[9,"empty()"]},{"href":"javascript:void(0)"},{"click":1},[n.$text(0,["Empty"])]),n.$text(0,[" - "]),n.elt("a",{e1:[9,"update()"]},{"href":"javascript:void(0)"},{"click":1},[n.$text(0,["Update list"])])]),n.$foreach({e1:[9,"d.items"]},"idx","itm",0,1,[n.catt("option",{e1:[9,"idx"]},{"value":["K",1]},0,[n.$text({e1:[9,"idx+1"],e2:[9,"itm"]},["",1,". ",2])])]),n.$text(0,[" "])]),n.$text(0,[" "]),n.$if({e1:[9,"d.selectedItem!==null"]},1,[n.$text({e1:[9,"d.selectedItem"]},["Last selected value: ",1])])];
+  var _showSelection,_$event,_d,_list,_empty,_update,_idx,_itm;try {_showSelection=showSelection} catch(e) {_showSelection=n.g('showSelection')};try {_$event=$event} catch(e) {_$event=n.g('$event')};try {_d=d} catch(e) {_d=n.g('d')};try {_list=list} catch(e) {_list=n.g('list')};try {_empty=empty} catch(e) {_empty=n.g('empty')};try {_update=update} catch(e) {_update=n.g('update')};try {_idx=idx} catch(e) {_idx=n.g('idx')};try {_itm=itm} catch(e) {_itm=n.g('itm')};
+  var __s = {showSelection : typeof showSelection === 'undefined' ? n.g('showSelection') : showSelection, $event : typeof $event === 'undefined' ? n.g('$event') : $event, d : typeof d === 'undefined' ? n.g('d') : d, list : typeof list === 'undefined' ? n.g('list') : list, empty : typeof empty === 'undefined' ? n.g('empty') : empty, update : typeof update === 'undefined' ? n.g('update') : update, idx : typeof idx === 'undefined' ? n.g('idx') : idx, itm : typeof itm === 'undefined' ? n.g('itm') : itm};
+  return [__s,n.$text(0,["Click on an item to select it:  "]),n.cpt([_list,"list"],{e1:[9,"showSelection($event.value)"]},{"head":"Static list","class":"listcpt"},{"select":1},[n.catt("option",{e1:[9,"d.itemName"]},{"value":"A","label":["First ",1]},0),n.catt("option",0,{"value":"B"},0,[n.$text({e1:[9,"d.itemName"]},["Second ",1])])]),n.$text(0,[" "]),n.cpt([_list,"list"],{e1:[9,"showSelection($event.value)"]},{"class":"listcpt"},{"select":1},[n.catt("head",0,0,0,[n.$text(0,["Dynamic list: "]),n.elt("a",{e1:[9,"empty()"]},{"href":"javascript:void(0)"},{"click":1},[n.$text(0,["Empty"])]),n.$text(0,[" - "]),n.elt("a",{e1:[9,"update()"]},{"href":"javascript:void(0)"},{"click":1},[n.$text(0,["Update list"])])]),n.$foreach({e1:[9,"d.items"]},"idx","itm",0,1,[n.catt("option",{e1:[9,"idx"]},{"value":["K",1]},0,[n.$text({e1:[9,"idx+1"],e2:[9,"itm"]},["",1,". ",2])])]),n.$text(0,[" "])]),n.$text(0,[" "]),n.$if({e1:[9,"d.selectedItem!==null"]},1,[n.$text({e1:[9,"d.selectedItem"]},["Last selected value: ",1])])];
 });
 
 

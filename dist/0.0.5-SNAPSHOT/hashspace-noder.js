@@ -1851,7 +1851,7 @@
      */
             createSubScope: function(ref) {
                 var vs = Object.create(ref);
-                vs["scope"] = vs;
+                vs["$scope"] = vs;
                 vs["+parent"] = ref;
                 return vs;
             }
@@ -1887,7 +1887,7 @@
                 var cbScope = Object.create(vscope);
                 //create a throw-away scope to expose additional identifiers to
                 //callback expression
-                cbScope.event = evt;
+                cbScope.$event = evt;
                 return this.getValue(cbScope, eh);
             },
             getObservablePairs: function(eh, vscope) {
@@ -2565,7 +2565,7 @@
             }
         }
         /**
- * CptWrapper class CptWrapper objects create, initializae and observe components to detect changes on their properties
+ * CptWrapper class CptWrapper objects create, initialize and observe components to detect changes on their properties
  * (or attributes) and call their onAttributeChange() or onPropertyChange() methods Such observers are necessary to
  * avoid having component observing themselves. This way, component can change their own properties through json.set()
  * without recursively being called because of their own changes This is performed by detecting if changes occur in the
@@ -2588,7 +2588,7 @@
                     this.initialized = false;
                     this.needsRefresh = true;
                     // update attribute values for simpler processing
-                    var atts = this.cpt.attributes, att, bnd;
+                    var atts = this.cpt.$attributes, att, bnd;
                     if (atts) {
                         for (var k in atts) {
                             att = atts[k];
@@ -2657,7 +2657,7 @@
                     return;
                 }
                 this.initialized = true;
-                var cpt = this.cpt, atts = cpt.attributes;
+                var cpt = this.cpt, atts = cpt.$attributes;
                 if (!cpt) {
                     return;
                 }
@@ -2764,8 +2764,8 @@
                 var callControllerCb = true;
                 // true if the onXXXChange() callback must be called on the controller
                 var att, isAttributeChange = false;
-                if (cpt.attributes) {
-                    att = cpt.attributes[nm];
+                if (cpt.$attributes) {
+                    att = cpt.$attributes[nm];
                     isAttributeChange = att !== undefined;
                     if (isAttributeChange) {
                         // adapt type if applicable
@@ -2804,7 +2804,7 @@
                             cbnm = att.onchange;
                         }
                         if (!cbnm) {
-                            cbnm = [ "on", nm.charAt(0).toUpperCase(), nm.slice(1), "Change" ].join("");
+                            cbnm = [ "$on", nm.charAt(0).toUpperCase(), nm.slice(1), "Change" ].join("");
                         }
                         if (cpt[cbnm]) {
                             cpt[cbnm].call(cpt, chg.newValue, chg.oldValue);
@@ -2848,7 +2848,7 @@
         /**
  * Create a Component wrapper and initialize it correctly according to the attributes passed as arguments
  * @param {Object} cptArgs the component arguments
- *      e.g. { nodeInstance:x, attributes:{att1:{}, att2:{}}, content:[] }
+ *      e.g. { nodeInstance:x, $attributes:{att1:{}, att2:{}}, $content:[] }
  */
         function createCptWrapper(Ctl, cptArgs) {
             var cw = new CptWrapper(Ctl), att, t, v;
@@ -2857,16 +2857,16 @@
                 var cpt = cw.cpt, ni = cptArgs.nodeInstance;
                 if (ni.isCptComponent || ni.isCptAttElement) {
                     // set the nodeInstance reference on the component
-                    var attributes = cptArgs.attributes, content = cptArgs.content;
+                    var $attributes = cptArgs.$attributes, $content = cptArgs.$content;
                     cw.nodeInstance = ni;
                     cw.cpt.nodeInstance = ni;
-                    if (attributes) {
-                        for (var k in attributes) {
+                    if ($attributes) {
+                        for (var k in $attributes) {
                             // set the template attribute value on the component instance
-                            if (attributes.hasOwnProperty(k)) {
-                                att = cw.cpt.attributes[k];
+                            if ($attributes.hasOwnProperty(k)) {
+                                att = cw.cpt.$attributes[k];
                                 t = att.type;
-                                v = attributes[k];
+                                v = $attributes[k];
                                 if (t && ATTRIBUTE_TYPES[t]) {
                                     // in case of invalid type an error should already have been logged
                                     // a type is defined - so let's convert the value
@@ -2876,12 +2876,12 @@
                             }
                         }
                     }
-                    if (content) {
-                        if (cpt.content) {
-                            log.error(ni + " Component controller cannot use 'content' for another property than child attribute elements");
+                    if ($content) {
+                        if (cpt.$content) {
+                            log.error(ni + " Component controller cannot use '$content' for another property than child attribute elements");
                         } else {
                             // create the content property on the component instance
-                            json.set(cpt, "content", content);
+                            json.set(cpt, "$content", $content);
                         }
                     }
                 }
@@ -2950,17 +2950,17 @@
                     this.ctlConstuctor = this.template.controllerConstructor;
                 }
                 var ctlProto = this.ctlConstuctor.prototype;
-                this.ctlAttributes = ctlProto.attributes;
-                this.ctlElements = ctlProto.elements;
+                this.ctlAttributes = ctlProto.$attributes;
+                this.ctlElements = ctlProto.$elements;
                 // load template arguments
                 this.loadCptAttElements();
                 // load child elements before processing the template
                 var cptArgs = {
                     nodeInstance: this,
-                    attributes: {},
-                    content: null
+                    $attributes: {},
+                    $content: null
                 };
-                var attributes = cptArgs.attributes, att;
+                var attributes = cptArgs.$attributes, att;
                 if (this.atts) {
                     // some attributes have been passed to this instance - so we push them to cptArgs
                     // so that they are set on the controller when the template are rendered
@@ -2985,7 +2985,7 @@
                     }
                 }
                 if (this.childElements) {
-                    cptArgs.content = this.getControllerContent();
+                    cptArgs.$content = this.getControllerContent();
                 }
                 return cptArgs;
             },
@@ -3303,7 +3303,7 @@
                         this.initChildComponents();
                     }
                     // Change content of the controller
-                    json.set(this.controller, "content", this.getControllerContent());
+                    json.set(this.controller, "$content", this.getControllerContent());
                     this.edirty = false;
                 }
                 // warning: the following refresh may change the component type and
@@ -3320,12 +3320,12 @@
             refreshAttributes: function() {
                 var atts = this.atts, att, ctlAtt, eh = this.eh, ctl = this.controller, v;
                 var vs = this.isCptAttElement ? this.vscope : this.parent.vscope;
-                if (atts && ctl && ctl.attributes) {
+                if (atts && ctl && ctl.$attributes) {
                     // this template has a controller
                     // let's propagate the new attribute values to the controller attributes
                     for (var i = 0, sz = this.atts.length; sz > i; i++) {
                         att = atts[i];
-                        ctlAtt = ctl.attributes[att.name];
+                        ctlAtt = ctl.$attributes[att.name];
                         // propagate changes for 1- and 2-way bound attributes
                         if (ctlAtt.type !== "template" && ctlAtt._binding !== 0) {
                             v = att.getValue(eh, vs, null);
@@ -3684,7 +3684,7 @@
      * @param {any} argvalue the argument value
      */
             updateArgument: function(argidx, argvalue) {
-                json.set(this.vscope["scope"], this.argNames[argidx], argvalue);
+                json.set(this.vscope["$scope"], this.argNames[argidx], argvalue);
             },
             /**
      * Append this root element to the DOM
@@ -6157,7 +6157,7 @@
                         argNames.push(nm);
                     }
                 }
-                vs["scope"] = vs;
+                vs["$scope"] = vs;
                 // self reference (used for variables - cf. expression handler)
                 var root = null;
                 if (tplctxt.$constructor && tplctxt.$constructor === $CptNode) {

@@ -62,7 +62,7 @@ module.exports = Hello;</span></code></pre>
 <span class="keyword">var</span> HelloCtrl = klass({
     <span class="comment">// declaring "name" attribute so that we can pass it</span>
     <span class="comment">// when instantiating a template via `Hello({name:"World"})`</span>
-    attributes: {
+    <span class="variable">$attributes</span>: {
         <span class="string">"name"</span> : { type : <span class="string">"string"</span> }
     },
     clear : <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>

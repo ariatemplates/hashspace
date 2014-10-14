@@ -5,11 +5,11 @@ var plunkerExport = require("./plunker.js");
 var Class = require("hsp/klass");
 
 var DescriptionCtrl = Class({
-    attributes: {
+    $attributes: {
         sample: { type: "object", binding: "1-way" }
     },
     $init: function() {
-        this.onSampleChange();
+        this.$onSampleChange();
     },
     $refresh: function() {
         if (!this.sample) return;
@@ -22,7 +22,7 @@ var DescriptionCtrl = Class({
         }
     },
 
-    onSampleChange: function() {
+    $onSampleChange: function() {
         if (!this.sample) return;
         var parts = this.sample.description.split("[#output]");
         this.before = parts[0];
@@ -48,7 +48,7 @@ var DescriptionCtrl = Class({
 <export template mainLayout(data, playground)>
     <#sampleList data="{data}" playground="{playground}"/>
 
-    <div class="hsp-sample {{'hsp-sample-full': data.navCollapsed}}" onclick="{hideNavHover(event, data)}">
+    <div class="hsp-sample {{'hsp-sample-full': data.navCollapsed}}" onclick="{hideNavHover($event, data)}">
         <!--div class="actions">
             <a href="" title="Toggle code panel"><span class="icon icon-code icon-active"></span></a>
             <a href="" title="Toggle description panel"><span class="icon icon-preview icon-active"></span></a>
@@ -56,11 +56,11 @@ var DescriptionCtrl = Class({
         <h4 class="title">{data.sampleTitle}</h4>
 
         <div class="editor" style="width: {data.splitterPos}">
-            <button class="plunker" title="Export this code to Plunker" onclick="{plunkerExport(event, playground)}">Edit in Plunker</button>
+            <button class="plunker" title="Export this code to Plunker" onclick="{plunkerExport($event, playground)}">Edit in Plunker</button>
             <div id="editor"></div>
         </div>
 
-        <#splitter type="horizontal" size="3" onrelease="{splitterReleased(event.position, data, playground)}"/>
+        <#splitter type="horizontal" size="3" onrelease="{splitterReleased($event.position, data, playground)}"/>
 
         <div class="description" style="left: {data.splitterPos}">
             <div>
@@ -107,12 +107,12 @@ function hideNavHover(event, data) {
 
 <template sampleList(data, playground)>
     <div class="samples-list {{'samples-list-collapsed': data.navCollapsed}}"
-        onclick="{hideNavHover(event, data)}">
+        onclick="{hideNavHover($event, data)}">
 
-        <a href="" class="collapse" title="{data.navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}" onclick="{collapseNav(event, data, playground)}"><span class="icon"></span></a>
+        <a href="" class="collapse" title="{data.navCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}" onclick="{collapseNav($event, data, playground)}"><span class="icon"></span></a>
 
         {if data.navCollapsed}
-            <a href="" class="showlist action" title="See samples list" onclick="{showListHover(event, data)}"><span class="icon"></span></a>
+            <a href="" class="showlist action" title="See samples list" onclick="{showListHover($event, data)}"><span class="icon"></span></a>
             <!--a href="" class="action" title="Toggle code panel"><span class="icon icon-code icon-active"></span></a>
             <a href="" class="action" title="Toggle description panel"><span class="icon icon-preview icon-active"></span></a-->
         {else}

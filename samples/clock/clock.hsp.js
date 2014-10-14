@@ -13,7 +13,7 @@ var CITIES={
 }
 
 var ClockController=klass({
-	attributes:{
+	$attributes:{
 		"city":{type:"string",binding:"1-way",defaultValue:"PAR"}
 	},
 	$init:function() {
@@ -21,13 +21,13 @@ var ClockController=klass({
 		for (var i=0;60>i;i++) {
 			$set(this.minuteMarkers, i, {major:(i%5===0)});
 		}
-		this.onCityChange();
+		this.$onCityChange();
 		$set(this, "_iid", setInterval(this.tick.bind(this),100));
 	},
 	$dispose:function() {
 		clearInterval(this._iid);
 	},
-	onCityChange:function() {
+	$onCityChange:function() {
 		// dynamic city change: check city validity and refresh the display
 		if (!CITIES[this.city]) {
 			// unsupported city

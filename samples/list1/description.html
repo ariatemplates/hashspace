@@ -2,8 +2,8 @@
 [#output]
 <p>As you can see from the sample code, supporting sub-elements requires few basic steps:</p>
 <ul>
-<li>first, the sub-elements have to be declared through a <strong>elements</strong> collection on the component&#39;s prototype.</li>
-<li>then, the component&#39;s template simply needs to scan the <strong>content</strong> collection that is automatically created on the controller instance to reference the element entities used in the component&#39;s parent template.</li>
+<li>first, the sub-elements have to be declared through a <strong>$elements</strong> collection on the component&#39;s prototype.</li>
+<li>then, the component&#39;s template simply needs to scan the <strong>$content</strong> collection that is automatically created on the controller instance to reference the element entities used in the component&#39;s parent template.</li>
 </ul>
-<p>The <em>content</em> collection is an ordered list that can be dynamically modified through <em>{if}</em> or <em>{foreach}</em> control statements. When template attributes are used in combination with sub-elements, the <em>content</em> collection will not reference them, as the template attributes will be directly referenced and as such don&#39;t need to be integrated in the element&#39;s content collection (cf. <em>@head</em> attribute in the example).</p>
+<p>The <em>$content</em> collection is an ordered list that can be dynamically modified through <em>{if}</em> or <em>{foreach}</em> control statements. When template attributes are used in combination with sub-elements, the <em>$content</em> collection will not reference them, as the template attributes will be directly referenced and as such don&#39;t need to be integrated in the element&#39;s content collection (cf. <em>@head</em> attribute in the example).</p>
 

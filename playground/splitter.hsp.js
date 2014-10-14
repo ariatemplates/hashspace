@@ -7,7 +7,7 @@ var $set=require("hsp/$set");
 var Class = require("hsp/klass");
 
 var SplitterCtrl = Class({
-    attributes: {
+    $attributes: {
         "type": { type: "string", defaultValue: "horizontal" },
         "size": { type: "int", defaultValue: 3 },
         "onrelease": { type: "callback" }
@@ -80,9 +80,9 @@ var SplitterCtrl = Class({
 
 
 var splitter = require("hsp/rt").template({ctl:[SplitterCtrl,"SplitterCtrl"],ref:"controller"}, function(n){
-  var _controller,_event;try {_controller=controller} catch(e) {_controller=n.g('controller')};try {_event=event} catch(e) {_event=n.g('event')};
-  var __s = {controller : typeof controller === 'undefined' ? n.g('controller') : controller, event : typeof event === 'undefined' ? n.g('event') : event};
-  return [__s,n.elt("div",{e1:[9,"controller.onMouseDown(event)"]},{"class":"splitter"},{"mousedown":1}),n.elt("div",{e1:[9,"{'splitter-proxy-hidden': !controller.active}"]},{"class":["splitter-proxy ",1]},0)];
+  var _controller,_$event;try {_controller=controller} catch(e) {_controller=n.g('controller')};try {_$event=$event} catch(e) {_$event=n.g('$event')};
+  var __s = {controller : typeof controller === 'undefined' ? n.g('controller') : controller, $event : typeof $event === 'undefined' ? n.g('$event') : $event};
+  return [__s,n.elt("div",{e1:[9,"controller.onMouseDown($event)"]},{"class":"splitter"},{"mousedown":1}),n.elt("div",{e1:[9,"{'splitter-proxy-hidden': !controller.active}"]},{"class":["splitter-proxy ",1]},0)];
 });
 
 
