@@ -136,6 +136,9 @@ var $ForEachNode = klass({
                 for (var i = 0, sz = this.childNodes.length; sz > i; i++) {
                     this.childNodes[i].replaceNodeBy(df, this.node);
                 }
+                if (this.rendered) {
+                    this.afterDOMInsert();
+                }
 
                 // TODO delete and recreate foreach items on a doc fragment
                 // Note: updateCollection could be used as well in this case - but when the whole collection
@@ -240,6 +243,9 @@ var $ForEachNode = klass({
                     }
                     this.node.insertBefore(ni.node, refNode);
                     ni.replaceNodeBy(ni.node, this.node);
+                    if (this.rendered) {
+                        ni.afterDOMInsert();
+                    }
                     // update current array
                     current.splice(i, 0, titm);
                     sz += 1;
@@ -271,6 +277,9 @@ var $ForEachNode = klass({
                     // create new item
                     var ni = this.createItem(titm, i, i === 0, i === maxsz - 1, doc.createDocumentFragment());
                     this.node.insertBefore(ni.node, this.node2);
+                    if (this.rendered) {
+                        ni.afterDOMInsert();
+                    }
                     ni.replaceNodeBy(ni.node, this.node);
                 }
             }

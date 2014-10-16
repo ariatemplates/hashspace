@@ -33,8 +33,8 @@ var CPT_TYPES={
 var DOCUMENT_FRAGMENT_NODE = 11;
 
 /**
- * Root node - created at the root of each template 
- * Contains the listeners requested by the child nodes 
+ * Root node - created at the root of each template
+ * Contains the listeners requested by the child nodes
  * Is replaced by the $CptNode (child class) when the template is inserted in another template
  */
 var $RootNode = klass({
@@ -265,25 +265,30 @@ var $RootNode = klass({
             // recursively updates all reference to the previous doc fragment node
             this.replaceNodeBy(df, c);
         }
-        this._triggersAfterRender(this);
+
+        var parentNode = c;
+        while (parentNode.parentNode) {
+            parentNode = parentNode.parentNode;
+        }
+        if (parentNode.body) {
+            this.afterDOMInsert();
+        }
         return this;
     },
 
     /**
-     * Recursively triggers the $afterRender method in all controllers of the TNode root and its children.
-     * @param {TNode} the root
+     * Recursively call the afterDOMInsert method in child nodes and the $onDOMInsert method in the controller, if any.
      */
-    _triggersAfterRender:function (tnode) {
-        if (tnode.childNodes && tnode.childNodes.length > 0) {
-            for (var i = 0; i < tnode.childNodes.length; i++) {
-                this._triggersAfterRender(tnode.childNodes[i]);
-            }
-        }
-        if (tnode.controller && tnode.controller.$afterRender) {
-            tnode.controller.$afterRender();
+    afterDOMInsert:function () {
+        TNode.afterDOMInsert.call(this);
+        if (this.controller && this.controller.$onDOMInsert) {
+            this.controller.$onDOMInsert();
         }
     }
-});
+
+
+
+    });
 
 /**
  * Return the object referenced by the path given as argument
@@ -411,7 +416,7 @@ var $CptNode = klass({
             ni.node2=node2;
 
             if (p.cptType==="$CptAttInsert") {
-                // this cpt is used to an insert another component passed as attribute 
+                // this cpt is used to an insert another component passed as attribute
                 ni.initCpt(po);
             } else {
                 // we are in a template or component cpt
@@ -425,7 +430,7 @@ var $CptNode = klass({
             // create an element to avoid generating other errors
             ni=this.createCptInstance("$CptAttInsert",parent);
         }
-        
+
         return ni;
     },
 
@@ -433,12 +438,12 @@ var $CptNode = klass({
      * Calculates the object referenced by the path and the component type
      * @return {Object} object with the following properties:
      *        pathObject: {Object} the object referenced by the path
-     *        cptType: {String} one of the following option: "$CptComponent", 
+     *        cptType: {String} one of the following option: "$CptComponent",
      *                 "$CptTemplate", "$CptAttInsert" or "InvalidComponent"
      */
     getPathData:function(path, vscope) {
-        // determine the type of this component: 
-        // - either a template - e.g. <#mytemplate foo="bar"/> 
+        // determine the type of this component:
+        // - either a template - e.g. <#mytemplate foo="bar"/>
         //   -> instance will extend $CptTemplate
         // - a component with controller - e.g. <#mycpt foo="bar"/>
         //   -> instance will extend $CptComponent
@@ -513,7 +518,7 @@ var $CptNode = klass({
             nd.appendChild(this.node2);
         }
     },
-    
+
     /**
      * Callback called when a controller attribute or a template attribute has changed
      */
@@ -604,7 +609,7 @@ var $CptNode = klass({
             } else {
                 if (this.refreshAttributes) {
                     this.refreshAttributes();
-                    // for component and sub-templates the original vscope is substituted 
+                    // for component and sub-templates the original vscope is substituted
                     // to the one of the component- or sub-template
                     // so we need to revert to the parent scope to observe the correct objects
                     var vs=this.vscope;
@@ -668,7 +673,7 @@ var $CptNode = klass({
         var sz=pos.length;
 
         this._pathChgeCb = this.onPathChange.bind(this);
-    
+
         for (var i=0;sz>i;i++) {
             json.observe(pos[i], this._pathChgeCb);
         }
@@ -747,7 +752,7 @@ var $CptAttElement = klass({
     isCptAttElement : true,
 
     /**
-     * $CptAttElement generator 
+     * $CptAttElement generator
      */
     $constructor : function (name, exps, attcfg, ehcfg, children) {
         this.name = name;
@@ -789,7 +794,7 @@ var $CptAttElement = klass({
                 if (p.ctlAttributes) {
                     attDef=p.ctlAttributes[this.name];
                 }
-                
+
                 if (!eltDef && !attDef) {
                     // invalid elt
                     log.error(this.info+" Element not supported by its parent component");

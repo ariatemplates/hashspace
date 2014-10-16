@@ -104,6 +104,9 @@ var $IfNode = klass({
                 }
                 this.replaceNodeBy(this.node, this.parent.node); // recursively remove doc fragment reference
                 this.node.insertBefore(df, this.node2);
+                if (this.rendered) {
+                    this.afterDOMInsert();
+                }
                 this.isDOMempty = false;
             }
         }
