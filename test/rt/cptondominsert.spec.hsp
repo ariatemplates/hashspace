@@ -1,0 +1,229 @@
+<script>
+var klass = require("hsp/klass"),
+    hsp=require("hsp/rt"),
+    json=require("hsp/json");
+
+var logs = [];
+var wrongLogs = [];
+
+var data = {
+    shown1 : false,
+    shown2 : true,
+    arr : [{v : 1}, {v : 2}, {v : 3}]
+};
+
+
+var dataTwo = {
+    shown1 : false,
+    shown2 : true,
+    arr : [{v : 1}, {v : 2}, {v : 3}]
+};
+
+
+var counter = 0;
+
+var PlaceholderCtrl = klass({
+    $init : function() {
+        this.id = counter;
+        counter++;
+    },
+    $refresh : function() {},
+
+    $onDOMInsert : function () {
+        if (document.getElementById("__hsp_ph" + this.id)){
+            logs.push(this.id);
+        } else {
+            wrongLogs.push(this.id);
+        }
+    }
+});
+
+var clear = function () {
+      logs = [];
+      wrongLogs = [];
+}
+
+</script>
+
+<template placeholder using c:PlaceholderCtrl>
+    <div id="__hsp_ph{c.id}">{c.id}</div>
+</template>
+
+
+
+<template testTemplateOne(d)>
+  <#placeholder />
+  {if d.shown1}
+    <#placeholder />
+  {/if}
+  {if d.shown2}
+    <#placeholder />
+  {/if}
+</template>
+
+<template testTemplateTwo(d)>
+  {foreach a in d.arr}
+      <#placeholder />
+  {/foreach}
+</template>
+
+
+<script>
+
+describe("Component Nodes", function () {
+    var elementOne, elementTwo, elementThree, elementFour;
+
+    var expectEmptyLogs = function () {
+        expect(logs).to.eql([]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+    };
+
+    before(function () {
+        elementOne = document.createElement("div");
+        document.body.appendChild(elementOne);
+        elementTwo = document.createElement("div");
+        document.body.appendChild(elementTwo);
+
+        // These elements are not appended to the dom in order to check that the $onDomInsert is not called in that case
+        elementThree = document.createElement("div");
+        elementFour = document.createElement("div");
+    });
+
+    after(function () {
+        document.body.removeChild(elementOne);
+        elementOne = null;
+        document.body.removeChild(elementTwo);
+        elementTwo = null;
+        elementThree = null;
+        elementFour = null;
+    });
+
+    // tests in which the templates are rendered inside a node that is appended to the dom
+    it("$onDOMInsert is not called before rendering", function() {
+        json.set(data, "shown1", true);
+        json.set(data, "shown2", false);
+        hsp.refresh();
+        expectEmptyLogs();
+
+        data.arr.splice(1, 1, {v : 10});
+        expect(wrongLogs).to.eql([]);
+        hsp.refresh();
+        expectEmptyLogs();
+    });
+
+    it("$onDOMInsert is called upon rendering", function() {
+        testTemplateOne(data).render(elementOne);
+        expect(logs).to.eql([0, 1]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        testTemplateTwo(data).render(elementTwo);
+        expect(logs).to.eql([2, 3, 4]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+    });
+
+    it("$onDOMInsert is called when $if node is refreshed", function() {
+        json.set(data, "shown1", false);
+        json.set(data, "shown2", true);
+        hsp.refresh();
+        json.set(data, "shown1", true);
+        hsp.refresh();
+        expect(logs).to.eql([5, 6]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        json.set(data, "shown1", false);
+        hsp.refresh();
+        expectEmptyLogs();
+    });
+
+    it("$onDOMInsert is called when $foreach node is refreshed", function() {
+        data.arr.push({v : 6});
+        hsp.refresh();
+        expect(logs).to.eql([7]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        data.arr.pop();
+        hsp.refresh();
+        expectEmptyLogs();
+
+        data.arr.splice(2, 0);
+        hsp.refresh();
+        expectEmptyLogs();
+
+        data.arr.splice(2, 0, {v : 3}, {v : 9});
+        hsp.refresh();
+        expect(logs).to.eql([8, 9]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+        data.arr = [];
+        hsp.refresh();
+        expectEmptyLogs();
+
+        data.arr.splice(0, 0, {v : 3}, {v : 9});
+        hsp.refresh();
+        expect(logs).to.eql([10, 11]);
+        expect(wrongLogs).to.eql([]);
+        clear();
+
+    });
+
+    // tests in which the templates are rendered inside a node that is NOT appended to the dom
+    it("$onDOMInsert is not called upon rendering in an element that is not in the real dom", function() {
+        testTemplateOne(dataTwo).render(elementThree);
+        expectEmptyLogs();
+
+        testTemplateTwo(dataTwo).render(elementFour);
+        expectEmptyLogs();
+    });
+
+    it("$onDOMInsert is not called when $if node is refreshed  - not in DOM", function() {
+        json.set(dataTwo, "shown1", false);
+        json.set(dataTwo, "shown2", true);
+        hsp.refresh();
+        json.set(dataTwo, "shown1", true);
+        hsp.refresh();
+        expectEmptyLogs();
+
+        json.set(dataTwo, "shown1", false);
+        hsp.refresh();
+        expectEmptyLogs();
+    });
+
+    it("$onDOMInsert is not called when $foreach node is refreshed - not in DOM", function() {
+        dataTwo.arr.push({v : 6});
+        hsp.refresh();
+        expectEmptyLogs();
+
+        dataTwo.arr.pop();
+        hsp.refresh();
+        expectEmptyLogs();
+
+        dataTwo.arr.splice(2, 0);
+        hsp.refresh();
+        expectEmptyLogs();
+
+        dataTwo.arr.splice(2, 0, {v : 3}, {v : 9});
+        hsp.refresh();
+        expectEmptyLogs();
+
+        dataTwo.arr = [];
+        hsp.refresh();
+        expectEmptyLogs();
+
+        dataTwo.arr.splice(0, 0, {v : 3}, {v : 9});
+        hsp.refresh();
+        expectEmptyLogs();
+    });
+});
+
+
+
+
+
+
+</script>

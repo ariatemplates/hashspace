@@ -37,6 +37,7 @@ var TNode = klass({
     isCptContent : false, // tells if a node instance is a child of a component (used to raise edirty flags)
     obsPairs : null,      // Array of observed [obj, property] pairs associated to this object
     needSubScope : false, // true if a dedicated sub-scope should be created for this node
+    rendered : false,
 
     $constructor : function (exps,observeExpTarget) {
         this.isStatic = (exps === 0);
@@ -418,7 +419,20 @@ var TNode = klass({
         } else {
             return "INDEFINITE";
         }
+    },
+
+    /**
+     * Recursively call the afterDOMInsert method in child nodes.
+     */
+    afterDOMInsert:function () {
+        this.rendered = true;
+        if (this.childNodes && this.childNodes.length > 0) {
+            for (var i = 0; i < this.childNodes.length; i++) {
+                this.childNodes[i].afterDOMInsert();
+            }
+        }
     }
+
 });
 
 /**
