@@ -1,0 +1,37 @@
+##### Template:
+<template id="foo" ctrl = " MyObj.MyCtrl  as  c ">
+   Hello World!
+</template>
+
+##### Parsed Tree:
+
+[
+  { type: 'template', name: 'foo',
+    controller: {
+      path : ["MyObj", "MyCtrl"],
+    },
+    controllerRef : 'c',
+    content: [{
+      type: 'text', value: 'Hello World!'
+    }]
+  }
+]
+
+##### Syntax Tree:
+
+[
+  { type: 'template', name: 'foo',
+    controller: {
+      path : ["MyObj", "MyCtrl"],
+      ref : 'c'
+    },
+    content: [{
+      type: 'text', value: 'Hello World!'
+    }]
+  }
+]
+
+##### Template Code 1
+foo=[__s,
+  n.$text(0, ["Hello World!"])
+]

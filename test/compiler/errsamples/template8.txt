@@ -11,7 +11,7 @@
     "column": 1,
     "code": '<template id="test" args="foo,_bar" } blah',
     "suberrors" : [
-      "invalid attribute name: unexpected character '}'",
+      "invalid attribute name: unexpected character(s) found in '}'",
       "missing closing brace for <template",
       "invalid template attribute: blah"
     ]

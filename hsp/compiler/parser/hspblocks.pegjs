@@ -52,7 +52,10 @@ TemplateStart "template statement"
     var attMap = {};        // { attrib1 : ..., attrib2: ...}
     var acceptedAttribs = ['id', 'args', 'ctrl', 'export', 'export-module'];
 
-    var code = "<template";  // to be used in error messages
+    // To be used in error messages.
+    // Note that we're rebuilding code from partials, so it may differ when compared with real code
+    // when it comes to spacing etc.
+    var code = "<template";
 
     var templateId = null;
     var modifier = null;
@@ -71,7 +74,7 @@ TemplateStart "template statement"
                 // att.errors foreach, line, column
                 var err = att.errors[k];
                 if (err.errorType == "name") {
-                    errors.push("invalid attribute name: unexpected character '" + err.value + "'");
+                    errors.push("invalid attribute name: unexpected character(s) found in '" + err.value + "'");
                 } else if (err.errorType = "tail") {
                     errors.push("unexpected character '" + err.tail + "' found at the end of attribute value");
                 } else {
@@ -86,12 +89,18 @@ TemplateStart "template statement"
 
             var codeChunk = " " + att.name;
             if (att.type == "attribute") {
-                if (att.value && att.value[0]) {
-                    codeChunk += ('="' + att.value[0].value + '"');
+                // foo     => ""
+                // foo=""  => []
+                // foo="x" => [{"value":"x"}]
+                if (att.value) {
+                    var valueOfAtt = att.value[0] ? att.value[0].value : "";
+                    codeChunk += ('="' + valueOfAtt + '"');
                 }
                 code += codeChunk;
             } else if (att.type == "tpl-arguments") {
-                code += " " + att.name + '="' + att.args.join(",")+ '"';
+                code += " " + att.name + '="' + att.args.join(",") + '"';
+            } else if (att.type == "tpl-controller") {
+                code += " " + att.name + '="' + att.controller.code + " as " + att.controllerRef + '"';
             }
         }
     }
@@ -130,12 +139,24 @@ TemplateStart "template statement"
     // instead of the specialized rules for maching 'args' / 'ctrl' (TemplateCtrlAttribute / TemplateArgsAttribute)
     // => that means the value provided was invalid
     if (attMap["args"]) {
+        var att = attMap["args"];
+        if (att.type === "tpl-arguments" && Array.isArray(att.args) && att.args.length === 0) {
+            // let's forbid empty args for consistency with ctrl;
+            // set appropriate type and value to have error handling consistent with that of ctrl
+            attMap["args"] = {
+               type : "attribute",
+               value : []
+            }
+        }
+
         if (attMap["args"].type !== "tpl-arguments") {
             var value = attMap["args"].value;
-            if (typeof value == "object") {
-                value = value[0].value;
-            } else {
+            if (value === "") {
                 value = "[empty value]";
+            } else if (Array.isArray(value) && value.length === 0) {
+                value = "[empty string]";
+            } else {
+                value = value[0].value;
             }
             errors.push("invalid value of 'args' attribute: " + value);
         } else {
@@ -143,13 +164,18 @@ TemplateStart "template statement"
         }
     }
 
+    // ctrl     => ""
+    // ctrl=""  => []
+    // ctrl="x" => [{"value":"x"}]
     if (attMap["ctrl"]) {
         if (attMap["ctrl"].type !== "tpl-controller") {
             var value = attMap["ctrl"].value;
-            if (typeof value == "object") {
-                value = value[0].value; // TODO value can be "" or [] or [0].value
-            } else {
+            if (value === "") {
                 value = "[empty value]";
+            } else if (Array.isArray(value) && value.length === 0) {
+                value = "[empty string]";
+            } else {
+                value = value[0].value;
             }
             errors.push("invalid value of 'ctrl' attribute: " + value);
         } else {
@@ -374,9 +400,16 @@ HTMLAttribute
     }
     else {
       var errors = [];
+      var code;
       if (typeof attName.tail === "undefined" || attName.tail && attName.tail.length) {
-        errors.push({errorType: "name", value: attName.name + (attName.tail && attName.tail.length > 0?attName.tail.join(''):""), line: line(), column: column()});
+        var tailStr = (attName.tail && attName.tail.length > 0 ? attName.tail.join('') : "");
+        var nameStr = attName.name + tailStr;
+        errors.push({errorType: "name", value: nameStr, line: line(), column: column()});
+        code = nameStr;
+      } else {
+        code = attName.name;
       }
+
       if (!isValueValid) {
         errors.push({errorType: "value", value: v.value});
       }
@@ -386,8 +419,7 @@ HTMLAttribute
       if (v2 != null && v2.value && v2.value.length > 0) {
         errors.push({errorType: "invalidquotes", value: v2.value, line: v2.line, column: v2.column});
       }
-      var code = attName.name;
-      if (v) {
+      if (v && v.value && v.value[0]) {
         code += '="' + v.value[0].value + '"';
         if (v.tail) {
             code += v.tail.join('');

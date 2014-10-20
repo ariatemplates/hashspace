@@ -1,0 +1,28 @@
+##### Template:
+
+<template id="foo" export="bar">
+   Hello World!
+</template>
+
+##### Parsed Tree:
+
+[
+  { type: 'plaintext', value: '\n'},
+  { type: 'template', name: 'foo', modifier: {type:'export', exportName: "bar"}, args: [], content: [
+    { type: 'text', value: 'Hello World!' }
+  ]}
+]
+
+##### Syntax Tree:
+
+[
+  { type: 'plaintext', value: '\n'},
+  { type: 'template', name: 'foo', isExport:true, args: [], content: [
+    { type: 'text', value: 'Hello World!' }
+  ]}
+]
+
+##### Template Code 1
+foo=[__s,
+  n.$text(0, ["Hello World!"])
+]

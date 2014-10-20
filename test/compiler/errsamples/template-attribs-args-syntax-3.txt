@@ -1,0 +1,17 @@
+##### Template:
+<template id="id" args="foo,bar,">
+  test
+</template>
+
+##### Errors:
+[
+  {
+    "description": "Invalid template declaration",
+    "line": 1,
+    "column": 1,
+    "code": '<template id="id" args="foo,bar,">',
+    "suberrors" : [
+        "invalid value of 'args' attribute: foo,bar,"
+    ]
+  }
+]
