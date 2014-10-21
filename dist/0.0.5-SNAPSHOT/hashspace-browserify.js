@@ -1918,6 +1918,9 @@ var $ForEachNode = klass({
                 for (var i = 0, sz = this.childNodes.length; sz > i; i++) {
                     this.childNodes[i].replaceNodeBy(df, this.node);
                 }
+                if (this.rendered) {
+                    this.afterDOMInsert();
+                }
 
                 // TODO delete and recreate foreach items on a doc fragment
                 // Note: updateCollection could be used as well in this case - but when the whole collection
@@ -2022,6 +2025,9 @@ var $ForEachNode = klass({
                     }
                     this.node.insertBefore(ni.node, refNode);
                     ni.replaceNodeBy(ni.node, this.node);
+                    if (this.rendered) {
+                        ni.afterDOMInsert();
+                    }
                     // update current array
                     current.splice(i, 0, titm);
                     sz += 1;
@@ -2053,6 +2059,9 @@ var $ForEachNode = klass({
                     // create new item
                     var ni = this.createItem(titm, i, i === 0, i === maxsz - 1, doc.createDocumentFragment());
                     this.node.insertBefore(ni.node, this.node2);
+                    if (this.rendered) {
+                        ni.afterDOMInsert();
+                    }
                     ni.replaceNodeBy(ni.node, this.node);
                 }
             }
@@ -2468,6 +2477,9 @@ var $IfNode = klass({
                 }
                 this.replaceNodeBy(this.node, this.parent.node); // recursively remove doc fragment reference
                 this.node.insertBefore(df, this.node2);
+                if (this.rendered) {
+                    this.afterDOMInsert();
+                }
                 this.isDOMempty = false;
             }
         }
@@ -2762,8 +2774,8 @@ var CPT_TYPES={
 var DOCUMENT_FRAGMENT_NODE = 11;
 
 /**
- * Root node - created at the root of each template 
- * Contains the listeners requested by the child nodes 
+ * Root node - created at the root of each template
+ * Contains the listeners requested by the child nodes
  * Is replaced by the $CptNode (child class) when the template is inserted in another template
  */
 var $RootNode = klass({
@@ -2994,25 +3006,30 @@ var $RootNode = klass({
             // recursively updates all reference to the previous doc fragment node
             this.replaceNodeBy(df, c);
         }
-        this._triggersAfterRender(this);
+
+        var parentNode = c;
+        while (parentNode.parentNode) {
+            parentNode = parentNode.parentNode;
+        }
+        if (parentNode.body) {
+            this.afterDOMInsert();
+        }
         return this;
     },
 
     /**
-     * Recursively triggers the $afterRender method in all controllers of the TNode root and its children.
-     * @param {TNode} the root
+     * Recursively call the afterDOMInsert method in child nodes and the $onDOMInsert method in the controller, if any.
      */
-    _triggersAfterRender:function (tnode) {
-        if (tnode.childNodes && tnode.childNodes.length > 0) {
-            for (var i = 0; i < tnode.childNodes.length; i++) {
-                this._triggersAfterRender(tnode.childNodes[i]);
-            }
-        }
-        if (tnode.controller && tnode.controller.$afterRender) {
-            tnode.controller.$afterRender();
+    afterDOMInsert:function () {
+        TNode.afterDOMInsert.call(this);
+        if (this.controller && this.controller.$onDOMInsert) {
+            this.controller.$onDOMInsert();
         }
     }
-});
+
+
+
+    });
 
 /**
  * Return the object referenced by the path given as argument
@@ -3140,7 +3157,7 @@ var $CptNode = klass({
             ni.node2=node2;
 
             if (p.cptType==="$CptAttInsert") {
-                // this cpt is used to an insert another component passed as attribute 
+                // this cpt is used to an insert another component passed as attribute
                 ni.initCpt(po);
             } else {
                 // we are in a template or component cpt
@@ -3154,7 +3171,7 @@ var $CptNode = klass({
             // create an element to avoid generating other errors
             ni=this.createCptInstance("$CptAttInsert",parent);
         }
-        
+
         return ni;
     },
 
@@ -3162,12 +3179,12 @@ var $CptNode = klass({
      * Calculates the object referenced by the path and the component type
      * @return {Object} object with the following properties:
      *        pathObject: {Object} the object referenced by the path
-     *        cptType: {String} one of the following option: "$CptComponent", 
+     *        cptType: {String} one of the following option: "$CptComponent",
      *                 "$CptTemplate", "$CptAttInsert" or "InvalidComponent"
      */
     getPathData:function(path, vscope) {
-        // determine the type of this component: 
-        // - either a template - e.g. <#mytemplate foo="bar"/> 
+        // determine the type of this component:
+        // - either a template - e.g. <#mytemplate foo="bar"/>
         //   -> instance will extend $CptTemplate
         // - a component with controller - e.g. <#mycpt foo="bar"/>
         //   -> instance will extend $CptComponent
@@ -3242,7 +3259,7 @@ var $CptNode = klass({
             nd.appendChild(this.node2);
         }
     },
-    
+
     /**
      * Callback called when a controller attribute or a template attribute has changed
      */
@@ -3333,7 +3350,7 @@ var $CptNode = klass({
             } else {
                 if (this.refreshAttributes) {
                     this.refreshAttributes();
-                    // for component and sub-templates the original vscope is substituted 
+                    // for component and sub-templates the original vscope is substituted
                     // to the one of the component- or sub-template
                     // so we need to revert to the parent scope to observe the correct objects
                     var vs=this.vscope;
@@ -3397,7 +3414,7 @@ var $CptNode = klass({
         var sz=pos.length;
 
         this._pathChgeCb = this.onPathChange.bind(this);
-    
+
         for (var i=0;sz>i;i++) {
             json.observe(pos[i], this._pathChgeCb);
         }
@@ -3476,7 +3493,7 @@ var $CptAttElement = klass({
     isCptAttElement : true,
 
     /**
-     * $CptAttElement generator 
+     * $CptAttElement generator
      */
     $constructor : function (name, exps, attcfg, ehcfg, children) {
         this.name = name;
@@ -3518,7 +3535,7 @@ var $CptAttElement = klass({
                 if (p.ctlAttributes) {
                     attDef=p.ctlAttributes[this.name];
                 }
-                
+
                 if (!eltDef && !attDef) {
                     // invalid elt
                     log.error(this.info+" Element not supported by its parent component");
@@ -6336,6 +6353,7 @@ var TNode = klass({
     isCptContent : false, // tells if a node instance is a child of a component (used to raise edirty flags)
     obsPairs : null,      // Array of observed [obj, property] pairs associated to this object
     needSubScope : false, // true if a dedicated sub-scope should be created for this node
+    rendered : false,
 
     $constructor : function (exps,observeExpTarget) {
         this.isStatic = (exps === 0);
@@ -6717,7 +6735,20 @@ var TNode = klass({
         } else {
             return "INDEFINITE";
         }
+    },
+
+    /**
+     * Recursively call the afterDOMInsert method in child nodes.
+     */
+    afterDOMInsert:function () {
+        this.rendered = true;
+        if (this.childNodes && this.childNodes.length > 0) {
+            for (var i = 0; i < this.childNodes.length; i++) {
+                this.childNodes[i].afterDOMInsert();
+            }
+        }
     }
+
 });
 
 /**

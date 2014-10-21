@@ -1948,6 +1948,7 @@
             // Array of observed [obj, property] pairs associated to this object
             needSubScope: false,
             // true if a dedicated sub-scope should be created for this node
+            rendered: false,
             $constructor: function(exps, observeExpTarget) {
                 this.isStatic = exps === 0;
                 if (!this.isStatic) {
@@ -2299,6 +2300,17 @@
                     return "CONTENT";
                 } else {
                     return "INDEFINITE";
+                }
+            },
+            /**
+     * Recursively call the afterDOMInsert method in child nodes.
+     */
+            afterDOMInsert: function() {
+                this.rendered = true;
+                if (this.childNodes && this.childNodes.length > 0) {
+                    for (var i = 0; i < this.childNodes.length; i++) {
+                        this.childNodes[i].afterDOMInsert();
+                    }
                 }
             }
         });
@@ -3498,8 +3510,8 @@
         };
         var DOCUMENT_FRAGMENT_NODE = 11;
         /**
- * Root node - created at the root of each template 
- * Contains the listeners requested by the child nodes 
+ * Root node - created at the root of each template
+ * Contains the listeners requested by the child nodes
  * Is replaced by the $CptNode (child class) when the template is inserted in another template
  */
         var $RootNode = klass({
@@ -3721,21 +3733,22 @@
                     // recursively updates all reference to the previous doc fragment node
                     this.replaceNodeBy(df, c);
                 }
-                this._triggersAfterRender(this);
+                var parentNode = c;
+                while (parentNode.parentNode) {
+                    parentNode = parentNode.parentNode;
+                }
+                if (parentNode.body) {
+                    this.afterDOMInsert();
+                }
                 return this;
             },
             /**
-     * Recursively triggers the $afterRender method in all controllers of the TNode root and its children.
-     * @param {TNode} the root
+     * Recursively call the afterDOMInsert method in child nodes and the $onDOMInsert method in the controller, if any.
      */
-            _triggersAfterRender: function(tnode) {
-                if (tnode.childNodes && tnode.childNodes.length > 0) {
-                    for (var i = 0; i < tnode.childNodes.length; i++) {
-                        this._triggersAfterRender(tnode.childNodes[i]);
-                    }
-                }
-                if (tnode.controller && tnode.controller.$afterRender) {
-                    tnode.controller.$afterRender();
+            afterDOMInsert: function() {
+                TNode.afterDOMInsert.call(this);
+                if (this.controller && this.controller.$onDOMInsert) {
+                    this.controller.$onDOMInsert();
                 }
             }
         });
@@ -3864,7 +3877,7 @@
                     ni.node1 = node1;
                     ni.node2 = node2;
                     if (p.cptType === "$CptAttInsert") {
-                        // this cpt is used to an insert another component passed as attribute 
+                        // this cpt is used to an insert another component passed as attribute
                         ni.initCpt(po);
                     } else {
                         // we are in a template or component cpt
@@ -3886,12 +3899,12 @@
      * Calculates the object referenced by the path and the component type
      * @return {Object} object with the following properties:
      *        pathObject: {Object} the object referenced by the path
-     *        cptType: {String} one of the following option: "$CptComponent", 
+     *        cptType: {String} one of the following option: "$CptComponent",
      *                 "$CptTemplate", "$CptAttInsert" or "InvalidComponent"
      */
             getPathData: function(path, vscope) {
-                // determine the type of this component: 
-                // - either a template - e.g. <#mytemplate foo="bar"/> 
+                // determine the type of this component:
+                // - either a template - e.g. <#mytemplate foo="bar"/>
                 //   -> instance will extend $CptTemplate
                 // - a component with controller - e.g. <#mycpt foo="bar"/>
                 //   -> instance will extend $CptComponent
@@ -4046,7 +4059,7 @@
                     } else {
                         if (this.refreshAttributes) {
                             this.refreshAttributes();
-                            // for component and sub-templates the original vscope is substituted 
+                            // for component and sub-templates the original vscope is substituted
                             // to the one of the component- or sub-template
                             // so we need to revert to the parent scope to observe the correct objects
                             var vs = this.vscope;
@@ -4178,7 +4191,7 @@
             $extends: $CptNode,
             isCptAttElement: true,
             /**
-     * $CptAttElement generator 
+     * $CptAttElement generator
      */
             $constructor: function(name, exps, attcfg, ehcfg, children) {
                 this.name = name;
@@ -4556,6 +4569,9 @@
                         this.replaceNodeBy(this.node, this.parent.node);
                         // recursively remove doc fragment reference
                         this.node.insertBefore(df, this.node2);
+                        if (this.rendered) {
+                            this.afterDOMInsert();
+                        }
                         this.isDOMempty = false;
                     }
                 }
@@ -4756,6 +4772,9 @@
                         for (var i = 0, sz = this.childNodes.length; sz > i; i++) {
                             this.childNodes[i].replaceNodeBy(df, this.node);
                         }
+                        if (this.rendered) {
+                            this.afterDOMInsert();
+                        }
                     } else {
                         // collection is the same but some items have been deleted or created
                         this.updateCollection(col);
@@ -4849,6 +4868,9 @@
                             }
                             this.node.insertBefore(ni.node, refNode);
                             ni.replaceNodeBy(ni.node, this.node);
+                            if (this.rendered) {
+                                ni.afterDOMInsert();
+                            }
                             // update current array
                             current.splice(i, 0, titm);
                             sz += 1;
@@ -4878,6 +4900,9 @@
                             // create new item
                             var ni = this.createItem(titm, i, i === 0, i === maxsz - 1, doc.createDocumentFragment());
                             this.node.insertBefore(ni.node, this.node2);
+                            if (this.rendered) {
+                                ni.afterDOMInsert();
+                            }
                             ni.replaceNodeBy(ni.node, this.node);
                         }
                     }
