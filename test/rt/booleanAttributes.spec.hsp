@@ -3,7 +3,7 @@ var json=require("hsp/json");
 hsp=require("hsp/rt");
 </script>
 
-<template tpl(model)>
+<template id="tpl" args="model">
 <input type = "text" required = "{model.flag}">
 <input type = "radio" checked = "{model.flag2}">
 </template>

@@ -1,5 +1,5 @@
 ##### Template:
-<template hello(person)>
+<template id="hello" args="person">
   <#x.mycpt class="foo">
     {let p=person} // OK
     {foreach n in p.names}

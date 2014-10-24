@@ -1,4 +1,4 @@
-<template test(m)>
+<template id="test" args="m">
   {let p1=m.part1, m21=m.part2.part21.msg+"!"}
   <div>
     {let p11=p1.part11}

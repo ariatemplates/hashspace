@@ -18,40 +18,40 @@ var hsp=require("hsp/rt"),
     json=require("hsp/json");
 </script>
 
-<template hello1()>
+<template id="hello1">
     Hello World!
 </template>
 
-<template hello2(person)>
+<template id="hello2" args="person">
     Hello {person.name}!
 </template>
 
-<template hello3(person)>
+<template id="hello3" args="person">
     Hello {person.firstName} {person.lastName}!
 </template>
 
 <script>
 // same as hello3 but with unbound variable on the lastName
 </script>
-<template hello4(person)>
+<template id="hello4" args="person">
     Hello {person.firstName} {:person.lastName}!
 </template>
 
 <script>
 // same as hello3 but with a string parameter
 </script>
-<template hello5(name)>
+<template id="hello5" args="name">
     Hello {name}!
 </template>
 
 <script>
 var globalValue="foo";
 </script>
-<template hello6()>
+<template id="hello6">
     {globalValue}
 </template>
 
-<template hello7(d)>
+<template id="hello7" args="d">
     {concat(d.firstName,d.lastName)}
 </template>
 
@@ -66,7 +66,7 @@ function compare(x,y) {
 }
 </script>
 
-<template hello8(d)>
+<template id="hello8" args="d">
     {if compare(d.firstName,d.lastName)}
         OK
     {/if}
@@ -75,7 +75,7 @@ function compare(x,y) {
 <script>
 var globalValueInt=0;
 </script>
-<template hello9()>
+<template id="hello9">
     {globalValueInt}
 </template>
 

@@ -1,4 +1,4 @@
-<template sample(data)>
+<template id="sample" args="data">
     <div class="info2">The following textarea elements are synchronized:</div>
     <div class="section">
         <div>Text #1:</div>

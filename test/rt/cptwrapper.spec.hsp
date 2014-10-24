@@ -116,7 +116,7 @@ lib.NbrField = klass({
 })
 </script>
 
-<template nbrfield using c:lib.NbrField>
+<template id="nbrfield" ctrl="lib.NbrField as c">
   <input type="text" model="{c.internalValue}" class="nbrfield {{'error': c.invalidValue, 'mandatory': c.mandatory}}"/>
   <input type="button" value="..." onclick="{c.resetField()}"/>
 </template>
@@ -125,13 +125,13 @@ lib.NbrField = klass({
 lib.nbrfield=nbrfield;
 </script>
 
-<template test(d)>
+<template id="test" args="d">
   <input type="text" value="{d.value}"/>
   <#lib.nbrfield value="{d.value}" min="-10" max="10" onbeforereset="{notifyReset(123,$event)}"
   onafterreset="{notifyReset2($event.type,$event)}"/>
 </template>
 
-<template test2(d)>
+<template id="test2" args="d">
   <input type="text" value="{d.value}"/>
   <#lib.nbrfield value="{d.value}" min="-10" max="10"/>
 </template>
@@ -166,7 +166,7 @@ var HelloCtrl = klass({
 });
 </script>
 
-<template test3 using ctrl:HelloCtrl>
+<template id="test3" ctrl="HelloCtrl as ctrl">
    <input type="checkbox" model="{ctrl.inputChecked}">
 </template>
 

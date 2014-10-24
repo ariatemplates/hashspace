@@ -2,7 +2,7 @@
 <script>
 // line 2
 </script>
-<template test(person)>
+<template id="test" args="person">
     <div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
         <span>Hello {person.name}!</span>
     </div>
@@ -11,7 +11,7 @@
 // line 10
 var foo=42;
 </script>
-<template bar>
+<template id="bar">
     Hello
 </template>
 <script>

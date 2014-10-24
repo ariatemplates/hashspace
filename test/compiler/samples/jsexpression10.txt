@@ -1,5 +1,5 @@
 ##### Template:
-<template hello(person,foo,bar)>
+<template id="hello" args="person,foo,bar">
   {person.name[foo[bar+1]]}
 </template>
 

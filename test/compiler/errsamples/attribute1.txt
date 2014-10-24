@@ -1,5 +1,5 @@
 ##### Template:
-<template test()>
+<template id="test">
     <div data-foo="0"></div>
     <#cpt data-foo_bar="1"></#cpt>
     <div data:foo="2"></div>

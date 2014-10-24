@@ -2,7 +2,7 @@
 var klass=require("hsp/klass");
 </script>
 
-<template todolist(todo)>
+<template id="todolist" args="todo">
     <div>
         <h3>TODO...</h3>
         <ul>

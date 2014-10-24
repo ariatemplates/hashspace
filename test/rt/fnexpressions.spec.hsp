@@ -25,19 +25,19 @@ function endText(a) {
 }
 </script>
 
-<template test1(d)>
+<template id="test1" args="d">
     <div class="content" title="{d.fn(d.msg1,d.msg2)}">foo</div>
 </template>
 
-<template test2(d)>
+<template id="test2" args="d">
     <div class="content" title="{concat(d.msg1,d.msg2)}!">foo</div>
 </template>
 
-<template test3(d)>
+<template id="test3" args="d">
     <div class="content" title="{d.sub.fn(d.msg1,d.msg2)}">foo</div>
 </template>
 
-<template test4(d)>
+<template id="test4" args="d">
     <div class="content">
         {d.fn(d.msg1,d.msg2)}!
         {if d.showEndText}
@@ -46,11 +46,11 @@ function endText(a) {
     </div>
 </template>
 
-<template test5(d)>
+<template id="test5" args="d">
     <div class="content">A {concat(d.msg1,d.msg2)} B</div>
 </template>
 
-<template test6(d)>
+<template id="test6" args="d">
     <div class="content">{d.sub.fn(d.msg1,d.msg2)}</div>
 </template>
 
@@ -58,7 +58,7 @@ function endText(a) {
 function InvalidModifier() {}
 </script>
 
-<template test7(d)>
+<template id="test7" args="d">
     {let modifier=new InvalidModifier()}
     <div class="content">{d.msg|modifier}</div>
 </template>

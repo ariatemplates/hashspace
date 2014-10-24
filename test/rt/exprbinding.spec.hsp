@@ -26,12 +26,12 @@ function changeValue (data,val) {
 }
 </script>
 
-<template test1(data) >
+<template id="test1" args="data" >
     <input class="in1" type="text" value="{data.object.value}" />
     <input class="in2" type="text" value="{data.object.value}" />
 </template>
 
-<template header(document)>
+<template id="header" args="document">
   <div class="title"> 
       {if document && document.title}
         {document.title}
@@ -41,12 +41,12 @@ function changeValue (data,val) {
   </div>
 </template>
 
-<template test2(data)>
+<template id="test2" args="data">
    <#header document="{data.document}" />
 </template>
 
 
-<template title(document)>
+<template id="title" args="document">
   {if document && document.title}
     {document.title}
   {else}
@@ -54,7 +54,7 @@ function changeValue (data,val) {
   {/if}
 </template>
 
-<template test3(data)>
+<template id="test3" args="data">
   <div class="content">
     <#title document="{data.document}" />
   </div>

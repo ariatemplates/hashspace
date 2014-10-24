@@ -18,13 +18,13 @@ var hsp=require("hsp/rt"),
     json=require("hsp/json");
 </script>
 
-<template test1(person)>
+<template id="test1" args="person">
     {if (person.firstName)}
         Hello {person.firstName}
     {/if}
 </template>
 
-<template test2(person)>
+<template id="test2" args="person">
     {if person.firstName}
         <h2>Hello {person.firstName}</h2>
         {if (person.favouriteDish)}
@@ -37,14 +37,14 @@ var hsp=require("hsp/rt"),
     {/if}
 </template>
 
-<template test3(person)>
+<template id="test3" args="person">
     Hello 
     {if person.firstName}
         {person.firstName}!
     {/if}
 </template>
 
-<template test4(person)>
+<template id="test4" args="person">
     Hello 
     // test literal as if parameter - even if it doesn't really make sense, should still be supported - e.g. for debugging purposes
     {if (true)}
@@ -52,13 +52,13 @@ var hsp=require("hsp/rt"),
     {/if}
 </template>
 
-<template test5(data)>
+<template id="test5" args="data">
   {if (data.value === "test" || data.value===false || data.value===null || data.value===123)} 
     Hello
   {/if}
 </template>
 
-<template test6>
+<template id="test6">
   {if (!false)} 
     Hello
   {/if}

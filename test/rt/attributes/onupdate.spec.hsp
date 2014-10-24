@@ -19,11 +19,11 @@ var $set = require('hsp/$set');
 var fireEvent = require("hsp/utils/eventgenerator").fireEvent;
 </script>
 
-<template test1(model)>
+<template id="test1" args="model">
     <input type="text" model="{model.value}" onupdate="{model.cb(event)}" update-timeout="1000"/>
 </template>
 
-<template test2(model)>
+<template id="test2" args="model">
     <textarea model="{model.value}" onupdate="{model.cb(event)}"/>
 </template>
 

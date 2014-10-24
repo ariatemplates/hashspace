@@ -1,5 +1,5 @@
 ##### Template:
-<template filterLink(ds, ctl, label, filterCode)   >
+<template id="filterLink" args="ds, ctl, label, filterCode"   >
     <a onclick="{ctl.selectFilter(filterCode)}" title="{label}">
         {label}
     </a>

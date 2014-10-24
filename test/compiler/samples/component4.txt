@@ -1,6 +1,6 @@
 ##### Template:
 
-<template test(d)>
+<template id="test" args="d">
   <input type="text" value="{d.value}"/>
   <#lib.nbrfield value="{d.value}" min="-10" max="10" onreset="{notifyReset(123)}"/>
 </template>

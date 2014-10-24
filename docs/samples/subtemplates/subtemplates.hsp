@@ -1,5 +1,5 @@
 
-<export template personList(persons)>
+<template export id="personList" args="persons">
     <div class="subtemplates">
         {foreach p in persons}
             <#personDescription person="{p}"/>
@@ -9,14 +9,14 @@
     </div>
 </template>
 
-<export template personDescription(person)>
+<template export id="personDescription" args="person">
     <div class="person">
         <#item label="First Name: " value="{person.firstName}"/>
         <#item label="Last Name: " value="{person.lastName}"/>
     </div>
 </template>
 
-<template item(label,value)>
+<template id="item" args="label,value">
     {if value}
         <div>
             <div class="label">{label}</div>

@@ -3,7 +3,7 @@ var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 </script>
 
-<template test(d)>
+<template id="test" args="d">
 <div class="section2">
     <ol>
         {foreach p in d.persons|orderBy:"name"}

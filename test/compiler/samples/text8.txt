@@ -3,7 +3,7 @@
 var nullValue = "null";
 </script>
 
-<template main()>
+<template id="main">
     before-{nullValue}-after
 </template> 
 

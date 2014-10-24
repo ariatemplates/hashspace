@@ -1,5 +1,5 @@
 ##### Template:
-<template hello(person)>
+<template id="hello" args="person">
     blah
     {else}
         blah

@@ -26,7 +26,7 @@ var ListController = klass({
 });
 </script>
 
-<template list using lc:ListController>
+<template id="list" ctrl="ListController as lc">
     {if !lc.$content} 
         <span class="nodata">Empty list</span>
     {else}
@@ -40,13 +40,13 @@ var ListController = klass({
     {/if}
 </template>
 
-<template test1()>
+<template id="test1">
     <#list>
         
     </#list>
 </template>
 
-<template test2(d)>
+<template id="test2" args="d">
     <#list>
         <@option>First {d.itemName}</@option>
         <@option>Second item</@option>
@@ -54,7 +54,7 @@ var ListController = klass({
     </#list>
 </template>
 
-<template test3(d)>
+<template id="test3" args="d">
     <#list>
         {if d.displayFirstAndLastItems}
             <@option>First {d.itemName}</@option>
@@ -70,7 +70,7 @@ var ListController = klass({
     </#list>
 </template>
 
-<template test4(d)>
+<template id="test4" args="d">
     <#list>
         <@option>1. First {d.itemName}</@option>
         {foreach idx,itm in d.items}

@@ -3,7 +3,7 @@ var klass=require("hsp/klass");
 </script>
 
 <!-- nt is an instance of NumberTester -->
-<template test(nt)>
+<template id="test" args="nt">
     <div>
         Number: <span class="textvalue">{nt.number}</span>
         {if nt.number==0}

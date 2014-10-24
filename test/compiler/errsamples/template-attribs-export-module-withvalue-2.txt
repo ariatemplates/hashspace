@@ -1,0 +1,17 @@
+##### Template:
+<template id="test" export-module="bar">
+  test
+</template>
+
+##### Errors:
+[
+  {
+    "description": "Invalid template declaration",
+    "line": 1,
+    "column": 1,
+    "code": '<template id="test" export-module="bar">',
+    "suberrors" : [
+        "the 'export-module' attribute must not have a value"
+    ]
+  }
+]

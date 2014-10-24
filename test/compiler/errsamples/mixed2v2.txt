@@ -5,7 +5,7 @@ function foo() {
 }
 </script>
 
-<template test(person)>
+<template id="test" args="person">
     <div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
         <span>Hello {person.name}!</span>
     </div>

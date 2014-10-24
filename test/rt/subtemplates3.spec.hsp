@@ -27,11 +27,11 @@ var removeItem = function (items, index) {
 };
 </script>
 
-<template displayItem(itms, idx)>
+<template id="displayItem" args="itms, idx">
     <li onclick="{removeItem(itms, 0)}">Remove #{idx}</li>
 </template>
 
-<template list(items)>
+<template id="list" args="items">
     <ul>
         {foreach index,curItem in items}
             {if true}
@@ -43,25 +43,25 @@ var removeItem = function (items, index) {
     <a onclick="{addItem(items)}">Add item</a>
 </template>
 
-<template item(value)>
+<template id="item" args="value">
     Value: {value}
 </template>
 
-<template test1(m)>
+<template id="test1" args="m">
     <div class="content">
         <#item value="{m.prop.value}"/>
     </div>
 </template>
 
-<template innerTemplate(data)>
+<template id="innerTemplate" args="data">
     {if data.checked}[x]{else}[ ]{/if} Checked
 </template>
 
-<template intermediateTemplate(data)>
+<template id="intermediateTemplate" args="data">
   <#innerTemplate data="{data}"/>
 </template> 
 
-<template test2(data)>
+<template id="test2" args="data">
   <div class="content">
     <#data.template data="{data}"/>
   </div>

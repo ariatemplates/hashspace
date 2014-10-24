@@ -9,7 +9,7 @@ The grammar is stored in the `hspblocks.pegjs` file, which is itself compiled in
 ## Input ##
 The hashspace template source code, e.g.:
 ```
-<template test(person)>
+<template id="test" args="person">
     <div title="Some text" id="{person.id}" class="{person.gender} {person.category}">
         Hello {person.name}!
     </div>
@@ -64,9 +64,6 @@ TemplateBlock
 
 TemplateEnd
 {type:"/template",line:line,column:column}}
-
-InvalidTemplate
-{type:"invalidtemplate", line:line, column:column, code: "# "+mod+"template "+name+" "+args.invalidTplArg}
 
 TplTextBlock "text"
 {type:"text", value:chars.join(''), line:line, column:column}

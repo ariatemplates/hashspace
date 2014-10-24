@@ -24,13 +24,13 @@ var Cpt1 = klass({
 });
 </script>
 
-<template cpt1 using c:Cpt1>
+<template id="cpt1" ctrl="Cpt1 as c">
 {if !c.closed}
   <button onclick="{c.close()}">Close</button>
 {/if}
 </template>
 
-<template test1(d)>
+<template id="test1" args="d">
   <#cpt1 />
   <#d.cpt />
 </template>

@@ -13,7 +13,7 @@ TemplateFile
    return blocks;
   }
 
-TopLevelWhitespace
+TopLevelWhitespace "whitespace"
   = lines:(chars:WhiteSpace* eol:EOL {return chars.join("") + eol})+
     {return {type:"plaintext", value:lines.join('')}}
 
@@ -26,14 +26,14 @@ TopLevelCommentBlock "HTML comment"
   }
 
 ScriptBlock "script block"
-  = (_ "<script>" eol1:EOL? content:TextBlock "</script>" _ eol2:(EOL / EOF))
+  = (_ "<script>" eol1:EOL? content:ScriptContentBlock "</script>" _ eol2:(EOL / EOF))
   {
     content.value = (eol1 || "") + content.value + (eol2 || "");
     return content;
   }
 
-TextBlock
-  = lines:(!(_ ("<") ("template" / "/script")) !(_ ("<") _ [a-zA-Z0-9]+ _ "template") !("#" _ "require") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+
+ScriptContentBlock
+  = lines:(!(_ "</script") chars:[^\n\r]* eol:EOL {return chars.join("")+eol})+
   {return {type:"plaintext", value:lines.join('')}}
 
 TemplateBlock "template block"
@@ -45,43 +45,83 @@ TemplateBlock "template block"
   }
 
 TemplateStart "template statement"
-  = _ d1:("<") p:_ m:(("template") / (c:[a-zA-Z0-9]+ _ "template") {return c.join('')})
-    S+ name:Identifier args:(TemplateController / ArgumentsDefinition / invarg:InvalidTplArgs)? _ d2:(">")? EOL
+  = _ "<template" parsedAtts:TemplateElementAttributes? _ closingBrace:(">")? _ EOL
   {
-    var mod=""; // modifier (e.g. "export")
-    if (m!=="template") {
-      mod=m;
-    }
-    if (args && args.invalidTplArg) {
-      if (mod) {
-        mod+=" ";
-      }
-      return {type:"invalidtemplate", line:line(), column:column(), code: d1+p+mod+"template "+name+" "+args.invalidTplArg}
-    } else {
-      if ((d1 === "<" && d2 !==">")) {
-        // inconsistant delimiters
-        return {type:"invalidtemplate", line:line(), column:column(), code: d1+p+mod+"template "+name+" "+args.invalidTplArg}
-      }
+    // doing minimum work at block level to have id, args, etc. extracted
+    // advanced error validation is done at syntax tree level
+    var templateId = null;
+    var modifier = null;
+    var controller = null;
+    var controllerRef = null;
+    var args = [];
 
-      if (args && args.ctl && args.constructor!==Array) {
-        // this template uses a controller
-        return {type:"template", name:name, mod:mod, controller:args.ctl, controllerRef: args.ctlref, line:line(), column:column()}
-      }
-      return {type:"template", name:name, mod:mod, args:(args== null)? []:args, line:line(), column:column()}
+    for (var i = 0; i < parsedAtts.length; i++) {
+        var att = parsedAtts[i];
+        if (att.name == "id") {
+            templateId = att.value[0].value;
+        } else if (att.name == "ctrl") {
+            controller = att.controller;
+            controllerRef = att.controllerRef;
+        } else if (att.name == "args") {
+            args = att.args;
+        } else if (att.name == "export") {
+            var exportedValue = att.value;
+            if (Array.isArray(exportedValue) && exportedValue.length > 0) {
+                exportedValue = exportedValue[0].value;
+            } else {
+                exportedValue = null;
+            }
+            modifier = {
+                type : "export",
+                exportName : exportedValue
+            };
+        } else if (att.name == "export-module") {
+            modifier = {
+                type: "export-module"
+            };
+        }
     }
+
+    return {
+        type: "template",
+        name: templateId,
+        controller: controller,
+        controllerRef: controllerRef,
+        args : args,
+        modifier : modifier,
+        attributes: parsedAtts,
+        closingBrace: closingBrace,
+        line: line(),
+        column: column()
+    };
   }
 
-TemplateController "controller"
-  = S+ "using" S+ ref:Identifier _ ":" _ ctl:JSObjectRef
-  {return {ctl:ctl, ctlref:ref}}
+TemplateElementAttributes // modeled after HTMLElementAttributes
+  = atts:( (S att:(TemplateAttribute)){return att} / att:InvalidTplArgs {return att})*
 
-ArgumentsDefinition "arguments"
-  = _ "(" _ first:VarIdentifier? others:((_ "," _ arg:VarIdentifier) {return arg})* _ ")"
-  {var args = first ? [first] : []; if (others && others.length) args=args.concat(others);return args;}
+TemplateAttribute // equivalent to HTMLAttribute
+  = TemplateCtrlAttribute / TemplateArgsAttribute / HTMLAttribute
+
+// TemplateCtrlAttribute and TemplateArgsAttribute are modeled after HTMLAttribute
+TemplateCtrlAttribute "template controller definition"
+  = "ctrl" _ "=" _ "\"" _ ctrl:JSObjectRef _ "as" _ ref:Identifier _ "\""
+  {
+    return {type:"tpl-controller", name:"ctrl", controller:ctrl, controllerRef:ref, line:line(), column:column()}
+  }
+
+TemplateArgsAttribute "template arguments"
+  = "args" _ "=" _ "\"" _ first:VarIdentifier? others:((_ "," _ arg:VarIdentifier) {return arg})* _ "\""
+  {
+    var args = first ? [first] : [];
+    if (others && others.length > 0) {
+      args = args.concat(others);
+    }
+    return {type:"tpl-arguments", name:"args", args:args, line:line(), column:column()}
+  }
 
 InvalidTplArgs
   = _ !">" chars:[^\n\r]+ &EOL
-  {return {invalidTplArg:chars.join('')}}
+  {return {type:"invalidtplarg", invalidTplArg:chars.join('')}}
 
 TemplateEnd "template end statement"
   = _ "</template" _ ">" _ (EOL / EOF)
@@ -211,16 +251,19 @@ HTMLName
   {return first + next.join("");}
 
 HTMLAttName
-  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-" / "_")* endString:(":" end:([a-zA-Z] / [0-9] / "-" / "_")+ {return ":" + end.join("")})? 
+  = first:[a-zA-Z#] next:([a-zA-Z] / [0-9] / "-" / "_")* endString:(":" end:([a-zA-Z] / [0-9] / "-" / "_")+ {return ":" + end.join("")})?
   // uppercase chars are considered as error in the parse post-processor
   {return first + next.join("") + (endString?endString:"");}
 
- HTMLAttribute
-  = attName:((n:HTMLAttName tail:HTMLAttributeStringChars* {return {name:n, tail:tail};}) / (n:HTMLAttributeStringChars+ {return {name:n.join('')};}))
-    v:(_ "=" _ value:HTMLAttributeQuoted tail:HTMLAttributeStringChars* {return {value:value, tail:tail};})?
+HTMLAttribute
+  = !"<" attName:(
+      (n:HTMLAttName tail:HTMLAttributeStringChars* {return {name:n, tail:tail};})
+      /(n2:HTMLAttributeStringChars+ {return {name:n2.join('')};})
+    )
+    v:(_ "=" _ value:HTMLAttributeQuoted tail:HTMLAttributeStringChars* {return {value:value, tail:tail};})?
     v2:(_ "=" _ value:InvalidHTMLAttributeValueWithoutQuotes {return value;})?
-    &(S / EOL / ">" / "/")
-  {
+    &(S / EOL / ">" / "/")
+  {
     var isValueValid = true;
     for (var i = 0; v && v.value && i < v.value.length; i++) {
       var item = v.value[i];
@@ -233,9 +276,16 @@ HTMLAttName
     }
     else {
       var errors = [];
+      var code;
       if (typeof attName.tail === "undefined" || attName.tail && attName.tail.length) {
-        errors.push({errorType: "name", value: attName.name + (attName.tail && attName.tail.length > 0?attName.tail.join(''):""), line: line(), column: column()});
+        var tailStr = (attName.tail && attName.tail.length > 0 ? attName.tail.join('') : "");
+        var nameStr = attName.name + tailStr;
+        errors.push({errorType: "name", value: nameStr, line: line(), column: column()});
+        code = nameStr;
+      } else {
+        code = attName.name;
       }
+
       if (!isValueValid) {
         errors.push({errorType: "value", value: v.value});
       }
@@ -245,9 +295,17 @@ HTMLAttName
       if (v2 != null && v2.value && v2.value.length > 0) {
         errors.push({errorType: "invalidquotes", value: v2.value, line: v2.line, column: v2.column});
       }
-      return {type: "invalidattribute", errors : errors};
+      if (v && v.value && v.value[0]) {
+        code += '="' + v.value[0].value + '"';
+        if (v.tail) {
+            code += v.tail.join('');
+        }
+      } else if (v2) {
+        code += v2.value;
+      }
+      return {type: "invalidattribute", code:code, errors : errors};
     }
-  }
+  }
 
 HTMLAttributeQuoted
   = '"' value:(HTMLAttributeTextDoubleQuoted / ExpressionTextBlock / InvalidHTMLAttributeValueWithinDoubleQuotes)* '"'
@@ -274,12 +332,12 @@ HTMLAttributeTextSingleQuoted
   {return {type:"text", value:chars.join(""), line:line(), column:column()}}
 
 InvalidHTMLAttributeValueWithinDoubleQuotes
-  = chars:[^\"\n\r]+
-  {return {type:"error", value:chars.join(''), line:line(), column:column()}}
+  = chars:[^\"\n\r]+
+  {return {type:"error", value:chars.join(''), line:line(), column:column()}}
 
 InvalidHTMLAttributeValueWithinSingleQuotes
-  = chars:[^'\n\r]+
-  {return {type:"error", value:chars.join(''), line:line(), column:column()}}
+  = chars:[^'\n\r]+
+  {return {type:"error", value:chars.join(''), line:line(), column:column()}}
 
 InvalidHTMLAttributeValueWithoutQuotes
   = chars:HTMLAttributeStringChars+

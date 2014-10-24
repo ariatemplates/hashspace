@@ -24,7 +24,7 @@ describe('Block Parser: ', function () {
                 'function func() {var x="text2"};',
                 '</script>',
                 '',
-                '<template hello1>',
+                '<template id="hello1">',
                 '   Hello World!',
                 '</template>',
                 '',
@@ -33,7 +33,7 @@ describe('Block Parser: ', function () {
                 'function func2(z) {return z;}',
                 '</script>',
                 '',
-                '<template hello1bis (arg1, arg2)>',
+                '<template id="hello1bis" args="arg1, arg2">',
                 '\tHello',
                 '\tAgain!',
                 '</template>',
@@ -88,6 +88,7 @@ describe('Block Parser: ', function () {
 
         if (sample.codeFragments) {
             if (r.errors.length > 0) {
+                // debugger;
                 console.log("--------------");
                 for (var i = 0, sz = r.errors.length; sz > i; i++) {
                     console.log("Compilation error: " + r.errors[i].description);
@@ -121,16 +122,9 @@ describe('Block Parser: ', function () {
 
     it('should allow whitespaces before <template>', function(){
       var r = compiler.compile(
-        '\n    <template spacesBefore()>\n' +
+        '\n    <template id="spacesBefore">\n' +
         ' </template>', "spacesBefore");
       assert.equal(r.errors.length, 0, "no compilation error");
-    });
-
-    it('should allow whitespaces before <template> when a modifier is present', function(){
-        var r = compiler.compile(
-            '\n   < export  template spacesBefore()>\n' +
-                ' </template>', "spacesBefore");
-        assert.equal(r.errors.length, 0, "no compilation error");
     });
 
     it('should fail with a clear err message if a mandatory argument is not provided', function(){
@@ -144,7 +138,7 @@ describe('Block Parser: ', function () {
     });
 
     it('should correctly compile templates with HTML elements containing -', function () {
-        var r =compiler.compile('<template x()>\n' +
+        var r =compiler.compile('<template id="x">\n' +
             '<x-div></x-div>\n' +
             '</template>', 'x.js');
         assert.equal(r.errors.length, 0);

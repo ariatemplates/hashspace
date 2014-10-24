@@ -1,5 +1,5 @@
 ##### Template:
-<template test(person)>
+<template id="test" args="person">
 	 Advanced log:
    {log 3+4*person.age, person.foo.bar}
 </template>

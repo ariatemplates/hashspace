@@ -1,5 +1,5 @@
 ##### Template:
-<template test(path, ctl, person)>
+<template id="test" args="path, ctl, person">
 	<img onclick="return false"/>
 </template>
 

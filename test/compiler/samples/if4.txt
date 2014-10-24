@@ -1,5 +1,5 @@
 ##### Template:
-<template test(x)>
+<template id="test" args="x">
    {if x==1} 
    	one 
    {else if x==2}

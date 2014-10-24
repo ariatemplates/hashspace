@@ -58,7 +58,7 @@ var TabBarCtrl = klass({
 });
 </script>
 
-<template tabbar using ctrl:TabBarCtrl>
+<template id="tabbar" ctrl="TabBarCtrl as ctrl">
   <div class="x-tabbar">
     <nav class="x-tabs">
         {foreach idx, tab in ctrl.$content}
@@ -80,7 +80,7 @@ var TabBarCtrl = klass({
   </div>
 </template>
 
-<template test1(m)>
+<template id="test1" args="m">
   <#tabbar selection="{m.selection}">
     <@tab label="Tab A">AAA Content AAA</@tab>
     <@tab label="Tab B">BBB Content BBB</@tab>
@@ -88,7 +88,7 @@ var TabBarCtrl = klass({
   </#tabbar>
 </template>
 
-<template test2(m)>
+<template id="test2" args="m">
   <#tabbar selection="{m.selection1}">
     <@tab label="Tab A">
         <#tabbar selection="{m.selection2}">

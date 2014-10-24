@@ -1,5 +1,5 @@
 ##### Template:
-<template test(person)>
+<template id="test" args="person">
 	<div title='Title for {person.name}'>
 		<b>Some text in <span class="test">bold</span></b>
 		<input type="text" value="{person.name}"/>

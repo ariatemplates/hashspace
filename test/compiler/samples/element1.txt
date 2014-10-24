@@ -1,5 +1,5 @@
 ##### Template:
-<template test(person)>
+<template id="test" args="person">
 	<div title='Some "nice" text' id="{person.id}" class="{person.gender} {person.category}">
 		Hello {person.name}!
 	</div>

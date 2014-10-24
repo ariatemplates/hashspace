@@ -1,4 +1,4 @@
-<template inputOnupdate(data)>
+<template id="inputOnupdate" args="data">
     <div class="info2">Input field with a standard timer of 500ms:</div>
     <div class="section">
         <input type="text" model="{data.comment}" onupdate="{data.updateHandler($event)}"/><br/>

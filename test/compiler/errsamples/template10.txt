@@ -1,0 +1,19 @@
+##### Template:
+<template id="test" args="foo,_bar"}
+    blah
+</template>
+
+##### Errors:
+[
+  {
+    "description": "Invalid template declaration",
+    "line": 1,
+    "column": 1,
+    "code": '<template id="test" args="foo,_bar"} blah',
+    "suberrors" : [
+      "unexpected character '}' found at the end of attribute value",
+      "missing closing brace for <template",
+      "invalid template attribute: blah"
+    ]
+  }
+]

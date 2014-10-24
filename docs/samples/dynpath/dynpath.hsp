@@ -1,4 +1,4 @@
-<template grid(data)>
+<template id="grid" args="data">
     <div>
         {foreach idx in data.rows}
             <div>

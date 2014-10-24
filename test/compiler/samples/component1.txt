@@ -1,6 +1,6 @@
 ##### Template:
 
-<template foo()>
+<template id="foo">
   foo
   <#mylib.mycpt att1="foo" att2="bar"/>
   bar

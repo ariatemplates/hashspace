@@ -1,5 +1,5 @@
 ##### Template:
-<template test(person)>
+<template id="test" args="person">
     <div title="Some text class="foo">
         foo bar
     </div>

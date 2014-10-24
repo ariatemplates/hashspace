@@ -1,5 +1,5 @@
 ##### Template:
-<template test(value1, value2)>
+<template id="test" args="value1, value2">
    Hello
 
    {if value1} World {/if}

@@ -42,7 +42,7 @@ var TestCtrl1=klass({
 });
 </script>
 
-<template test1 using c:TestCtrl1>
+<template id="test1" ctrl="TestCtrl1 as c">
   Hello
   <div class="foo">
     Blah
@@ -50,13 +50,13 @@ var TestCtrl1=klass({
   <div class="bar" title="hello"></div>
 </template>
 
-<template test2>
+<template id="test2">
   <div class="bar" title="foo1"></div>
   <#test1/>
   <div class="bar" title="foo2"></div>
 </template>
 
-<template test3(d)>
+<template id="test3" args="d">
   {if d.ok}
     <#test1 value="{d.input}"/>
   {/if}

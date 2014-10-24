@@ -1,5 +1,5 @@
 ##### Template:
-<template test(v1, v2)>
+<template id="test" args="v1, v2">
    Hello
    {if v1.isWorld} 
    		{if (v2)}

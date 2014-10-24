@@ -1,5 +1,5 @@
 ##### Template:
-<template test(event)>
+<template id="test" args="event">
     Hello World!
 </template>
 

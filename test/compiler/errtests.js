@@ -8,8 +8,15 @@ describe('Template compilation errors: ', function () {
 
     var testFn = function () {
         var sample = ut.getErrorSampleContent(this.name);
-        var r = compiler.compile(sample.template, this.name, true, true);
 
+        var r;
+        try {
+            r = compiler.compile(sample.template, this.name, true, true);
+        } catch (e) {
+            console.error("Template parsing error: " + e.message);
+            // debugger;
+            throw e;
+        }
         if (sample.errors) {
             assert.equal(ut.jsonContains(r.errors, sample.errors, "errorList"), "", "parsed tree comparison");
         } else {

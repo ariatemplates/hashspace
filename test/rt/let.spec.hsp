@@ -21,7 +21,7 @@ var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 </script>
 
-<template test1(d)>
+<template id="test1" args="d">
     {let x=d.value, y=x+3}
     <div class="foo">
         Blah
@@ -32,7 +32,7 @@ var hsp=require("hsp/rt"),
     </span>
 </template>
 
-<template test2(d)>
+<template id="test2" args="d">
     <div class="foo">
         {let x=d.value+' World'}
         {x}
@@ -42,7 +42,7 @@ var hsp=require("hsp/rt"),
     </span>
 </template>
 
-<template test3(d)>
+<template id="test3" args="d">
     <div class="foo">
         {if d.condition}
             {let x=d.value1+' World'}
@@ -54,7 +54,7 @@ var hsp=require("hsp/rt"),
     </div>
 </template>
 
-<template test4(d)>
+<template id="test4" args="d">
     <div class="foo">
         <ul>
             {foreach city in d.cities}

@@ -1,0 +1,17 @@
+##### Template:
+<template id="id" ctrl="this is not a good value">
+  test
+</template>
+
+##### Errors:
+[
+  {
+    "description": "Invalid template declaration",
+    "line": 1,
+    "column": 1,
+    "code": '<template id=\"id\" ctrl=\"this is not a good value\">',
+    "suberrors" : [
+        "invalid value of 'ctrl' attribute: this is not a good value"
+    ]
+  }
+]

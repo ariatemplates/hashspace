@@ -2,7 +2,7 @@
 <script>
 var person = {name : "World"};
 </script>
-<template hello()>
+<template id="hello">
 	Hello {person.name}!
 </template>
 

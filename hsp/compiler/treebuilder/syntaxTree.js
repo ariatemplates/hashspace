@@ -88,12 +88,15 @@ var SyntaxTree = klass({
             description : description
         };
         if (errdesc) {
-            if (errdesc.line) {
+            if (errdesc.line) { // Integers
                 desc.line = errdesc.line;
                 desc.column = errdesc.column;
             }
-            if (errdesc.code) {
+            if (errdesc.code) { // String
                 desc.code = errdesc.code;
+            }
+            if (errdesc.suberrors) { // Array of String
+                desc.suberrors = errdesc.suberrors;
             }
         }
         this.errors.push(desc);
@@ -208,6 +211,148 @@ var SyntaxTree = klass({
         }
     },
 
+    _processTemplateStart : function (parsedAtts, closingBrace) {
+        var errors = [];
+        var attNamesCount = {};  // count attributes to avoid duplicates
+        var attMap = {};        // { attrib1 : ..., attrib2: ...}
+        var acceptedAttribs = ['id', 'args', 'ctrl', 'export', 'export-module'];
+
+        // To be used in error messages.
+        // Note that we're rebuilding code from partials, so it may differ when compared with real code
+        // when it comes to spacing etc.
+        var code = "<template";
+
+        for (var i = 0; i < parsedAtts.length; i++) {
+            var att = parsedAtts[i];
+
+            if (att.type == "invalidtplarg") {
+                errors.push("unexpected character: '" + att.invalidTplArg + "'");
+                code += att.invalidTplArg;
+            } else if (att.type == "invalidattribute") {
+                for (var k = 0; k < att.errors.length; k++) {
+                    // att.errors foreach, line, column
+                    var err = att.errors[k];
+                    if (err.errorType == "name") {
+                        errors.push("invalid attribute name: unexpected character(s) found in '" + err.value + "'");
+                    } else if (err.errorType = "tail") {
+                        errors.push("unexpected character '" + err.tail + "' found at the end of attribute value");
+                    } else {
+                        errors.push("invalid attribute: " + err.type + ":" + err.value);
+                    }
+                }
+                code += " " + att.code;
+            } else {
+                var attName = att.name;
+                attNamesCount[attName] = (attNamesCount[attName] || 0) + 1 ;
+                attMap[attName] = att ;
+
+                var codeChunk = " " + att.name;
+                if (att.type == "attribute") {
+                    // foo     => ""
+                    // foo=""  => []
+                    // foo="x" => [{"value":"x"}]
+                    if (att.value) {
+                        var valueOfAtt = att.value[0] ? att.value[0].value : "";
+                        codeChunk += ('="' + valueOfAtt + '"');
+                    }
+                    code += codeChunk;
+                } else if (att.type == "tpl-arguments") {
+                    code += " " + att.name + '="' + att.args.join(",") + '"';
+                } else if (att.type == "tpl-controller") {
+                    code += " " + att.name + '="' + att.controller.code + " as " + att.controllerRef + '"';
+                }
+            }
+        }
+
+        if (!closingBrace) {
+            errors.push("missing closing brace for <template");
+        } else {
+            code += ">";
+        }
+
+        for (var attName in attNamesCount) {
+            // prevent <template unknown-attribute="value">
+            if (acceptedAttribs.indexOf(attName) == -1) {
+                errors.push("invalid template attribute: " + attName);
+            }
+
+            // prevent <template id="foo" id="bar">
+            if (attNamesCount[attName] > 1) {
+                errors.push("duplicated template attribute: " + attName);
+            }
+        }
+
+        // each template needs a unique id; uniqueness is checked at later stage
+        if (!attMap ["id"] ) {
+            errors.push("missing mandatory template id");
+        }
+
+        // 'ctrl' and 'args' do not make sense together
+        if (attMap["ctrl"] && attMap["args"]) {
+            errors.push("a template can not have both 'args' and 'ctrl' attributes");
+        }
+
+        // if 'args' or 'ctrl' have type === 'attribute', they were matched using standard HTML attrib matching rule
+        // instead of the specialized rules for maching 'args' / 'ctrl' (TemplateCtrlAttribute / TemplateArgsAttribute)
+        // => that means the value provided was invalid
+        if (attMap["args"]) {
+            var att = attMap["args"];
+            if (att.type === "tpl-arguments" && Array.isArray(att.args) && att.args.length === 0) {
+                // let's forbid empty args for consistency with ctrl;
+                // set appropriate type and value to have error handling consistent with that of ctrl
+                attMap["args"] = {
+                   type : "attribute",
+                   value : []
+                };
+            }
+
+            if (attMap["args"].type !== "tpl-arguments") {
+                var value = attMap["args"].value;
+                if (value === "") {
+                    value = "[empty value]";
+                } else if (Array.isArray(value) && value.length === 0) {
+                    value = "[empty string]";
+                } else {
+                    value = value[0].value;
+                }
+                errors.push("invalid value of 'args' attribute: " + value);
+            }
+        }
+
+        // ctrl     => ""
+        // ctrl=""  => []
+        // ctrl="x" => [{"value":"x"}]
+        if (attMap["ctrl"]) {
+            if (attMap["ctrl"].type !== "tpl-controller") {
+                var value = attMap["ctrl"].value;
+                if (value === "") {
+                    value = "[empty value]";
+                } else if (Array.isArray(value) && value.length === 0) {
+                    value = "[empty string]";
+                } else {
+                    value = value[0].value;
+                }
+                errors.push("invalid value of 'ctrl' attribute: " + value);
+            }
+        }
+
+        // export also has to be either empty, or contain a valid identifier, which can not clash with
+        // an id of another template (checked at later stage)
+        if (attMap["export"] && attMap["export-module"]) {
+            errors.push("a template can not have both 'export' and 'export-module' attributes");
+        }
+
+        // prevent 'export-module="foo"' which doesn't make sense and may confuse users
+        if (attMap["export-module"] && attMap["export-module"].value) {
+            errors.push("the 'export-module' attribute must not have a value");
+        }
+
+        return {
+            errors : errors,
+            code : code
+        };
+    },
+
     /**
      * Manages a template block.
      * @param {Array} blocks the full list of blocks.
@@ -216,12 +361,24 @@ var SyntaxTree = klass({
      * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
      */
     __template : function (index, blocks, out) {
-        var node = new Node("template"), block = blocks[index];
+        var node = new Node("template");
+        var block = blocks[index];
+
+        var validationResults = this._processTemplateStart(block.attributes, block.closingBrace);
+        if (validationResults.errors.length > 0) {
+            this._logError("Invalid template declaration", {
+                line: block.line,
+                column : block.column,
+                code: validationResults.code,
+                suberrors: validationResults.errors
+            });
+        }
         node.name = block.name;
+
         if (block.controller) {
             node.controller = block.controller;
             node.controller.ref = block.controllerRef;
-        } else {
+        } else if (block.args) {
             node.args = block.args;
             // check args
             for (var i=0; i < node.args.length; i++) {
@@ -230,15 +387,12 @@ var SyntaxTree = klass({
                 }
             }
         }
-        node.isExport = block.mod === "export";
+        node.isExport = (block.modifier !== null && block.modifier.type === "export");
+        node.isExportModule = (block.modifier !== null && block.modifier.type === "export-module");
         node.startLine = block.line;
         node.endLine = block.endLine;
         node.content = [];
         out.push(node);
-
-        if (block.mod !== '' && block.mod !== "export") {
-            this._logError("Invalid template template modifier: " + block.mod, blocks[index]);
-        }
 
         if (!block.closed) {
             this._logError("Missing end template statement", block);
@@ -246,18 +400,6 @@ var SyntaxTree = klass({
 
         // parse sub-list of blocks
         this._advance(block.content, 0, node.content);
-        return index;
-    },
-
-    /**
-     * Catches invalid template definitions.
-     * @param {Array} blocks the full list of blocks.
-     * @param {Integer} index the index of the block to manage.
-     * @param {Array} out the output as an array of Node.
-     * @return {Integer} the index of the block where the function stopped or -1 if all blocks have been handled.
-     */
-    __invalidtemplate : function (index, blocks, out) {
-        this._logError("Invalid template declaration", blocks[index]);
         return index;
     },
 

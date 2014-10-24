@@ -18,37 +18,37 @@ var hsp=require("hsp/rt"),
     ht=require("hsp/utils/hashtester");
 </script>
 
-<template test1()>
+<template id="test1">
     <div class="content">Hello {msg}</div>
 </template>
 
-<template test2()>
+<template id="test2">
     <div class="content">{g.msg}!</div>
 </template>
 
-<template w1(message)>
+<template id="w1" args="message">
     <span class="wmsg">{message}</span>
 </template>
 
-<template test3(msg)>
+<template id="test3" args="msg">
     <div class="content">
         <#mywidget message="{msg}"/>
     </div>
 </template>
 
-<template test4(msg)>
+<template id="test4" args="msg">
     <div class="content">
         <#lib.widget message="{msg}"/>
     </div>
 </template>
 
-<template test5(values)>
+<template id="test5" args="values">
     <div class="content">
         Values: {mytransform(values)}
     </div>
 </template>
 
-<template test6(values)>
+<template id="test6" args="values">
     {let t=new TestTransform("A")}
     <div class="content">
         Values: {t.process(values)}

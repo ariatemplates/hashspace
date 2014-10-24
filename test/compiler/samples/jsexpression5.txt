@@ -1,5 +1,5 @@
 ##### Template:
-<template test(value)>
+<template id="test" args="value">
   {(value=="a")? value : (value===3)}
   {value==="W"? "World" : "You"}
 </template>
