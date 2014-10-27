@@ -45,18 +45,10 @@ TemplateBlock "template block"
   }
 
 TemplateStart "template statement"
-  = _ "<template" parsedAtts:TemplateElementAttributes? _ closing:(">")? _ EOL
+  = _ "<template" parsedAtts:TemplateElementAttributes? _ closingBrace:(">")? _ EOL
   {
-    var errors = [];
-    var attNamesCount = {};  // count attributes to avoid duplicates
-    var attMap = {};        // { attrib1 : ..., attrib2: ...}
-    var acceptedAttribs = ['id', 'args', 'ctrl', 'export', 'export-module'];
-
-    // To be used in error messages.
-    // Note that we're rebuilding code from partials, so it may differ when compared with real code
-    // when it comes to spacing etc.
-    var code = "<template";
-
+    // doing minimum work at block level to have id, args, etc. extracted
+    // advanced error validation is done at syntax tree level
     var templateId = null;
     var modifier = null;
     var controller = null;
@@ -65,159 +57,43 @@ TemplateStart "template statement"
 
     for (var i = 0; i < parsedAtts.length; i++) {
         var att = parsedAtts[i];
-
-        if (att.type == "invalidtplarg") {
-            errors.push("unexpected character: '" + att.invalidTplArg + "'");
-            code += att.invalidTplArg;
-        } else if (att.type == "invalidattribute") {
-            for (var k = 0; k < att.errors.length; k++) {
-                // att.errors foreach, line, column
-                var err = att.errors[k];
-                if (err.errorType == "name") {
-                    errors.push("invalid attribute name: unexpected character(s) found in '" + err.value + "'");
-                } else if (err.errorType = "tail") {
-                    errors.push("unexpected character '" + err.tail + "' found at the end of attribute value");
-                } else {
-                    errors.push("invalid attribute: " + err.type + ":" + err.value);
-                }
-            }
-            code += " " + att.code;
-        } else {
-            var attName = att.name;
-            attNamesCount[attName] = (attNamesCount[attName] || 0) + 1 ;
-            attMap[attName] = att ;
-
-            var codeChunk = " " + att.name;
-            if (att.type == "attribute") {
-                // foo     => ""
-                // foo=""  => []
-                // foo="x" => [{"value":"x"}]
-                if (att.value) {
-                    var valueOfAtt = att.value[0] ? att.value[0].value : "";
-                    codeChunk += ('="' + valueOfAtt + '"');
-                }
-                code += codeChunk;
-            } else if (att.type == "tpl-arguments") {
-                code += " " + att.name + '="' + att.args.join(",") + '"';
-            } else if (att.type == "tpl-controller") {
-                code += " " + att.name + '="' + att.controller.code + " as " + att.controllerRef + '"';
-            }
-        }
-    }
-
-    if (!closing) {
-        errors.push("missing closing brace for <template");
-    } else {
-        code += ">";
-    }
-
-    for (var attName in attNamesCount) {
-        // prevent <template unknown-attribute="value">
-        if (acceptedAttribs.indexOf(attName) == -1) {
-            errors.push("invalid template attribute: " + attName);
-        }
-
-        // prevent <template id="foo" id="bar">
-        if (attNamesCount[attName] > 1) {
-            errors.push("duplicated template attribute: " + attName);
-        }
-    }
-
-    // each template needs a unique id; uniqueness is checked at later stage
-    if (!attMap ["id"] ) {
-        errors.push("missing mandatory template id");
-    } else {
-        templateId = attMap["id"].value[0].value;
-    }
-
-    // 'ctrl' and 'args' do not make sense together
-    if (attMap["ctrl"] && attMap["args"]) {
-        errors.push("a template can not have both 'args' and 'ctrl' attributes");
-    }
-
-    // if 'args' or 'ctrl' have type === 'attribute', they were matched using standard HTML attrib matching rule
-    // instead of the specialized rules for maching 'args' / 'ctrl' (TemplateCtrlAttribute / TemplateArgsAttribute)
-    // => that means the value provided was invalid
-    if (attMap["args"]) {
-        var att = attMap["args"];
-        if (att.type === "tpl-arguments" && Array.isArray(att.args) && att.args.length === 0) {
-            // let's forbid empty args for consistency with ctrl;
-            // set appropriate type and value to have error handling consistent with that of ctrl
-            attMap["args"] = {
-               type : "attribute",
-               value : []
-            }
-        }
-
-        if (attMap["args"].type !== "tpl-arguments") {
-            var value = attMap["args"].value;
-            if (value === "") {
-                value = "[empty value]";
-            } else if (Array.isArray(value) && value.length === 0) {
-                value = "[empty string]";
+        if (att.name == "id") {
+            templateId = att.value[0].value;
+        } else if (att.name == "ctrl") {
+            controller = att.controller;
+            controllerRef = att.controllerRef;
+        } else if (att.name == "args") {
+            args = att.args;
+        } else if (att.name == "export") {
+            var exportedValue = att.value;
+            if (Array.isArray(exportedValue) && exportedValue.length > 0) {
+                exportedValue = exportedValue[0].value;
             } else {
-                value = value[0].value;
+                exportedValue = null;
             }
-            errors.push("invalid value of 'args' attribute: " + value);
-        } else {
-            args = attMap["args"].args;
+            modifier = {
+                type : "export",
+                exportName : exportedValue
+            };
+        } else if (att.name == "export-module") {
+            modifier = {
+                type: "export-module"
+            };
         }
     }
 
-    // ctrl     => ""
-    // ctrl=""  => []
-    // ctrl="x" => [{"value":"x"}]
-    if (attMap["ctrl"]) {
-        if (attMap["ctrl"].type !== "tpl-controller") {
-            var value = attMap["ctrl"].value;
-            if (value === "") {
-                value = "[empty value]";
-            } else if (Array.isArray(value) && value.length === 0) {
-                value = "[empty string]";
-            } else {
-                value = value[0].value;
-            }
-            errors.push("invalid value of 'ctrl' attribute: " + value);
-        } else {
-            controller = attMap["ctrl"].controller;
-            controllerRef = attMap["ctrl"].controllerRef;
-        }
-    }
-
-    // export also has to be either empty, or contain a valid identifier, which can not clash with
-    // an id of another template (checked at later stage)
-    if (attMap["export"] && attMap["export-module"]) {
-        errors.push("a template can not have both 'export' and 'export-module' attributes");
-    }
-
-    // prevent 'export-module="foo"' which doesn't make sense and may confuse users
-    if (attMap["export-module"] && attMap["export-module"].value) {
-        errors.push("the 'export-module' attribute must not have a value");
-    }
-
-    if (attMap["export"]) {
-        var exportedValue = attMap["export"].value;
-        if (Array.isArray(exportedValue) && exportedValue.length > 0) {
-            exportedValue = exportedValue[0].value;
-        } else {
-            exportedValue = null;
-        }
-        modifier = {
-            type : "export",
-            exportName : exportedValue
-        };
-    } else if (attMap["export-module"]) {
-        modifier = {
-            type: "export-module"
-        }
-    }
-
-    if (errors && errors.length > 0) {
-        return {type:"invalidtemplate", suberrors:errors, code:code, line:line(), column:column()/*, parsedAtts:parsedAtts*/}
-    }
-
-    return {type:"template", name:templateId, controller:controller, controllerRef:controllerRef, args:args,
-      modifier:modifier, /*attributes:parsedAtts,*/ line:line(), column:column()}
+    return {
+        type: "template",
+        name: templateId,
+        controller: controller,
+        controllerRef: controllerRef,
+        args : args,
+        modifier : modifier,
+        attributes: parsedAtts,
+        closingBrace: closingBrace,
+        line: line(),
+        column: column()
+    };
   }
 
 TemplateElementAttributes // modeled after HTMLElementAttributes
