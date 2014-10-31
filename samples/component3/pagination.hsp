@@ -45,7 +45,7 @@ var Pagination=klass({
 });
 </script>
 
-<template pagination using p:Pagination>
+<template id="pagination" ctrl="Pagination as p">
     <ul class="pagination">
         <li class="{{'disabled':p.activepage===0}}">
             <a href="javascript:void(0)" onclick="{p.selectPage(p.activepage-1)}">Previous</a>
@@ -61,7 +61,7 @@ var Pagination=klass({
     </ul>
 </template>
 
-<template paginationTest(model)>
+<template id="paginationTest" args="model">
   <div class="section3">
     <label class="fieldlabel">Active page: </label><input type="number"  model="{model.active}"/><br/>
     <label class="fieldlabel">Collection size: </label><input type="number"  model="{model.collectionSize}"/><br/>

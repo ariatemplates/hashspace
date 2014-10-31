@@ -8125,7 +8125,8 @@ function logMsg(type,args,forceType) {
                 out.push(s);
             }
         }
-        md.message=out.join(' ');
+        md.message = out.join(' ');
+        md.messages = out; // Array might be better if user wants some custom formatting
     }
 
     if (loggers && loggers.length) {

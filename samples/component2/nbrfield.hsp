@@ -72,7 +72,7 @@ function getNumber(s) {
 </script>
 
 <!-- component template associated with the NbrField controller -->
-<export template nbrfield using c:NbrField>
+<template export id="nbrfield" ctrl="NbrField as c">
   <span class="nbrfield">
     <input type="text" model="{c.internalValue}"
     class="nbrfield {{'error': !c.isValid}}"/>
@@ -81,7 +81,7 @@ function getNumber(s) {
 </template>
 
 <!-- component usage -->
-<template test(d)>
+<template id="test" args="d">
   Component #1: <#nbrfield value="{d.value1}" min="-10" max="1000"/><br/>
   Value in the data model: <span class="textValue">{d.value1}</span>
   (min:-10 / max:1000 / default:0)

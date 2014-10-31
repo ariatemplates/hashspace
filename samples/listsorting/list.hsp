@@ -1,4 +1,4 @@
-<template list(persons)>
+<template id="list" args="persons">
     <div onselectstart="return false">
         <div class="msg">
             <span class="info">

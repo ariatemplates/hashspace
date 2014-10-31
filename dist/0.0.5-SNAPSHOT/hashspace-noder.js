@@ -816,6 +816,7 @@
                     }
                 }
                 md.message = out.join(" ");
+                md.messages = out;
             }
             if (loggers && loggers.length) {
                 var stop = false;

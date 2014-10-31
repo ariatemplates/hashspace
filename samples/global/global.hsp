@@ -2,7 +2,7 @@
 var hsp=require("hsp/rt");
 </script>
 
-<template item(text,value)>
+<template id="item" args="text,value">
     {if value}
         <div>
             <div class="label">{text}</div>
@@ -16,7 +16,7 @@ hsp.global.label=item;
 hsp.global.ln={personDetails:"Person details"};
 </script>
 
-<template test(person)>
+<template id="test" args="person">
     <div class="global" title="{ln.personDetails}">
         <#label text="First Name: " value="{person.firstName}"/>
         <#label text="Last Name: "  value="{person.lastName}"/>

@@ -2,7 +2,7 @@
 var klass=require("hsp/klass");
 </script>
 
-<template elapsedTime(timer)>
+<template id="elapsedTime" args="timer">
     Seconds Elapsed: {timer.secondsElapsed}
 </template>
 

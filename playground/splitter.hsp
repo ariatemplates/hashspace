@@ -74,7 +74,7 @@ var SplitterCtrl = Class({
 });
 </script>
 
-<template splitter using controller:SplitterCtrl>
+<template id="splitter" ctrl="SplitterCtrl as controller">
     <div class="splitter" onmousedown="{controller.onMouseDown($event)}"></div>
     <div class="splitter-proxy {{'splitter-proxy-hidden': !controller.active}}"></div>
 </template>
