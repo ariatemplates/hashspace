@@ -8,7 +8,7 @@ set -e
 # SAUCE_ACCESS_KEY
 # Follow the steps at https://saucelabs.com/opensource/travis to set that up.
 
-CONNECT_URL="https://d2nkw87yt5k0to.cloudfront.net/downloads/sc-latest-linux.tar.gz"
+CONNECT_URL="https://saucelabs.com/downloads/sc-latest-linux.tar.gz"
 CONNECT_DIR="/tmp/sauce-connect-$RANDOM"
 CONNECT_DOWNLOAD="sc-latest-linux.tar.gz"
 

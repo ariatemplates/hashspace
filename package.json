@@ -2,7 +2,7 @@
   "author": "ariatemplates <contact@ariatemplates.com> (http://github.com/ariatemplates)",
   "name": "hashspace",
   "description": "hashspace compiler and runtime",
-  "version": "0.0.5-SNAPSHOT",
+  "version": "0.0.5",
   "homepage": "",
   "repository": {
     "type": "git",
