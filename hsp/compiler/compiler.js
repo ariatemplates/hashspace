@@ -52,7 +52,7 @@ exports.compile = function (template, path, options) {
     res = jsgenerator.generate(res, template, fileName, dirPath, options);
 
     //Step4 : transpiler
-    if (!res.errors || res.errors.length===0) {
+    if (options.bypassTranspilation !== true && (!res.errors || res.errors.length===0)) {
         res.code=transpiler.processString(res.code, path, options).code;
     }
 
