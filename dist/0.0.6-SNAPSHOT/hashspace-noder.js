@@ -1510,7 +1510,7 @@
             },
             "(": function(scope, left, right) {
                 //function call on a scope
-                return left.apply(left, right);
+                return left.apply(null, right);
             },
             "new": function(scope, constrFunc, args) {
                 //constructor invocation
