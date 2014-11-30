@@ -25,18 +25,18 @@ var ClassHandler = klass({
         var newClassesArr = [], newClasses, classExpr;
 
         for (var i = 0; i < exprVals.length; i++) {
-            if (exprVals % 2 || typeof exprVals[i] !== 'object') {
+            if (typeof exprVals[i] !== 'object') {
                 newClassesArr.push(exprVals[i]);
             } else {
                 classExpr = exprVals[i];
                 for (var className in classExpr) {
                     if (classExpr.hasOwnProperty(className) && classExpr[className]) {
-                        newClassesArr.push(className);
+                        newClassesArr.push(className, " ");
                     }
                 }
             }
         }
-        newClasses = newClassesArr.join(' ');
+        newClasses = newClassesArr.join('');
 
         var currentClasses = this.nodeInstance.node.className;
         var results = currentClasses && currentClasses.split? currentClasses.split(' '): [];
