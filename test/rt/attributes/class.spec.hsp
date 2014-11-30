@@ -24,6 +24,7 @@ var $set = require('hsp/$set');
     <div class="base {{'active': model.isActive}}"></div>
     <div class="{model.list}"></div>
     <div class="base {model.more}"></div>
+    <div class="space-{model.more}-test"></div>
 </template>
 
 <script>
@@ -41,6 +42,7 @@ describe("Class attribute", function () {
         expect(n.node.childNodes[2].className).to.equal("base active");
         expect(n.node.childNodes[3].className).to.equal("foo bar");
         expect(n.node.childNodes[4].className).to.equal("base bar");
+        expect(n.node.childNodes[5].className).to.equal("space-bar-test");
         $set(model, "isActive", false);
         $set(model, "list", "foz baz");
         $set(model, "more", "foo");
@@ -50,6 +52,7 @@ describe("Class attribute", function () {
         expect(n.node.childNodes[2].className).to.equal("base");
         expect(n.node.childNodes[3].className).to.equal("foz baz");
         expect(n.node.childNodes[4].className).to.equal("base foo");
+        expect(n.node.childNodes[5].className).to.equal("space-foo-test");
         n.$dispose();
     });
 
