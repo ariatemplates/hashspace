@@ -97,7 +97,7 @@ constant("null", null);
 prefix("new", function(){
     var args = [];
     this.a = 'bnr';
-    this.l = expression(70);
+    this.l = expression(75);
     advance("(");
     if (token.v !== ')') {
         while (true) {
@@ -216,7 +216,7 @@ infix("[", 80, function (left) {
     advance("]");
     return this;
 });
-infix("(", 70, function (left) {
+infix("(", 75, function (left) {
     var a = [];
     if (left.id === "." || left.id === "[") {
         this.a = 'tnr';

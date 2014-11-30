@@ -60,6 +60,14 @@ describe('getValue', function () {
         expect(expression('foo[idx]["baz"][0]').getValue({foo: {bar: {baz: 'Im baz'}}, idx: 'bar'})).to.equal('I');
     });
 
+    it('should evaluate ! and function calls in correct order', function() {
+        var myFunction = function() {
+            return false;
+        };
+        expect(expression('!myFunction()').getValue({myFunction: myFunction})).to.equal(!myFunction());
+        expect(expression('!(myFunction())').getValue({myFunction: myFunction})).to.equal(!(myFunction()));
+    });
+
     it('should evaluate function calls in expressions', function() {
         var scope = {
             r: "r",
