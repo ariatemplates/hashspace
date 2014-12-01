@@ -1180,7 +1180,7 @@
         prefix("new", function() {
             var args = [];
             this.a = "bnr";
-            this.l = expression(70);
+            this.l = expression(75);
             advance("(");
             if (token.v !== ")") {
                 while (true) {
@@ -1299,7 +1299,7 @@
             advance("]");
             return this;
         });
-        infix("(", 70, function(left) {
+        infix("(", 75, function(left) {
             var a = [];
             if (left.id === "." || left.id === "[") {
                 this.a = "tnr";
@@ -5234,18 +5234,18 @@
             $setValueFromExp: function(name, exprVals) {
                 var newClassesArr = [], newClasses, classExpr;
                 for (var i = 0; i < exprVals.length; i++) {
-                    if (exprVals % 2 || typeof exprVals[i] !== "object") {
+                    if (typeof exprVals[i] !== "object") {
                         newClassesArr.push(exprVals[i]);
                     } else {
                         classExpr = exprVals[i];
                         for (var className in classExpr) {
                             if (classExpr.hasOwnProperty(className) && classExpr[className]) {
-                                newClassesArr.push(className);
+                                newClassesArr.push(className, " ");
                             }
                         }
                     }
                 }
-                newClasses = newClassesArr.join(" ");
+                newClasses = newClassesArr.join("");
                 var currentClasses = this.nodeInstance.node.className;
                 var results = currentClasses && currentClasses.split ? currentClasses.split(" ") : [];
                 if (this.previousClasses) {
