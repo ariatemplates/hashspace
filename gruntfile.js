@@ -272,44 +272,36 @@ module.exports = function (grunt) {
     },
     browserify: {
       runtime: {
-        files: [{dest: 'dist/hashspace-browserify.js', src: ['hsp/rt.js']}],
+        files: [{
+          dest: 'dist/hashspace-browserify.js',
+          src: ['hsp/rt.js']
+        }],
         options: {
-          aliasMappings: [
-            {
-              cwd: "hsp",
-              src: ['*.js'],
-              dest: 'hsp'
-            },
-            {
-              cwd: "hsp/rt",
-              src: ['*.js'],
-              dest: 'hsp/rt'
-            }
-          ]
+          browserifyOptions: {
+            standalone: "hsp"
+          }
         }
       },
       compiler: {
-        files: [{dest: 'dist/hashspace-browserify-compiler.js', src: ['hsp/compiler/compiler.js']}],
+        files: [{
+          dest: 'dist/hashspace-browserify-compiler.js',
+          src: ['hsp/compiler/browser.js']
+        }],
         options: {
-          aliasMappings: [
-            {
-              cwd: "hsp/compiler",
-              src: ['compiler.js'],
-              dest: 'hsp'
-            }
-          ]
+          browserifyOptions: {
+            standalone: "hspcompile"
+          }
         }
       },
       gestures: {
-        files: [{dest: 'dist/hashspace-browserify-gestures.js', src: ['hsp/gestures/index.js']}],
+        files: [{
+          dest: 'dist/hashspace-browserify-gestures.js',
+          src: ['hsp/gestures/index.js']
+        }],
         options: {
-          aliasMappings: [
-            {
-              cwd: "hsp/gestures",
-              src: ['*.js'],
-              dest: 'hsp/gestures'
-            }
-          ]
+          browserifyOptions: {
+            standalone: "hsp.gestures"
+          }
         }
       }
     },
