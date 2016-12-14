@@ -72,4 +72,4 @@ Then you can use `http://localhost:8000?dev=true` in your favorite browser to ge
 [todomvc]: http://addyosmani.github.com/todomvc/
 [angular]:http://angularjs.org/
 [grunt]: http://gruntjs.com/
-[mocha]: http://visionmedia.github.io/mocha/
+[mocha]: http://mochajs.org/
