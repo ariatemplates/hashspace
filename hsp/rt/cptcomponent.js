@@ -138,11 +138,7 @@ exports.$CptComponent = {
    *        must be used when a new instance is created to adapt to a path change
    */
   $dispose:function(localPropOnly) {
-    if (this.ctlWrapper) {
-      this.ctlWrapper.$dispose();
-      this.ctlWrapper=null;
-      this.controller=null;
-    }
+    this.$disposeCtlWrapper();
     this.ctlAttributes=null;
     this.cleanObjectProperties(localPropOnly);
     this.ctlConstuctor=null;

@@ -51,7 +51,7 @@ var $RootNode = klass({
      * @param {Map} ctlInitAtts the init value of the controller attributes (optional) - e.g.
      * {value:'123',mandatory:true}
      */
-    $constructor : function (vscope, nodedefs, argnames, ctlWrapper, ctlInitAtts) {
+    $constructor : function(vscope, nodedefs, argnames, ctlWrapper, ctlInitAtts) {
         if (this.isInsertNode) {
             TNode.$constructor.call(this, this.exps);
         } else {
@@ -125,12 +125,16 @@ var $RootNode = klass({
             o.$dispose();
         }
         this.propObs=null;
+        this.$disposeCtlWrapper();
+        TNode.$dispose.call(this);
+    },
+
+    $disposeCtlWrapper: function() {
         if (this.ctlWrapper) {
             this.ctlWrapper.$dispose();
             this.ctlWrapper = null;
             this.controller = null;
         }
-        TNode.$dispose.call(this);
     },
 
     /**
@@ -323,6 +327,7 @@ var getObject = exports.getObject = function (path, scope) {
             o = o[path[i]];
         }
     }
+
     return o;
 };
 
@@ -343,7 +348,7 @@ var $CptNode = klass({
      * expression index associated to the event hanlder callback
      * @param {Array} children list of child node generators - correponding to pseudo components and attribute content
      */
-    $constructor : function (tplPath, exps, attcfg, ehcfg, children) {
+    $constructor : function(tplPath, exps, attcfg, ehcfg, children) {
         this.pathInfo=tplPath.slice(1).join("."); // debugging info
         this.info="[Component: #"+this.pathInfo+"]"; // debug info
         this.isCptNode = true;
@@ -604,6 +609,15 @@ var $CptNode = klass({
 
             if (tplChanged) {
                 // check if component nature changed from template to component or opposite
+
+                // Change might also be a different component ref, ie cpt1 -> cpt2
+                // let's dispose anything related to previous template
+                if (this.template.$dispose) {
+                    this.template.$dispose(true);
+                } else {
+                    // this.template might be only a reference to template closure function, not what it returns
+                    this.$disposeCtlWrapper();
+                }
                 this.template=tpl;
                 this.createChildNodeInstances();
             } else {
@@ -754,7 +768,7 @@ var $CptAttElement = klass({
     /**
      * $CptAttElement generator
      */
-    $constructor : function (name, exps, attcfg, ehcfg, children) {
+    $constructor : function(name, exps, attcfg, ehcfg, children) {
         this.name = name;
         this.info = "[Component attribute element: @"+this.name+"]";
         this.tagName = "@"+name;
@@ -851,4 +865,3 @@ cptComponent.setDependency("$CptAttElement",$CptAttElement);
 exports.$RootNode = $RootNode;
 exports.$CptNode = $CptNode;
 exports.$CptAttElement = $CptAttElement;
-
