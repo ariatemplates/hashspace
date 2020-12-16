@@ -211,8 +211,8 @@ var CptWrapper = klass({
                 }
                 if (att.type === "callback") {
                     // create an even callback function
-                    this.createEventFunction(k.slice(2));
-                    cpt[k].isEmpty=(iAtt===undefined);
+                    var isEmpty = !this.createEventFunction(k.slice(2));
+                    cpt[k].isEmpty = isEmpty;
                     continue;
                 } else if (att.type === "template") {
                     v=null;
@@ -268,6 +268,17 @@ var CptWrapper = klass({
                 self.nodeInstance.onEvent(evtData);
             }
         };
+        if (this.nodeInstance) {
+            var evh = this.nodeInstance.evtHandlers;
+            if (evh) {
+                for (var i = 0; i < evh.length; i++) {
+                    if (evh[i].evtType === evtType) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     },
 
     /**
