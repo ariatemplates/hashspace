@@ -87,7 +87,9 @@ exports.$CptComponent = {
         for (var i = 0, sz = this.atts.length; sz > i; i++) {
           att = atts[i];
           nm = att.name;
-          if (this.ctlAttributes[nm].type!=="template") {
+          if (!this.ctlAttributes || !this.ctlAttributes[nm]) {
+              throw new Error('The attribute "' + nm + '" was used but the component doesn\'t define this attribute.');
+          } else if (this.ctlAttributes[nm].type!=="template") {
             attributes[nm]=att.getValue(eh, pvs, null);
           }
         }

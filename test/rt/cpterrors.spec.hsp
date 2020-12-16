@@ -1,0 +1,51 @@
+var klass=require("hsp/klass"),
+    ht=require("hsp/utils/hashtester");
+
+var FooNoAttrsCtrl=klass({
+});
+
+var FooEmptyAttrsCtrl=klass({
+    attributes: {
+    }
+});
+
+{template fooNoAttrs using ctrl:FooNoAttrsCtrl}
+<div>foo</div>
+{/template}
+
+{template fooEmptyAttrs using ctrl:FooEmptyAttrsCtrl}
+<div>foo</div>
+{/template}
+
+{template test1}
+<#fooNoAttrs foo="bar"></#fooNoAttrs>
+{/template}
+
+{template test2}
+<#fooEmptyAttrs foo="bar"></#fooEmptyAttrs>
+{/template}
+
+describe('error reporting for custom components', function() {
+        
+    var h;
+    beforeEach(function() {
+        h=ht.newTestContext();
+    });
+
+    it('attribute used for a component without attributes', function() {
+        expect(function() {
+            test1().render(h.container);
+        }).to.throwException(/The attribute "foo" was used but the component doesn't define this attribute./);
+    });
+
+    it('attribute used for a component without attributes', function() {
+        expect(function() {
+            test2().render(h.container);
+    }   ).to.throwException(/The attribute "foo" was used but the component doesn't define this attribute./);
+    });
+
+    afterEach(function(){
+        h.$dispose();
+    });
+
+});
